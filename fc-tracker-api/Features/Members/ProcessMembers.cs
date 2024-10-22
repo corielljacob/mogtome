@@ -4,6 +4,7 @@ using NetStone;
 using MongoDB.Driver;
 using fc_tracker_api.Features.Members.Data;
 using AutoMapper;
+using MongoDB.Bson;
 
 namespace fc_tracker_api.Features.Members
 {
@@ -20,11 +21,15 @@ namespace fc_tracker_api.Features.Members
         {
             private readonly ILogger<ProcessMembers> _logger;
             private readonly IMapper _mapper;
+            private string _connectionString;
+            private MongoClient _mongoClient;
 
             public Handler(ILogger<ProcessMembers> logger, IMapper mapper)
             {
                 _logger = logger;
                 _mapper = mapper;
+                _connectionString = Environment.GetEnvironmentVariable(Constants.ConnectionStringId, EnvironmentVariableTarget.Machine);
+                _mongoClient = new MongoClient(_connectionString);
             }
 
             public async Task<Response> Handle(Command command, CancellationToken cancellationToken)
@@ -38,7 +43,6 @@ namespace fc_tracker_api.Features.Members
                     var freshFreeCompanyMemberEntries = await GetFreshFreeCompanyMemberList();
                     freshFreeCompanyMemberList = _mapper.Map<List<FreeCompanyMember>>(freshFreeCompanyMemberEntries);
                     archivedFreeCompanyMemberList = await GetArchivedFreeCompanyMembers();
-
                 }
                 catch (Exception ex)
                 {
@@ -46,21 +50,14 @@ namespace fc_tracker_api.Features.Members
                     return new Response { ProccessingFinishedSuccessfully = false };
                 }
 
-                // TODO: Implement each of these methods
-                var membersWhoHaveLeft = GetMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
-                var membersWhoHaveJoined = GetMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
-                var existingMembers = GetExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
-
-                // TODO: Remove members who have left or mark them as inactive with a flag
-
-                // TODO: Add new members who have joined
-
-                // TODO: Check each existing member for any data updates that need to be made
+                await UpdateMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                UpdateMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                UpdateExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
 
                 return new Response { ProccessingFinishedSuccessfully = successfullyProcessedAllMembers };
             }
 
-            private async Task<List<FreeCompanyMembersEntry>> GetFreshFreeCompanyMemberList()
+            private static async Task<List<FreeCompanyMembersEntry>> GetFreshFreeCompanyMemberList()
             {
                 List<FreeCompanyMembersEntry> members = [];
 
@@ -76,7 +73,7 @@ namespace fc_tracker_api.Features.Members
                 return members;
             }
 
-            private async Task<List<FreeCompanyMember>> GetArchivedFreeCompanyMembers()
+            private static async Task<List<FreeCompanyMember>> GetArchivedFreeCompanyMembers()
             {
                 var connectionString = Environment.GetEnvironmentVariable(Constants.ConnectionStringId, EnvironmentVariableTarget.Machine);
                 var client = new MongoClient(connectionString);
@@ -87,37 +84,64 @@ namespace fc_tracker_api.Features.Members
                 return freeCompanyMembers;
             }
 
-            // TODO: Implement Feature
-            private List<FreeCompanyMember> GetMembersWhoHaveLeft(List<FreeCompanyMember> FreshFreeCompanyMemberList, List<FreeCompanyMember> ArchivedFreeCompanyMemberList)
+            private async Task UpdateMembersWhoHaveLeft(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                // Find members who have left the FC since last check
-                // Find the members who are in the archivedFreeCompanyMemberList list but not in the freshFreeCompanyMemberList list
-                // basically, archivedFreeCompanyMemberList - freshFreeCompanyMemberList (set subtraction)
-                // .NET has a method for lists called Except that you can use. myList.Except(myOtherList) will return list items in myList that are not in myOtherList
+                var membersWhoHaveLeft = GetMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                var idsOfMembersWhoHaveLeft = membersWhoHaveLeft.Select(member => member.CharacterId).ToList();
 
-                return null;
+                var membersCollection = _mongoClient.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
+                var filter = Builders<FreeCompanyMember>.Filter.In("CharacterId", idsOfMembersWhoHaveLeft);
+
+                var update = Builders<FreeCompanyMember>.Update.Pipeline(
+                    new BsonDocument[]
+                    {
+                        new BsonDocument("$set", new BsonDocument
+                        {
+                            { "MembershipHistory", new BsonDocument("$concat", new BsonArray { "$MembershipHistory", $"{DateTime.Now.Date}" }) },
+                            { "ActiveMember", false },
+                            { "LastLeaveDate", DateTime.Now },
+                            { "LastUpdateDate", DateTime.Now }
+                        })
+                    }
+                );
+
+                var result = membersCollection.UpdateMany(filter, update);
             }
 
-            // TODO: Implement Feature
-            private List<FreeCompanyMember> GetMembersWhoHaveJoined(List<FreeCompanyMember> FreshFreeCompanyMemberList, List<FreeCompanyMember> ArchivedFreeCompanyMemberList)
+            private void UpdateMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                // Find members who have joined the FC since last check
-                // Find the members who are in the FreshFreeCompanyMemberList list but not in the ArchivedFreeCompanyMemberList list
-                // basically, FreshFreeCompanyMemberList - ArchivedFreeCompanyMemberList (set subtraction)
-                // .NET has a method for lists called Except that you can use. myList.Except(myOtherList) will return list items in myList that are not in myOtherList
-
-                return null;
+                var membersWhoHaveJoined = GetMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
             }
 
-            // TODO: Implement Feature
-            private List<FreeCompanyMember> GetExistingMembers(List<FreeCompanyMember> FreshFreeCompanyMemberList, List<FreeCompanyMember> ArchivedFreeCompanyMemberList)
+            private void UpdateExistingMembers(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                // Find members who were in the FC the last time we checked
-                // Find the members who are in both the FreshFreeCompanyMemberList list and the ArchivedFreeCompanyMemberList list
-                // This is called set intersection
-                // .NET has a method for lists called Intersect that you can use. myList.Intersect(myOtherList) will return list items in both myList and myOtherList
+                var existingMembers = GetExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+            }
 
-                return null;
+            private static List<FreeCompanyMember> GetMembersWhoHaveLeft(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            {
+                var membersWhoHaveLeft = archivedFreeCompanyMemberList
+                    .Where(member => member.ActiveMember)
+                    .Except(freshFreeCompanyMemberList)
+                    .ToList();
+
+                return membersWhoHaveLeft;
+            }
+
+            private static List<FreeCompanyMember> GetMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            {
+                var membersWhoHaveJoined = freshFreeCompanyMemberList.Except(archivedFreeCompanyMemberList).ToList();
+                return membersWhoHaveJoined;
+            }
+
+            private static List<FreeCompanyMember> GetExistingMembers(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            {
+                var existingMembers = archivedFreeCompanyMemberList
+                    .Where(member => member.ActiveMember)
+                    .Intersect(freshFreeCompanyMemberList)
+                    .ToList();
+
+                return existingMembers;
             }
         }
     }
