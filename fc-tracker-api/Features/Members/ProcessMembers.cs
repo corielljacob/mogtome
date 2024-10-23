@@ -21,8 +21,8 @@ namespace fc_tracker_api.Features.Members
         {
             private readonly ILogger<ProcessMembers> _logger;
             private readonly IMapper _mapper;
-            private string _connectionString;
-            private MongoClient _mongoClient;
+            private readonly string _connectionString;
+            private readonly MongoClient _mongoClient;
 
             public Handler(ILogger<ProcessMembers> logger, IMapper mapper)
             {
@@ -51,7 +51,7 @@ namespace fc_tracker_api.Features.Members
                 }
 
                 await UpdateMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
-                UpdateMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                await UpdateMembersWhoHaveJoined(freshFreeCompanyMemberList.GetRange(0, 5), archivedFreeCompanyMemberList);
                 UpdateExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
 
                 return new Response { ProccessingFinishedSuccessfully = successfullyProcessedAllMembers };
@@ -92,10 +92,11 @@ namespace fc_tracker_api.Features.Members
                 var membersCollection = _mongoClient.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
                 var filter = Builders<FreeCompanyMember>.Filter.In("CharacterId", idsOfMembersWhoHaveLeft);
 
+                // todo: get rid of pipeline and use UpdateOneModel and BulkUpdate instead
                 var update = Builders<FreeCompanyMember>.Update.Pipeline(
                     new BsonDocument[]
                     {
-                        new BsonDocument("$set", new BsonDocument
+                        new ("$set", new BsonDocument
                         {
                             { "MembershipHistory", new BsonDocument("$concat", new BsonArray { "$MembershipHistory", $"{DateTime.Now.Date}" }) },
                             { "ActiveMember", false },
@@ -105,40 +106,115 @@ namespace fc_tracker_api.Features.Members
                     }
                 );
 
-                var result = membersCollection.UpdateMany(filter, update);
+                await membersCollection.UpdateManyAsync(filter, update);
             }
 
-            private void UpdateMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            private async Task UpdateMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                var membersWhoHaveJoined = GetMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                var newMembersWhoHaveJoined = GetNewMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                var returningMembersWhoHaveJoined = GetReturningMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+
+                if (newMembersWhoHaveJoined.Count == 0 && returningMembersWhoHaveJoined.Count == 0)
+                    return; 
+
+                var membersCollection = _mongoClient.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
+
+                // Insert brand new members
+                if (newMembersWhoHaveJoined.Count > 0)
+                    await membersCollection.InsertManyAsync(newMembersWhoHaveJoined);
+
+                // Update documents for rejoining members
+                if(returningMembersWhoHaveJoined.Count > 0)
+                {
+                    var idsOfMembersWhoHaveRejoined = returningMembersWhoHaveJoined.Select(member => member.CharacterId).ToList();
+                    var filter = Builders<FreeCompanyMember>.Filter.In("CharacterId", idsOfMembersWhoHaveRejoined);
+
+                    // todo: get rid of pipeline and use UpdateOneModel and BulkUpdate instead
+                    var update = Builders<FreeCompanyMember>.Update.Pipeline(
+                        new BsonDocument[]
+                        {
+                            new ("$set", new BsonDocument
+                            {
+                                { "MembershipHistory", new BsonDocument("$concat", new BsonArray { "$MembershipHistory", $"+{DateTime.Now.Date}-" }) },
+                                { "ActiveMember", true },
+                                { "LastJoinDate", DateTime.Now },
+                                { "LastUpdateDate", DateTime.Now }
+                            })
+                        }
+                    );
+
+                    await membersCollection.UpdateManyAsync(filter, update);
+                }
             }
 
             private void UpdateExistingMembers(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
                 var existingMembers = GetExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                var membersCollection = _mongoClient.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
+
+                var updates = new List<WriteModel<FreeCompanyMember>>();
+                foreach (var member in existingMembers)
+                {
+                    var currentName = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).Name;
+                    if(currentName != member.Name)
+                    {
+                        var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
+                        var update = Builders<FreeCompanyMember>.Update
+                            .Set(member => member.Name, currentName)
+                            .Set(member => member.LastUpdatedDate, DateTime.Now);
+                        var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
+                        updates.Add(updateModel);
+                    }
+
+                    var currentRank = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).FreeCompanyRank;
+                    if (currentName != member.Name)
+                    {
+                        var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
+                        var update = Builders<FreeCompanyMember>.Update.Set(member => member.FreeCompanyRank, currentRank);
+                        var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
+                        updates.Add(updateModel);
+                    }
+                }
+                
+                if(updates.Count > 0)
+                {
+                    var updateResult = membersCollection.BulkWrite(updates);
+                }
             }
 
             private static List<FreeCompanyMember> GetMembersWhoHaveLeft(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
                 var membersWhoHaveLeft = archivedFreeCompanyMemberList
                     .Where(member => member.ActiveMember)
-                    .Except(freshFreeCompanyMemberList)
+                    .Where(member => freshFreeCompanyMemberList.Any(freshMember => freshMember.CharacterId.Equals(member.CharacterId)) == false)
                     .ToList();
 
                 return membersWhoHaveLeft;
             }
 
-            private static List<FreeCompanyMember> GetMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            private static List<FreeCompanyMember> GetNewMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                var membersWhoHaveJoined = freshFreeCompanyMemberList.Except(archivedFreeCompanyMemberList).ToList();
+                var membersWhoHaveJoined = freshFreeCompanyMemberList
+                    .Where(member => archivedFreeCompanyMemberList.Any(historicalMember => historicalMember.CharacterId.Equals(member.CharacterId)) == false)
+                    .ToList();
+
                 return membersWhoHaveJoined;
+            }
+
+            private static List<FreeCompanyMember> GetReturningMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            {
+                var membersWhoHaveRejoined = freshFreeCompanyMemberList
+                    .Where(member => archivedFreeCompanyMemberList.Any(historicalMember => historicalMember.CharacterId.Equals(member.CharacterId) && historicalMember.ActiveMember == false))
+                    .ToList();
+
+                return membersWhoHaveRejoined;
             }
 
             private static List<FreeCompanyMember> GetExistingMembers(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
                 var existingMembers = archivedFreeCompanyMemberList
                     .Where(member => member.ActiveMember)
-                    .Intersect(freshFreeCompanyMemberList)
+                    .Where(member => freshFreeCompanyMemberList.Any(freshMember => freshMember.CharacterId.Equals(member.CharacterId)))
                     .ToList();
 
                 return existingMembers;

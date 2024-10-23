@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using fc_tracker_api.Features.Members.Data;
+using MongoDB.Bson;
 using NetStone.Model.Parseables.FreeCompany.Members;
 
 namespace fc_tracker_api.Features.Members
@@ -9,7 +10,12 @@ namespace fc_tracker_api.Features.Members
         public FreeCompanyMemberProfile() 
         {
             CreateMap<FreeCompanyMembersEntry, FreeCompanyMember>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.FreeCompanyRank, opt => opt.MapFrom(src => src.FreeCompanyRank))
+                .ForMember(dest => dest.CharacterId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.ActiveMember, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.LastUpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.MembershipHistory, opt => opt.MapFrom(src => $"{DateTime.Now.ToShortDateString()}-"));
         }
     }
 }
