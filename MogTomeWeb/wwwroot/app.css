@@ -83,7 +83,7 @@ h1:focus {
 }
 
 .search-container input {
-    width: 200px; 
+    width: 200px;
     padding: 5px;
     font-size: 14px;
     border: 1px solid #ccc;
@@ -94,24 +94,32 @@ h1:focus {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    margin-bottom: 0px; /* Reduce space below pagination container */
 }
 
 .pagination {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
 }
 
 .pagination span,
 .pagination button {
-    margin: 5px; 
+    margin: 5px;
 }
 
 .item-count {
     text-align: center;
     width: 100%;
-    margin-top: 5px; 
+    margin-top: 5px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+.item-count-text {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 /* Add media query for smaller screens */
@@ -153,7 +161,6 @@ h1:focus {
 .general-member {
     background-color: #f6ebe0;
 }
-
 
 @import url('https://fonts.googleapis.com/css2?family=Garamond:wght@700&display=swap');
 
