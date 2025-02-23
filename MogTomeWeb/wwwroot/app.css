@@ -42,9 +42,9 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
@@ -55,6 +55,7 @@ h1:focus {
     flex-wrap: wrap;
     gap: 10px;
 }
+
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -70,35 +71,50 @@ h1:focus {
     align-items: flex-start;
 }
 
-    .search-container input {
-        width: 200px; /* Adjust the width as needed */
-        padding: 5px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+.search-container input {
+    width: 200px; 
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
 
 .pagination {
     display: flex;
-    flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
     justify-content: flex-end;
     align-items: center;
+    flex-wrap: wrap; 
 }
 
-    .pagination span,
-    .pagination button {
-        margin: 5px; /* Add some margin for better spacing */
-    }
+.pagination span,
+.pagination button {
+    margin: 5px; 
+}
 
 .item-count {
-    text-align: right;
+    text-align: center;
     width: 100%;
-    margin-top: 5px; /* Adjust to reduce whitespace */
+    margin-top: 5px; 
 }
 
 /* Add media query for smaller screens */
 @media (max-width: 600px) {
     .pagination {
         justify-content: center;
+    }
+
+    .item-count {
+        text-align: center; 
+        margin-bottom: -15px; 
+    }
+
+    .pagination-container {
+        margin-top: 15px; 
     }
 }
