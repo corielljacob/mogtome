@@ -118,3 +118,31 @@ h1:focus {
         margin-top: 15px; 
     }
 }
+
+img {
+    padding: 0;
+    display: block;
+    margin: 0 auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Garamond:wght@700&display=swap');
+
+.welcome-header {
+    font-family: 'Garamond', 'Georgia', 'Times New Roman', Times, serif; /* Classy and interesting font style */
+    font-size: 3rem; /* Large font size */
+    text-align: center; /* Center the text */
+    margin-top: 15px; /* Add some space at the top */
+    color: #333; /* Dark gray color for a classy look */
+}
+
+.welcome-paragraph {
+    font-family: 'Garamond', 'Georgia', 'Times New Roman', Times, serif; /* Matching font style */
+    font-size: 1.25rem; /* Medium font size */
+    text-align: center; /* Center the text */
+    margin-top: 10px; /* Add some space between the header and paragraph */
+    margin-top: 10px; /* Add some space between the header and paragraph */
+    color: #555; /* Slightly lighter gray for contrast */
+}
+
