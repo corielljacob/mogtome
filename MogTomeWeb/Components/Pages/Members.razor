@@ -71,6 +71,7 @@
         currentPage = 1;  // Reset to the first page when the search query changes
         UpdateDisplayedCards();
     }
+
 }
 
 <div class="header-container">
@@ -106,7 +107,7 @@
                 <CardBody>
                     <CardTitle>@member.Name</CardTitle>
                     <CardText>@member.FreeCompanyRank</CardText>
-                    <Button Color="ButtonColor.Primary" To="#" Type="ButtonType.Link">Lodestone</Button>
+                    <a href="@($"https://na.finalfantasyxiv.com/lodestone/character/{member.CharacterId}")" target="_blank" class="btn btn-primary">Lodestone</a>
                 </CardBody>
             </Card>
         }
