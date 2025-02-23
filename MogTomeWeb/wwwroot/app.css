@@ -54,6 +54,17 @@ h1:focus {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    justify-content: center; 
+}
+
+.card {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 0 0 18rem;
+    max-width: 18rem;
+    box-sizing: border-box;
+    margin: 10px;
 }
 
 .header-container {
@@ -143,10 +154,6 @@ h1:focus {
     background-color: #f6ebe0;
 }
 
-.card {
-    max-height: 50%;
-    max-width: 50%;
-}
 
 @import url('https://fonts.googleapis.com/css2?family=Garamond:wght@700&display=swap');
 
@@ -166,10 +173,3 @@ h1:focus {
     margin-top: 10px; /* Add some space between the header and paragraph */
     color: #555; /* Slightly lighter gray for contrast */
 }
-
-.test {
-    font-family: 'Garamond', 'Georgia', 'Times New Roman', Times, serif; /* Matching font style */
-    font-size: 1.25rem; /* Medium font size */
-    color: #555; /* Slightly lighter gray for contrast */
-}
-
