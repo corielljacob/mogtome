@@ -2,6 +2,6 @@
 {
     public class Constants
     {
-        public readonly static string ConnectionStringId = "FC-Tracker-Connection-String";
+        public readonly static string ConnectionStringId = "FC_Tracker_Connection_String";
     }
 }

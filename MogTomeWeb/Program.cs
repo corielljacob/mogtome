@@ -1,4 +1,4 @@
-using MogTome.Components;
+using MogTomeWeb.Components;
 using MogTome.Services;
 
 namespace MogTome
