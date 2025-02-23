@@ -95,7 +95,7 @@
 <hr>
 
 <div class="card-container">
-    @if (displayedMembers == null)
+    @if (displayedMembers == null || displayedMembers.Count  == 0)
     {
         <p>Loading...</p>
     }
