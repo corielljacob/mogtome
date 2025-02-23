@@ -1,0 +1,40 @@
+﻿@page "/members"
+@using MogTome.Data
+@using MogTome.Services
+@using MongoDB.Driver
+@attribute [StreamRendering]
+
+<PageTitle>Members</PageTitle>
+
+@code {
+    [Inject]
+    private MongoService _mongoService { get; set; }
+    private List<FreeCompanyMember> members { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = await _mongoService.GetFreeCompanyMembers();
+    }
+}
+
+<div class="card-container">
+    @if (members == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        @foreach (FreeCompanyMember member in members)
+        {
+            <Card Style="width:18rem;">
+                <img class="rounded-top" src="@member.AvatarLink" alt="placeholder" />
+                <CardBody>
+                    <CardTitle>@member.Name</CardTitle>
+                    <CardText>@member.FreeCompanyRank</CardText>
+                    <Button Color="ButtonColor.Primary" To="#" Type="ButtonType.Link">Lodestone</Button>
+                </CardBody>
+            </Card>
+        }
+    }
+</div>
+

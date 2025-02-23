@@ -15,7 +15,8 @@ namespace fc_tracker_api.Features.Members
                 .ForMember(dest => dest.CharacterId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ActiveMember, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.LastUpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.MembershipHistory, opt => opt.MapFrom(src => $"{DateTime.Now.ToShortDateString()}-"));
+                .ForMember(dest => dest.MembershipHistory, opt => opt.MapFrom(src => $"{DateTime.Now.ToShortDateString()}-"))
+                .ForMember(dest => dest.AvatarLink, opt => opt.MapFrom(src => src.Avatar.ToString()));
         }
     }
 }

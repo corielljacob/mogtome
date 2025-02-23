@@ -1,12 +1,11 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace fc_tracker_api.Features.Members.Data
+namespace MogTome.Data
 {
     [BsonIgnoreExtraElements]
     public class FreeCompanyMember
     {
-        public string Name { get; set; } 
+        public string Name { get; set; }
         public string FreeCompanyRank { get; set; }
         public string CharacterId { get; set; }
         public bool ActiveMember { get; set; }

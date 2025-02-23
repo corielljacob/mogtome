@@ -1,0 +1,24 @@
+﻿using MogTome.Data;
+using MongoDB.Driver;
+
+namespace MogTome.Services
+{
+    public class MongoService
+    {
+        private readonly MongoClient _client;
+
+        public MongoService()
+        {
+            _client = new MongoClient(Environment.GetEnvironmentVariable(Constants.ConnectionStringId, EnvironmentVariableTarget.Machine));
+        }
+
+        public async Task<List<FreeCompanyMember>> GetFreeCompanyMembers()
+        {
+            var memberCollection = _client.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
+            var filter = Builders<FreeCompanyMember>.Filter.Empty;
+            var freeCompanyMembers = await memberCollection.Find(filter).ToListAsync();
+
+            return freeCompanyMembers;
+        }
+    }
+}

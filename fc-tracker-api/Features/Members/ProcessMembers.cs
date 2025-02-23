@@ -4,7 +4,6 @@ using NetStone;
 using MongoDB.Driver;
 using fc_tracker_api.Features.Members.Data;
 using AutoMapper;
-using MongoDB.Bson;
 
 namespace fc_tracker_api.Features.Members
 {
@@ -50,8 +49,8 @@ namespace fc_tracker_api.Features.Members
                     return new Response { ProccessingFinishedSuccessfully = false };
                 }
 
-                await UpdateMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
-                await UpdateMembersWhoHaveJoined(freshFreeCompanyMemberList.GetRange(0, 5), archivedFreeCompanyMemberList);
+                UpdateMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
+                await UpdateMembersWhoHaveJoined(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
                 UpdateExistingMembers(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
 
                 return new Response { ProccessingFinishedSuccessfully = successfullyProcessedAllMembers };
@@ -60,7 +59,6 @@ namespace fc_tracker_api.Features.Members
             private static async Task<List<FreeCompanyMembersEntry>> GetFreshFreeCompanyMemberList()
             {
                 List<FreeCompanyMembersEntry> members = [];
-
                 var lodestoneClient = await LodestoneClient.GetClientAsync();
                 var freeCompanyMembers = await lodestoneClient.GetFreeCompanyMembers(Constants.KupoLifeId);
 
@@ -84,29 +82,30 @@ namespace fc_tracker_api.Features.Members
                 return freeCompanyMembers;
             }
 
-            private async Task UpdateMembersWhoHaveLeft(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
+            private void UpdateMembersWhoHaveLeft(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
                 var membersWhoHaveLeft = GetMembersWhoHaveLeft(freshFreeCompanyMemberList, archivedFreeCompanyMemberList);
                 var idsOfMembersWhoHaveLeft = membersWhoHaveLeft.Select(member => member.CharacterId).ToList();
 
                 var membersCollection = _mongoClient.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
-                var filter = Builders<FreeCompanyMember>.Filter.In("CharacterId", idsOfMembersWhoHaveLeft);
 
-                // todo: get rid of pipeline and use UpdateOneModel and BulkUpdate instead
-                var update = Builders<FreeCompanyMember>.Update.Pipeline(
-                    new BsonDocument[]
-                    {
-                        new ("$set", new BsonDocument
-                        {
-                            { "MembershipHistory", new BsonDocument("$concat", new BsonArray { "$MembershipHistory", $"{DateTime.Now.Date}" }) },
-                            { "ActiveMember", false },
-                            { "LastLeaveDate", DateTime.Now },
-                            { "LastUpdateDate", DateTime.Now }
-                        })
-                    }
-                );
+                var updates = new List<WriteModel<FreeCompanyMember>>();
+                foreach (var member in membersWhoHaveLeft)
+                {
+                    var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
+                    var update = Builders<FreeCompanyMember>.Update
+                        .Set(member => member.MembershipHistory, $"{member.MembershipHistory}{DateTime.Now.ToShortDateString()}")
+                        .Set(member => member.LastUpdatedDate, DateTime.Now)
+                        .Set(member => member.ActiveMember, false);
 
-                await membersCollection.UpdateManyAsync(filter, update);
+                    var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
+                    updates.Add(updateModel);
+                }
+
+                if (updates.Count > 0)
+                {
+                    var updateResult = membersCollection.BulkWrite(updates);
+                }
             }
 
             private async Task UpdateMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
@@ -126,24 +125,26 @@ namespace fc_tracker_api.Features.Members
                 // Update documents for rejoining members
                 if(returningMembersWhoHaveJoined.Count > 0)
                 {
-                    var idsOfMembersWhoHaveRejoined = returningMembersWhoHaveJoined.Select(member => member.CharacterId).ToList();
-                    var filter = Builders<FreeCompanyMember>.Filter.In("CharacterId", idsOfMembersWhoHaveRejoined);
+                    var updates = new List<WriteModel<FreeCompanyMember>>();
+                    foreach (var member in returningMembersWhoHaveJoined)
+                    {
+                        var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
+                        var update = Builders<FreeCompanyMember>.Update
+                            .Set(member => member.Name, member.Name)
+                            .Set(member => member.FreeCompanyRank, member.FreeCompanyRank)
+                            .Set(member => member.MembershipHistory, $"{member.MembershipHistory}+{DateTime.Now.ToShortDateString()}-")
+                            .Set(member => member.LastUpdatedDate, DateTime.Now)
+                            .Set(member => member.ActiveMember, true)
+                            .Set(member => member.AvatarLink, member.AvatarLink);
 
-                    // todo: get rid of pipeline and use UpdateOneModel and BulkUpdate instead
-                    var update = Builders<FreeCompanyMember>.Update.Pipeline(
-                        new BsonDocument[]
-                        {
-                            new ("$set", new BsonDocument
-                            {
-                                { "MembershipHistory", new BsonDocument("$concat", new BsonArray { "$MembershipHistory", $"+{DateTime.Now.Date}-" }) },
-                                { "ActiveMember", true },
-                                { "LastJoinDate", DateTime.Now },
-                                { "LastUpdateDate", DateTime.Now }
-                            })
-                        }
-                    );
+                        var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
+                        updates.Add(updateModel);
+                    }
 
-                    await membersCollection.UpdateManyAsync(filter, update);
+                    if (updates.Count > 0)
+                    {
+                        var updateResult = membersCollection.BulkWrite(updates);
+                    }
                 }
             }
 
@@ -156,21 +157,18 @@ namespace fc_tracker_api.Features.Members
                 foreach (var member in existingMembers)
                 {
                     var currentName = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).Name;
-                    if(currentName != member.Name)
+                    var currentAvatarLink = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).AvatarLink;
+                    var currentRank = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).FreeCompanyRank;
+
+                    if (currentName != member.Name || currentAvatarLink != member.AvatarLink || currentRank != member.FreeCompanyRank)
                     {
                         var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
                         var update = Builders<FreeCompanyMember>.Update
                             .Set(member => member.Name, currentName)
-                            .Set(member => member.LastUpdatedDate, DateTime.Now);
-                        var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
-                        updates.Add(updateModel);
-                    }
+                            .Set(member => member.LastUpdatedDate, DateTime.Now)
+                            .Set(member => member.AvatarLink, currentAvatarLink)
+                            .Set(member => member.FreeCompanyRank, currentRank);
 
-                    var currentRank = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).FreeCompanyRank;
-                    if (currentName != member.Name)
-                    {
-                        var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
-                        var update = Builders<FreeCompanyMember>.Update.Set(member => member.FreeCompanyRank, currentRank);
                         var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
                         updates.Add(updateModel);
                     }
@@ -203,8 +201,8 @@ namespace fc_tracker_api.Features.Members
 
             private static List<FreeCompanyMember> GetReturningMembersWhoHaveJoined(List<FreeCompanyMember> freshFreeCompanyMemberList, List<FreeCompanyMember> archivedFreeCompanyMemberList)
             {
-                var membersWhoHaveRejoined = freshFreeCompanyMemberList
-                    .Where(member => archivedFreeCompanyMemberList.Any(historicalMember => historicalMember.CharacterId.Equals(member.CharacterId) && historicalMember.ActiveMember == false))
+                var membersWhoHaveRejoined = archivedFreeCompanyMemberList
+                    .Where(member => freshFreeCompanyMemberList.Any(freshMember => freshMember.CharacterId.Equals(member.CharacterId) && member.ActiveMember == false))
                     .ToList();
 
                 return membersWhoHaveRejoined;
@@ -219,6 +217,11 @@ namespace fc_tracker_api.Features.Members
 
                 return existingMembers;
             }
+
+            // Write a function that takes in a list of FreeCompanyMembers and deletes them from the MongoDB database
+
+
+
         }
     }
 }
