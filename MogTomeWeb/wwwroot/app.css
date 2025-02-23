@@ -60,6 +60,7 @@ h1:focus {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
 .search-container {
@@ -79,14 +80,25 @@ h1:focus {
 
 .pagination {
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
     justify-content: flex-end;
     align-items: center;
 }
 
-    .pagination span {
-        margin: 0 5px;
+    .pagination span,
+    .pagination button {
+        margin: 5px; /* Add some margin for better spacing */
     }
+
 .item-count {
     text-align: right;
-    margin-top: -10px; /* Adjust to reduce whitespace */
+    width: 100%;
+    margin-top: 5px; /* Adjust to reduce whitespace */
+}
+
+/* Add media query for smaller screens */
+@media (max-width: 600px) {
+    .pagination {
+        justify-content: center;
+    }
 }
