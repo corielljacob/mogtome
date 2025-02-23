@@ -132,6 +132,7 @@ namespace fc_tracker_api.Features.Members
                         var update = Builders<FreeCompanyMember>.Update
                             .Set(member => member.Name, member.Name)
                             .Set(member => member.FreeCompanyRank, member.FreeCompanyRank)
+                            .Set(member => member.FreeCompanyRankIcon, member.FreeCompanyRankIcon)
                             .Set(member => member.MembershipHistory, $"{member.MembershipHistory}+{DateTime.Now.ToShortDateString()}-")
                             .Set(member => member.LastUpdatedDate, DateTime.Now)
                             .Set(member => member.ActiveMember, true)
@@ -159,15 +160,17 @@ namespace fc_tracker_api.Features.Members
                     var currentName = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).Name;
                     var currentAvatarLink = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).AvatarLink;
                     var currentRank = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).FreeCompanyRank;
+                    var currentRankIcon = freshFreeCompanyMemberList.First(freshMember => freshMember.CharacterId == member.CharacterId).FreeCompanyRankIcon;
 
-                    if (currentName != member.Name || currentAvatarLink != member.AvatarLink || currentRank != member.FreeCompanyRank)
+                    if (currentName != member.Name || currentAvatarLink != member.AvatarLink || currentRank != member.FreeCompanyRank || currentRankIcon != member.FreeCompanyRankIcon)
                     {
                         var filter = Builders<FreeCompanyMember>.Filter.Eq("CharacterId", member.CharacterId);
                         var update = Builders<FreeCompanyMember>.Update
                             .Set(member => member.Name, currentName)
                             .Set(member => member.LastUpdatedDate, DateTime.Now)
                             .Set(member => member.AvatarLink, currentAvatarLink)
-                            .Set(member => member.FreeCompanyRank, currentRank);
+                            .Set(member => member.FreeCompanyRank, currentRank)
+                            .Set(member => member.FreeCompanyRankIcon, currentRankIcon);
 
                         var updateModel = new UpdateOneModel<FreeCompanyMember>(filter, update);
                         updates.Add(updateModel);

@@ -119,12 +119,33 @@ h1:focus {
     }
 }
 
-img {
+.big-img {
     padding: 0;
     display: block;
     margin: 0 auto;
     max-height: 100%;
     max-width: 100%;
+}
+
+.guardian {
+    background-color: #f7ef9c;
+}
+
+.knight {
+    background-color: #64a2b6;
+}
+
+.paissa {
+    background-color: #e4dab7;
+}
+
+.general-member {
+    background-color: #f6ebe0;
+}
+
+.card {
+    max-height: 50%;
+    max-width: 50%;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Garamond:wght@700&display=swap');
@@ -143,6 +164,12 @@ img {
     text-align: center; /* Center the text */
     margin-top: 10px; /* Add some space between the header and paragraph */
     margin-top: 10px; /* Add some space between the header and paragraph */
+    color: #555; /* Slightly lighter gray for contrast */
+}
+
+.test {
+    font-family: 'Garamond', 'Georgia', 'Times New Roman', Times, serif; /* Matching font style */
+    font-size: 1.25rem; /* Medium font size */
     color: #555; /* Slightly lighter gray for contrast */
 }
 

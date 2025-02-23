@@ -12,6 +12,7 @@ namespace fc_tracker_api.Features.Members
             CreateMap<FreeCompanyMembersEntry, FreeCompanyMember>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.FreeCompanyRank, opt => opt.MapFrom(src => src.FreeCompanyRank))
+                .ForMember(dest => dest.FreeCompanyRankIcon, opt => opt.MapFrom(src => src.FreeCompanyRankIcon))
                 .ForMember(dest => dest.CharacterId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ActiveMember, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.LastUpdatedDate, opt => opt.MapFrom(src => DateTime.Now))
