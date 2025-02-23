@@ -27,8 +27,14 @@ namespace fc_tracker_api.Features.Members
             {
                 _logger = logger;
                 _mapper = mapper;
-                _connectionString = Environment.GetEnvironmentVariable(Constants.ConnectionStringId, EnvironmentVariableTarget.Machine);
                 _mongoClient = new MongoClient(_connectionString);
+
+                var connectionString = Environment.GetEnvironmentVariable(Constants.ConnectionStringId, EnvironmentVariableTarget.Machine);
+
+                if (string.IsNullOrWhiteSpace(connectionString))
+                    connectionString = Environment.GetEnvironmentVariable(Constants.ConnectionStringId);
+
+                _connectionString = connectionString;
             }
 
             public async Task<Response> Handle(Command command, CancellationToken cancellationToken)
