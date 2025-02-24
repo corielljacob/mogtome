@@ -82,6 +82,32 @@ h1:focus {
     align-items: flex-start;
 }
 
+.filter-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    margin-top: 10px; 
+}
+
+.filter-container label {
+    margin-bottom: 0px; 
+    align-self: flex-start; 
+}
+
+.custom-multiselect {
+    width: 100%;
+    position: relative;
+    align-self: flex-start;
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+    color: #ccc !important;
+    --bs-btn-border-color: green;
+}
+
+.simple-dropdown .btn-outline-secondary {
+    --bs-btn-border-color: #ccc !important;
+}
+
 .search-container input {
     width: 200px;
     padding: 5px;
@@ -94,7 +120,7 @@ h1:focus {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin-bottom: 0px; /* Reduce space below pagination container */
+    margin-bottom: 0px; 
 }
 
 .pagination {

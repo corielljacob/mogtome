@@ -16,6 +16,7 @@
     private int totalPages;
     private int currentSearchCount;
     private string searchQuery = string.Empty;
+    private List<string> _rankFilterSelections = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,6 +30,7 @@
         var filteredList = totalMemberList
             .Where(card => card.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
                            card.FreeCompanyRank.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .Where(card => _rankFilterSelections.Count == 0 || _rankFilterSelections.Contains(card.FreeCompanyRank))
             .ToList();
 
         totalPages = (int)Math.Ceiling(filteredList.Count / (double)pageSize);
@@ -71,17 +73,30 @@
     {
         if (e.Value is not null)
             searchQuery = e.Value.ToString() ?? "";
-        
+
         currentPage = 1;
         UpdateDisplayedCards();
     }
 }
 
+
 <div class="header-container">
-    <div class="search-container">
-        <label style="font-size:15px" for="search"><b>Search by Name or Rank</b></label>
-        <TextInput Value="@searchQuery" ValueExpression="() => searchQuery" @oninput="OnSearchQueryChanged" Placeholder="Enter name or rank..." />
+    <div class="search-and-filter-container">
+        <div class="search-container">
+            <label style="font-size:15px" for="search"><b>Search by Name or Rank</b></label>
+            <TextInput Value="@searchQuery" ValueExpression="() => searchQuery" @oninput="OnSearchQueryChanged" Placeholder="Enter name or rank..." />
+        </div>
+
+
+        <div class="filter-container">
+            <label style="font-size:15px" for="filter"><b>Filter by Rank</b></label>
+            <SimpleMultiselect class="custom-multiselect" Options="GetRanks()"
+                               @bind-SelectedOptions="_rankFilterSelections"
+                               @bind-SelectedOptions:after="UpdateDisplayedCards">
+            </SimpleMultiselect>
+        </div>
     </div>
+    
 
     <div class="pagination-container">
         <div class="pagination">
@@ -130,4 +145,20 @@
         else
             return "general-member";
     }
+
+    private List<string> GetRanks()
+    {
+        return new List<string> { 
+            "Moogle Guardian", 
+            "Moogle Knight", 
+            "Paissa Trainer",
+            "Coeurl Hunter",
+            "Mandragora",
+            "Apkallu Seeker",
+            "Kupo Shelf",
+            "Bom Boko"
+        };
+    }
+
+    
 }

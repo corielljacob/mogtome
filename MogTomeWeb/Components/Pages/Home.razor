@@ -6,3 +6,27 @@
 <h1 class="welcome-header">WELCOME, KUPO</h1>
 <p class="welcome-paragraph">This is just a fun little way to easily see info about our wonderful FC. Reach out to planedonut with any questions!<br />We currently only provide the ability to view members. <a class="welcome-paragraph" href="/members">Check it out!</a></p>
 <img class="big-img" src="mogs.png" />
+
+
+
+@code {
+    private readonly List<string> _items = new List<string> { "Item 1" };
+    private List<string> _selectedItems = new List<string> { "Item 1" };
+
+    private string GetClass(string rank)
+    {
+        if (rank == "Moogle Guardian")
+            return "guardian";
+        else if (rank == "Moogle Knight")
+            return "knight";
+        else if (rank == "Paissa Trainer")
+            return "paissa";
+        else
+            return "general-member";
+    }
+
+    private List<string> GetRanks()
+    {
+        return new List<string> { "hello world", "Moogle Guardian", "Moogle Knight", "Paissa Trainer" };
+    }
+}
