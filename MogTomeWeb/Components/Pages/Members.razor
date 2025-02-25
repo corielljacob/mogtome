@@ -31,6 +31,7 @@
             .Where(card => card.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
                            card.FreeCompanyRank.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
             .Where(card => _rankFilterSelections.Count == 0 || _rankFilterSelections.Contains(card.FreeCompanyRank))
+            .OrderBy(item => FreeCompanyRanks.IndexOf(item.FreeCompanyRank))
             .ToList();
 
         totalPages = (int)Math.Ceiling(filteredList.Count / (double)pageSize);
@@ -96,7 +97,7 @@
             </SimpleMultiselect>
         </div>
     </div>
-    
+
 
     <div class="pagination-container">
         <div class="pagination">
@@ -148,17 +149,17 @@
 
     private List<string> GetRanks()
     {
-        return new List<string> { 
-            "Moogle Guardian", 
-            "Moogle Knight", 
+        return FreeCompanyRanks;
+    }
+
+    List<String> FreeCompanyRanks = new List<String> {
+            "Moogle Guardian",
+            "Moogle Knight",
             "Paissa Trainer",
             "Coeurl Hunter",
             "Mandragora",
             "Apkallu Seeker",
             "Kupo Shelf",
             "Bom Boko"
-        };
-    }
-
-    
+    };
 }
