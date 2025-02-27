@@ -173,15 +173,31 @@ h1:focus {
 }
 
 .guardian {
-    background-color: #f7ef9c;
+    background-color: #94EBDE;
 }
 
 .knight {
-    background-color: #64a2b6;
+    background-color: #945FE0;
 }
 
 .paissa {
+    background-color: #1abc9c;
+}
+
+.hunter {
+    background-color: #1f8b4c;
+}
+
+.mandragora {
     background-color: #e4dab7;
+}
+
+.seeker {
+    background-color: #4d88bb;
+}
+
+.shelf {
+    background-color: #5abe32;
 }
 
 .general-member {
