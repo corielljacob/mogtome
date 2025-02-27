@@ -21,9 +21,12 @@ namespace MogTome.Services
         {
             var memberCollection = _client.GetDatabase("kupo-life").GetCollection<FreeCompanyMember>("members");
             var filter = Builders<FreeCompanyMember>.Filter.Empty;
-            var freeCompanyMembers = await memberCollection.Find(filter).ToListAsync();
+            var freeCompanyMembers = await memberCollection
+                .Find(filter)
+                .ToListAsync();
 
-            return freeCompanyMembers;
+            var activeMembers = freeCompanyMembers.Where(member => member.ActiveMember).ToList();
+            return activeMembers;
         }
     }
 }

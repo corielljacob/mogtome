@@ -123,9 +123,11 @@
             <Card class=@GetClass(member.FreeCompanyRank) Style="width:14rem;">
                 <img class="rounded-top card-img-top" src="@member.AvatarLink" alt="placeholder" />
                 <CardBody >
-                    <CardTitle class="title">@member.Name</CardTitle>
-                    <CardText>@member.FreeCompanyRank <img class="rounded-top" src="@member.FreeCompanyRankIcon" alt="placeholder" /></CardText>
-                    <a href="@($"https://na.finalfantasyxiv.com/lodestone/character/{member.CharacterId}")" target="_blank" class="btn btn-primary">Lodestone</a>
+                    <CardTitle class="title card-text">@member.Name</CardTitle>
+                    <CardText class="card-text">@member.FreeCompanyRank <img class="rounded-top" src="@member.FreeCompanyRankIcon" alt="placeholder" /></CardText>
+                    <div class="button-container">
+                        <a href="@($"https://na.finalfantasyxiv.com/lodestone/character/{member.CharacterId}")" target="_blank" class="btn btn-primary">Lodestone</a>
+                    </div>
                 </CardBody>
             </Card>
         }
