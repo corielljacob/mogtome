@@ -228,7 +228,7 @@ h1:focus {
     background: linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)); /* Adds a subtle gradient background */
     padding: 10px; /* Adds some padding around the text */
     border-radius: 8px; /* Rounds the corners of the background */
-    font-family: 'Roboto', sans-serif; /* Changes the font to a more modern one */
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2em; /* Adjusts the font size */
     text-align: center; /* Centers the text */
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Creates a black border effect around the text */
@@ -236,8 +236,8 @@ h1:focus {
 }
 
 .button-container {
-    display: flex; /* Enable flexbox */
-    justify-content: center; /* Center items horizontally */
-    margin-top: 10px; /* Add some space between the text and the button */
+display: flex; /* Enable flexbox */
+justify-content: center; /* Center items horizontally */
+margin-top: 10px; /* Add some space between the text and the button */
 }
 
