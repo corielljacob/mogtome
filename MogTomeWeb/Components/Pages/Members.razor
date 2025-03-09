@@ -1,7 +1,10 @@
 ﻿@page "/members"
+@using Blazored.LocalStorage
 @using MogTome.Data
 @using MogTome.Services
 @using MongoDB.Driver
+@using System.Text
+@inject IJSRuntime JS
 @attribute [StreamRendering]
 
 <PageTitle>Members</PageTitle>
@@ -9,6 +12,8 @@
 @code {
     [Inject]
     private MongoService _mongoService { get; set; }
+    [Inject]
+    private ILocalStorageService localStorage { get; set; }
     private List<FreeCompanyMember> totalMemberList { get; set; }
     private List<FreeCompanyMember> displayedMembers { get; set; } = new List<FreeCompanyMember>();
     private int currentPage = 1;
@@ -16,13 +21,38 @@
     private int totalPages;
     private int currentSearchCount;
     private string searchQuery = string.Empty;
+    private string searchText = "Loading...";
     private List<string> _rankFilterSelections = new();
+    private bool IsLoading { get; set; } = false;
+    private List<int> PageSizes { get; set; } = new List<int> { 10, 20, 50, 100, 200, 400, 512 };
 
     protected override async Task OnInitializedAsync()
     {
         totalMemberList = await _mongoService.GetFreeCompanyMembers();
+        totalMemberList = totalMemberList.OrderBy(item => FreeCompanyRanks.IndexOf(item.FreeCompanyRank)).ToList();
         totalPages = (int)Math.Ceiling(totalMemberList.Count / (double)pageSize);
+
+        var storedPageSize = await localStorage.GetItemAsync<int>("pageSize");
+
+        if (storedPageSize != 0)
+        {
+            pageSize = storedPageSize;
+        }
+        else
+        {
+            await localStorage.SetItemAsync("pageSize", 20);
+            pageSize = 20;
+        }
+
         UpdateDisplayedCards();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import","./js-helper.js");
+        }
     }
 
     private void UpdateDisplayedCards()
@@ -37,7 +67,39 @@
         totalPages = (int)Math.Ceiling(filteredList.Count / (double)pageSize);
         currentSearchCount = filteredList.Count;
         displayedMembers = filteredList.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+
+        if (currentSearchCount == 0)
+            searchText = "No members found";
     }
+
+    private async Task Refresh()
+    {
+        IsLoading = true;
+        displayedMembers.Clear();
+        await Task.Delay(1000);
+
+        UpdateDisplayedCards();
+
+        IsLoading = false;
+
+        if (currentSearchCount == 0)
+            searchText = "No members found";
+    }
+
+    private void ClearFilters()
+    {
+        IsLoading = true;
+
+        _rankFilterSelections.Clear();
+        searchQuery = string.Empty;
+        UpdateDisplayedCards();
+
+        IsLoading = false;
+
+        if (currentSearchCount == 0)
+            searchText = "No members found";
+    }
+
 
     private void GoToPreviousPage()
     {
@@ -78,67 +140,12 @@
         currentPage = 1;
         UpdateDisplayedCards();
     }
-}
 
-
-<div class="header-container">
-    <div class="search-and-filter-container">
-        <div class="search-container">
-            <label style="font-size:15px" for="search"><b>Search by Name or Rank</b></label>
-            <TextInput Value="@searchQuery" ValueExpression="() => searchQuery" @oninput="OnSearchQueryChanged" Placeholder="Enter name or rank..." />
-        </div>
-
-
-        <div class="filter-container">
-            <label style="font-size:15px" for="filter"><b>Filter by Rank</b></label>
-            <SimpleMultiselect class="custom-multiselect" Options="GetRanks()"
-                               @bind-SelectedOptions="_rankFilterSelections"
-                               @bind-SelectedOptions:after="UpdateDisplayedCards">
-            </SimpleMultiselect>
-        </div>
-    </div>
-
-
-    <div class="pagination-container">
-        <div class="pagination">
-            <Button Color="ButtonColor.Primary" @onclick="GoToPreviousPage" disabled="@(!CanGoToPreviousPage)">Previous</Button>
-            <span>Page <input type="text" @bind="currentPage" @bind:event="oninput" @onblur="GoToPage" @onchange="GoToPage" style="width: 40px; text-align: center;" /> of @totalPages</span>
-            <Button Color="ButtonColor.Primary" @onclick="GoToNextPage" disabled="@(!CanGoToNextPage)">Next</Button>
-        </div>
-        <div class="item-count">
-            <p class="item-count-text">Displaying @displayedMembers.Count members<br />@currentSearchCount total members</p>
-        </div>
-    </div>
-</div>
-<hr>
-<div class="card-container">
-    @if (displayedMembers == null || displayedMembers.Count  == 0)
-    {
-        <p>Loading...</p>
-    }
-    else
-    {
-        @foreach (FreeCompanyMember member in displayedMembers)
-        {
-            <Card class=@GetClass(member.FreeCompanyRank) Style="width:14rem;">
-                <img class="rounded-top card-img-top" src="@member.AvatarLink" alt="placeholder" />
-                <CardBody >
-                    <CardTitle class="title card-text">@member.Name</CardTitle>
-                    <CardText class="card-text">@member.FreeCompanyRank <img class="rounded-top" src="@member.FreeCompanyRankIcon" alt="placeholder" /></CardText>
-                    <div class="button-container">
-                        <a href="@($"https://na.finalfantasyxiv.com/lodestone/character/{member.CharacterId}")" target="_blank" class="btn btn-primary">Lodestone</a>
-                    </div>
-                </CardBody>
-            </Card>
-        }
-    }
-</div>
-
-@code {
     private bool CanGoToPreviousPage => currentPage > 1;
     private bool CanGoToNextPage => currentPage < totalPages;
 
-    private string GetClass(string rank) {
+    private string GetClass(string rank)
+    {
         if (rank == "Moogle Guardian")
             return "guardian";
         else if (rank == "Moogle Knight")
@@ -163,13 +170,121 @@
     }
 
     List<String> FreeCompanyRanks = new List<String> {
-            "Moogle Guardian",
-            "Moogle Knight",
-            "Paissa Trainer",
-            "Coeurl Hunter",
-            "Mandragora",
-            "Apkallu Seeker",
-            "Kupo Shelf",
-            "Bom Boko"
+        "Moogle Guardian",
+        "Moogle Knight",
+        "Paissa Trainer",
+        "Coeurl Hunter",
+        "Mandragora",
+        "Apkallu Seeker",
+        "Kupo Shelf",
+        "Bom Boko"
     };
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (e.Value is not null && string.IsNullOrEmpty(e.Value.ToString()) == false)
+        {
+            var selectedPageSize = e.Value.ToString();
+            pageSize = int.Parse(selectedPageSize ?? "20");
+            await localStorage.SetItemAsync("pageSize", pageSize);
+            UpdateDisplayedCards();
+        }
+    }
+
+    private IJSObjectReference? module;
+
+    private async Task ExportPageToCSV()
+    {
+        await ExportToCSV(displayedMembers);
+    }
+
+    private async Task ExportAllToCSV()
+    {
+        await ExportToCSV(totalMemberList);
+    }
+
+    private async Task ExportToCSV(List<FreeCompanyMember> membersToExport)
+    {
+        var headers = "Name,Rank,Lodestone Id";
+        var csvContent = new StringBuilder();
+        csvContent.AppendLine(headers);
+
+        foreach (var member in membersToExport)
+        {
+            csvContent.AppendLine($"{member.Name},{member.FreeCompanyRank},{member.CharacterId}");
+        }
+
+        if(module is not null)
+            await module.InvokeAsync<string>("downloadCSV", csvContent.ToString(), "member-export.csv");
+    }
 }
+
+<script>
+    
+</script>
+
+<div class="header-container">
+    <div class="filters">
+        <div class="filter-row">
+            <div class="input-wrapper">
+                <div class="label"><b>Search by Name or Rank</b></div>
+                <TextInput class="input-placeholder" Value="@searchQuery" ValueExpression="() => searchQuery" @oninput="OnSearchQueryChanged" Placeholder="Enter name or rank..." />
+            </div>
+            <div class="input-wrapper">
+                <div class="label"><b>Filter by Rank</b></div>
+                <SimpleMultiselect class="input-placeholder" Options="GetRanks()" DefaultText="Select Rank"
+                                   @bind-SelectedOptions="_rankFilterSelections"
+                                   @bind-SelectedOptions:after="Refresh">
+                </SimpleMultiselect>
+            </div>
+        </div>
+        <div class="filter-row">
+            <Button Color="ButtonColor.Primary" @onclick="Refresh">Refresh</Button>
+            <Button Color="ButtonColor.Primary" @onclick="ClearFilters">Clear Filters</Button>
+            <Button Color="ButtonColor.Primary" @onclick="ExportPageToCSV">Export Page</Button>
+            <Button Color="ButtonColor.Primary" @onclick="ExportAllToCSV">Export All</Button>
+        </div>
+    </div>
+    <div class="pagination-controls">
+        <div class="pagination-row">
+            <Button Color="ButtonColor.Primary" @onclick="GoToPreviousPage" disabled="@(!CanGoToPreviousPage)">Previous</Button>
+            <span>Page <input type="text" @bind="currentPage" @bind:event="oninput" @onblur="GoToPage" @onchange="GoToPage" style="width: 40px; text-align: center;" /> of @totalPages</span>
+            <Button Color="ButtonColor.Primary" @onclick="GoToNextPage" disabled="@(!CanGoToNextPage)">Next</Button>
+        </div>
+        <p class="item-count-text item-count">Displaying @displayedMembers.Count members<br />
+            <select class="dropdown" @onchange="OnPageSizeChanged">
+                @foreach (var size in PageSizes)
+                {
+                    <option value="@size" selected="@(size == pageSize)">@size</option>
+                }
+            </select> members per page
+            <br />@currentSearchCount total members
+        </p>
+    </div>
+</div>
+
+<hr>
+<div class="card-container">
+    @if (IsLoading)
+    {
+        <div class="loading-text">Loading...</div>
+    }
+    else if (displayedMembers == null || displayedMembers.Count  == 0)
+    {
+        <p>@searchText</p>
+    }
+    else
+    {
+        @foreach (FreeCompanyMember member in displayedMembers)
+        {
+            <Card class=@GetClass(member.FreeCompanyRank) Style="width:14rem;">
+                <a href="@($"https://na.finalfantasyxiv.com/lodestone/character/{member.CharacterId}")" target="_blank"><img class="rounded-top card-img-top" src="@member.AvatarLink" alt="placeholder" /></a>
+                <CardBody >
+                    <CardTitle class="title card-text">@member.Name</CardTitle>
+                    <CardText class="card-text">@member.FreeCompanyRank <img class="rounded-top" src="@member.FreeCompanyRankIcon" alt="placeholder" /></CardText>
+                    
+                </CardBody>
+            </Card>
+        }
+    }
+</div>

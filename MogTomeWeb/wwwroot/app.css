@@ -67,72 +67,8 @@ h1:focus {
     margin: 5px;
 }
 
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-}
-
-.search-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.filter-container {
-    display: flex;
-    flex-direction: column; 
-    align-items: flex-start;
-    margin-top: 10px; 
-}
-
-.filter-container label {
-    margin-bottom: 0px; 
-    align-self: flex-start; 
-}
-
-.custom-multiselect {
-    width: 100%;
-    position: relative;
-    align-self: flex-start;
-    margin-left: 0 !important;
-    padding-top: 0 !important;
-    color: #ccc !important;
-    --bs-btn-border-color: green;
-}
-
 .simple-dropdown .btn-outline-secondary {
-    --bs-btn-border-color: #ccc !important;
-}
-
-.search-container input {
-    width: 200px;
-    padding: 5px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.pagination-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-bottom: 0px; 
-}
-
-.pagination {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.pagination span,
-.pagination button {
-    margin: 5px;
+    --bs-btn-border-color: #dee2e6 !important;
 }
 
 .item-count {
@@ -235,9 +171,70 @@ h1:focus {
     outline: 1px solid rgba(0, 0, 0, 0.5); /* Adds a subtle outline to reduce blurriness */
 }
 
-.button-container {
-display: flex; /* Enable flexbox */
-justify-content: center; /* Center items horizontally */
-margin-top: 10px; /* Add some space between the text and the button */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
 }
 
+.dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f2f2f2;
+    flex-wrap: wrap;
+}
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.pagination-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-placeholder, .button-placeholder {
+    width: 200px !important;
+    height: 35px !important;
+    background-color: #fff;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.label {
+    font-size: 12px;
+    margin-bottom: 0px;
+    margin-left: 5px;
+}
