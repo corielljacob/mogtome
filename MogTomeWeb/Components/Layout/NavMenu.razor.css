@@ -83,6 +83,7 @@
 
 .nav-scrollable {
     display: none;
+    position: relative; /* Ensure the container is positioned relative */
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -102,4 +103,27 @@
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+}
+
+.navbar-toggler:checked ~ .nav-scrollable {
+    display: block;
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    width: 50px;
+    height: 50px;
+    position: absolute; /* Position the button absolutely */
+    bottom: 1rem; /* Adjust the distance from the bottom */
+    right: 1rem; /* Adjust the distance from the right */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+}
+
+.dark-mode-toggle img {
+    width: 100%; /* Ensure the image takes the full width of the button */
+    height: auto; /* Maintain the aspect ratio */
 }

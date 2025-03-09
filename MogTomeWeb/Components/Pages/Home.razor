@@ -1,5 +1,6 @@
 ﻿@page "/"
-
+@using Blazored.LocalStorage
+@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 
@@ -7,11 +8,19 @@
 <p class="welcome-paragraph">This is just a fun little way to easily see info about our wonderful FC. Reach out to planedonut with any questions!<br />We currently only provide the ability to view members. <a class="welcome-paragraph" href="/members">Check it out!</a></p>
 <img class="big-img" src="mogs.png" />
 
-
-
 @code {
     private readonly List<string> _items = new List<string> { "Item 1" };
     private List<string> _selectedItems = new List<string> { "Item 1" };
+    [Inject]
+    private ILocalStorageService localStorage { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetAppearance();
+        }
+    }
 
     private string GetClass(string rank)
     {
@@ -28,5 +37,27 @@
     private List<string> GetRanks()
     {
         return new List<string> { "hello world", "Moogle Guardian", "Moogle Knight", "Paissa Trainer" };
+    }
+
+    private async Task SetAppearance()
+    {
+        var darkModeEnabled = await localStorage.GetItemAsync<string>("darkModeEnabled");
+
+        if (string.IsNullOrEmpty(darkModeEnabled))
+        {
+            await localStorage.SetItemAsync<string>("darkModeEnabled", "false");
+            await JS.InvokeVoidAsync("disableDarkMode");
+        }
+        else
+        {
+            if (bool.Parse(darkModeEnabled))
+            {
+                await JS.InvokeVoidAsync("enableDarkMode");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("disableDarkMode");
+            }
+        }
     }
 }

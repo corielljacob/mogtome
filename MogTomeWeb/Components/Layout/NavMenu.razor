@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Blazored.LocalStorage
+@inject IJSRuntime JS
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">MogTome</a>
     </div>
@@ -20,5 +23,47 @@
             </NavLink>
         </div>
     </nav>
+    <button @onclick="ToggleDarkMode" class="dark-mode-toggle">
+        <img src="white_moon.svg" alt="Toggle dark mode" />
+    </button>
 </div>
 
+<script>
+    function enableDarkMode() {
+        document.body.classList.add('dark-mode');
+    }
+
+    function disableDarkMode() {
+        document.body.classList.remove('dark-mode');
+    }
+</script>
+
+@code {
+    [Inject]
+    private ILocalStorageService localStorage { get; set; }
+    private bool DarkModeEnabled = false;
+
+    private async Task ToggleDarkMode()
+    {
+        var darkModeEnabled = await localStorage.GetItemAsync<string>("darkModeEnabled");
+
+        if(string.IsNullOrEmpty(darkModeEnabled))
+        {
+            await localStorage.SetItemAsync<string>("darkModeEnabled", "true");
+            await JS.InvokeVoidAsync("enableDarkMode");
+        }
+        else
+        {
+            if(bool.Parse(darkModeEnabled))
+            {
+                await localStorage.SetItemAsync<string>("darkModeEnabled", "false");
+                await JS.InvokeVoidAsync("disableDarkMode");
+            }
+            else
+            {
+                await localStorage.SetItemAsync<string>("darkModeEnabled", "true");
+                await JS.InvokeVoidAsync("enableDarkMode");
+            }
+        }
+    }
+}

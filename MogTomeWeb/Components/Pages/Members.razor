@@ -52,7 +52,7 @@
     {
         if (firstRender)
         {
-            module = await JS.InvokeAsync<IJSObjectReference>("import","./js-helper.js");
+            await SetAppearance();
         }
     }
 
@@ -196,8 +196,6 @@
         }
     }
 
-    private IJSObjectReference? module;
-
     private async Task ExportPageToCSV()
     {
         exportList = displayedMembers;
@@ -221,8 +219,7 @@
             csvContent.AppendLine($"{member.Name},{member.FreeCompanyRank},{member.CharacterId}");
         }
 
-        if(module is not null)
-            await module.InvokeAsync<string>("downloadCSV", csvContent.ToString(), "member-export.csv");
+        await JS.InvokeVoidAsync("downloadCSV", csvContent.ToString(), "member-export.csv");
     }
 
     private async Task OnShowExportConfirmModalClick()
@@ -240,10 +237,52 @@
         await ExportToCSV(exportList);
         await exportConfirmModal?.HideAsync();
     }
+
+    private async Task SetAppearance()
+    {
+        var darkModeEnabled = await localStorage.GetItemAsync<string>("darkModeEnabled");
+
+        if (string.IsNullOrEmpty(darkModeEnabled))
+        {
+            await localStorage.SetItemAsync<string>("darkModeEnabled", "false");
+            await JS.InvokeVoidAsync("disableDarkMode");
+        }
+        else
+        {
+            if (bool.Parse(darkModeEnabled))
+            {
+                await JS.InvokeVoidAsync("enableDarkMode");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("disableDarkMode");
+            }
+        }
+    }
 }
 
 <script>
-    
+    function enableDarkMode() {
+        document.body.classList.add('dark-mode');
+    }
+
+    function disableDarkMode() {
+        document.body.classList.remove('dark-mode');
+    }
+
+    function downloadCSV(content, fileName) {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
 </script>
 
 <div class="header-container">
@@ -305,14 +344,13 @@
                 <CardBody >
                     <CardTitle class="title card-text">@member.Name</CardTitle>
                     <CardText class="card-text">@member.FreeCompanyRank <img class="rounded-top" src="@member.FreeCompanyRankIcon" alt="placeholder" /></CardText>
-                    
                 </CardBody>
             </Card>
         }
     }
 </div>
 
-<Modal @ref="exportConfirmModal" Title="Confirm Export">
+<Modal @ref="exportConfirmModal" Title="Confirm Export" BodyCssClass="my-modals" FooterCssClass="my-modals" HeaderCssClass="my-modals">
     <BodyTemplate>
         This export will contain @exportList.Count members
     </BodyTemplate>

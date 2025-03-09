@@ -147,7 +147,6 @@ h1:focus {
     font-size: 3rem; /* Large font size */
     text-align: center; /* Center the text */
     margin-top: 15px; /* Add some space at the top */
-    color: #333; /* Dark gray color for a classy look */
 }
 
 .welcome-paragraph {
@@ -156,7 +155,6 @@ h1:focus {
     text-align: center; /* Center the text */
     margin-top: 10px; /* Add some space between the header and paragraph */
     margin-top: 10px; /* Add some space between the header and paragraph */
-    color: #555; /* Slightly lighter gray for contrast */
 }
 
 .card-text {
@@ -174,11 +172,15 @@ h1:focus {
 :root {
     --background-color: #ffffff;
     --text-color: #000000;
+    --filter-background-color: #f2f2f2;
+    --modal-bg-color: #ffffff
 }
 
 .dark-mode {
     --background-color: #121212;
     --text-color: #ffffff;
+    --filter-background-color: #373737;
+    --modal-bg-color: #353535;
 }
 
 body {
@@ -191,8 +193,9 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #f2f2f2;
+    background-color: var(--filter-background-color);
     flex-wrap: wrap;
+    border-radius: 10px;
 }
 
 .filters {
@@ -237,4 +240,8 @@ body {
     font-size: 12px;
     margin-bottom: 0px;
     margin-left: 5px;
+}
+
+.my-modals {
+    background-color: var(--modal-bg-color);
 }
