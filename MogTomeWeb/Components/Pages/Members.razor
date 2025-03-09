@@ -28,9 +28,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        totalMemberList = await _mongoService.GetFreeCompanyMembers();
-        totalMemberList = totalMemberList.OrderBy(item => FreeCompanyRanks.IndexOf(item.FreeCompanyRank)).ToList();
-        totalPages = (int)Math.Ceiling(totalMemberList.Count / (double)pageSize);
+        await RetrieveMembers();
 
         var storedPageSize = await localStorage.GetItemAsync<int>("pageSize");
 
@@ -55,6 +53,13 @@
         }
     }
 
+    private async Task RetrieveMembers()
+    {
+        totalMemberList = await _mongoService.GetFreeCompanyMembers();
+        totalMemberList = totalMemberList.OrderBy(item => FreeCompanyRanks.IndexOf(item.FreeCompanyRank)).ToList();
+        totalPages = (int)Math.Ceiling(totalMemberList.Count / (double)pageSize);
+    }
+
     private void UpdateDisplayedCards()
     {
         var filteredList = totalMemberList
@@ -76,10 +81,8 @@
     {
         IsLoading = true;
         displayedMembers.Clear();
-        await Task.Delay(1000);
-
+        await RetrieveMembers();
         UpdateDisplayedCards();
-
         IsLoading = false;
 
         if (currentSearchCount == 0)
