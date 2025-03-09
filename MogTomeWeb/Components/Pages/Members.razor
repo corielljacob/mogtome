@@ -16,6 +16,7 @@
     private ILocalStorageService localStorage { get; set; }
     private List<FreeCompanyMember> totalMemberList { get; set; }
     private List<FreeCompanyMember> displayedMembers { get; set; } = new List<FreeCompanyMember>();
+    private List<FreeCompanyMember> exportList { get; set; } = new List<FreeCompanyMember>();
     private int currentPage = 1;
     private int pageSize = 20;
     private int totalPages;
@@ -25,6 +26,7 @@
     private List<string> _rankFilterSelections = new();
     private bool IsLoading { get; set; } = false;
     private List<int> PageSizes { get; set; } = new List<int> { 10, 20, 50, 100, 200, 400, 512 };
+    private Modal exportConfirmModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,6 +45,7 @@
         }
 
         UpdateDisplayedCards();
+        await exportConfirmModal?.HideAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -102,7 +105,6 @@
         if (currentSearchCount == 0)
             searchText = "No members found";
     }
-
 
     private void GoToPreviousPage()
     {
@@ -198,12 +200,14 @@
 
     private async Task ExportPageToCSV()
     {
-        await ExportToCSV(displayedMembers);
+        exportList = displayedMembers;
+        await exportConfirmModal?.ShowAsync();
     }
 
     private async Task ExportAllToCSV()
     {
-        await ExportToCSV(totalMemberList);
+        exportList = totalMemberList;
+        await exportConfirmModal?.ShowAsync();
     }
 
     private async Task ExportToCSV(List<FreeCompanyMember> membersToExport)
@@ -219,6 +223,22 @@
 
         if(module is not null)
             await module.InvokeAsync<string>("downloadCSV", csvContent.ToString(), "member-export.csv");
+    }
+
+    private async Task OnShowExportConfirmModalClick()
+    {
+        await exportConfirmModal?.ShowAsync();
+    }
+
+    private async Task OnHideExportConfirmModalClick()
+    {
+        await exportConfirmModal?.HideAsync();
+    }
+
+    private async Task OnExportModalConfirm()
+    {
+        await ExportToCSV(exportList);
+        await exportConfirmModal?.HideAsync();
     }
 }
 
@@ -291,3 +311,13 @@
         }
     }
 </div>
+
+<Modal @ref="exportConfirmModal" Title="Confirm Export">
+    <BodyTemplate>
+        This export will contain @exportList.Count members
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideExportConfirmModalClick">Cancel</Button>
+        <Button Color="ButtonColor.Primary" @onclick="OnExportModalConfirm">Confirm</Button>
+    </FooterTemplate>
+</Modal>
