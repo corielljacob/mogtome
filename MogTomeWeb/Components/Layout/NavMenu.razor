@@ -4,6 +4,9 @@
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">MogTome</a>
+        <button @onclick="ToggleDarkMode" class="dark-mode-toggle">
+            <img src="white_moon.svg" alt="Toggle dark mode" />
+        </button>
     </div>
 </div>
 
@@ -23,9 +26,7 @@
             </NavLink>
         </div>
     </nav>
-    <button @onclick="ToggleDarkMode" class="dark-mode-toggle">
-        <img src="white_moon.svg" alt="Toggle dark mode" />
-    </button>
+    
 </div>
 
 <script>
