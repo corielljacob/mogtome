@@ -1,8 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using MogTomeWeb.Components.Shared
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar" style="background-image:none;background-color:#155275;">
-        <NavMenu />
+        <NavMenu @rendermode="InteractiveServer" OnRequestAdmin="() => ToggleModal()" />
     </div>
 
     <main>
@@ -18,3 +19,16 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+<AdminModal @ref="modalRef" />
+
+@code {
+    private bool ShowAdminModal = false;
+    private AdminModal? modalRef;
+
+    private async Task ToggleModal()
+    {
+        if (modalRef is not null)
+            await modalRef.ShowAsync();
+    }
+}

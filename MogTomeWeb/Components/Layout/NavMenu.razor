@@ -1,10 +1,13 @@
 ﻿@using Blazored.LocalStorage
+@using MogTomeWeb.Components.Shared
+@using MogTomeWeb.Services
 @inject IJSRuntime JS
+@inject IAdminSessionService AdminSession
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">MogTome</a>
-        <button @onclick="ToggleDarkMode" class="dark-mode-toggle">
+        <a class="navbar-brand" href="">@GetBannerName()</a>
+        <button @onclick="ToggleDarkMode" class="dark-mode-toggle" >
             <img src="white_moon.svg" alt="Toggle dark mode" />
         </button>
     </div>
@@ -14,7 +17,7 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        <div class="nav-item px-3" @ref="HoldBtn">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
@@ -26,23 +29,63 @@
             </NavLink>
         </div>
     </nav>
-    
 </div>
 
 <script>
     function enableDarkMode() {
-        document.body.classList.add('dark-mode');
+    document.body.classList.add('dark-mode');
     }
 
     function disableDarkMode() {
-        document.body.classList.remove('dark-mode');
+    document.body.classList.remove('dark-mode');
     }
 </script>
+
+<script>
+    window.registerHoldHandler = function (element, dotNetHelper, holdDuration) {
+    let timer = null;
+
+    element.addEventListener('mousedown', () => {
+    timer = setTimeout(() => {
+    dotNetHelper.invokeMethodAsync('TriggerHold');
+    }, holdDuration);
+    });
+
+    element.addEventListener('mouseup', () => clearTimeout(timer));
+    element.addEventListener('mouseleave', () => clearTimeout(timer));
+    element.addEventListener('touchend', () => clearTimeout(timer));
+    };
+</script>
+
+
 
 @code {
     [Inject]
     private ILocalStorageService localStorage { get; set; }
     private bool DarkModeEnabled = false;
+    private ElementReference HoldBtn;
+    private bool ShowPasscodeModal = false;
+    [Parameter] public EventCallback OnRequestAdmin { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AdminSession.OnAdminStateChanged += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("registerHoldHandler", HoldBtn, dotNetRef, 3000);
+        }
+    }
+
+    [JSInvokable]
+    public async Task TriggerHold()
+    {
+        await OnRequestAdmin.InvokeAsync();
+    }
 
     private async Task ToggleDarkMode()
     {
@@ -66,5 +109,13 @@
                 await JS.InvokeVoidAsync("enableDarkMode");
             }
         }
+    }
+
+    private string GetBannerName()
+    {
+        if (AdminSession.IsAdmin)
+            return "MogTome Admin";
+        else
+            return "MogTome";
     }
 }

@@ -1,0 +1,55 @@
+﻿@using MogTomeWeb.Services
+@inject IAdminSessionService AdminSession
+
+<Modal @ref="modalRef" Title="Admin Access" BodyCssClass="my-modals" FooterCssClass="my-modals" HeaderCssClass="my-modals">
+    <BodyTemplate>
+        Enter the passcode for admin access and click Submit <br />
+        <br /><input class="form-control" placeholder="Enter passcode" @bind="Passcode"  />
+    </BodyTemplate>
+    <FooterTemplate>
+        @if(ShowAuthenticationFailed)
+        {
+            <span class="text-danger">Authentication Failed</span>
+        }
+        <Button Color="ButtonColor.Secondary" @onclick="Cancel">Cancel</Button>
+        <Button Color="ButtonColor.Primary" @onclick="Submit">Confirm</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal? modalRef;
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    private string Passcode = "";
+    private bool ShowAuthenticationFailed = false;
+
+    private async Task Submit()
+    {
+        var authenticated = AdminSession.Authenticate(Passcode);
+
+        if(authenticated)
+        {
+            ShowAuthenticationFailed = false;
+
+            if (modalRef is not null)
+                await modalRef.HideAsync();
+        }
+        else
+        {
+            ShowAuthenticationFailed = true;
+        }
+    }
+
+    private async Task Cancel()
+    {
+        if (modalRef is not null)
+            await modalRef.HideAsync();
+    }
+
+    public async Task ShowAsync()
+    {
+        if (modalRef is not null)
+            await modalRef.ShowAsync();
+    }
+}
+

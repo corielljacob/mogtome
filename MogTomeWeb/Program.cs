@@ -3,6 +3,7 @@ using MogTome.Services;
 using Blazored.LocalStorage;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MogTomeWeb.Services;
 
 namespace MogTome
 {
@@ -29,6 +30,15 @@ namespace MogTome
             });
 
             builder.Services.AddSingleton<MongoService>();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped<IAdminSessionService, AdminSessionService>();
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.IsEssential = true; 
+                options.Cookie.MaxAge = TimeSpan.FromDays(7); 
+            });
 
             var app = builder.Build();
 
@@ -47,6 +57,16 @@ namespace MogTome
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
+
+            app.UseSession();
+
+            app.Use(async delegate (HttpContext Context, Func<Task> Next)
+            {
+                var TempKey = Guid.NewGuid().ToString();
+                Context.Session.Set(TempKey, Array.Empty<byte>());
+                Context.Session.Remove(TempKey);
+                await Next();
+            });
 
             app.Run();
         }
