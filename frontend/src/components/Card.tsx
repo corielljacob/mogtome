@@ -1,0 +1,49 @@
+import { type ReactNode } from 'react';
+
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+  compact?: boolean;
+}
+
+export function Card({ children, className = '', compact = false }: CardProps) {
+  return (
+    <div className={`card bg-base-100 shadow ${compact ? 'card-compact' : ''} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+interface CardBodyProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardBody({ children, className = '' }: CardBodyProps) {
+  return <div className={`card-body ${className}`}>{children}</div>;
+}
+
+interface CardTitleProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardTitle({ children, className = '' }: CardTitleProps) {
+  return <h2 className={`card-title ${className}`}>{children}</h2>;
+}
+
+interface CardActionsProps {
+  children: ReactNode;
+  className?: string;
+  justify?: 'start' | 'end' | 'center';
+}
+
+export function CardActions({ children, className = '', justify = 'end' }: CardActionsProps) {
+  const justifyClass = {
+    start: 'justify-start',
+    end: 'justify-end',
+    center: 'justify-center',
+  }[justify];
+
+  return <div className={`card-actions ${justifyClass} ${className}`}>{children}</div>;
+}
