@@ -1,10 +1,52 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-/* ===== MOOGLE THEME ===== */
-/* A cute, warm, fluffy aesthetic inspired by FFXIV moogles */
+/* ===== DAISYUI CUSTOM MOOGLE THEME ===== */
+@plugin "daisyui/theme" {
+  name: "moogle";
+  default: true;
+  
+  /* Primary - Soft Purple */
+  --color-primary: #B794C7;
+  --color-primary-content: #ffffff;
+  
+  /* Secondary - Soft Pink */
+  --color-secondary: #FFB7C5;
+  --color-secondary-content: #4A4A4A;
+  
+  /* Accent - Moogle Gold */
+  --color-accent: #FFD93D;
+  --color-accent-content: #4A4A4A;
+  
+  /* Neutral - Warm Brown */
+  --color-neutral: #8B7355;
+  --color-neutral-content: #ffffff;
+  
+  /* Base colors - Creamy backgrounds */
+  --color-base-100: #FFFDFB;
+  --color-base-200: #FFF8F0;
+  --color-base-300: #F5EDE4;
+  --color-base-content: #4A4A4A;
+  
+  /* State colors */
+  --color-info: #B5E2FA;
+  --color-info-content: #4A4A4A;
+  --color-success: #C1F0DB;
+  --color-success-content: #4A4A4A;
+  --color-warning: #FFE5B4;
+  --color-warning-content: #4A4A4A;
+  --color-error: #FFB4A2;
+  --color-error-content: #4A4A4A;
+  
+  /* Rounded corners - Extra fluffy! */
+  --radius-selector: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
+}
 
+/* ===== CUSTOM MOOGLE COLORS (for custom components) ===== */
 @theme {
-  /* Moogle Color Palette */
+  /* Extended Moogle Palette */
   --color-moogle-cream: #FFF8F0;
   --color-moogle-white: #FFFDFB;
   --color-moogle-pink: #FFB7C5;
@@ -30,28 +72,10 @@
   --color-rank-shelf: #5ABE32;
   --color-rank-bom-boko: #F6EBE0;
   
-  /* Semantic Colors */
-  --color-primary: var(--color-moogle-purple);
-  --color-primary-dark: var(--color-moogle-purple-deep);
-  --color-secondary: var(--color-moogle-pink);
-  --color-accent: var(--color-moogle-gold);
-  --color-background: var(--color-moogle-cream);
-  --color-surface: var(--color-moogle-white);
-  --color-text: #4A4A4A;
-  --color-text-light: #7A7A7A;
-  --color-text-dark: #2D2D2D;
-  
   /* Shadows */
   --shadow-soft: 0 4px 20px rgba(139, 106, 174, 0.15);
   --shadow-float: 0 8px 30px rgba(139, 106, 174, 0.2);
   --shadow-glow: 0 0 20px rgba(255, 183, 197, 0.4);
-  
-  /* Border Radius - Extra round for fluffy feel */
-  --radius-sm: 0.5rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2rem;
-  --radius-full: 9999px;
   
   /* Fonts */
   --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
@@ -70,8 +94,6 @@
   
   body {
     font-family: var(--font-body);
-    background-color: var(--color-background);
-    color: var(--color-text);
     min-height: 100vh;
     margin: 0;
     line-height: 1.6;
@@ -80,17 +102,6 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 600;
-    color: var(--color-text-dark);
-  }
-  
-  a {
-    color: var(--color-primary-dark);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  
-  a:hover {
-    color: var(--color-secondary);
   }
 }
 
@@ -98,19 +109,6 @@
 @layer utilities {
   .text-shadow-soft {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .pom-accent::before {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: var(--color-moogle-pink);
-    border-radius: 50%;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
   }
   
   .gradient-moogle {
@@ -121,76 +119,47 @@
     background: linear-gradient(135deg, var(--color-moogle-coral) 0%, var(--color-moogle-pink) 50%, var(--color-moogle-lavender) 100%);
   }
   
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  .animate-bounce-slow {
-    animation: bounce-slow 2s ease-in-out infinite;
-  }
-  
-  .animate-wiggle {
-    animation: wiggle 0.5s ease-in-out;
-  }
-  
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
+  .gradient-text-moogle {
+    background: linear-gradient(135deg, var(--color-moogle-purple) 0%, var(--color-moogle-pink) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
 /* ===== ANIMATIONS ===== */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes bounce-slow {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 @keyframes wiggle {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-5deg);
-  }
-  75% {
-    transform: rotate(5deg);
-  }
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
 }
 
 @keyframes sparkle {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
 }
 
 @keyframes pom-bob {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3px) rotate(-2deg);
-  }
-  75% {
-    transform: translateY(-3px) rotate(2deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-2deg); }
+  75% { transform: translateY(-3px) rotate(2deg); }
 }
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+.animate-wiggle { animation: wiggle 0.5s ease-in-out; }
+.animate-sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+.animate-pom-bob { animation: pom-bob 2s ease-in-out infinite; }
 
 /* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
@@ -216,4 +185,32 @@
 ::selection {
   background: var(--color-moogle-pink);
   color: white;
+}
+
+/* ===== DAISYUI COMPONENT OVERRIDES ===== */
+.btn {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.card {
+  box-shadow: var(--shadow-soft);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-float);
+}
+
+/* Extra cute badge styling */
+.badge {
+  font-family: var(--font-display);
+}
+
+/* Cute input focus rings */
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--color-moogle-purple);
+  box-shadow: 0 0 0 3px rgba(183, 148, 199, 0.2);
 }

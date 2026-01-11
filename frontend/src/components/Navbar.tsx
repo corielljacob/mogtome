@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { Home, Users, LogIn, Shield, LogOut } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { MooglePom } from './MooglePom';
@@ -15,90 +16,86 @@ export function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-moogle-lavender/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <MooglePom size="md" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-moogle-purple to-moogle-pink bg-clip-text text-transparent">
-              MogTome
-            </span>
-          </Link>
-
-          {/* Navigation Links */}
-          <div className="flex items-center gap-1">
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="navbar bg-base-100/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm border-b border-base-200"
+    >
+      <div className="navbar-start">
+        {/* Mobile menu */}
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </div>
+          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-base-100 rounded-box w-52">
             {navItems.map(({ path, label, icon: Icon }) => (
+              <li key={path}>
+                <Link to={path} className={isActive(path) ? 'active' : ''}>
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* Logo */}
+        <Link to="/" className="btn btn-ghost text-xl gap-2 hover:bg-transparent">
+          <MooglePom size="sm" />
+          <span className="font-bold gradient-text-moogle">MogTome</span>
+        </Link>
+      </div>
+
+      {/* Desktop menu */}
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1 gap-1">
+          {navItems.map(({ path, label, icon: Icon }) => (
+            <li key={path}>
               <Link
-                key={path}
                 to={path}
-                className={`
-                  flex items-center gap-2 px-4 py-2 rounded-xl
-                  font-medium transition-all duration-200
-                  ${
-                    isActive(path)
-                      ? 'bg-moogle-lavender text-moogle-purple-deep'
-                      : 'text-text hover:bg-moogle-lavender/50 hover:text-moogle-purple-deep'
-                  }
-                `}
+                className={`rounded-xl font-medium ${isActive(path) ? 'bg-primary/20 text-primary' : ''}`}
               >
                 <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{label}</span>
+                {label}
               </Link>
-            ))}
-
-            {/* Auth Section */}
-            <div className="ml-2 pl-2 border-l border-moogle-lavender/30">
-              {isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  {user?.isAdmin && (
-                    <Link
-                      to="/admin"
-                      className={`
-                        flex items-center gap-2 px-4 py-2 rounded-xl
-                        font-medium transition-all duration-200
-                        ${
-                          isActive('/admin')
-                            ? 'bg-moogle-gold/30 text-moogle-gold-dark'
-                            : 'text-moogle-gold-dark hover:bg-moogle-gold/20'
-                        }
-                      `}
-                    >
-                      <Shield className="w-4 h-4" />
-                      <span className="hidden sm:inline">Admin</span>
-                    </Link>
-                  )}
-                  <button
-                    onClick={logout}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-text-light hover:bg-red-50 hover:text-red-500 transition-all duration-200"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Logout</span>
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className={`
-                    flex items-center gap-2 px-4 py-2 rounded-xl
-                    font-medium transition-all duration-200
-                    ${
-                      isActive('/login')
-                        ? 'bg-moogle-purple text-white'
-                        : 'text-moogle-purple-deep hover:bg-moogle-lavender/50'
-                    }
-                  `}
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span className="hidden sm:inline">Admin Login</span>
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       </div>
-    </nav>
+
+      {/* Auth section */}
+      <div className="navbar-end gap-2">
+        {isAuthenticated ? (
+          <>
+            {user?.isAdmin && (
+              <Link
+                to="/admin"
+                className={`btn btn-sm ${isActive('/admin') ? 'btn-accent' : 'btn-ghost'}`}
+              >
+                <Shield className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
+            <button
+              onClick={logout}
+              className="btn btn-sm btn-ghost text-error hover:bg-error/10"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className={`btn btn-sm ${isActive('/login') ? 'btn-primary' : 'btn-ghost'}`}
+          >
+            <LogIn className="w-4 h-4" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
+      </div>
+    </motion.nav>
   );
 }

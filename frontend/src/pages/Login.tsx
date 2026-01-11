@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { Shield, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { authApi } from '../api/auth';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
-import { Card, CardBody, CardHeader } from '../components/Card';
 import { MooglePom } from '../components/MooglePom';
 
 export function Login() {
@@ -37,32 +37,53 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-moogle-purple/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-moogle-gold/10 rounded-full blur-3xl" />
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ scale: [1.2, 1, 1.2] }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
+        />
       </div>
 
-      <Card className="relative w-full max-w-md" glow>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <div className="w-20 h-20 bg-gradient-to-br from-moogle-gold to-moogle-gold-dark rounded-2xl flex items-center justify-center shadow-lg">
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: 'spring', duration: 0.5 }}
+        className="card bg-base-100 shadow-2xl w-full max-w-md relative"
+      >
+        <div className="card-body">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+              className="relative inline-block mb-4"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/70 rounded-2xl flex items-center justify-center shadow-lg mx-auto">
                 <Shield className="w-10 h-10 text-white" />
               </div>
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <MooglePom size="sm" />
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+                <MooglePom size="md" />
               </div>
-            </div>
+            </motion.div>
+            <h1 className="text-2xl font-bold">Admin Login</h1>
+            <p className="text-base-content/60 mt-1">Access the MogTome admin panel</p>
           </div>
-          <h1 className="text-2xl font-bold text-text-dark">Admin Login</h1>
-          <p className="text-text-light mt-1">Access the MogTome admin panel</p>
-        </CardHeader>
 
-        <CardBody>
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-center">
-                {error}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="alert alert-error"
+              >
+                <span>{error}</span>
+              </motion.div>
             )}
 
             <Input
@@ -86,7 +107,7 @@ export function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-9 text-text-light hover:text-moogle-purple transition-colors"
+                className="absolute right-3 top-10 text-base-content/50 hover:text-primary transition-colors"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -102,14 +123,16 @@ export function Login() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-text-light">
+          <div className="divider">OR</div>
+
+          <p className="text-center text-sm text-base-content/60">
             Not an admin? That's okay!{' '}
-            <a href="/" className="text-moogle-purple hover:underline">
+            <a href="/" className="link link-primary">
               Go back home
             </a>
           </p>
-        </CardBody>
-      </Card>
+        </div>
+      </motion.div>
     </div>
   );
 }

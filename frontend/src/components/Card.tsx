@@ -1,38 +1,28 @@
 import { type ReactNode } from 'react';
+import { motion } from 'motion/react';
 
 interface CardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
-  glow?: boolean;
+  compact?: boolean;
 }
 
-export function Card({ children, className = '', hover = true, glow = false }: CardProps) {
+export function Card({ children, className = '', hover = true, compact = false }: CardProps) {
+  if (hover) {
+    return (
+      <motion.div
+        whileHover={{ y: -4, scale: 1.01 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className={`card bg-base-100 shadow-lg ${compact ? 'card-compact' : ''} ${className}`}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+
   return (
-    <div
-      className={`
-        bg-surface
-        rounded-2xl
-        border border-moogle-lavender/30
-        ${hover ? 'hover:shadow-float hover:-translate-y-1' : 'shadow-soft'}
-        ${glow ? 'shadow-glow' : ''}
-        transition-all duration-300 ease-out
-        ${className}
-      `}
-    >
-      {children}
-    </div>
-  );
-}
-
-interface CardHeaderProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function CardHeader({ children, className = '' }: CardHeaderProps) {
-  return (
-    <div className={`px-5 py-4 border-b border-moogle-lavender/20 ${className}`}>
+    <div className={`card bg-base-100 shadow-lg ${compact ? 'card-compact' : ''} ${className}`}>
       {children}
     </div>
   );
@@ -44,18 +34,30 @@ interface CardBodyProps {
 }
 
 export function CardBody({ children, className = '' }: CardBodyProps) {
-  return <div className={`px-5 py-4 ${className}`}>{children}</div>;
+  return <div className={`card-body ${className}`}>{children}</div>;
 }
 
-interface CardFooterProps {
+interface CardTitleProps {
   children: ReactNode;
   className?: string;
 }
 
-export function CardFooter({ children, className = '' }: CardFooterProps) {
-  return (
-    <div className={`px-5 py-4 border-t border-moogle-lavender/20 ${className}`}>
-      {children}
-    </div>
-  );
+export function CardTitle({ children, className = '' }: CardTitleProps) {
+  return <h2 className={`card-title ${className}`}>{children}</h2>;
+}
+
+interface CardActionsProps {
+  children: ReactNode;
+  className?: string;
+  justify?: 'start' | 'end' | 'center';
+}
+
+export function CardActions({ children, className = '', justify = 'end' }: CardActionsProps) {
+  const justifyClass = {
+    start: 'justify-start',
+    end: 'justify-end',
+    center: 'justify-center',
+  }[justify];
+
+  return <div className={`card-actions ${justifyClass} ${className}`}>{children}</div>;
 }

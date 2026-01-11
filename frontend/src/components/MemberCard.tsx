@@ -1,19 +1,19 @@
+import { motion } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
-import { Card } from './Card';
 
 interface MemberCardProps {
   member: FreeCompanyMember;
 }
 
 const rankColors: Record<string, string> = {
-  'Moogle Guardian': 'from-rank-guardian to-emerald-300',
-  'Moogle Knight': 'from-rank-knight to-purple-400',
-  'Paissa Trainer': 'from-rank-paissa to-teal-400',
-  'Coeurl Hunter': 'from-rank-hunter to-green-400',
-  'Mandragora': 'from-rank-mandragora to-orange-300',
-  'Apkallu Seeker': 'from-rank-seeker to-blue-400',
-  'Kupo Shelf': 'from-rank-shelf to-lime-400',
-  'Bom Boko': 'from-rank-bom-boko to-amber-100',
+  'Moogle Guardian': 'from-[#94EBDE] to-emerald-300',
+  'Moogle Knight': 'from-[#945FE0] to-purple-400',
+  'Paissa Trainer': 'from-[#1ABC9C] to-teal-400',
+  'Coeurl Hunter': 'from-[#1F8B4C] to-green-400',
+  'Mandragora': 'from-[#E57E1E] to-orange-300',
+  'Apkallu Seeker': 'from-[#4D88BB] to-blue-400',
+  'Kupo Shelf': 'from-[#5ABE32] to-lime-400',
+  'Bom Boko': 'from-[#F6EBE0] to-amber-100',
 };
 
 export function MemberCard({ member }: MemberCardProps) {
@@ -21,7 +21,12 @@ export function MemberCard({ member }: MemberCardProps) {
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
 
   return (
-    <Card className="overflow-hidden group w-56">
+    <motion.div
+      whileHover={{ y: -8, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className="card bg-base-100 shadow-lg overflow-hidden w-56 cursor-pointer group"
+    >
       {/* Rank color banner */}
       <div className={`h-2 bg-gradient-to-r ${gradientClass}`} />
       
@@ -32,24 +37,28 @@ export function MemberCard({ member }: MemberCardProps) {
         rel="noopener noreferrer"
         className="block relative overflow-hidden"
       >
-        <img
+        <motion.img
           src={member.avatarLink}
           alt={member.name}
-          className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full aspect-square object-cover"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.3 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
-        {/* Hover overlay with "View on Lodestone" */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="bg-white/90 text-text-dark text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg">
-            View on Lodestone ↗
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+          <span className="badge badge-neutral gap-1">
+            View Lodestone
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
           </span>
         </div>
       </a>
 
       {/* Info */}
-      <div className="p-4 text-center">
-        <h3 className="font-bold text-text-dark text-lg leading-tight mb-1 truncate">
+      <div className="card-body p-4 text-center">
+        <h3 className="font-bold text-base-content text-lg leading-tight truncate">
           {member.name}
         </h3>
         <div className="flex items-center justify-center gap-2">
@@ -60,11 +69,11 @@ export function MemberCard({ member }: MemberCardProps) {
               className="w-5 h-5"
             />
           )}
-          <span className="text-sm text-text-light font-medium">
+          <span className="text-sm text-base-content/70 font-medium">
             {member.freeCompanyRank}
           </span>
         </div>
       </div>
-    </Card>
+    </motion.div>
   );
 }
