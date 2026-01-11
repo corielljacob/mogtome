@@ -5,8 +5,6 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MogTomeWeb", "api\MogTomeWeb.csproj", "{7E60166F-1746-47E2-8577-50E836F92D76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MogTomeApi", "MogTomeApi\MogTomeApi.csproj", "{8B61D8B2-4A3C-4E5F-9D7A-1C2E3F4A5B6C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{7E60166F-1746-47E2-8577-50E836F92D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E60166F-1746-47E2-8577-50E836F92D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E60166F-1746-47E2-8577-50E836F92D76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B61D8B2-4A3C-4E5F-9D7A-1C2E3F4A5B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B61D8B2-4A3C-4E5F-9D7A-1C2E3F4A5B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B61D8B2-4A3C-4E5F-9D7A-1C2E3F4A5B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B61D8B2-4A3C-4E5F-9D7A-1C2E3F4A5B6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

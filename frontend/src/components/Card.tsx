@@ -1,28 +1,14 @@
 import { type ReactNode } from 'react';
-import { motion } from 'motion/react';
 
 interface CardProps {
   children: ReactNode;
   className?: string;
-  hover?: boolean;
   compact?: boolean;
 }
 
-export function Card({ children, className = '', hover = true, compact = false }: CardProps) {
-  if (hover) {
-    return (
-      <motion.div
-        whileHover={{ y: -4, scale: 1.01 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className={`card bg-base-100 shadow-lg ${compact ? 'card-compact' : ''} ${className}`}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-
+export function Card({ children, className = '', compact = false }: CardProps) {
   return (
-    <div className={`card bg-base-100 shadow-lg ${compact ? 'card-compact' : ''} ${className}`}>
+    <div className={`card bg-base-100 shadow ${compact ? 'card-compact' : ''} ${className}`}>
       {children}
     </div>
   );

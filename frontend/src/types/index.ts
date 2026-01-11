@@ -25,6 +25,34 @@ export const FC_RANKS = [
 
 export type FCRankName = typeof FC_RANKS[number]['name'];
 
+// Timeline Event Types
+export type TimelineEventType = 
+  | 'member_joined'
+  | 'member_left'
+  | 'name_change'
+  | 'rank_change'
+  | 'fc_announcement'
+  | 'achievement'
+  | 'other';
+
+export interface TimelineEvent {
+  id: string;
+  type: TimelineEventType;
+  title: string;
+  description?: string;
+  date: string; // ISO date string
+  memberId?: string;
+  memberName?: string;
+  memberAvatar?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TimelineResponse {
+  events: TimelineEvent[];
+  nextCursor?: string;
+  hasMore: boolean;
+}
+
 // Auth types
 export interface User {
   id: string;

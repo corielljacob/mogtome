@@ -8,14 +8,6 @@ export function useMembers(params?: GetMembersParams) {
   });
 }
 
-export function useMember(id: string) {
-  return useQuery({
-    queryKey: ['member', id],
-    queryFn: () => membersApi.getMember(id),
-    enabled: !!id,
-  });
-}
-
 export function useMemberByCharacterId(characterId: string) {
   return useQuery({
     queryKey: ['member', 'character', characterId],

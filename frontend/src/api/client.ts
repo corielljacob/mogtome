@@ -1,36 +1,15 @@
 import axios from 'axios';
-import { useAuthStore } from '../stores/authStore';
+
+// In development, requests to /api are proxied by Vite to the Azure API
+// In production, this should be updated to the actual API URL or use env vars
+const API_BASE_URL = '/api';
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-// Request interceptor to add auth token
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor to handle auth errors
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Clear auth state on unauthorized
-      useAuthStore.getState().logout();
-    }
-    return Promise.reject(error);
-  }
-);
 
 export default apiClient;
