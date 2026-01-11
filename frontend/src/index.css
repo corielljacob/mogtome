@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* ===== MOOGLE THEME ===== */
+/* A cute, warm, fluffy aesthetic inspired by FFXIV moogles */
+
+@theme {
+  /* Moogle Color Palette */
+  --color-moogle-cream: #FFF8F0;
+  --color-moogle-white: #FFFDFB;
+  --color-moogle-pink: #FFB7C5;
+  --color-moogle-pink-dark: #E8919F;
+  --color-moogle-lavender: #E8D4F0;
+  --color-moogle-purple: #B794C7;
+  --color-moogle-purple-deep: #8B6AAE;
+  --color-moogle-gold: #FFD93D;
+  --color-moogle-gold-dark: #E6B800;
+  --color-moogle-sky: #B5E2FA;
+  --color-moogle-mint: #C1F0DB;
+  --color-moogle-coral: #FFB4A2;
+  --color-moogle-brown: #8B7355;
+  --color-moogle-brown-light: #C4A77D;
+  
+  /* FC Rank Colors */
+  --color-rank-guardian: #94EBDE;
+  --color-rank-knight: #945FE0;
+  --color-rank-paissa: #1ABC9C;
+  --color-rank-hunter: #1F8B4C;
+  --color-rank-mandragora: #E57E1E;
+  --color-rank-seeker: #4D88BB;
+  --color-rank-shelf: #5ABE32;
+  --color-rank-bom-boko: #F6EBE0;
+  
+  /* Semantic Colors */
+  --color-primary: var(--color-moogle-purple);
+  --color-primary-dark: var(--color-moogle-purple-deep);
+  --color-secondary: var(--color-moogle-pink);
+  --color-accent: var(--color-moogle-gold);
+  --color-background: var(--color-moogle-cream);
+  --color-surface: var(--color-moogle-white);
+  --color-text: #4A4A4A;
+  --color-text-light: #7A7A7A;
+  --color-text-dark: #2D2D2D;
+  
+  /* Shadows */
+  --shadow-soft: 0 4px 20px rgba(139, 106, 174, 0.15);
+  --shadow-float: 0 8px 30px rgba(139, 106, 174, 0.2);
+  --shadow-glow: 0 0 20px rgba(255, 183, 197, 0.4);
+  
+  /* Border Radius - Extra round for fluffy feel */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-full: 9999px;
+  
+  /* Fonts */
+  --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+}
+
+/* ===== BASE STYLES ===== */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    min-height: 100vh;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-text-dark);
+  }
+  
+  a {
+    color: var(--color-primary-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  a:hover {
+    color: var(--color-secondary);
+  }
+}
+
+/* ===== CUSTOM UTILITIES ===== */
+@layer utilities {
+  .text-shadow-soft {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pom-accent::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--color-moogle-pink);
+    border-radius: 50%;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
+  }
+  
+  .gradient-moogle {
+    background: linear-gradient(135deg, var(--color-moogle-lavender) 0%, var(--color-moogle-pink) 50%, var(--color-moogle-cream) 100%);
+  }
+  
+  .gradient-sunset {
+    background: linear-gradient(135deg, var(--color-moogle-coral) 0%, var(--color-moogle-pink) 50%, var(--color-moogle-lavender) 100%);
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
+  
+  .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+  
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes pom-bob {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-moogle-cream);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-moogle-lavender);
+  border-radius: 10px;
+  border: 2px solid var(--color-moogle-cream);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-moogle-purple);
+}
+
+/* ===== SELECTION STYLING ===== */
+::selection {
+  background: var(--color-moogle-pink);
+  color: white;
+}
