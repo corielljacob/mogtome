@@ -8,7 +8,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { FC_RANKS } from '../types';
 
-// Simple card component
+// Small content card wrapper
 function ContentCard({ children, className = '', padding = 'md' }: { children: React.ReactNode; className?: string; padding?: 'sm' | 'md' | 'lg' }) {
   const paddingClass = {
     sm: 'p-3 md:p-4',
@@ -34,16 +34,16 @@ export function Members() {
   const [selectedRanks, setSelectedRanks] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch ALL members once - no pagination
+  // Fetch all members once; paginate client-side for now
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['members-all'],
     queryFn: () => membersApi.getMembers({ pageSize: 1000 }),
     staleTime: 1000 * 60 * 5,
   });
 
-  const allMembers = data?.items || [];
+  const allMembers = useMemo(() => data?.items ?? [], [data]);
 
-  // Client-side filtering
+  // Client-side filter controls
   const filteredMembers = useMemo(() => {
     let result = allMembers;
 
@@ -64,7 +64,7 @@ export function Members() {
     return result;
   }, [allMembers, searchQuery, selectedRanks]);
 
-  // Group members by rank for display
+  // Group members by rank for grouped view
   const membersByRank = useMemo(() => {
     const grouped = new Map<string, typeof filteredMembers>();
     
@@ -95,7 +95,7 @@ export function Members() {
     <div className="min-h-screen relative">
       <div className="relative py-8 md:py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+          {/* Page hero */}
           <motion.div 
             className="text-center mb-8 md:mb-10"
             initial={{ opacity: 0, y: 12 }}
@@ -115,7 +115,7 @@ export function Members() {
             </p>
           </motion.div>
 
-          {/* Search and Filters */}
+          {/* Search + filters */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,7 +166,7 @@ export function Members() {
                 </div>
               </div>
 
-              {/* Filter Pills */}
+              {/* Ranks filter chips */}
               <AnimatePresence>
                 {showFilters && (
                   <motion.div 
@@ -209,7 +209,7 @@ export function Members() {
                 )}
               </AnimatePresence>
 
-              {/* Results count */}
+              {/* Results summary */}
               {hasActiveFilters && (
                 <div className="pt-4 border-t border-[var(--bento-border)] mt-4">
                   <p className="font-soft text-sm text-[var(--bento-text-muted)]">
@@ -220,7 +220,7 @@ export function Members() {
             </ContentCard>
           </motion.div>
 
-          {/* Members Display */}
+          {/* Member list */}
           {isLoading ? (
             <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
               {Array.from({ length: 12 }).map((_, i) => (
@@ -253,10 +253,10 @@ export function Members() {
               transition={{ duration: 0.3 }}
             >
               {selectedRanks.length === 0 && !searchQuery ? (
-                // Grouped view
+                // Grouped view by rank when no filters
                 Array.from(membersByRank.entries()).map(([rankName, members]) => (
                   <div key={rankName}>
-                    {/* Rank Header */}
+                    {/* Rank header */}
                     <div className="flex items-center gap-3 mb-4">
                       <h2 className="font-display font-semibold text-lg text-[var(--bento-text)]">
                         {rankName}
@@ -267,7 +267,7 @@ export function Members() {
                       <div className="flex-1 h-px bg-[var(--bento-border)]" />
                     </div>
                     
-                    {/* Members Grid */}
+                    {/* Members grid */}
                     <div className="flex flex-wrap gap-4 md:gap-5">
                       {members.map((member) => (
                         <div 
@@ -281,7 +281,7 @@ export function Members() {
                   </div>
                 ))
               ) : (
-                // Flat view when searching/filtering
+                // Flat grid when filters are active
                 <div className="flex flex-wrap gap-4 md:gap-5 justify-center">
                   {filteredMembers.map((member) => (
                     <div 

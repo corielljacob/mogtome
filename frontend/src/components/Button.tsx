@@ -9,8 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * Button - KUPO BIT Refined Button Component
- * Soft, modern button with subtle animations and glassmorphism.
+ * Button - KUPO BIT refined button with gradient and ghost variants.
  */
 export function Button({
   variant = 'primary',
@@ -123,7 +122,7 @@ export function Button({
 }
 
 /**
- * IconButton - KUPO BIT Icon-only Button
+ * IconButton - Icon-only control styled to match Button.
  */
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/Button';
 
-// Moogle quotes that rotate
+// Rotating set of moogle one-liners
 const kupoQuotes = [
   { text: "Welcome, kupo!", icon: Sparkles },
   { text: "Good to see you, kupo~", icon: Heart },
@@ -16,7 +16,7 @@ const kupoQuotes = [
   { text: "Stay cozy, kupo~", icon: Feather },
 ];
 
-// Simple card component for this page
+// Page-local card wrapper
 function FeatureCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`
@@ -47,10 +47,9 @@ export function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Hero Section */}
+      {/* Hero with rotating quote */}
       <section className="relative py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center relative">
-          {/* Rotating Kupo Quote */}
           <AnimatePresence mode="wait">
             <motion.div 
               key={quoteIndex}
@@ -66,8 +65,6 @@ export function Home() {
               </span>
             </motion.div>
           </AnimatePresence>
-          
-          {/* Main Title */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6">
             <motion.span 
               className="text-[var(--bento-text)] block"
@@ -96,7 +93,6 @@ export function Home() {
             </motion.span>
           </h1>
 
-          {/* Subtitle */}
           <motion.p 
             className="text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-2xl mx-auto mb-4 leading-relaxed"
             initial={{ opacity: 0 }}
@@ -107,7 +103,6 @@ export function Home() {
             adventures are shared, and everyone's welcome!
           </motion.p>
           
-          {/* Fun sub-note */}
           <motion.p 
             className="font-accent text-xl text-[var(--bento-text-subtle)] mb-10 flex items-center justify-center gap-2"
             initial={{ opacity: 0 }}
@@ -119,7 +114,6 @@ export function Home() {
             <Feather className="w-4 h-4 scale-x-[-1]" />
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0, y: 8 }}
@@ -137,10 +131,9 @@ export function Home() {
         </div>
       </section>
 
-      {/* Feature Cards */}
+      {/* Feature cards */}
       <section className="py-16 md:py-24 px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
           <motion.div 
             className="text-center mb-12 md:mb-16"
             initial={{ opacity: 0 }}
@@ -158,7 +151,6 @@ export function Home() {
             </h2>
           </motion.div>
 
-          {/* Cards Grid */}
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
@@ -226,7 +218,7 @@ export function Home() {
         </div>
       </section>
 
-      {/* Fun Call-out Section */}
+      {/* Call-out */}
       <motion.section 
         className="py-16 px-4"
         initial={{ opacity: 0 }}
@@ -236,7 +228,6 @@ export function Home() {
       >
         <div className="max-w-3xl mx-auto">
           <FeatureCard className="text-center relative overflow-hidden hover:scale-[1.01]">
-            {/* Background decoration */}
             <div className="absolute inset-0 bg-gradient-to-br from-[var(--bento-primary)]/5 via-transparent to-[var(--bento-secondary)]/5" />
             
             <div className="relative">

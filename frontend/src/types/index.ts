@@ -1,4 +1,4 @@
-// Free Company Member from the backend
+// Free Company member shape coming from the backend
 export interface FreeCompanyMember {
   id?: string;
   name: string;
@@ -11,7 +11,7 @@ export interface FreeCompanyMember {
   avatarLink: string;
 }
 
-// FC Ranks with their display info
+// FC ranks plus presentation metadata
 export const FC_RANKS = [
   { name: 'Moogle Guardian', color: 'rank-guardian', order: 0 },
   { name: 'Moogle Knight', color: 'rank-knight', order: 1 },
@@ -25,7 +25,7 @@ export const FC_RANKS = [
 
 export type FCRankName = typeof FC_RANKS[number]['name'];
 
-// Timeline Event Types
+// Timeline event taxonomy
 export type TimelineEventType = 
   | 'member_joined'
   | 'member_left'
@@ -53,7 +53,7 @@ export interface TimelineResponse {
   hasMore: boolean;
 }
 
-// Auth types
+// Auth payloads
 export interface User {
   id: string;
   username: string;
@@ -70,7 +70,7 @@ export interface AuthResponse {
   user: User;
 }
 
-// API Response types
+// Common paginated response wrapper
 export interface PaginatedResponse<T> {
   items: T[];
   totalCount: number;

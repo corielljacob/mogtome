@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-// In development, requests to /api are proxied by Vite to the Azure API
-// In production, this should be updated to the actual API URL or use env vars
+// Vite dev server proxies /api to the Azure API; prod should swap to env-backed base URL
 const API_BASE_URL = '/api';
 
-// Create axios instance with base configuration
+// Axios client with shared defaults
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {

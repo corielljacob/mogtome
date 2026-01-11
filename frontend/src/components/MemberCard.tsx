@@ -17,8 +17,7 @@ const rankColors: Record<string, string> = {
 };
 
 /**
- * MemberCard - KUPO BIT Styled Member Card
- * Clean, modern card with refined aesthetics.
+ * MemberCard - KUPO BIT styled member card with Lodestone link affordance.
  */
 export function MemberCard({ member }: MemberCardProps) {
   const gradient = rankColors[member.freeCompanyRank] || 'from-stone-300 to-stone-400';
@@ -38,10 +37,10 @@ export function MemberCard({ member }: MemberCardProps) {
         transition-all duration-300
         hover:-translate-y-1
       ">
-        {/* Gradient banner */}
+        {/* Gradient rank banner */}
         <div className={`h-1.5 md:h-2 bg-gradient-to-r ${gradient}`} />
         
-        {/* Avatar */}
+        {/* Avatar with Lodestone link */}
         <a 
           href={lodestoneUrl} 
           target="_blank" 
@@ -54,7 +53,7 @@ export function MemberCard({ member }: MemberCardProps) {
             className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
           />
           
-          {/* Hover overlay */}
+          {/* Hover overlay with Lodestone chip */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
             <span className="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 dark:bg-slate-900/90 rounded-lg text-xs font-inter font-medium text-[var(--bento-text)]">
               <ExternalLink className="w-3 h-3" />
@@ -63,7 +62,7 @@ export function MemberCard({ member }: MemberCardProps) {
           </div>
         </a>
 
-        {/* Info */}
+        {/* Member info */}
         <div className="p-3 md:p-4 text-center">
           <h3 className="font-inter font-semibold text-sm md:text-base text-[var(--bento-text)] truncate mb-1.5">
             {member.name}
@@ -83,7 +82,7 @@ export function MemberCard({ member }: MemberCardProps) {
 }
 
 /**
- * MemberCardSkeleton - Loading skeleton for MemberCard
+ * MemberCardSkeleton - Loading placeholder for MemberCard.
  */
 export function MemberCardSkeleton() {
   return (

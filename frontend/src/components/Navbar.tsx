@@ -2,24 +2,25 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Users, Menu, X, Heart, BookOpen, Sparkles, Moon, Sun } from 'lucide-react';
 
-// Simple Theme Toggle Button
+// Theme toggle that honors system preference
 function ThemeToggleButton() {
-  const [isDark, setIsDark] = useState(false);
+  const getInitialTheme = () => {
+    if (typeof window === 'undefined') return false;
+    const stored = localStorage.getItem('theme');
+    if (stored) return stored === 'dark';
+    if (document.documentElement.classList.contains('dark')) return true;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+
+  const [isDark, setIsDark] = useState(getInitialTheme);
 
   useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains('dark') ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    setIsDark(isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const toggle = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    document.documentElement.classList.toggle('dark', newDark);
-    localStorage.setItem('theme', newDark ? 'dark' : 'light');
+    setIsDark((prev) => !prev);
   };
 
   return (
@@ -33,7 +34,7 @@ function ThemeToggleButton() {
   );
 }
 
-// Custom Logo Icon - Book with Pom
+// Logo mark with a little pom accent
 function LogoIcon({ hovered = false }: { hovered?: boolean }) {
   return (
     <div className="relative">
@@ -81,7 +82,7 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-[var(--bento-border)] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Brand mark */}
           <Link 
             to="/" 
             className="flex items-center gap-3 group"
@@ -102,7 +103,7 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => (
               <Link
@@ -126,7 +127,6 @@ export function Navbar() {
                 `} />
                 <span>{label}</span>
                 
-                {/* Accent icon on hover */}
                 <AccentIcon className={`
                   absolute -top-1 -right-0.5 w-3 h-3
                   text-[var(--bento-secondary)]
@@ -138,18 +138,15 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Right Section */}
+          {/* Right-side controls */}
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Kupo badge - desktop only */}
             <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20">
               <Heart className="w-3 h-3 text-pink-500 fill-pink-500 animate-pulse" />
               <span className="font-accent text-sm text-pink-600 dark:text-pink-400">kupo!</span>
             </div>
 
-            {/* Theme Toggle */}
             <ThemeToggleButton />
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`
@@ -165,7 +162,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-[var(--bento-border)]">
             <div className="space-y-1">
@@ -202,7 +199,6 @@ export function Navbar() {
               ))}
             </div>
             
-            {/* Mobile footer */}
             <div className="mt-4 pt-4 border-t border-[var(--bento-border)] px-4">
               <div className="flex items-center justify-center gap-2 text-[var(--bento-text-subtle)]">
                 <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
