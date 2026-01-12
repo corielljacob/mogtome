@@ -9,7 +9,6 @@ import { Button } from '../components/Button';
 import winkingMoogle from '../assets/moogles/4478593_moogle-moogle-ff-hd-png-download.png';
 import gamingMoogle from '../assets/moogles/gaming moogle.png';
 import musicMoogle from '../assets/moogles/moogle playing music.png';
-import flyingMoogles from '../assets/moogles/moogles flying.png';
 import illustratedMoogle from '../assets/moogles/illustrated moogle.png';
 import mailMoogle from '../assets/moogles/moogle mail.png';
 import wizardMoogle from '../assets/moogles/wizard moogle.png';
