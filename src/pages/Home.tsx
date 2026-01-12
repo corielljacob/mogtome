@@ -6,6 +6,13 @@ import {
   Compass, Feather, BookOpen, Gift
 } from 'lucide-react';
 import { Button } from '../components/Button';
+import winkingMoogle from '../assets/moogles/4478593_moogle-moogle-ff-hd-png-download.png';
+import gamingMoogle from '../assets/moogles/gaming moogle.png';
+import musicMoogle from '../assets/moogles/moogle playing music.png';
+import flyingMoogles from '../assets/moogles/moogles flying.png';
+import illustratedMoogle from '../assets/moogles/illustrated moogle.png';
+import mailMoogle from '../assets/moogles/moogle mail.png';
+import wizardMoogle from '../assets/moogles/wizard moogle.png';
 
 // Rotating set of moogle one-liners
 const kupoQuotes = [
@@ -50,21 +57,33 @@ export function Home() {
       {/* Hero with rotating quote */}
       <section className="relative py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center relative">
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={quoteIndex}
-              className="inline-flex items-center gap-2 mb-6"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <QuoteIcon className="w-6 h-6 text-[var(--bento-primary)]" />
-              <span className="font-accent text-2xl md:text-3xl text-[var(--bento-primary)]">
-                {currentQuote.text}
-              </span>
-            </motion.div>
-          </AnimatePresence>
+          {/* Moogle with speech bubble quote */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img 
+              src={winkingMoogle} 
+              alt="Friendly moogle" 
+              className="w-16 md:w-20 flex-shrink-0"
+            />
+            <div className="relative bg-white dark:bg-slate-800 border border-[var(--bento-border)] rounded-2xl px-4 py-2 shadow-sm w-64 md:w-72">
+              {/* Speech bubble tail */}
+              <div className="absolute left-0 top-1/2 -translate-x-1.5 -translate-y-1/2 w-3 h-3 bg-white dark:bg-slate-800 border-l border-b border-[var(--bento-border)] rotate-45" />
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={quoteIndex}
+                  className="flex items-center justify-center gap-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <QuoteIcon className="w-5 h-5 text-[var(--bento-primary)] flex-shrink-0" />
+                  <span className="font-accent text-xl md:text-2xl text-[var(--bento-primary)]">
+                    {currentQuote.text}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6">
             <motion.span 
               className="text-[var(--bento-text)] block"
@@ -163,6 +182,7 @@ export function Home() {
                 quote: "Everyone's beautiful, kupo~",
                 quoteColor: 'text-[var(--bento-primary)]',
                 quoteIcon: Heart,
+                moogle: gamingMoogle,
               },
               {
                 icon: BookOpen,
@@ -174,6 +194,7 @@ export function Home() {
                 quote: 'Memories are treasures, kupo!',
                 quoteColor: 'text-[var(--bento-secondary)]',
                 quoteIcon: Star,
+                moogle: musicMoogle,
               },
               {
                 icon: Compass,
@@ -185,6 +206,7 @@ export function Home() {
                 quote: 'Clicking is caring, kupo!',
                 quoteColor: 'text-pink-500',
                 quoteIcon: Sparkles,
+                moogle: mailMoogle,
               },
             ].map((card, i) => (
               <motion.div 
@@ -196,6 +218,12 @@ export function Home() {
               >
                 <FeatureCard className="group relative overflow-hidden h-full hover:-translate-y-1">
                   <div className={`absolute top-0 right-0 w-32 h-32 ${card.blobColor} rounded-full -translate-y-1/2 translate-x-1/2 transition-transform duration-300 group-hover:scale-125`} />
+                  {/* Little moogle accent */}
+                  <img 
+                    src={card.moogle} 
+                    alt="" 
+                    className="absolute bottom-2 right-2 w-16 h-16 md:w-20 md:h-20 object-contain opacity-40 group-hover:opacity-70 transition-opacity duration-300"
+                  />
                   <div className="relative">
                     <div className={`w-14 h-14 mb-5 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-lg ${card.shadowColor} transition-transform duration-200 group-hover:scale-105`}>
                       <card.icon className="w-7 h-7 text-white" />
@@ -229,6 +257,7 @@ export function Home() {
         <div className="max-w-3xl mx-auto">
           <FeatureCard className="text-center relative overflow-hidden hover:scale-[1.01]">
             <div className="absolute inset-0 bg-gradient-to-br from-[var(--bento-primary)]/5 via-transparent to-[var(--bento-secondary)]/5" />
+            <img src={wizardMoogle} alt="" className="absolute -left-6 bottom-4 w-16 h-16 opacity-30" />
             
             <div className="relative">
               <div className="flex justify-center gap-3 mb-4">
@@ -258,11 +287,15 @@ export function Home() {
       {/* Footer */}
       <footer className="py-10 md:py-12 px-4 border-t border-[var(--bento-border)]">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="font-soft text-[var(--bento-text-muted)] flex items-center justify-center gap-2 text-sm mb-2">
-            Made with 
-            <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-            by moogles, for moogles
-          </p>
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <img src={illustratedMoogle} alt="" className="w-10 h-10 object-contain opacity-60" />
+            <p className="font-soft text-[var(--bento-text-muted)] flex items-center gap-2 text-sm">
+              Made with 
+              <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+              by moogles, for moogles
+            </p>
+            <img src={illustratedMoogle} alt="" className="w-10 h-10 object-contain opacity-60 scale-x-[-1]" />
+          </div>
           <p className="font-accent text-lg text-[var(--bento-text-subtle)] flex items-center justify-center gap-1">
             Kupo!
             <Heart className="w-4 h-4 text-pink-400 fill-pink-400" />

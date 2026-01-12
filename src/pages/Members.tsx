@@ -7,8 +7,9 @@ import { MemberCard } from '../components/MemberCard';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { FC_RANKS } from '../types';
-import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.png';
+import pushingMoogles from '../assets/moogles/moogles pushing.png';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.png';
+import deadMoogle from '../assets/moogles/dead moogle.png';
 
 // Small content card wrapper
 function ContentCard({ children, className = '', padding = 'md' }: { children: React.ReactNode; className?: string; padding?: 'sm' | 'md' | 'lg' }) {
@@ -224,25 +225,30 @@ export function Members() {
 
           {/* Member list */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col items-center justify-center py-10">
               <img 
-                src={pixelMoogle} 
-                alt="Moogle" 
-                className="w-16 h-16 mb-4 animate-bounce"
-                style={{ imageRendering: 'pixelated' }}
+                src={pushingMoogles} 
+                alt="Moogles working hard" 
+                className="w-32 md:w-36 -mb-2"
               />
-              <p className="font-accent text-xl text-[var(--bento-text-muted)]">
+              <p className="font-accent text-lg text-[var(--bento-text-muted)]">
                 Fetching members, kupo...
               </p>
             </div>
           ) : isError ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">
-              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 mb-6 font-soft font-medium">
-                Failed to load members
-              </div>
-              <div>
-                <Button onClick={() => refetch()}>Try Again</Button>
-              </div>
+              <img 
+                src={deadMoogle} 
+                alt="Moogle down" 
+                className="w-32 h-32 mx-auto mb-4 object-contain"
+              />
+              <p className="text-xl font-display font-medium mb-2 text-[var(--bento-text)]">
+                Something went wrong
+              </p>
+              <p className="font-accent text-lg text-[var(--bento-text-muted)] mb-6">
+                A moogle fell over, kupo...
+              </p>
+              <Button onClick={() => refetch()}>Try Again</Button>
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">

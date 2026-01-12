@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Users, Menu, X, Heart, BookOpen, Sparkles, Moon, Sun } from 'lucide-react';
+import lilGuyMoogle from '../assets/moogles/lil guy moogle.png';
 
 // Theme toggle that honors system preference
 function ThemeToggleButton() {
@@ -54,11 +55,9 @@ function LogoIcon({ hovered = false }: { hovered?: boolean }) {
         transition-all duration-300 ease-out
         ${hovered ? 'scale-105 shadow-xl shadow-[var(--bento-primary)]/30' : ''}
       `}>
-        <BookOpen className={`
-          w-5 h-5 text-white 
-          transition-transform duration-300 ease-out
-          ${hovered ? 'scale-105' : ''}
-        `} />
+        <div className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center overflow-hidden">
+          <img src={lilGuyMoogle} alt="MogTome" className="w-7 h-7 object-contain" />
+        </div>
       </div>
       
       {/* Floating pom-pom on top - bounces once on first load */}
