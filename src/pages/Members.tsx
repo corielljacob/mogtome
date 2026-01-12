@@ -7,6 +7,8 @@ import { MemberCard } from '../components/MemberCard';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { FC_RANKS } from '../types';
+import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.png';
+import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.png';
 
 // Small content card wrapper
 function ContentCard({ children, className = '', padding = 'md' }: { children: React.ReactNode; className?: string; padding?: 'sm' | 'md' | 'lg' }) {
@@ -223,9 +225,12 @@ export function Members() {
           {/* Member list */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-12 h-12 mb-4 rounded-full bg-[var(--bento-primary)]/10 flex items-center justify-center">
-                <RefreshCw className="w-6 h-6 text-[var(--bento-primary)] animate-spin" />
-              </div>
+              <img 
+                src={pixelMoogle} 
+                alt="Moogle" 
+                className="w-16 h-16 mb-4 animate-bounce"
+                style={{ imageRendering: 'pixelated' }}
+              />
               <p className="font-accent text-xl text-[var(--bento-text-muted)]">
                 Fetching members, kupo...
               </p>
@@ -241,9 +246,15 @@ export function Members() {
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">
-              <Sparkles className="w-12 h-12 text-[var(--bento-text-subtle)] mx-auto mb-4" />
+              <img 
+                src={grumpyMoogle} 
+                alt="Confused moogle" 
+                className="w-32 h-32 mx-auto mb-4 object-contain"
+              />
               <p className="text-xl font-display font-medium mb-2 text-[var(--bento-text)]">No members found</p>
-              <p className="text-[var(--bento-text-muted)] font-soft mb-4">Try adjusting your search or filters</p>
+              <p className="font-accent text-lg text-[var(--bento-text-muted)] mb-4">
+                Kupo? We couldn't find anyone by that name...
+              </p>
               {hasActiveFilters && (
                 <Button variant="ghost" onClick={clearFilters}>Clear filters</Button>
               )}
