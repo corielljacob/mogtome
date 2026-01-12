@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Vite dev server proxies /api to the Azure API; prod should swap to env-backed base URL
-const API_BASE_URL = '/api';
+// Use an env-provided base URL in production; fall back to /api for local proxy
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Axios client with shared defaults
 const apiClient = axios.create({
