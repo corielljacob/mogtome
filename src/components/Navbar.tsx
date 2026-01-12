@@ -36,6 +36,14 @@ function ThemeToggleButton() {
 
 // Logo mark with a little pom accent
 function LogoIcon({ hovered = false }: { hovered?: boolean }) {
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    // Short delay so page settles, then pom drops in
+    const timer = setTimeout(() => setShouldAnimate(true), 250);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="relative">
       <div className={`
@@ -53,9 +61,13 @@ function LogoIcon({ hovered = false }: { hovered?: boolean }) {
         `} />
       </div>
       
-      {/* Floating pom-pom on top */}
+      {/* Floating pom-pom on top - bounces once on first load */}
       <div 
-        className="absolute -top-1.5 -right-1.5 transition-transform duration-300 ease-out"
+        className={`
+          absolute -top-1.5 -right-1.5 
+          transition-transform duration-300 ease-out
+          ${shouldAnimate ? 'animate-pom-land' : 'opacity-0'}
+        `}
         style={{ transform: hovered ? 'translateY(-2px) scale(1.1)' : 'translateY(0) scale(1)' }}
       >
         <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-pink-500 border-2 border-white dark:border-slate-900 shadow-sm flex items-center justify-center">

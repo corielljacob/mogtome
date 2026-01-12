@@ -69,7 +69,11 @@ export function MemberCard({ member }: MemberCardProps) {
           </h3>
           <div className="flex items-center justify-center gap-1.5">
             {member.freeCompanyRankIcon && (
-              <img src={member.freeCompanyRankIcon} alt="" className="w-4 h-4" />
+              <img 
+                src={member.freeCompanyRankIcon} 
+                alt="" 
+                className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" 
+              />
             )}
             <span className="text-[10px] md:text-xs text-[var(--bento-text-muted)] font-inter font-medium truncate">
               {member.freeCompanyRank}

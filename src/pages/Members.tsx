@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Filter, RefreshCw, Users, X, Sparkles, Heart } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { MemberCard, MemberCardSkeleton } from '../components/MemberCard';
+import { MemberCard } from '../components/MemberCard';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { FC_RANKS } from '../types';
@@ -222,10 +222,13 @@ export function Members() {
 
           {/* Member list */}
           {isLoading ? (
-            <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <MemberCardSkeleton key={i} />
-              ))}
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-12 h-12 mb-4 rounded-full bg-[var(--bento-primary)]/10 flex items-center justify-center">
+                <RefreshCw className="w-6 h-6 text-[var(--bento-primary)] animate-spin" />
+              </div>
+              <p className="font-accent text-xl text-[var(--bento-text-muted)]">
+                Fetching members, kupo...
+              </p>
             </div>
           ) : isError ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">
