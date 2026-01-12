@@ -1,15 +1,36 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/assets/*", "/*.svg", "/*.png", "/*.ico", "/*.js", "/*.css"]
-  },
-  "responseOverrides": {
-    "404": {
-      "rewrite": "/index.html",
-      "statusCode": 200
-    }
+    "exclude": [
+      "/assets/**",
+      "*.js",
+      "*.css",
+      "*.svg",
+      "*.png",
+      "*.jpg",
+      "*.jpeg",
+      "*.gif",
+      "*.ico",
+      "*.woff",
+      "*.woff2",
+      "*.ttf",
+      "*.eot",
+      "*.json",
+      "*.map"
+    ]
   },
   "mimeTypes": {
-    ".json": "application/json"
+    ".js": "text/javascript",
+    ".mjs": "text/javascript",
+    ".css": "text/css",
+    ".json": "application/json",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".ico": "image/x-icon",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2"
   }
 }
