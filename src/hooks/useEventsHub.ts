@@ -149,11 +149,19 @@ export function useEventsHub(): UseEventsHubResult {
   // Start connection on mount
   useEffect(() => {
     isMountedRef.current = true;
-    startConnection();
+    
+    // Small delay to let React Strict Mode's double-mount settle
+    // This prevents the "stopped during negotiation" error
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current) {
+        startConnection();
+      }
+    }, 100);
 
     return () => {
       isMountedRef.current = false;
       isConnectingRef.current = false;
+      clearTimeout(timeoutId);
       if (connectionRef.current) {
         connectionRef.current.stop().catch(() => {
           // Ignore cleanup errors
