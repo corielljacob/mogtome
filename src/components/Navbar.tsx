@@ -152,7 +152,7 @@ const kupoEasterEggPhrases = [
 function KupoBadge() {
   const [wiggleKey, setWiggleKey] = useState(0);
   const [isActivated, setIsActivated] = useState(false);
-  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; delay: number; type: 'sparkle' | 'heart' }>>([]);
   const [easterEggPhrase, setEasterEggPhrase] = useState("");
   
   useEffect(() => {
@@ -174,6 +174,7 @@ function KupoBadge() {
       x: (Math.random() - 0.5) * 200,
       y: (Math.random() - 0.5) * 100 + 40,
       delay: Math.random() * 0.3,
+      type: Math.random() > 0.5 ? 'sparkle' : 'heart',
     }));
     setSparkles(newSparkles);
     
@@ -274,7 +275,7 @@ function KupoBadge() {
               ease: "easeOut" 
             }}
           >
-            {Math.random() > 0.5 ? (
+            {sparkle.type === 'sparkle' ? (
               <Sparkles className="w-4 h-4 text-amber-400" />
             ) : (
               <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />

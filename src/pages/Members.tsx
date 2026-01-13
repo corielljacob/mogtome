@@ -136,7 +136,6 @@ export function Members() {
 
   // Use immediate values for UI state (buttons, badges) but deferred for the list
   const hasActiveFilters = searchQuery || selectedRanks.length > 0;
-  const deferredHasActiveFilters = deferredSearchQuery || deferredSelectedRanks.length > 0;
 
   // Memoize rank counts to avoid recalculating on every render
   const rankCounts = useMemo(() => {

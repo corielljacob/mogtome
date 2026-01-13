@@ -125,9 +125,7 @@ export function Button({
         y: 0,
       } : undefined}
       transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 17,
+        duration: 0.05
       }}
       {...props}
     >
@@ -137,7 +135,7 @@ export function Button({
           className="absolute inset-0 pointer-events-none"
           initial={{ x: '-100%', opacity: 0 }}
           animate={isHovered ? { x: '100%', opacity: 0.3 } : { x: '-100%', opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <div className="w-full h-full bg-gradient-to-r from-transparent via-white to-transparent skew-x-12" />
         </motion.div>
@@ -157,7 +155,7 @@ export function Button({
               y: [0, -20],
             }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <Sparkles className="w-3 h-3 text-white/80" />
           </motion.div>
@@ -194,7 +192,7 @@ export function Button({
       <motion.span 
         className="relative z-10 flex items-center gap-2"
         animate={isHovered && fun ? { y: [0, -1, 0] } : {}}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2 }}
       >
         {children}
       </motion.span>
