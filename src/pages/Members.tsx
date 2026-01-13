@@ -561,39 +561,48 @@ export function Members() {
             <div className={`space-y-12 transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
               {deferredSelectedRanks.length === 0 && !deferredSearchQuery ? (
                 // Grouped view by rank when no filters
-                Array.from(membersByRank.entries()).map(([rankName, members]) => (
-                  <motion.section 
-                    key={rankName}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    {/* Rank header - refined style */}
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="flex items-center gap-2.5">
-                        <h2 className="font-display font-bold text-lg md:text-xl text-[var(--bento-text)]">
-                          {rankName}
-                        </h2>
-                        <span className="
-                          px-2.5 py-1 rounded-full 
-                          bg-gradient-to-r from-[var(--bento-primary)]/10 to-[var(--bento-secondary)]/10
-                          text-[var(--bento-primary)] text-sm font-soft font-bold
-                          border border-[var(--bento-primary)]/10
-                        ">
-                          {members.length}
-                        </span>
-                      </div>
-                      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-border)] to-transparent" />
-                    </div>
+                // Use cumulative index for staggered animation across all cards
+                (() => {
+                  let cumulativeIndex = 0;
+                  return Array.from(membersByRank.entries()).map(([rankName, members], sectionIdx) => {
+                    const startIndex = cumulativeIndex;
+                    cumulativeIndex += members.length;
                     
-                    {/* Members grid - responsive with better spacing */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6">
-                      {members.map((member, idx) => (
-                        <MemoizedMemberCard key={member.characterId} member={member} index={idx} />
-                      ))}
-                    </div>
-                  </motion.section>
-                ))
+                    return (
+                      <motion.section 
+                        key={rankName}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: sectionIdx * 0.1 }}
+                      >
+                        {/* Rank header - refined style */}
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="flex items-center gap-2.5">
+                            <h2 className="font-display font-bold text-lg md:text-xl text-[var(--bento-text)]">
+                              {rankName}
+                            </h2>
+                            <span className="
+                              px-2.5 py-1 rounded-full 
+                              bg-gradient-to-r from-[var(--bento-primary)]/10 to-[var(--bento-secondary)]/10
+                              text-[var(--bento-primary)] text-sm font-soft font-bold
+                              border border-[var(--bento-primary)]/10
+                            ">
+                              {members.length}
+                            </span>
+                          </div>
+                          <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-border)] to-transparent" />
+                        </div>
+                        
+                        {/* Members grid - responsive with better spacing */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6">
+                          {members.map((member, idx) => (
+                            <MemoizedMemberCard key={member.characterId} member={member} index={startIndex + idx} />
+                          ))}
+                        </div>
+                      </motion.section>
+                    );
+                  });
+                })()
               ) : (
                 // Flat grid when filters are active - centered with better responsiveness
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6 justify-items-center">
