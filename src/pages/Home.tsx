@@ -218,7 +218,7 @@ export function Home() {
             <div className="h-px w-8 bg-gradient-to-r from-transparent to-[var(--bento-border)]" />
             <p className="font-accent text-base md:text-lg text-[var(--bento-text-subtle)] flex items-center gap-2">
               <Feather className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
-              <span>No pom-pom pulling allowed!</span>
+              <span>No pom pulling allowed!</span>
               <Feather className="w-3.5 h-3.5 text-[var(--bento-secondary)] scale-x-[-1]" />
             </p>
             <div className="h-px w-8 bg-gradient-to-l from-transparent to-[var(--bento-border)]" />
