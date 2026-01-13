@@ -23,15 +23,14 @@ const kupoQuotes = [
   { text: "Stay cozy, kupo~", icon: Feather },
 ];
 
-// Page-local card wrapper with improved styling
+// Reusable card component for this page
 function FeatureCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`
-      bg-white/80 dark:bg-slate-800/80
-      backdrop-blur-sm
-      border border-[var(--bento-border)]
-      rounded-3xl p-6 md:p-8
-      shadow-sm hover:shadow-xl hover:shadow-[var(--bento-primary)]/5
+      bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm
+      border border-[var(--bento-border)] rounded-2xl
+      p-6 md:p-8 shadow-sm
+      hover:shadow-xl hover:shadow-[var(--bento-primary)]/5
       transition-all duration-300
       ${className}
     `}>
@@ -41,20 +40,15 @@ function FeatureCard({ children, className = '' }: { children: React.ReactNode; 
 }
 
 // Subtle decorative moogle for background
-function DecorativeMoogle({ 
-  src, 
-  className = ''
-}: { 
-  src: string; 
-  className?: string;
-}) {
+function DecorativeMoogle({ src, className = '' }: { src: string; className?: string }) {
   return (
     <motion.img
       src={src}
       alt=""
+      aria-hidden
       className={`absolute pointer-events-none select-none ${className}`}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 0.08 }}
+      animate={{ opacity: 0.06 }}
       transition={{ duration: 1.5 }}
     />
   );
@@ -393,20 +387,19 @@ export function Home() {
       </motion.section>
 
       {/* Footer */}
-      <footer className="py-10 md:py-12 px-4 border-t border-[var(--bento-border)]">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <img src={footerMoogle} alt="" className="w-10 h-10 object-contain opacity-60" />
-            <p className="font-soft text-[var(--bento-text-muted)] flex items-center gap-2 text-sm">
+      <footer className="py-12 px-4 mt-8 border-t border-[var(--bento-border)]">
+        <div className="max-w-4xl mx-auto text-center space-y-3">
+          <div className="flex items-center justify-center gap-4">
+            <img src={footerMoogle} alt="" aria-hidden className="w-8 h-8 object-contain opacity-50" />
+            <p className="font-soft text-sm text-[var(--bento-text-muted)] flex items-center gap-2">
               Made with 
-              <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+              <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
               by moogles, for moogles
             </p>
-            <img src={footerMoogle} alt="" className="w-10 h-10 object-contain opacity-60 scale-x-[-1]" />
+            <img src={footerMoogle} alt="" aria-hidden className="w-8 h-8 object-contain opacity-50 scale-x-[-1]" />
           </div>
-          <p className="font-accent text-lg text-[var(--bento-text-subtle)] flex items-center justify-center gap-1">
-            Kupo!
-            <Heart className="w-4 h-4 text-pink-400 fill-pink-400" />
+          <p className="font-accent text-base text-[var(--bento-text-subtle)]">
+            Kupo! <Heart className="w-3 h-3 text-pink-400 fill-pink-400 inline" />
           </p>
         </div>
       </footer>
