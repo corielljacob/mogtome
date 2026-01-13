@@ -272,8 +272,8 @@ export function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                {/* Speech bubble - fixed size to prevent jumping */}
-                <div className="relative bg-[var(--bento-card)] rounded-2xl px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[300px] md:w-[360px] h-[70px] md:h-[80px] flex items-center justify-center mx-auto">
+                {/* Speech bubble - responsive sizing */}
+                <div className="relative bg-[var(--bento-card)] rounded-2xl px-4 sm:px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-4rem)] max-w-[300px] sm:max-w-[360px] min-h-[70px] sm:min-h-[80px] flex items-center justify-center mx-auto">
                   {/* Bubble tail pointing up - bigger and more prominent */}
                   <div className="absolute -top-5 left-1/2 -translate-x-1/2">
                     <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
@@ -350,7 +350,7 @@ export function Home() {
       </section>
 
       {/* Footer - storybook closing */}
-      <footer className="py-8 px-4 relative z-10">
+      <footer className="py-8 px-4 relative z-10" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
         <motion.div 
           className="max-w-md mx-auto text-center"
           initial={{ opacity: 0 }}

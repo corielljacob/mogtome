@@ -63,7 +63,7 @@ function ThemeToggleButton() {
   return (
     <motion.button
       onClick={() => setIsDark((prev) => !prev)}
-      className="relative w-9 h-9 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm"
+      className="relative w-10 h-10 md:w-9 md:h-9 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm"
       style={{ perspective: 600 }}
       aria-label="Toggle theme"
       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -71,7 +71,7 @@ function ThemeToggleButton() {
     >
       {/* The flipper */}
       <motion.div
-        className="absolute inset-1 rounded-lg"
+        className="absolute inset-1.5 md:inset-1 rounded-lg"
         style={{ transformStyle: "preserve-3d" }}
         animate={{ rotateY: isDark ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 800, damping: 30 }}
@@ -361,9 +361,9 @@ export function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 transition-all duration-300">
-      {/* Storybook-style backdrop with warmth */}
-      <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" />
+    <nav className="sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+      {/* Storybook-style backdrop with warmth - extends to cover safe area */}
+      <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       
       {/* Floating whimsical sparkles */}
@@ -375,7 +375,7 @@ export function Navbar() {
       {/* Bottom border with storybook style */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
       
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8" style={{ paddingLeft: 'max(1rem, var(--safe-area-inset-left, 0px))', paddingRight: 'max(1rem, var(--safe-area-inset-right, 0px))' }}>
         <div className="flex items-center justify-between h-[4.5rem]">
           {/* Brand mark */}
           <Link 
@@ -490,12 +490,14 @@ export function Navbar() {
             <KupoBadge />
             <ThemeToggleButton />
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button - min 44px touch target */}
             <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative p-2.5 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors"
+              className="md:hidden relative p-3 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {mobileMenuOpen ? (
