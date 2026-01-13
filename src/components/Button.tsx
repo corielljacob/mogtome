@@ -24,6 +24,12 @@ export function Button({
   fun = true,
   className = '',
   disabled,
+  onDrag,
+  onDragStart,
+  onDragEnd,
+  onAnimationStart,
+  onAnimationEnd,
+  onAnimationIteration,
   ...props
 }: ButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -216,6 +222,12 @@ export function IconButton({
   variant = 'ghost',
   fun = true,
   className = '',
+  onDrag,
+  onDragStart,
+  onDragEnd,
+  onAnimationStart,
+  onAnimationEnd,
+  onAnimationIteration,
   ...props
 }: IconButtonProps) {
   const sizeClasses = {

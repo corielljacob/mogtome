@@ -174,7 +174,7 @@ function KupoBadge() {
       x: (Math.random() - 0.5) * 200,
       y: (Math.random() - 0.5) * 100 + 40,
       delay: Math.random() * 0.3,
-      type: Math.random() > 0.5 ? 'sparkle' : 'heart',
+      type: (Math.random() > 0.5 ? 'sparkle' : 'heart') as 'sparkle' | 'heart',
     }));
     setSparkles(newSparkles);
     
