@@ -1,36 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Righteous&display=swap');
 @import "tailwindcss";
-@plugin "daisyui";
 
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
-
-/* DaisyUI Theme */
-@plugin "daisyui/theme" {
-  name: "moogle";
-  default: true;
-  
-  --color-primary: #8B5FBF;
-  --color-primary-content: #ffffff;
-  --color-secondary: #D4708F;
-  --color-secondary-content: #ffffff;
-  --color-accent: #E6A623;
-  --color-accent-content: #ffffff;
-  --color-neutral: #4A4158;
-  --color-neutral-content: #ffffff;
-  --color-base-100: #ffffff;
-  --color-base-200: #FAF8FC;
-  --color-base-300: #EDE8F2;
-  --color-base-content: #2D2438;
-  --color-info: #3B82F6;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  
-  --radius-selector: 0.75rem;
-  --radius-field: 0.75rem;
-  --radius-box: 1rem;
-}
 
 /* Base Styles */
 @layer base {
@@ -48,7 +20,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Fredoka', 'Nunito', system-ui, sans-serif;
     font-weight: 600;
-    color: var(--color-base-content);
+    color: var(--bento-text);
   }
 }
 
