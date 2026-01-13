@@ -1,18 +1,15 @@
-import { useState, useMemo, memo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { MemberCard } from '../components/MemberCard';
+import { VirtualizedMemberGrid } from '../components/VirtualizedMemberGrid';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
 import deadMoogle from '../assets/moogles/dead moogle.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
-
-// Memoized member card wrapper to prevent unnecessary re-renders
-const MemoizedMemberCard = memo(MemberCard);
 
 // Storybook divider matching home page
 function StoryDivider({ className = '' }: { className?: string }) {
@@ -647,57 +644,12 @@ export function Members() {
               )}
             </ContentCard>
           ) : (
-            <div className={`space-y-12 transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
-              {deferredSelectedRanks.length === 0 && !deferredSearchQuery ? (
-                (() => {
-                  let cumulativeIndex = 0;
-                  return Array.from(membersByRank.entries()).map(([rankName, members], sectionIdx) => {
-                    const startIndex = cumulativeIndex;
-                    cumulativeIndex += members.length;
-                    
-                    return (
-                      <motion.section 
-                        key={rankName}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: sectionIdx * 0.1 }}
-                      >
-                        {/* Rank header - storybook style */}
-                        <div className="flex items-center gap-4 mb-6">
-                          <div className="flex items-center gap-2.5">
-                            <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
-                            <h2 className="font-display font-bold text-xl md:text-2xl text-[var(--bento-text)]">
-                              {rankName}
-                            </h2>
-                            <span className="
-                              px-3 py-1 rounded-full 
-                              bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15
-                              text-[var(--bento-primary)] text-sm font-soft font-bold
-                              border border-[var(--bento-primary)]/15
-                            ">
-                              {members.length}
-                            </span>
-                          </div>
-                          <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/10 to-transparent" />
-                        </div>
-                        
-                        {/* Members grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center">
-                          {members.map((member, idx) => (
-                            <MemoizedMemberCard key={member.characterId} member={member} index={startIndex + idx} />
-                          ))}
-                        </div>
-                      </motion.section>
-                    );
-                  });
-                })()
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6 justify-items-center">
-                  {filteredMembers.map((member, idx) => (
-                    <MemoizedMemberCard key={member.characterId} member={member} index={idx} />
-                  ))}
-                </div>
-              )}
+            <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
+              <VirtualizedMemberGrid
+                members={filteredMembers}
+                membersByRank={membersByRank}
+                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
+              />
             </div>
           )}
 
