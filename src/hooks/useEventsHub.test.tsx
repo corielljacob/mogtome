@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ConnectionStatus } from './useEventsHub';
+import type { ConnectionStatus } from './useEventsHub';
 
 /**
  * Note: Full integration tests for useEventsHub require complex SignalR mocking.
@@ -39,5 +39,16 @@ describe('useEventsHub exports', () => {
     // This is a compile-time check - if it compiles, the type exists
     const status: ConnectionStatus = 'connected';
     expect(status).toBe('connected');
+  });
+
+  it('hook returns expected shape', async () => {
+    // Just verify the module structure - actual hook behavior requires SignalR mock
+    const module = await import('./useEventsHub');
+    
+    // The hook should be a function
+    expect(typeof module.useEventsHub).toBe('function');
+    
+    // Expected return type shape (compile-time check):
+    // { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen }
   });
 });

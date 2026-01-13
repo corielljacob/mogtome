@@ -16,12 +16,16 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 're
 interface UseEventsHubResult {
   /** Current connection status */
   status: ConnectionStatus;
-  /** New events received via SignalR (most recent first) */
+  /** All events received via SignalR (most recent first) */
   realtimeEvents: ChronicleEvent[];
+  /** Number of events that haven't been marked as seen */
+  unseenCount: number;
   /** Manually reconnect if disconnected */
   reconnect: () => void;
-  /** Clear all realtime events */
-  clearRealtimeEvents: () => void;
+  /** Mark all current events as seen (removes "new" styling but keeps events visible) */
+  markAllAsSeen: () => void;
+  /** Clear all realtime events (use when refetching from API) */
+  clearEvents: () => void;
 }
 
 /**
@@ -34,6 +38,7 @@ export function useEventsHub(): UseEventsHubResult {
   const isConnectingRef = useRef(false);
   const [status, setStatus] = useState<ConnectionStatus>('disconnected');
   const [realtimeEvents, setRealtimeEvents] = useState<ChronicleEvent[]>([]);
+  const [unseenCount, setUnseenCount] = useState(0);
 
   const startConnection = useCallback(async (isManualReconnect = false) => {
     // Prevent concurrent connection attempts
@@ -98,6 +103,7 @@ export function useEventsHub(): UseEventsHubResult {
       if (isMountedRef.current) {
         const events = Array.isArray(data) ? data : [data];
         setRealtimeEvents((prev) => [...events, ...prev]);
+        setUnseenCount((prev) => prev + events.length);
       }
     });
 
@@ -131,8 +137,13 @@ export function useEventsHub(): UseEventsHubResult {
     startConnection(true);
   }, [startConnection]);
 
-  const clearRealtimeEvents = useCallback(() => {
+  const markAllAsSeen = useCallback(() => {
+    setUnseenCount(0);
+  }, []);
+
+  const clearEvents = useCallback(() => {
     setRealtimeEvents([]);
+    setUnseenCount(0);
   }, []);
 
   // Start connection on mount
@@ -162,7 +173,9 @@ export function useEventsHub(): UseEventsHubResult {
   return {
     status,
     realtimeEvents,
+    unseenCount,
     reconnect,
-    clearRealtimeEvents,
+    markAllAsSeen,
+    clearEvents,
   };
 }

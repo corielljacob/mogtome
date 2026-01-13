@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -172,11 +172,15 @@ function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEven
 
 export function Chronicle() {
   const [showRealtimeEvents, setShowRealtimeEvents] = useState(true);
-  const { status, realtimeEvents, reconnect, clearRealtimeEvents } = useEventsHub();
+  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen, clearEvents } = useEventsHub();
+
+  // Track if we've done the initial load (to avoid clearing on mount)
+  const hasInitialLoadRef = useRef(false);
 
   // Fetch historical events with infinite scroll
   const {
     data,
+    dataUpdatedAt,
     isLoading,
     isError,
     isFetchingNextPage,
@@ -190,6 +194,17 @@ export function Chronicle() {
     initialPageParam: undefined as string | undefined,
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
+
+  // Clear realtime events when API data is refetched (prevents duplicates)
+  useEffect(() => {
+    if (!hasInitialLoadRef.current && data) {
+      // First load - just mark as loaded
+      hasInitialLoadRef.current = true;
+    } else if (hasInitialLoadRef.current && dataUpdatedAt) {
+      // Subsequent refetch - clear realtime events since API has them now
+      clearEvents();
+    }
+  }, [dataUpdatedAt, clearEvents]);
 
   // Flatten all pages of historical events
   const historicalEvents = useMemo(() => {
@@ -289,18 +304,18 @@ export function Chronicle() {
                   `}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  {realtimeEvents.length} new
+                  {unseenCount > 0 ? `${unseenCount} new` : `${realtimeEvents.length} live`}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
                 </button>
               )}
 
-              {/* Clear realtime events */}
-              {realtimeEvents.length > 0 && (
+              {/* Mark as read button - only show when there are unseen events */}
+              {unseenCount > 0 && (
                 <button
-                  onClick={clearRealtimeEvents}
+                  onClick={markAllAsSeen}
                   className="px-3 py-1.5 rounded-full text-sm font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer"
                 >
-                  Clear new
+                  Mark as read
                 </button>
               )}
 
@@ -423,10 +438,10 @@ export function Chronicle() {
                     </div>
                     
                     {realtimeEvents.map((event, index) => (
-                      <TimelineEventCard 
-                        key={`rt-${getEventKey(event, index)}`} 
-                        event={event} 
-                        isRealtime 
+                      <TimelineEventCard
+                        key={`rt-${getEventKey(event, index)}`}
+                        event={event}
+                        isRealtime={index < unseenCount}
                       />
                     ))}
 
