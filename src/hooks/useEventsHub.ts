@@ -30,10 +30,17 @@ interface UseEventsHubResult {
  */
 export function useEventsHub(): UseEventsHubResult {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const isMountedRef = useRef(true);
+  const isConnectingRef = useRef(false);
   const [status, setStatus] = useState<ConnectionStatus>('disconnected');
   const [realtimeEvents, setRealtimeEvents] = useState<ChronicleEvent[]>([]);
 
-  const startConnection = useCallback(async () => {
+  const startConnection = useCallback(async (isManualReconnect = false) => {
+    // Prevent concurrent connection attempts
+    if (isConnectingRef.current && !isManualReconnect) {
+      return;
+    }
+
     // Cleanup existing connection if any
     if (connectionRef.current) {
       try {
@@ -41,8 +48,15 @@ export function useEventsHub(): UseEventsHubResult {
       } catch {
         // Ignore stop errors
       }
+      connectionRef.current = null;
     }
 
+    // Don't start if unmounted (React Strict Mode cleanup)
+    if (!isMountedRef.current) {
+      return;
+    }
+
+    isConnectingRef.current = true;
     setStatus('connecting');
 
     const connection = new signalR.HubConnectionBuilder()
@@ -61,45 +75,71 @@ export function useEventsHub(): UseEventsHubResult {
 
     // Handle connection state changes
     connection.onreconnecting(() => {
-      setStatus('reconnecting');
+      if (isMountedRef.current) {
+        setStatus('reconnecting');
+      }
     });
 
     connection.onreconnected(() => {
-      setStatus('connected');
+      if (isMountedRef.current) {
+        setStatus('connected');
+      }
     });
 
     connection.onclose((error) => {
-      setStatus(error ? 'error' : 'disconnected');
+      if (isMountedRef.current) {
+        // Only set error if it's a real error, not a manual disconnect
+        setStatus(error ? 'error' : 'disconnected');
+      }
     });
 
     // Listen for new events from the hub
     // The hub method name may vary - common patterns are "ReceiveEvent", "NewEvent", "EventReceived"
     connection.on('ReceiveEvent', (event: ChronicleEvent) => {
-      setRealtimeEvents((prev) => [event, ...prev]);
+      if (isMountedRef.current) {
+        setRealtimeEvents((prev) => [event, ...prev]);
+      }
     });
 
     // Also listen for alternative method names the backend might use
     connection.on('NewEvent', (event: ChronicleEvent) => {
-      setRealtimeEvents((prev) => [event, ...prev]);
+      if (isMountedRef.current) {
+        setRealtimeEvents((prev) => [event, ...prev]);
+      }
     });
 
     connection.on('EventCreated', (event: ChronicleEvent) => {
-      setRealtimeEvents((prev) => [event, ...prev]);
+      if (isMountedRef.current) {
+        setRealtimeEvents((prev) => [event, ...prev]);
+      }
     });
 
     connectionRef.current = connection;
 
     try {
       await connection.start();
-      setStatus('connected');
+      isConnectingRef.current = false;
+      if (isMountedRef.current) {
+        setStatus('connected');
+      }
     } catch (err) {
-      console.error('SignalR connection failed:', err);
-      setStatus('error');
+      isConnectingRef.current = false;
+      // Only log and set error if this wasn't an abort from unmount
+      if (isMountedRef.current) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        // Don't treat abort during negotiation as an error (happens in Strict Mode)
+        if (!errorMessage.includes('stopped during negotiation')) {
+          console.error('SignalR connection failed:', err);
+          setStatus('error');
+        } else {
+          setStatus('disconnected');
+        }
+      }
     }
   }, []);
 
   const reconnect = useCallback(() => {
-    startConnection();
+    startConnection(true);
   }, [startConnection]);
 
   const clearRealtimeEvents = useCallback(() => {
@@ -108,9 +148,12 @@ export function useEventsHub(): UseEventsHubResult {
 
   // Start connection on mount
   useEffect(() => {
+    isMountedRef.current = true;
     startConnection();
 
     return () => {
+      isMountedRef.current = false;
+      isConnectingRef.current = false;
       if (connectionRef.current) {
         connectionRef.current.stop().catch(() => {
           // Ignore cleanup errors
