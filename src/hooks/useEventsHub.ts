@@ -93,24 +93,11 @@ export function useEventsHub(): UseEventsHubResult {
       }
     });
 
-    // Listen for new events from the hub
-    // The hub method name may vary - common patterns are "ReceiveEvent", "NewEvent", "EventReceived"
-    connection.on('ReceiveEvent', (event: ChronicleEvent) => {
+    // Listen for chronicle events from the server
+    connection.on('informclient', (data: ChronicleEvent | ChronicleEvent[]) => {
       if (isMountedRef.current) {
-        setRealtimeEvents((prev) => [event, ...prev]);
-      }
-    });
-
-    // Also listen for alternative method names the backend might use
-    connection.on('NewEvent', (event: ChronicleEvent) => {
-      if (isMountedRef.current) {
-        setRealtimeEvents((prev) => [event, ...prev]);
-      }
-    });
-
-    connection.on('EventCreated', (event: ChronicleEvent) => {
-      if (isMountedRef.current) {
-        setRealtimeEvents((prev) => [event, ...prev]);
+        const events = Array.isArray(data) ? data : [data];
+        setRealtimeEvents((prev) => [...events, ...prev]);
       }
     });
 
@@ -124,15 +111,17 @@ export function useEventsHub(): UseEventsHubResult {
       }
     } catch (err) {
       isConnectingRef.current = false;
-      // Only log and set error if this wasn't an abort from unmount
       if (isMountedRef.current) {
         const errorMessage = err instanceof Error ? err.message : String(err);
         // Don't treat abort during negotiation as an error (happens in Strict Mode)
-        if (!errorMessage.includes('stopped during negotiation')) {
-          console.error('SignalR connection failed:', err);
-          setStatus('error');
-        } else {
+        if (errorMessage.includes('stopped during negotiation')) {
           setStatus('disconnected');
+        } else {
+          // Only warn in dev, don't spam console - backend may just be unavailable
+          if (import.meta.env.DEV) {
+            console.warn('[EventsHub] Connection unavailable - will retry on reconnect');
+          }
+          setStatus('error');
         }
       }
     }

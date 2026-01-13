@@ -6,124 +6,62 @@ import {
   RefreshCw, 
   Wifi, 
   WifiOff, 
-  Star,
-  Sparkles,
   Heart,
   ChevronDown,
-  UserPlus,
-  UserMinus,
-  Award,
-  ArrowUpDown,
-  Megaphone,
-  HelpCircle,
+  Sparkles,
   Scroll,
   Loader2,
 } from 'lucide-react';
+
+// Shared components
+import { StoryDivider, FloatingSparkles, ContentCard, SimpleFloatingMoogles } from '../components';
+
+// Utils & Constants
+import { formatRelativeTime, formatFullDate } from '../utils';
+import { getEventTypeConfig } from '../constants';
+
+// API & Hooks
 import { eventsApi } from '../api/events';
 import { useEventsHub, type ConnectionStatus } from '../hooks';
 import type { ChronicleEvent } from '../types';
+
+// Assets
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import moogleMail from '../assets/moogles/moogle mail.webp';
 import deadMoogle from '../assets/moogles/dead moogle.webp';
 
-// Story divider matching other pages
-function StoryDivider({ className = '' }: { className?: string }) {
-  return (
-    <svg 
-      viewBox="0 0 200 20" 
-      className={`w-48 md:w-64 h-5 ${className}`}
-      fill="none"
-    >
-      <path 
-        d="M10 10 Q 30 5, 50 10 T 90 10 T 130 10 T 170 10 T 190 10" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round"
-        className="text-[var(--bento-primary)]/40"
-      />
-      <circle cx="100" cy="10" r="3" className="fill-[var(--bento-secondary)]" />
-      <circle cx="80" cy="8" r="2" className="fill-[var(--bento-primary)]/50" />
-      <circle cx="120" cy="8" r="2" className="fill-[var(--bento-primary)]/50" />
-    </svg>
-  );
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper Functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+const PLACEHOLDER_TIMESTAMP = 0;
+const PLACEHOLDER_CREATION_TIME = '1970-01-01T00:00:00Z';
+
+/** Check if an event has a valid (non-placeholder) ID */
+function hasValidId(event: ChronicleEvent): boolean {
+  return event.id.timestamp !== PLACEHOLDER_TIMESTAMP || 
+         event.id.creationTime !== PLACEHOLDER_CREATION_TIME;
 }
 
-// Floating background decoration
-function FloatingBackgroundMoogles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.img
-        src={flyingMoogles}
-        alt=""
-        aria-hidden
-        className="absolute top-32 left-4 md:left-16 w-24 md:w-32 object-contain"
-        style={{ rotate: '-5deg' }}
-        animate={{ 
-          opacity: [0.06, 0.12, 0.06],
-          y: [0, -15, 0],
-        }}
-        transition={{
-          opacity: { duration: 5, repeat: Infinity },
-          y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-        }}
-      />
-      <motion.img
-        src={moogleMail}
-        alt=""
-        aria-hidden
-        className="absolute top-64 right-4 md:right-16 w-20 md:w-28 object-contain"
-        style={{ rotate: '8deg' }}
-        animate={{ 
-          opacity: [0.06, 0.12, 0.06],
-          y: [0, -12, 0],
-        }}
-        transition={{
-          opacity: { duration: 4, repeat: Infinity, delay: 1.5 },
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 },
-        }}
-      />
-    </div>
-  );
+/** Get a signature for deduplication (createdAt + type + text) */
+function getEventSignature(event: ChronicleEvent): string {
+  return `${event.createdAt}-${event.type}-${event.text}`;
 }
 
-// Floating sparkles
-function FloatingSparkles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[
-        { left: '8%', top: '25%' },
-        { left: '92%', top: '18%' },
-        { left: '12%', top: '65%' },
-        { left: '88%', top: '72%' },
-      ].map((pos, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={pos}
-          animate={{
-            y: [0, -8, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [0.9, 1.1, 0.9],
-          }}
-          transition={{
-            duration: 3 + i * 0.5,
-            repeat: Infinity,
-            delay: i * 0.7,
-            ease: "easeInOut",
-          }}
-        >
-          {i % 2 === 0 ? (
-            <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
-          ) : (
-            <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
-          )}
-        </motion.div>
-      ))}
-    </div>
-  );
+/** Get unique key for React list rendering */
+function getEventKey(event: ChronicleEvent, index: number): string {
+  if (hasValidId(event)) {
+    return `${event.id.timestamp}-${event.id.creationTime}`;
+  }
+  // Fallback for placeholder IDs: use signature + index
+  return `${getEventSignature(event)}-${index}`;
 }
 
-// Connection status indicator
+// ─────────────────────────────────────────────────────────────────────────────
+// Sub-components
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Connection status indicator */
 function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const statusConfig: Record<ConnectionStatus, { color: string; label: string; Icon: typeof Wifi }> = {
     connected: { color: 'text-green-500', label: 'Live', Icon: Wifi },
@@ -154,58 +92,9 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   );
 }
 
-// Get icon and color for event type
-function getEventTypeConfig(type: string): { Icon: typeof UserPlus; color: string; bgColor: string } {
-  const typeMap: Record<string, { Icon: typeof UserPlus; color: string; bgColor: string }> = {
-    member_joined: { Icon: UserPlus, color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    member_left: { Icon: UserMinus, color: 'text-red-400', bgColor: 'bg-red-500/10' },
-    name_change: { Icon: ArrowUpDown, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-    rank_change: { Icon: Award, color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
-    fc_announcement: { Icon: Megaphone, color: 'text-[var(--bento-primary)]', bgColor: 'bg-[var(--bento-primary)]/10' },
-    achievement: { Icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
-  };
-
-  return typeMap[type] || { Icon: HelpCircle, color: 'text-[var(--bento-text-muted)]', bgColor: 'bg-[var(--bento-bg)]' };
-}
-
-// Format relative time
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
-
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHour < 24) return `${diffHour}h ago`;
-  if (diffDay < 7) return `${diffDay}d ago`;
-  
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-// Format full date
-function formatFullDate(dateString: string): string {
-  return new Date(dateString).toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-// Get unique key for an event
-function getEventKey(event: ChronicleEvent): string {
-  return `${event.id.timestamp}-${event.id.creationTime}`;
-}
-
-// Single timeline event card
+/** Single timeline event card */
 function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEvent; isRealtime?: boolean }) {
-  const { Icon, color, bgColor } = getEventTypeConfig(event.type);
+  const { Icon, color, bgColor, label } = getEventTypeConfig(event.type);
   
   return (
     <motion.div
@@ -237,10 +126,10 @@ function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEven
             {/* Event type badge */}
             <div className="flex items-center gap-2 mb-1.5">
               <span className={`
-                px-2 py-0.5 rounded-full text-xs font-soft font-semibold capitalize
+                px-2 py-0.5 rounded-full text-xs font-soft font-semibold
                 ${bgColor} ${color}
               `}>
-                {event.type.replace(/_/g, ' ')}
+                {label}
               </span>
               {isRealtime && (
                 <motion.span
@@ -277,17 +166,9 @@ function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEven
   );
 }
 
-// Content card wrapper
-function ContentCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`
-      bg-[var(--bento-card)]/80 backdrop-blur-sm border border-[var(--bento-primary)]/10
-      rounded-2xl p-6 md:p-8 shadow-lg shadow-[var(--bento-primary)]/5 ${className}
-    `}>
-      {children}
-    </div>
-  );
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Component
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function Chronicle() {
   const [showRealtimeEvents, setShowRealtimeEvents] = useState(true);
@@ -316,15 +197,15 @@ export function Chronicle() {
     return data.pages.flatMap((page) => page.events);
   }, [data]);
 
-  // Create a Set of realtime event keys to filter duplicates from historical
-  const realtimeEventKeys = useMemo(() => {
-    return new Set(realtimeEvents.map(getEventKey));
+  // Create a Set of realtime event signatures to filter duplicates from historical
+  const realtimeEventSignatures = useMemo(() => {
+    return new Set(realtimeEvents.map(getEventSignature));
   }, [realtimeEvents]);
 
   // Filter historical events to exclude any that are also in realtime
   const filteredHistoricalEvents = useMemo(() => {
-    return historicalEvents.filter((event) => !realtimeEventKeys.has(getEventKey(event)));
-  }, [historicalEvents, realtimeEventKeys]);
+    return historicalEvents.filter((event) => !realtimeEventSignatures.has(getEventSignature(event)));
+  }, [historicalEvents, realtimeEventSignatures]);
 
   // Total event count
   const totalCount = realtimeEvents.length + filteredHistoricalEvents.length;
@@ -339,8 +220,8 @@ export function Chronicle() {
     <div className="min-h-screen relative">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <FloatingBackgroundMoogles />
-      <FloatingSparkles />
+      <SimpleFloatingMoogles primarySrc={flyingMoogles} secondarySrc={moogleMail} />
+      <FloatingSparkles minimal />
 
       <div className="relative py-8 md:py-12 px-4 z-10">
         <div className="max-w-4xl mx-auto">
@@ -381,7 +262,7 @@ export function Chronicle() {
               <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
             </p>
 
-            <StoryDivider className="mx-auto" />
+            <StoryDivider className="mx-auto" size="sm" />
           </motion.header>
 
           {/* Controls bar */}
@@ -541,9 +422,9 @@ export function Chronicle() {
                       <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" />
                     </div>
                     
-                    {realtimeEvents.map((event) => (
+                    {realtimeEvents.map((event, index) => (
                       <TimelineEventCard 
-                        key={`rt-${getEventKey(event)}`} 
+                        key={`rt-${getEventKey(event, index)}`} 
                         event={event} 
                         isRealtime 
                       />
@@ -561,9 +442,9 @@ export function Chronicle() {
               </AnimatePresence>
 
               {/* Historical events */}
-              {filteredHistoricalEvents.map((event) => (
+              {filteredHistoricalEvents.map((event, index) => (
                 <TimelineEventCard 
-                  key={`hist-${getEventKey(event)}`} 
+                  key={`hist-${getEventKey(event, index)}`} 
                   event={event} 
                 />
               ))}
@@ -610,7 +491,7 @@ export function Chronicle() {
           {/* Footer */}
           {!isLoading && !isError && totalCount > 0 && (
             <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
-              <StoryDivider className="mx-auto mb-6" />
+              <StoryDivider className="mx-auto mb-6" size="sm" />
               <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
                 <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                 Every moment tells a story, kupo!
