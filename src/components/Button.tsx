@@ -1,4 +1,6 @@
-import { type ReactNode, type ButtonHTMLAttributes } from 'react';
+import { type ReactNode, type ButtonHTMLAttributes, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Sparkles } from 'lucide-react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
@@ -6,10 +8,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   isLoading?: boolean;
   outline?: boolean;
+  fun?: boolean; // Enable extra fun animations
 }
 
 /**
  * Button - KUPO BIT refined button with gradient and ghost variants.
+ * Now with extra moogle magic! ✨
  */
 export function Button({
   variant = 'primary',
@@ -17,10 +21,32 @@ export function Button({
   children,
   isLoading = false,
   outline = false,
+  fun = true,
   className = '',
   disabled,
   ...props
 }: ButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([]);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (fun && !outline && variant === 'primary') {
+      // Create sparkles on hover
+      const newSparkles = Array.from({ length: 3 }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+      }));
+      setSparkles(newSparkles);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setSparkles([]);
+  };
+
   const baseClasses = `
     inline-flex items-center justify-center gap-2
     font-inter font-medium
@@ -28,7 +54,7 @@ export function Button({
     transition-all duration-200
     focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
     disabled:opacity-50 disabled:cursor-not-allowed
-    active:scale-[0.98]
+    cursor-pointer
   `;
 
   const sizeClasses = {
@@ -52,7 +78,6 @@ export function Button({
           text-white
           shadow-md shadow-[var(--bento-primary)]/20
           hover:shadow-lg hover:shadow-[var(--bento-primary)]/30
-          hover:brightness-110
           focus-visible:ring-[var(--bento-primary)]
         `,
         secondary: `
@@ -60,7 +85,6 @@ export function Button({
           text-white
           shadow-md shadow-[var(--bento-secondary)]/20
           hover:shadow-lg hover:shadow-[var(--bento-secondary)]/30
-          hover:brightness-110
           focus-visible:ring-[var(--bento-secondary)]
         `,
         ghost: `
@@ -75,7 +99,6 @@ export function Button({
           text-white
           shadow-md shadow-red-500/20
           hover:shadow-lg hover:shadow-red-500/30
-          hover:brightness-110
           focus-visible:ring-red-500
         `,
         success: `
@@ -83,23 +106,73 @@ export function Button({
           text-white
           shadow-md shadow-green-500/20
           hover:shadow-lg hover:shadow-green-500/30
-          hover:brightness-110
           focus-visible:ring-green-500
         `,
       };
 
   return (
-    <button
-      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+    <motion.button
+      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className} relative overflow-hidden`}
       disabled={disabled || isLoading}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      whileHover={fun ? { 
+        scale: 1.03,
+        y: -2,
+      } : undefined}
+      whileTap={fun ? { 
+        scale: 0.97,
+        y: 0,
+      } : undefined}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 17,
+      }}
       {...props}
     >
+      {/* Shimmer effect on hover */}
+      {fun && !outline && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          initial={{ x: '-100%', opacity: 0 }}
+          animate={isHovered ? { x: '100%', opacity: 0.3 } : { x: '-100%', opacity: 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-white to-transparent skew-x-12" />
+        </motion.div>
+      )}
+
+      {/* Floating sparkles */}
+      <AnimatePresence>
+        {sparkles.map((sparkle) => (
+          <motion.div
+            key={sparkle.id}
+            className="absolute pointer-events-none"
+            style={{ left: `${sparkle.x}%`, top: `${sparkle.y}%` }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0],
+              y: [0, -20],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <Sparkles className="w-3 h-3 text-white/80" />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Loading spinner */}
       {isLoading && (
-        <svg
-          className="animate-spin h-4 w-4"
+        <motion.svg
+          className="h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         >
           <circle
             className="opacity-25"
@@ -114,10 +187,18 @@ export function Button({
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
-        </svg>
+        </motion.svg>
       )}
-      {children}
-    </button>
+      
+      {/* Content with slight bounce on hover */}
+      <motion.span 
+        className="relative z-10 flex items-center gap-2"
+        animate={isHovered && fun ? { y: [0, -1, 0] } : {}}
+        transition={{ duration: 0.3 }}
+      >
+        {children}
+      </motion.span>
+    </motion.button>
   );
 }
 
@@ -128,12 +209,14 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'ghost' | 'primary' | 'secondary';
+  fun?: boolean;
 }
 
 export function IconButton({
   icon,
   size = 'md',
   variant = 'ghost',
+  fun = true,
   className = '',
   ...props
 }: IconButtonProps) {
@@ -150,20 +233,23 @@ export function IconButton({
   };
 
   return (
-    <button
+    <motion.button
       className={`
         inline-flex items-center justify-center
         rounded-xl
-        transition-all duration-200
+        transition-colors duration-200
         focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2
-        active:scale-95
+        cursor-pointer
         ${sizeClasses[size]}
         ${variantClasses[variant]}
         ${className}
       `}
+      whileHover={fun ? { scale: 1.1, rotate: 5 } : undefined}
+      whileTap={fun ? { scale: 0.9, rotate: -5 } : undefined}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       {...props}
     >
       {icon}
-    </button>
+    </motion.button>
   );
 }

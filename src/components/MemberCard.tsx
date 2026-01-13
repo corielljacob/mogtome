@@ -32,10 +32,11 @@ export function MemberCard({ member }: MemberCardProps) {
         rounded-2xl
         overflow-hidden
         shadow-sm
-        hover:shadow-xl hover:shadow-[var(--bento-primary)]/10
+        hover:shadow-lg hover:shadow-[var(--bento-primary)]/10
         dark:hover:shadow-[var(--bento-primary)]/20
-        transition-all duration-300
-        hover:-translate-y-1
+        transition-[transform,box-shadow] duration-200 ease-out
+        hover:-translate-y-0.5
+        will-change-transform
       ">
         {/* Gradient rank banner */}
         <div className={`h-1.5 md:h-2 bg-gradient-to-r ${gradient}`} />
@@ -50,7 +51,8 @@ export function MemberCard({ member }: MemberCardProps) {
           <img
             src={member.avatarLink}
             alt={member.name}
-            className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            className="w-full aspect-square object-cover transition-transform duration-200 ease-out group-hover:scale-[1.02] will-change-transform"
           />
           
           {/* Hover overlay with Lodestone chip */}

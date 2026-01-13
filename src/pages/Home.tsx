@@ -8,7 +8,7 @@ import {
 import { Button } from '../components/Button';
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.gif';
 import jugglingMoogle from '../assets/moogles/final-fantasy-artemicion-moogle-amigurumi-on-storenvy-juggling-performer-bubble-transparent-png-2074996.png';
-import happyMoogle from '../assets/moogles/kupo-moogle-moon-nature-pillow-cushion-transparent-png-1962056.png';
+import moogleMail from '../assets/moogles/moogle mail.png';
 import moogleWithPig from '../assets/moogles/moogle with pig thing.png';
 import wizardMoogle from '../assets/moogles/wizard moogle.png';
 import flyingMoogles from '../assets/moogles/moogles flying.png';
@@ -295,7 +295,7 @@ export function Home() {
                 quote: 'Memories are treasures, kupo!',
                 quoteColor: 'text-[var(--bento-secondary)]',
                 quoteIcon: Star,
-                moogle: happyMoogle,
+                moogle: moogleMail,
               },
               {
                 icon: Compass,

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2 } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.png';
+import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.gif';
 
 // Quirky snappy toggle - bouncy flip matching navbar style
 function ThemeToggleButton() {
@@ -24,7 +25,7 @@ function ThemeToggleButton() {
   return (
     <motion.button
       onClick={() => setIsDark((prev) => !prev)}
-      className="relative w-9 h-9 rounded-xl bg-[var(--bento-bg)]/60 dark:bg-slate-800/40 border border-[var(--bento-border)]"
+      className="relative w-9 h-9 rounded-xl bg-[var(--bento-bg)]/60 dark:bg-slate-800/40 border border-[var(--bento-border)] cursor-pointer"
       style={{ perspective: 600 }}
       aria-label="Toggle theme"
       whileHover={{ scale: 1.1, rotate: 3 }}
@@ -133,9 +134,26 @@ function LogoIcon({ hovered = false }: { hovered?: boolean }) {
 }
 
 
-// Whimsical "kupo!" badge with occasional wiggle
+// Fun kupo phrases for the easter egg
+const kupoEasterEggPhrases = [
+  "Kupo kupo kupo~! ✨",
+  "You found me, kupo! 💕",
+  "Pom-pom power! 🎀",
+  "That tickles, kupo~! 🌟",
+  "Moogle magic! ✨",
+  "Best friends forever~! 💕",
+  "You're my favorite, kupo! 💖",
+  "*wiggles pom-pom* ✨",
+  "Kupopopo~! 🎵",
+  "Secret moogle club! 🤫",
+];
+
+// Whimsical "kupo!" badge with occasional wiggle and easter egg
 function KupoBadge() {
   const [wiggleKey, setWiggleKey] = useState(0);
+  const [isActivated, setIsActivated] = useState(false);
+  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [easterEggPhrase, setEasterEggPhrase] = useState("");
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -144,26 +162,161 @@ function KupoBadge() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleClick = () => {
+    // Pick a random phrase
+    const randomPhrase = kupoEasterEggPhrases[Math.floor(Math.random() * kupoEasterEggPhrases.length)];
+    setEasterEggPhrase(randomPhrase);
+    setIsActivated(true);
+    
+    // Create sparkles burst - spread around
+    const newSparkles = Array.from({ length: 8 }, (_, i) => ({
+      id: Date.now() + i,
+      x: (Math.random() - 0.5) * 200,
+      y: (Math.random() - 0.5) * 100 + 40,
+      delay: Math.random() * 0.3,
+    }));
+    setSparkles(newSparkles);
+    
+    // Reset after animation
+    setTimeout(() => {
+      setIsActivated(false);
+      setSparkles([]);
+    }, 3500);
+  };
+
   return (
-    <motion.div 
-      key={wiggleKey}
-      className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-400/20 dark:border-pink-500/20 shadow-sm shadow-pink-500/10 cursor-default"
-      initial={wiggleKey > 0 ? { rotate: 0 } : false}
-      animate={wiggleKey > 0 ? { 
-        rotate: [0, -5, 4, -3, 2, -1, 0],
-      } : {}}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      whileHover={{ scale: 1.05 }}
-    >
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+    <div className="relative">
+      {/* Easter egg popup with Pusheen & Moogle gif */}
+      <AnimatePresence>
+        {isActivated && (
+          <motion.div
+            className="absolute top-full mt-4 right-0 z-50"
+            initial={{ opacity: 0, scale: 0.5, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            {/* Card container */}
+            <div className="relative bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl shadow-pink-500/20 border border-pink-200 dark:border-pink-500/30">
+              {/* Little tail pointing up */}
+              <div className="absolute -top-2 right-6 w-4 h-4 bg-white dark:bg-slate-800 rotate-45 border-l border-t border-pink-200 dark:border-pink-500/30" />
+              
+              {/* Pusheen & Moogle gif */}
+              <motion.div
+                className="relative"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src={pusheenMoogle} 
+                  alt="Pusheen and Moogle being best friends" 
+                  className="w-28 h-28 object-contain"
+                />
+              </motion.div>
+              
+              {/* Speech bubble with phrase */}
+              <motion.div 
+                className="mt-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-accent text-sm text-center whitespace-nowrap shadow-lg"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {easterEggPhrase}
+              </motion.div>
+              
+              {/* Floating hearts around the card */}
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute pointer-events-none"
+                  style={{ 
+                    left: `${20 + i * 30}%`, 
+                    top: '10%',
+                  }}
+                  animate={{ 
+                    y: [0, -15, 0],
+                    opacity: [0.6, 1, 0.6],
+                    scale: [0.8, 1, 0.8],
+                  }}
+                  transition={{ 
+                    duration: 1.5 + i * 0.3, 
+                    repeat: Infinity, 
+                    delay: i * 0.2,
+                    ease: "easeInOut" 
+                  }}
+                >
+                  <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Sparkles burst */}
+      <AnimatePresence>
+        {sparkles.map((sparkle) => (
+          <motion.div
+            key={sparkle.id}
+            className="absolute top-1/2 left-1/2 pointer-events-none z-40"
+            initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
+            animate={{ 
+              x: sparkle.x, 
+              y: sparkle.y, 
+              scale: [0, 1.2, 0],
+              opacity: [1, 1, 0],
+              rotate: [0, 180, 360],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 1, 
+              delay: sparkle.delay,
+              ease: "easeOut" 
+            }}
+          >
+            {Math.random() > 0.5 ? (
+              <Sparkles className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />
+            )}
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Main badge */}
+      <motion.button 
+        key={wiggleKey}
+        onClick={handleClick}
+        className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-400/20 dark:border-pink-500/20 shadow-sm shadow-pink-500/10 cursor-pointer select-none"
+        initial={wiggleKey > 0 ? { rotate: 0 } : false}
+        animate={isActivated ? { 
+          scale: [1, 1.2, 0.9, 1.1, 1],
+          rotate: [0, -10, 10, -5, 0],
+        } : wiggleKey > 0 ? { 
+          rotate: [0, -5, 4, -3, 2, -1, 0],
+        } : {}}
+        transition={{ duration: isActivated ? 0.5 : 0.5, ease: "easeInOut" }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
-      </motion.div>
-      <span className="font-accent text-base text-pink-600 dark:text-pink-400 leading-none">kupo!</span>
-      <Wand2 className="w-3 h-3 text-pink-400/60" />
-    </motion.div>
+        <motion.div
+          animate={isActivated ? { 
+            scale: [1, 1.5, 1],
+            rotate: [0, 360],
+          } : { scale: [1, 1.2, 1] }}
+          transition={isActivated ? { duration: 0.5 } : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
+        </motion.div>
+        <span className="font-accent text-base text-pink-600 dark:text-pink-400 leading-none">kupo!</span>
+        <motion.div
+          animate={isActivated ? { rotate: [0, 360] } : {}}
+          transition={{ duration: 0.5 }}
+        >
+          <Wand2 className="w-3 h-3 text-pink-400/60" />
+        </motion.div>
+      </motion.button>
+    </div>
   );
 }
 
