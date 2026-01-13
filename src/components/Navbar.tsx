@@ -1,9 +1,47 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2 } from 'lucide-react';
+import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2, Star } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
+
+// Floating navbar sparkles for whimsy
+function NavbarSparkles() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {[
+        { left: '10%', top: '20%', delay: 0 },
+        { left: '25%', top: '60%', delay: 0.5 },
+        { left: '70%', top: '30%', delay: 1 },
+        { left: '85%', top: '50%', delay: 1.5 },
+        { left: '50%', top: '25%', delay: 2 },
+      ].map((pos, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ left: pos.left, top: pos.top }}
+          animate={{
+            y: [0, -4, 0],
+            opacity: [0.2, 0.5, 0.2],
+            scale: [0.8, 1, 0.8],
+          }}
+          transition={{
+            duration: 3 + i * 0.3,
+            repeat: Infinity,
+            delay: pos.delay,
+            ease: "easeInOut",
+          }}
+        >
+          {i % 2 === 0 ? (
+            <Sparkles className="w-3 h-3 text-[var(--bento-primary)]/40" />
+          ) : (
+            <Star className="w-2.5 h-2.5 text-[var(--bento-secondary)]/30 fill-[var(--bento-secondary)]/30" />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
 
 // Quirky snappy toggle - bouncy flip matching navbar style
 function ThemeToggleButton() {
@@ -25,10 +63,10 @@ function ThemeToggleButton() {
   return (
     <motion.button
       onClick={() => setIsDark((prev) => !prev)}
-      className="relative w-9 h-9 rounded-xl bg-[var(--bento-bg)]/60 dark:bg-slate-800/40 border border-[var(--bento-border)] cursor-pointer"
+      className="relative w-9 h-9 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm"
       style={{ perspective: 600 }}
       aria-label="Toggle theme"
-      whileHover={{ scale: 1.1, rotate: 3 }}
+      whileHover={{ scale: 1.1, rotate: 5 }}
       whileTap={{ scale: 0.9 }}
     >
       {/* The flipper */}
@@ -38,17 +76,17 @@ function ThemeToggleButton() {
         animate={{ rotateY: isDark ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 800, damping: 30 }}
       >
-        {/* Sun face (front) - warm coral/pink from theme */}
+        {/* Sun face (front) */}
         <div 
-          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-primary)] to-pink-500"
+          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-accent)]"
           style={{ backfaceVisibility: "hidden" }}
         >
           <Sun className="w-4 h-4 text-white" />
         </div>
         
-        {/* Moon face (back) - cool purple from theme */}
+        {/* Moon face (back) */}
         <div 
-          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-secondary)] to-violet-600"
+          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-secondary)] to-[var(--bento-text-muted)]"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <Moon className="w-4 h-4 text-white" />
@@ -80,16 +118,16 @@ function FloatingPom({ isHovered }: { isHovered: boolean }) {
       <div className="relative">
         {/* Pom glow */}
         <motion.div 
-          className="absolute inset-0 rounded-full bg-pink-400/40 blur-sm"
-          animate={{ scale: [1, 1.2, 1] }}
+          className="absolute inset-0 rounded-full bg-[var(--bento-primary)]/40 blur-sm"
+          animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
         {/* Main pom */}
-        <div className="relative w-5 h-5 rounded-full bg-gradient-to-br from-red-400 via-pink-500 to-rose-600 border-2 border-white dark:border-slate-800 shadow-lg shadow-pink-500/30">
+        <div className="relative w-5 h-5 rounded-full bg-gradient-to-br from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-primary)] border-2 border-[var(--bento-card)] shadow-lg shadow-[var(--bento-primary)]/30">
           <div className="absolute top-0.5 left-1 w-2 h-1.5 rounded-full bg-white/40" />
         </div>
         {/* Tiny antenna line */}
-        <div className="absolute -bottom-1 left-1/2 w-px h-2 bg-gradient-to-b from-slate-400 to-transparent -translate-x-1/2" />
+        <div className="absolute -bottom-1 left-1/2 w-px h-2 bg-gradient-to-b from-[var(--bento-text-subtle)] to-transparent -translate-x-1/2" />
       </div>
     </motion.div>
   );
@@ -116,12 +154,15 @@ function LogoIcon({ hovered = false }: { hovered?: boolean }) {
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         {/* Inner white container */}
-        <div className="w-9 h-9 rounded-xl bg-white/95 dark:bg-slate-100 flex items-center justify-center overflow-hidden">
+        <div className="w-9 h-9 rounded-xl bg-[var(--bento-card)] flex items-center justify-center overflow-hidden">
           <motion.img 
             src={lilGuyMoogle} 
             alt="MogTome" 
             className="w-8 h-8 object-contain"
-            animate={{ scale: hovered ? 1.1 : 1 }}
+            animate={{ 
+              scale: hovered ? 1.1 : 1,
+              y: hovered ? -2 : 0,
+            }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           />
         </div>
@@ -163,12 +204,10 @@ function KupoBadge() {
   }, []);
 
   const handleClick = () => {
-    // Pick a random phrase
     const randomPhrase = kupoEasterEggPhrases[Math.floor(Math.random() * kupoEasterEggPhrases.length)];
     setEasterEggPhrase(randomPhrase);
     setIsActivated(true);
     
-    // Create sparkles burst - spread around
     const newSparkles = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
       x: (Math.random() - 0.5) * 200,
@@ -178,7 +217,6 @@ function KupoBadge() {
     }));
     setSparkles(newSparkles);
     
-    // Reset after animation
     setTimeout(() => {
       setIsActivated(false);
       setSparkles([]);
@@ -187,7 +225,7 @@ function KupoBadge() {
 
   return (
     <div className="relative">
-      {/* Easter egg popup with Pusheen & Moogle gif */}
+      {/* Easter egg popup */}
       <AnimatePresence>
         {isActivated && (
           <motion.div
@@ -197,12 +235,9 @@ function KupoBadge() {
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            {/* Card container */}
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl shadow-pink-500/20 border border-pink-200 dark:border-pink-500/30">
-              {/* Little tail pointing up */}
-              <div className="absolute -top-2 right-6 w-4 h-4 bg-white dark:bg-slate-800 rotate-45 border-l border-t border-pink-200 dark:border-pink-500/30" />
+            <div className="relative bg-[var(--bento-card)] rounded-2xl p-4 shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/20">
+              <div className="absolute -top-2 right-6 w-4 h-4 bg-[var(--bento-card)] rotate-45 border-l border-t border-[var(--bento-primary)]/20" />
               
-              {/* Pusheen & Moogle gif */}
               <motion.div
                 className="relative"
                 animate={{ y: [0, -3, 0] }}
@@ -215,9 +250,8 @@ function KupoBadge() {
                 />
               </motion.div>
               
-              {/* Speech bubble with phrase */}
               <motion.div 
-                className="mt-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-accent text-sm text-center whitespace-nowrap shadow-lg"
+                className="mt-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-accent text-sm text-center whitespace-nowrap shadow-lg"
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -225,15 +259,11 @@ function KupoBadge() {
                 {easterEggPhrase}
               </motion.div>
               
-              {/* Floating hearts around the card */}
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
                   className="absolute pointer-events-none"
-                  style={{ 
-                    left: `${20 + i * 30}%`, 
-                    top: '10%',
-                  }}
+                  style={{ left: `${20 + i * 30}%`, top: '10%' }}
                   animate={{ 
                     y: [0, -15, 0],
                     opacity: [0.6, 1, 0.6],
@@ -246,7 +276,7 @@ function KupoBadge() {
                     ease: "easeInOut" 
                   }}
                 >
-                  <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />
+                  <Heart className="w-3 h-3 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                 </motion.div>
               ))}
             </div>
@@ -269,16 +299,12 @@ function KupoBadge() {
               rotate: [0, 180, 360],
             }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 1, 
-              delay: sparkle.delay,
-              ease: "easeOut" 
-            }}
+            transition={{ duration: 1, delay: sparkle.delay, ease: "easeOut" }}
           >
             {sparkle.type === 'sparkle' ? (
-              <Sparkles className="w-4 h-4 text-amber-400" />
+              <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
             ) : (
-              <Heart className="w-3 h-3 text-pink-400 fill-pink-400" />
+              <Heart className="w-3 h-3 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
             )}
           </motion.div>
         ))}
@@ -288,7 +314,7 @@ function KupoBadge() {
       <motion.button 
         key={wiggleKey}
         onClick={handleClick}
-        className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-400/20 dark:border-pink-500/20 shadow-sm shadow-pink-500/10 cursor-pointer select-none"
+        className="hidden lg:flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/20 shadow-md shadow-[var(--bento-primary)]/10 cursor-pointer select-none"
         initial={wiggleKey > 0 ? { rotate: 0 } : false}
         animate={isActivated ? { 
           scale: [1, 1.2, 0.9, 1.1, 1],
@@ -297,7 +323,7 @@ function KupoBadge() {
           rotate: [0, -5, 4, -3, 2, -1, 0],
         } : {}}
         transition={{ duration: isActivated ? 0.5 : 0.5, ease: "easeInOut" }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.08, y: -2 }}
         whileTap={{ scale: 0.95 }}
       >
         <motion.div
@@ -307,14 +333,14 @@ function KupoBadge() {
           } : { scale: [1, 1.2, 1] }}
           transition={isActivated ? { duration: 0.5 } : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
+          <Heart className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
         </motion.div>
-        <span className="font-accent text-base text-pink-600 dark:text-pink-400 leading-none">kupo!</span>
+        <span className="font-accent text-lg text-[var(--bento-primary)] leading-none">kupo!</span>
         <motion.div
-          animate={isActivated ? { rotate: [0, 360] } : {}}
-          transition={{ duration: 0.5 }}
+          animate={isActivated ? { rotate: [0, 360] } : { rotate: [0, 10, -10, 0] }}
+          transition={isActivated ? { duration: 0.5 } : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Wand2 className="w-3 h-3 text-pink-400/60" />
+          <Wand2 className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
         </motion.div>
       </motion.button>
     </div>
@@ -328,19 +354,26 @@ export function Navbar() {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
   const navItems = [
-    { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles, color: 'amber' },
-    { path: '/members', label: 'Family', icon: Users, accentIcon: Heart, color: 'pink' },
+    { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
+    { path: '/members', label: 'Family', icon: Users, accentIcon: Heart },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="sticky top-0 z-50 transition-all duration-300">
-      {/* Soft gradient backdrop */}
-      <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl" />
+      {/* Storybook-style backdrop with warmth */}
+      <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       
-      {/* Subtle bottom border with gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent" />
+      {/* Floating whimsical sparkles */}
+      <NavbarSparkles />
+      
+      {/* Decorative top line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--bento-primary)]/30 to-transparent" />
+      
+      {/* Bottom border with storybook style */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
       
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[4.5rem]">
@@ -355,31 +388,37 @@ export function Navbar() {
             
             <div className="hidden sm:block">
               <div className="flex items-baseline gap-0.5">
-                <span className={`
-                  font-display font-bold text-xl 
-                  text-[var(--bento-text)] 
-                  transition-all duration-300
-                  ${logoHovered ? 'text-[var(--bento-primary)]' : ''}
-                `}>
+                <motion.span 
+                  className="font-display font-bold text-xl text-[var(--bento-text)]"
+                  animate={{ color: logoHovered ? 'var(--bento-primary)' : 'var(--bento-text)' }}
+                  transition={{ duration: 0.2 }}
+                >
                   Mog
-                </span>
-                <span className="font-display font-bold text-xl bg-gradient-to-r from-[var(--bento-primary)] via-pink-500 to-[var(--bento-secondary)] bg-clip-text text-transparent pb-0.5">
+                </motion.span>
+                <span className="font-display font-bold text-xl bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent pb-0.5">
                   Tome
                 </span>
               </div>
-              {/* Subtle tagline on hover */}
-              <span className={`
-                block text-xs font-accent text-[var(--bento-text-subtle)]
-                transition-all duration-300 overflow-hidden
-                ${logoHovered ? 'max-h-4 opacity-100' : 'max-h-0 opacity-0'}
-              `}>
-                ✨ Where moogles gather
-              </span>
+              {/* Storybook tagline on hover */}
+              <motion.span 
+                className="block text-xs font-accent text-[var(--bento-secondary)]"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ 
+                  height: logoHovered ? 'auto' : 0, 
+                  opacity: logoHovered ? 1 : 0 
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                ~ Where moogles gather ~
+              </motion.span>
             </div>
           </Link>
 
-          {/* Desktop nav - cloud-like container */}
-          <div className="hidden md:flex items-center gap-1 bg-[var(--bento-bg)]/60 dark:bg-slate-800/40 px-2 py-1.5 rounded-2xl border border-[var(--bento-border)]">
+          {/* Desktop nav - storybook styled */}
+          <div className="hidden md:flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5">
+            {/* Decorative star on left */}
+            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" />
+            
             {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
               const active = isActive(path);
               const hovered = hoveredNav === path;
@@ -393,17 +432,18 @@ export function Navbar() {
                   className={`
                     relative flex items-center gap-2.5 px-4 py-2 rounded-xl
                     font-soft text-sm font-semibold
-                    transition-colors duration-200
+                    transition-all duration-200
                     ${active
-                      ? 'bg-white dark:bg-slate-700 text-[var(--bento-primary)] shadow-sm'
-                      : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                      ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] shadow-sm border border-[var(--bento-primary)]/10'
+                      : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/50'
                     }
                   `}
                 >
                   <motion.div
                     animate={{ 
-                      scale: hovered && !active ? 1.15 : 1,
-                      rotate: hovered && !active ? -8 : 0
+                      scale: hovered && !active ? 1.2 : 1,
+                      rotate: hovered && !active ? -10 : 0,
+                      y: hovered && !active ? -2 : 0,
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
@@ -414,7 +454,7 @@ export function Navbar() {
                     {label}
                     {/* Animated underline on active */}
                     <motion.span 
-                      className="absolute -bottom-0.5 left-0 h-0.5 rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]"
+                      className="absolute -bottom-0.5 left-0 h-[2px] rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]"
                       initial={false}
                       animate={{ width: active ? "100%" : "0%" }}
                       transition={{ duration: 0.3, ease: "easeOut" }}
@@ -424,21 +464,25 @@ export function Navbar() {
                   {/* Floating accent icon on hover */}
                   {!active && (
                     <motion.div
-                      className="absolute -top-2 right-1 pointer-events-none"
-                      initial={{ opacity: 0, scale: 0, rotate: -20 }}
+                      className="absolute -top-3 right-0 pointer-events-none"
+                      initial={{ opacity: 0, scale: 0, rotate: -20, y: 5 }}
                       animate={{ 
                         opacity: hovered ? 1 : 0, 
                         scale: hovered ? 1 : 0,
-                        rotate: hovered ? 12 : -20
+                        rotate: hovered ? 15 : -20,
+                        y: hovered ? 0 : 5,
                       }}
                       transition={{ type: "spring", stiffness: 500, damping: 20 }}
                     >
-                      <AccentIcon className="w-3 h-3 text-[var(--bento-secondary)]" />
+                      <AccentIcon className="w-4 h-4 text-[var(--bento-secondary)]" />
                     </motion.div>
                   )}
                 </Link>
               );
             })}
+            
+            {/* Decorative star on right */}
+            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" />
           </div>
 
           {/* Right-side controls */}
@@ -449,7 +493,8 @@ export function Navbar() {
             {/* Mobile menu button */}
             <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative p-2.5 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] bg-[var(--bento-bg)]/50 hover:bg-[var(--bento-bg)] transition-colors"
+              className="md:hidden relative p-2.5 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors"
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -479,7 +524,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu - animated with Framer Motion */}
+        {/* Mobile menu */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div 
@@ -489,7 +534,7 @@ export function Navbar() {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <div className="py-4 border-t border-[var(--bento-border)]">
+              <div className="py-4 border-t border-[var(--bento-primary)]/10">
                 <div className="space-y-2">
                   {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }, index) => (
                     <motion.div
@@ -504,10 +549,10 @@ export function Navbar() {
                         className={`
                           flex items-center justify-between px-4 py-4 rounded-2xl
                           font-soft text-base font-semibold
-                          transition-colors duration-200
+                          transition-all duration-200
                           active:scale-[0.98]
                           ${isActive(path)
-                            ? 'bg-gradient-to-r from-[var(--bento-primary)]/10 to-[var(--bento-secondary)]/10 text-[var(--bento-primary)]'
+                            ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] border border-[var(--bento-primary)]/10'
                             : 'text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)]'
                           }
                         `}
@@ -530,19 +575,19 @@ export function Navbar() {
                   ))}
                 </div>
                 
-                {/* Mobile footer message */}
+                {/* Mobile footer - storybook style */}
                 <motion.div 
-                  className="mt-6 pt-4 border-t border-[var(--bento-border)]"
+                  className="mt-6 pt-4 border-t border-[var(--bento-primary)]/10"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <div className="flex items-center justify-center gap-2 py-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span className="font-accent text-lg text-[var(--bento-text-subtle)]">
-                      Happy adventuring, kupo!
+                  <div className="flex items-center justify-center gap-3 py-2">
+                    <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+                    <span className="font-accent text-xl text-[var(--bento-secondary)]">
+                      ~ Happy adventuring, kupo! ~
                     </span>
-                    <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                    <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                   </div>
                 </motion.div>
               </div>

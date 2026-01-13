@@ -1,56 +1,160 @@
-import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Users, Heart, ArrowRight, Sparkles, Star, 
-  Compass, Feather, BookOpen, Gift
-} from 'lucide-react';
+import { Users, Heart, ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '../components/Button';
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
-import jugglingMoogle from '../assets/moogles/final-fantasy-artemicion-moogle-amigurumi-on-storenvy-juggling-performer-bubble-transparent-png-2074996.webp';
-import moogleMail from '../assets/moogles/moogle mail.webp';
-import moogleWithPig from '../assets/moogles/moogle with pig thing.webp';
+
+// Rotating kupo quotes
+const kupoQuotes = [
+  "Welcome home, kupo!",
+  "Good to see you, kupo~",
+  "Ready for adventure, kupo?",
+  "Stay cozy, kupo!",
+  "You look great today, kupo!",
+  "Let's have fun, kupo~",
+  "Glad you're here, kupo!",
+];
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
-import footerMoogle from '../assets/moogles/lil guy moogle.webp';
+import musicMoogle from '../assets/moogles/moogle playing music.webp';
+import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
-// Rotating set of moogle one-liners
-const kupoQuotes = [
-  { text: "Welcome, kupo!", icon: Sparkles },
-  { text: "Good to see you, kupo~", icon: Heart },
-  { text: "Let's have fun, kupo!", icon: Star },
-  { text: "Adventure awaits, kupo!", icon: Compass },
-  { text: "Stay cozy, kupo~", icon: Feather },
+// Hand-drawn style decorative divider - punchy colors
+function StoryDivider({ className = '' }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 200 20" 
+      className={`w-56 md:w-72 h-6 ${className}`}
+      fill="none"
+    >
+      <path 
+        d="M10 10 Q 30 5, 50 10 T 90 10 T 130 10 T 170 10 T 190 10" 
+        stroke="currentColor" 
+        strokeWidth="2.5" 
+        strokeLinecap="round"
+        className="text-[var(--bento-primary)]/60"
+      />
+      {/* Little decorative dots - punchy colors */}
+      <circle cx="100" cy="10" r="5" className="fill-[var(--bento-secondary)]" />
+      <circle cx="76" cy="8" r="3" className="fill-[var(--bento-primary)]/70" />
+      <circle cx="124" cy="8" r="3" className="fill-[var(--bento-primary)]/70" />
+      <circle cx="55" cy="10" r="2" className="fill-[var(--bento-secondary)]/60" />
+      <circle cx="145" cy="10" r="2" className="fill-[var(--bento-secondary)]/60" />
+    </svg>
+  );
+}
+
+// Floating background moogles - more visible
+const floatingMoogles = [
+  { src: wizardMoogle, position: 'top-16 left-4 md:left-16', size: 'w-24 md:w-36', rotate: -12, delay: 0 },
+  { src: flyingMoogles, position: 'top-24 right-0 md:right-8', size: 'w-32 md:w-48', rotate: 8, delay: 0.5 },
+  { src: musicMoogle, position: 'bottom-32 left-4 md:left-20', size: 'w-20 md:w-32', rotate: 6, delay: 1 },
+  { src: lilGuyMoogle, position: 'bottom-20 right-8 md:right-24', size: 'w-18 md:w-28', rotate: -8, delay: 1.5 },
 ];
 
-// Reusable card component for this page
-function FeatureCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function FloatingBackgroundMoogles() {
   return (
-    <div className={`
-      bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm
-      border border-[var(--bento-border)] rounded-2xl
-      p-6 md:p-8 shadow-sm
-      hover:shadow-xl hover:shadow-[var(--bento-primary)]/5
-      transition-all duration-300
-      ${className}
-    `}>
-      {children}
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {floatingMoogles.map((moogle, i) => (
+        <motion.img
+          key={i}
+          src={moogle.src}
+          alt=""
+          aria-hidden
+          className={`absolute ${moogle.position} ${moogle.size} object-contain`}
+          style={{ rotate: `${moogle.rotate}deg` }}
+          initial={{ opacity: 0 }}
+          animate={{ 
+            opacity: [0.15, 0.25, 0.15],
+            y: [0, -15, 0],
+          }}
+          transition={{
+            opacity: { duration: 4, repeat: Infinity, delay: moogle.delay },
+            y: { duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: moogle.delay },
+          }}
+        />
+      ))}
     </div>
   );
 }
 
-// Subtle decorative moogle for background
-function DecorativeMoogle({ src, className = '' }: { src: string; className?: string }) {
+// Floating sparkle accents - positioned around edges, away from center content
+function FloatingSparkles() {
+  const sparkleData = [
+    { left: '5%', top: '12%', size: 'w-4 h-4', color: 'text-[var(--bento-primary)]' },
+    { left: '92%', top: '18%', size: 'w-5 h-5', color: 'text-[var(--bento-secondary)]' },
+    { left: '8%', top: '75%', size: 'w-4 h-4', color: 'text-[var(--bento-secondary)]' },
+    { left: '88%', top: '70%', size: 'w-5 h-5', color: 'text-[var(--bento-primary)]' },
+    { left: '15%', top: '45%', size: 'w-3 h-3', color: 'text-[var(--bento-accent)]' },
+    { left: '18%', top: '88%', size: 'w-4 h-4', color: 'text-[var(--bento-accent)]' },
+    { left: '82%', top: '85%', size: 'w-3 h-3', color: 'text-[var(--bento-primary)]' },
+    { left: '3%', top: '35%', size: 'w-4 h-4', color: 'text-[var(--bento-secondary)]' },
+  ];
+
   return (
-    <motion.img
-      src={src}
-      alt=""
-      aria-hidden
-      className={`absolute pointer-events-none select-none ${className}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 0.06 }}
-      transition={{ duration: 1.5 }}
-    />
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {sparkleData.map((sparkle, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ left: sparkle.left, top: sparkle.top }}
+          animate={{
+            y: [0, -10, 0],
+            opacity: [0.4, 0.8, 0.4],
+            scale: [0.9, 1.1, 0.9],
+            rotate: [0, 10, 0],
+          }}
+          transition={{
+            duration: 3 + i * 0.3,
+            repeat: Infinity,
+            delay: i * 0.5,
+            ease: "easeInOut",
+          }}
+        >
+          {i % 3 === 0 ? (
+            <Star className={`${sparkle.size} ${sparkle.color} fill-current`} />
+          ) : (
+            <Sparkles className={`${sparkle.size} ${sparkle.color}`} />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// Decorative corner flourishes - more visible
+function CornerFlourish({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
+  const positionClasses = {
+    'top-left': 'top-3 left-3',
+    'top-right': 'top-3 right-3 scale-x-[-1]',
+    'bottom-left': 'bottom-3 left-3 scale-y-[-1]',
+    'bottom-right': 'bottom-3 right-3 scale-[-1]',
+  };
+
+  return (
+    <svg 
+      className={`absolute ${positionClasses[position]} w-14 h-14 md:w-20 md:h-20`}
+      viewBox="0 0 50 50" 
+      fill="none"
+    >
+      <path 
+        d="M5 45 Q5 5 45 5" 
+        stroke="currentColor" 
+        strokeWidth="2.5" 
+        strokeLinecap="round"
+        className="text-[var(--bento-primary)]/30"
+      />
+      <circle cx="45" cy="5" r="4" className="fill-[var(--bento-secondary)]/50" />
+      <path 
+        d="M10 40 Q10 15 35 10" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round"
+        className="text-[var(--bento-secondary)]/35"
+      />
+      <circle cx="5" cy="45" r="2.5" className="fill-[var(--bento-primary)]/40" />
+    </svg>
   );
 }
 
@@ -59,349 +163,210 @@ export function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setQuoteIndex((i) => (i + 1) % kupoQuotes.length);
+      setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const currentQuote = kupoQuotes[quoteIndex];
-  const QuoteIcon = currentQuote.icon;
-
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Subtle decorative moogles in background */}
-      <DecorativeMoogle 
-        src={flyingMoogles} 
-        className="w-40 md:w-56 top-32 -right-8 md:right-8 rotate-12 opacity-[0.08] dark:opacity-[0.04]" 
-      />
-      <DecorativeMoogle 
-        src={wizardMoogle} 
-        className="w-24 md:w-32 bottom-[20%] -left-4 md:left-8 -rotate-6 opacity-[0.08] dark:opacity-[0.04]" 
-      />
+    <div className="min-h-[calc(100vh-4.5rem)] flex flex-col relative">
+      {/* Warm gradient overlay - more visible */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
+      
+      {/* Floating background moogles */}
+      <FloatingBackgroundMoogles />
+      
+      {/* Floating sparkles */}
+      <FloatingSparkles />
 
-      {/* Hero with rotating quote */}
-      <section className="relative py-12 md:py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center relative">
-          {/* Moogle mascot with speech bubble */}
+      {/* Main content with decorative frame */}
+      <section className="flex-1 flex items-center justify-center px-4 py-8 md:py-16 relative z-10">
+        <div className="relative max-w-2xl mx-auto">
+          {/* Decorative frame card */}
           <motion.div 
-            className="flex items-center justify-center gap-1 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="relative bg-[var(--bento-card)]/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-[var(--bento-primary)]/10 shadow-xl shadow-[var(--bento-primary)]/5"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
           >
-            {/* Animated Moogle with floating effect */}
-            <motion.div 
-              className="relative flex-shrink-0"
-              animate={{ 
-                y: [0, -8, 0],
-              }}
-              transition={{ 
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              {/* Soft glow behind moogle */}
-              <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/20 via-transparent to-transparent blur-xl scale-150" />
-              <img 
-                src={welcomingMoogle} 
-                alt="Welcoming moogle" 
-                className="relative w-24 md:w-32 lg:w-36 drop-shadow-xl"
-              />
-            </motion.div>
+            {/* Corner flourishes */}
+            <CornerFlourish position="top-left" />
+            <CornerFlourish position="top-right" />
+            <CornerFlourish position="bottom-left" />
+            <CornerFlourish position="bottom-right" />
 
-            {/* Polished speech bubble with improved design */}
-            <motion.div 
-              className="relative"
-              initial={{ scale: 0.9, opacity: 0, x: -10 }}
-              animate={{ scale: 1, opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
-            >
-              {/* Outer glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 rounded-3xl blur-md" />
-              
-              {/* Fixed width container to prevent jumping */}
-              <div className="relative bg-white dark:bg-slate-800 border border-[var(--bento-primary)]/15 dark:border-[var(--bento-primary)]/25 rounded-2xl px-5 md:px-6 py-3 shadow-xl shadow-[var(--bento-primary)]/10 min-w-[200px] md:min-w-[260px]">
-                {/* Inner gradient overlay */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white via-transparent to-[var(--bento-primary)]/5 dark:from-slate-700/50 dark:to-transparent pointer-events-none" />
-                
-                {/* Speech bubble tail - curved style */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2">
-                  <svg 
-                    className="w-4 h-6 -ml-3 drop-shadow-sm" 
-                    viewBox="0 0 16 24" 
-                    fill="none"
-                  >
-                    <path 
-                      d="M16 12C16 12 8 10 4 6C0 2 0 0 0 0C0 0 2 8 2 12C2 16 0 24 0 24C0 24 0 22 4 18C8 14 16 12 16 12Z" 
-                      className="fill-white dark:fill-slate-800"
-                    />
-                  </svg>
-                </div>
-                
-                {/* Rotating quote content - centered */}
-                <AnimatePresence mode="wait">
-                  <motion.div 
-                    key={quoteIndex}
-                    className="flex items-center justify-center gap-2.5 relative z-10"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      key={`icon-${quoteIndex}`}
-                    >
-                      <QuoteIcon className="w-5 h-5 md:w-6 md:h-6 text-[var(--bento-primary)] flex-shrink-0" />
-                    </motion.div>
-                    <span className="font-accent text-lg md:text-xl text-[var(--bento-text)] whitespace-nowrap">
-                      {currentQuote.text}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Main heading with improved typography */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6">
-            <motion.span 
-              className="text-[var(--bento-text)] block mb-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              Welcome to
-            </motion.span>
-            <motion.span 
-              className="relative inline-block"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-pink-500 to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                MogTome
-              </span>
-              {/* Decorative sparkle */}
-              <span className="absolute -top-1 -right-6 md:-right-8">
-                <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-amber-400 drop-shadow-sm" />
-              </span>
-            </motion.span>
-          </h1>
-
-          {/* Subtitle */}
-          <motion.p 
-            className="text-base md:text-lg text-[var(--bento-text-muted)] font-soft max-w-2xl mx-auto mb-4 leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Your cozy corner of Eorzea where moogles gather, 
-            adventures are shared, and everyone's welcome!
-          </motion.p>
-          
-          {/* Fun tagline with decorative line */}
-          <motion.div 
-            className="flex items-center justify-center gap-3 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <div className="h-px w-8 bg-gradient-to-r from-transparent to-[var(--bento-border)]" />
-            <p className="font-accent text-base md:text-lg text-[var(--bento-text-subtle)] flex items-center gap-2">
-              <Feather className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
-              <span>No pom pulling allowed!</span>
-              <Feather className="w-3.5 h-3.5 text-[var(--bento-secondary)] scale-x-[-1]" />
-            </p>
-            <div className="h-px w-8 bg-gradient-to-l from-transparent to-[var(--bento-border)]" />
-          </motion.div>
-
-          {/* CTA button */}
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Link to="/members">
-              <Button size="lg" className="w-full sm:w-auto gap-2.5 px-8 group shadow-lg shadow-[var(--bento-primary)]/20 hover:shadow-xl hover:shadow-[var(--bento-primary)]/30">
-                <Users className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                Meet the Family
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Feature cards */}
-      <section className="py-12 md:py-16 px-4 relative">
-        {/* Subtle gradient backdrop */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bento-primary)]/[0.02] to-transparent pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto relative">
-          <motion.div 
-            className="text-center mb-10 md:mb-12"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.p 
-              className="font-accent text-2xl text-[var(--bento-secondary)] mb-3 flex items-center justify-center gap-2"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <Gift className="w-5 h-5" />
-              What's inside?
-            </motion.p>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-[var(--bento-text)] flex items-center justify-center gap-3">
-              The Good Stuff
-              <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-amber-400" />
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {[
-              {
-                icon: Users,
-                gradient: 'from-[var(--bento-primary)] to-rose-500',
-                shadowColor: 'shadow-[var(--bento-primary)]/25',
-                blobColor: 'bg-[var(--bento-primary)]/8',
-                title: 'The Roster',
-                description: 'Meet all our wonderful FC members! Search by name, filter by rank, or just scroll and admire the glamours.',
-                quote: "Everyone's beautiful, kupo~",
-                quoteColor: 'text-[var(--bento-primary)]',
-                quoteIcon: Heart,
-                moogle: jugglingMoogle,
-              },
-              {
-                icon: BookOpen,
-                gradient: 'from-[var(--bento-secondary)] to-violet-500',
-                shadowColor: 'shadow-[var(--bento-secondary)]/25',
-                blobColor: 'bg-[var(--bento-secondary)]/8',
-                title: 'The Chronicle',
-                description: 'Our story unfolds here! See who joined, who got promoted, and all the shenanigans in between.',
-                quote: 'Memories are treasures, kupo!',
-                quoteColor: 'text-[var(--bento-secondary)]',
-                quoteIcon: Star,
-                moogle: moogleMail,
-              },
-              {
-                icon: Compass,
-                gradient: 'from-pink-500 to-rose-500',
-                shadowColor: 'shadow-pink-500/25',
-                blobColor: 'bg-pink-500/8',
-                title: 'Quick Links',
-                description: "Jump straight to anyone's Lodestone profile with a single click. Check out gear, achievements, and more!",
-                quote: 'Clicking is caring, kupo!',
-                quoteColor: 'text-pink-500',
-                quoteIcon: Sparkles,
-                moogle: moogleWithPig,
-              },
-            ].map((card, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            <div className="text-center relative">
+              {/* "Once upon a time" opener - storybook style */}
+              <motion.p
+                className="font-accent text-2xl md:text-3xl text-[var(--bento-secondary)] mb-8"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <FeatureCard className="group relative overflow-hidden h-full hover:-translate-y-2">
-                  {/* Background blob */}
-                  <div className={`absolute top-0 right-0 w-40 h-40 ${card.blobColor} rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl transition-transform duration-500 group-hover:scale-150`} />
-                  
-                  {/* Moogle accent */}
-                  <img 
-                    src={card.moogle} 
-                    alt="" 
-                    className="absolute bottom-3 right-3 w-20 h-20 md:w-24 md:h-24 object-contain opacity-20 group-hover:opacity-40 transition-opacity duration-500"
-                  />
-                  
-                  <div className="relative">
-                    {/* Icon with improved styling */}
-                    <div className={`w-14 h-14 mb-6 bg-gradient-to-br ${card.gradient} rounded-2xl flex items-center justify-center shadow-lg ${card.shadowColor}`}>
-                      <card.icon className="w-7 h-7 text-white" />
-                    </div>
-                    
-                    <h3 className="font-display font-bold text-xl md:text-2xl mb-3 text-[var(--bento-text)]">
-                      {card.title}
-                    </h3>
-                    <p className="font-soft text-[var(--bento-text-muted)] leading-relaxed mb-5">
-                      {card.description}
-                    </p>
-                    
-                    {/* Quote with icon */}
-                    <div className={`font-accent text-lg ${card.quoteColor} flex items-center gap-2`}>
-                      <card.quoteIcon className="w-4 h-4 flex-shrink-0" />
-                      <span>{card.quote}</span>
-                    </div>
-                  </div>
-                </FeatureCard>
+                ~ A cozy corner awaits ~
+              </motion.p>
+
+              {/* Moogle mascot - BIGGER with more visible decorations */}
+              <motion.div 
+                className="relative inline-block"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              >
+                {/* Soft dreamy glow - more visible */}
+                <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/30 via-[var(--bento-accent)]/20 to-transparent blur-3xl scale-[2]" />
+                
+                {/* Decorative elements - only on sides, keeping bottom clear for speech bubble */}
+                <motion.div 
+                  className="absolute inset-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                >
+                  {/* Left side */}
+                  <motion.div 
+                    className="absolute top-1/3 -left-10 md:-left-14"
+                    animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Star className="w-5 h-5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
+                  </motion.div>
+                  {/* Right side */}
+                  <motion.div 
+                    className="absolute top-1/3 -right-10 md:-right-14"
+                    animate={{ y: [0, -6, 0], rotate: [0, -10, 0] }}
+                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  >
+                    <Sparkles className="w-5 h-5 text-[var(--bento-primary)]" />
+                  </motion.div>
+                  {/* Top left accent */}
+                  <motion.div 
+                    className="absolute top-0 -left-6 md:-left-8"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  >
+                    <Heart className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+                  </motion.div>
+                </motion.div>
+                
+                {/* Main moogle - BIGGER */}
+                <motion.img 
+                  src={welcomingMoogle} 
+                  alt="Welcoming moogle" 
+                  className="relative w-44 md:w-56 lg:w-64 drop-shadow-2xl"
+                  animate={{ 
+                    y: [0, -8, 0],
+                  }}
+                  transition={{ 
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
               </motion.div>
-            ))}
-          </div>
+
+              {/* Kupo speech bubble - attached to moogle */}
+              <motion.div
+                className="mb-5 relative -mt-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                {/* Speech bubble - fixed size to prevent jumping */}
+                <div className="relative bg-[var(--bento-card)] rounded-2xl px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[300px] md:w-[360px] h-[70px] md:h-[80px] flex items-center justify-center mx-auto">
+                  {/* Bubble tail pointing up - bigger and more prominent */}
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+                    <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
+                    <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[24px] border-b-[var(--bento-primary)]/15 -z-10" />
+                  </div>
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={quoteIndex}
+                      className="font-accent text-2xl md:text-3xl text-[var(--bento-text)] text-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      "{kupoQuotes[quoteIndex]}"
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+                <p className="font-accent text-lg md:text-xl text-[var(--bento-text-muted)] mt-4">
+                  ~ says the friendly moogle ~
+                </p>
+              </motion.div>
+
+              {/* Decorative divider - more visible */}
+              <motion.div 
+                className="flex justify-center mb-6"
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <StoryDivider />
+              </motion.div>
+
+              {/* Main heading - Fredoka rounded */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-4">
+                  <span className="text-[var(--bento-primary)]">Mog</span>
+                  <span className="text-[var(--bento-secondary)]">Tome</span>
+                </h1>
+                <p className="text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-md mx-auto leading-relaxed mb-3">
+                  Where moogles gather, adventures are shared, 
+                  and everyone belongs.
+                </p>
+                <p className="font-accent text-xl text-[var(--bento-secondary)]">
+                  ✧ Your Free Company's cozy hearth ✧
+                </p>
+              </motion.div>
+
+              {/* CTA button */}
+              <motion.div 
+                className="mt-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+              >
+                <Link to="/members">
+                  <Button 
+                    size="lg" 
+                    className="gap-2.5 px-10 py-4 text-lg group shadow-xl shadow-[var(--bento-primary)]/30 hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40 transition-all duration-300"
+                  >
+                    <Users className="w-5 h-5" />
+                    <span className="font-soft font-semibold">Meet the Family</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  </Button>
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Call-out */}
-      <motion.section 
-        className="py-12 px-4"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="max-w-3xl mx-auto">
-          <FeatureCard className="text-center relative overflow-hidden hover:scale-[1.01]">
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--bento-primary)]/5 via-transparent to-[var(--bento-secondary)]/5" />
-            <img src={wizardMoogle} alt="" className="absolute -left-6 bottom-4 w-16 h-16 opacity-30" />
-            
-            <div className="relative">
-              <div className="flex justify-center gap-3 mb-4">
-                <Star className="w-7 h-7 text-amber-500" />
-                <Heart className="w-7 h-7 text-pink-500" />
-                <Star className="w-7 h-7 text-amber-500" />
-              </div>
-              
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-[var(--bento-text)] mb-3">
-                We're glad you're here!
-              </h3>
-              
-              <p className="font-soft text-[var(--bento-text-muted)] max-w-xl mx-auto mb-6 leading-relaxed">
-                Whether you're a sprout finding your way or a seasoned adventurer 
-                taking a break, there's always room for one more in our cozy corner.
-              </p>
-              
-              <p className="font-accent text-xl text-[var(--bento-text-subtle)] flex items-center justify-center gap-2">
-                May your pom-pom always bounce high!
-                <Feather className="w-5 h-5 text-[var(--bento-secondary)]" />
-              </p>
-            </div>
-          </FeatureCard>
-        </div>
-      </motion.section>
-
-      {/* Footer */}
-      <footer className="py-12 px-4 mt-8 border-t border-[var(--bento-border)]">
-        <div className="max-w-4xl mx-auto text-center space-y-3">
-          <div className="flex items-center justify-center gap-4">
-            <img src={footerMoogle} alt="" aria-hidden className="w-8 h-8 object-contain opacity-50" />
-            <p className="font-soft text-sm text-[var(--bento-text-muted)] flex items-center gap-2">
-              Made with 
-              <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
-              by moogles, for moogles
-            </p>
-            <img src={footerMoogle} alt="" aria-hidden className="w-8 h-8 object-contain opacity-50 scale-x-[-1]" />
-          </div>
-          <p className="font-accent text-base text-[var(--bento-text-subtle)]">
-            Kupo! <Heart className="w-3 h-3 text-pink-400 fill-pink-400 inline" />
+      {/* Footer - storybook closing */}
+      <footer className="py-8 px-4 relative z-10">
+        <motion.div 
+          className="max-w-md mx-auto text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.9 }}
+        >
+          <StoryDivider className="mx-auto mb-4 opacity-70" />
+          <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
+            Made with 
+            <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+            by moogles, for moogles
           </p>
-        </div>
+          <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2">
+            ~ fin ~
+          </p>
+        </motion.div>
       </footer>
     </div>
   );

@@ -24,35 +24,37 @@
   }
 }
 
-/* Design System Variables */
+/* Design System Variables - Pom-Pom Classic Palette (Punchy) */
 :root {
-  --bento-bg: #FAFAF9;
+  --bento-bg: #FFF9F5;
   --bento-card: #FFFFFF;
-  --bento-text: #334155;
-  --bento-text-muted: #64748B;
-  --bento-text-subtle: #94A3B8;
-  --bento-primary: #FF6B6B;
-  --bento-secondary: #A78BFA;
-  --bento-success: #22C55E;
-  --bento-warning: #F59E0B;
-  --bento-border: rgba(0, 0, 0, 0.06);
-  --bento-shadow: rgba(99, 102, 241, 0.08);
-  --bento-glass: rgba(255, 255, 255, 0.7);
+  --bento-text: #3D3848;
+  --bento-text-muted: #5C5670;
+  --bento-text-subtle: #847E96;
+  --bento-primary: #E54B4B;
+  --bento-secondary: #9683B8;
+  --bento-accent: #F28B8B;
+  --bento-success: #6AAF6E;
+  --bento-warning: #E8A830;
+  --bento-border: rgba(60, 56, 72, 0.1);
+  --bento-shadow: rgba(229, 75, 75, 0.18);
+  --bento-glass: rgba(255, 255, 255, 0.92);
 }
 
 .dark {
-  --bento-bg: #020617;
-  --bento-card: rgba(15, 23, 42, 0.9);
-  --bento-text: #CBD5E1;
-  --bento-text-muted: #94A3B8;
-  --bento-text-subtle: #64748B;
-  --bento-primary: #FF6B6B;
-  --bento-secondary: #A78BFA;
-  --bento-success: #4ADE80;
-  --bento-warning: #FBBF24;
-  --bento-border: rgba(255, 255, 255, 0.05);
-  --bento-shadow: rgba(139, 92, 246, 0.15);
-  --bento-glass: rgba(15, 23, 42, 0.8);
+  --bento-bg: #1A1722;
+  --bento-card: rgba(30, 26, 38, 0.96);
+  --bento-text: #F0ECF5;
+  --bento-text-muted: #C4BED2;
+  --bento-text-subtle: #9690A6;
+  --bento-primary: #F06060;
+  --bento-secondary: #B8A4D8;
+  --bento-accent: #F8A0A0;
+  --bento-success: #7FC083;
+  --bento-warning: #F0B840;
+  --bento-border: rgba(240, 236, 245, 0.1);
+  --bento-shadow: rgba(240, 96, 96, 0.22);
+  --bento-glass: rgba(30, 26, 38, 0.94);
 }
 
 /* Typography */
@@ -61,24 +63,25 @@
 .font-number { font-family: 'Righteous', 'Fredoka', system-ui, sans-serif; }
 .font-accent { font-family: 'Caveat', cursive; }
 .font-soft { font-family: 'Nunito', system-ui, sans-serif; }
+.font-title { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }
 
-/* Background */
+/* Background - Pom-Pom Classic (Richer) */
 .bento-bg-mesh {
   background: 
-    radial-gradient(ellipse at 0% 0%, rgba(250, 245, 255, 0.8) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(254, 249, 243, 0.8) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(243, 232, 255, 0.6) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(254, 252, 232, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 0%, rgba(150, 131, 184, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(242, 139, 139, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
     var(--bento-bg);
   background-attachment: fixed;
 }
 
 .dark .bento-bg-mesh {
   background: 
-    radial-gradient(ellipse at 0% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 0%, rgba(184, 164, 216, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(240, 96, 96, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
     var(--bento-bg);
   background-attachment: fixed;
 }

@@ -9,7 +9,7 @@ interface MemberCardProps {
   index?: number; // For staggered animations
 }
 
-// Rank theming - colors and icons that match the Soft Bento palette
+// Rank theming - cozy palette that matches the storybook coral/lavender theme
 const rankThemes: Record<string, { 
   gradient: string; 
   glow: string; 
@@ -18,66 +18,74 @@ const rankThemes: Record<string, {
   accent: string;
 }> = {
   'Moogle Guardian': { 
-    gradient: 'from-emerald-400 to-teal-500',
-    glow: 'rgba(52, 211, 153, 0.4)',
-    bg: 'bg-emerald-500/10',
+    // Golden/warm - special leader rank
+    gradient: 'from-amber-400 to-orange-400',
+    glow: 'rgba(251, 191, 36, 0.4)',
+    bg: 'bg-amber-500/10',
     icon: Crown,
-    accent: 'text-emerald-500',
+    accent: 'text-amber-500',
   },
   'Moogle Knight': { 
-    gradient: 'from-violet-500 to-purple-600',
-    glow: 'rgba(139, 92, 246, 0.4)',
+    // Rich purple - royal/noble feel
+    gradient: 'from-violet-400 to-purple-500',
+    glow: 'rgba(167, 139, 250, 0.4)',
     bg: 'bg-violet-500/10',
     icon: Shield,
     accent: 'text-violet-500',
   },
   'Paissa Trainer': { 
-    gradient: 'from-teal-400 to-cyan-500',
-    glow: 'rgba(20, 184, 166, 0.4)',
-    bg: 'bg-teal-500/10',
+    // Warm coral/rose - matches primary
+    gradient: 'from-rose-400 to-pink-500',
+    glow: 'rgba(251, 113, 133, 0.4)',
+    bg: 'bg-rose-500/10',
     icon: Heart,
-    accent: 'text-teal-500',
+    accent: 'text-rose-500',
   },
   'Coeurl Hunter': { 
-    gradient: 'from-green-500 to-emerald-600',
-    glow: 'rgba(34, 197, 94, 0.4)',
-    bg: 'bg-green-500/10',
+    // Dusty lavender - matches secondary
+    gradient: 'from-purple-300 to-violet-400',
+    glow: 'rgba(196, 181, 253, 0.4)',
+    bg: 'bg-purple-400/10',
     icon: Cat,
-    accent: 'text-green-500',
+    accent: 'text-purple-400',
   },
   'Mandragora': { 
-    gradient: 'from-orange-400 to-amber-500',
-    glow: 'rgba(251, 146, 60, 0.4)',
-    bg: 'bg-orange-500/10',
+    // Warm peach/coral
+    gradient: 'from-orange-300 to-rose-400',
+    glow: 'rgba(253, 186, 116, 0.4)',
+    bg: 'bg-orange-400/10',
     icon: Leaf,
-    accent: 'text-orange-500',
+    accent: 'text-orange-400',
   },
   'Apkallu Seeker': { 
-    gradient: 'from-sky-400 to-blue-500',
-    glow: 'rgba(56, 189, 248, 0.4)',
-    bg: 'bg-sky-500/10',
+    // Soft mauve/pink
+    gradient: 'from-pink-300 to-rose-400',
+    glow: 'rgba(249, 168, 212, 0.4)',
+    bg: 'bg-pink-400/10',
     icon: Bird,
-    accent: 'text-sky-500',
+    accent: 'text-pink-400',
   },
   'Kupo Shelf': { 
-    gradient: 'from-lime-400 to-green-500',
-    glow: 'rgba(163, 230, 53, 0.4)',
-    bg: 'bg-lime-500/10',
+    // Soft lilac
+    gradient: 'from-violet-300 to-purple-400',
+    glow: 'rgba(196, 181, 253, 0.35)',
+    bg: 'bg-violet-400/10',
     icon: Star,
-    accent: 'text-lime-500',
+    accent: 'text-violet-400',
   },
   'Bom Boko': { 
+    // Warm taupe/neutral
     gradient: 'from-stone-300 to-stone-400',
     glow: 'rgba(168, 162, 158, 0.3)',
-    bg: 'bg-stone-500/10',
+    bg: 'bg-stone-400/10',
     icon: Sparkles,
-    accent: 'text-stone-500',
+    accent: 'text-stone-400',
   },
 };
 
 const defaultTheme = {
-  gradient: 'from-[var(--bento-primary)] to-rose-500',
-  glow: 'rgba(255, 107, 107, 0.3)',
+  gradient: 'from-[var(--bento-primary)] to-[var(--bento-secondary)]',
+  glow: 'rgba(199, 91, 122, 0.3)',
   bg: 'bg-[var(--bento-primary)]/10',
   icon: Sword,
   accent: 'text-[var(--bento-primary)]',
@@ -100,7 +108,7 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
 
   return (
     <motion.div 
-      className="group relative w-40 sm:w-44 md:w-48"
+      className="group relative w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem]"
       initial={shouldAnimateEntrance ? { opacity: 0, y: 20, scale: 0.95 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={shouldAnimateEntrance ? { 
@@ -121,8 +129,8 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
       <motion.div 
         className="
           relative w-full
-          bg-white dark:bg-slate-800/90
-          border border-[var(--bento-border)]
+          bg-[var(--bento-card)]
+          border border-[var(--bento-primary)]/10
           rounded-2xl overflow-hidden shadow-sm
         "
         onMouseEnter={() => setIsHovered(true)}
@@ -153,7 +161,7 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
         >
           {/* Loading shimmer */}
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 animate-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" />
           )}
           
           <motion.img
@@ -180,7 +188,7 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
                 transition={{ duration: 0.2 }}
               >
                 <motion.span 
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-full text-xs font-soft font-semibold text-[var(--bento-text)] shadow-lg border border-white/20"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bento-card)]/95 backdrop-blur-md rounded-full text-xs font-soft font-semibold text-[var(--bento-text)] shadow-lg border border-[var(--bento-primary)]/20"
                   initial={{ y: 12, opacity: 0, scale: 0.9 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
                   exit={{ y: 8, opacity: 0, scale: 0.95 }}
@@ -263,19 +271,19 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
  */
 export function MemberCardSkeleton() {
   return (
-    <div className="w-40 sm:w-44 md:w-48 bg-white dark:bg-slate-800/90 border border-[var(--bento-border)] rounded-2xl overflow-hidden shadow-sm">
+    <div className="w-40 sm:w-44 md:w-48 bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-2xl overflow-hidden shadow-sm">
       {/* Rank banner skeleton */}
-      <div className="h-1 bg-gradient-to-r from-stone-200 via-stone-300 to-stone-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 animate-shimmer" />
+      <div className="h-1 bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/30 to-[var(--bento-primary)]/20 animate-shimmer" />
       
       {/* Avatar skeleton */}
-      <div className="w-full aspect-square bg-gradient-to-br from-stone-100 to-stone-200 dark:from-slate-700 dark:to-slate-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+      <div className="w-full aspect-square bg-gradient-to-br from-[var(--bento-bg)] to-[var(--bento-card)] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--bento-primary)]/10 to-transparent animate-shimmer" />
       </div>
       
       {/* Info skeleton */}
       <div className="p-3 space-y-2.5">
-        <div className="h-4 bg-stone-200 dark:bg-slate-700 rounded-full animate-pulse mx-auto w-4/5" />
-        <div className="h-5 bg-stone-100 dark:bg-slate-700/50 rounded-full animate-pulse mx-auto w-3/5" />
+        <div className="h-4 bg-[var(--bento-bg)] rounded-full animate-pulse mx-auto w-4/5" />
+        <div className="h-5 bg-[var(--bento-primary)]/10 rounded-full animate-pulse mx-auto w-3/5" />
       </div>
     </div>
   );
@@ -295,11 +303,11 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       rel="noopener noreferrer"
       className="
         flex items-center gap-3 p-2 pr-4
-        bg-white dark:bg-slate-800/90
-        border border-[var(--bento-border)]
+        bg-[var(--bento-card)]
+        border border-[var(--bento-primary)]/10
         rounded-xl
         shadow-sm
-        hover:shadow-md
+        hover:shadow-md hover:shadow-[var(--bento-primary)]/10
         transition-shadow duration-200
         group
       "
@@ -307,7 +315,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       whileTap={{ scale: 0.98 }}
     >
       {/* Avatar */}
-      <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-800`} style={{ '--tw-ring-color': theme.glow } as React.CSSProperties}>
+      <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': theme.glow } as React.CSSProperties}>
         <img 
           src={member.avatarLink} 
           alt={member.name}
