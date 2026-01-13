@@ -273,7 +273,8 @@ export function Members() {
           {/* Sticky search bar - storybook styled */}
           <div 
             ref={searchContainerRef}
-            className={`sticky top-[5rem] z-30 mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-4 md:mx-8' : ''}`}
+            className={`sticky z-30 mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-4 md:mx-8' : ''}`}
+            style={{ top: 'calc(4.5rem + var(--safe-area-inset-top, 0px))' }}
           >
                 <div 
                   className={`
@@ -388,21 +389,24 @@ export function Members() {
                   )}
                 </div>
                 
-                {/* Back to top button */}
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className={`
-                    flex-shrink-0 p-2 rounded-xl
-                    bg-[var(--bento-bg)] 
-                    hover:bg-[var(--bento-primary)]/10 
-                    text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] 
-                    cursor-pointer transition-all duration-200 ease-out
-                    ${isCompact ? 'opacity-100' : 'opacity-0 w-0 p-0 overflow-hidden'}
-                  `}
-                  title="Back to top"
-                >
-                  <ChevronDown className="w-4 h-4 rotate-180" />
-                </button>
+                {/* Back to top button - only shows when scrolled down (compact mode) */}
+                {isCompact && (
+                  <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="
+                      flex-shrink-0 w-9 h-9 rounded-xl
+                      flex items-center justify-center
+                      bg-[var(--bento-bg)] 
+                      hover:bg-[var(--bento-primary)]/10 
+                      text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] 
+                      cursor-pointer transition-colors duration-200
+                    "
+                    title="Back to top"
+                    aria-label="Scroll to top"
+                  >
+                    <ChevronDown className="w-4 h-4 rotate-180" />
+                  </button>
+                )}
                 
                 {/* Refresh button - hidden on mobile */}
                 <motion.button
@@ -655,7 +659,7 @@ export function Members() {
 
           {/* Footer - storybook style */}
           {!isLoading && !isError && filteredMembers.length > 0 && (
-            <footer className="text-center mt-16 pt-8">
+            <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
               <StoryDivider className="mx-auto mb-6" />
               <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
                 <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
