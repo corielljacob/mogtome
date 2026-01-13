@@ -53,6 +53,31 @@ export interface TimelineResponse {
   hasMore: boolean;
 }
 
+// Chronicle API event types (from /events endpoint)
+export interface ChronicleEventId {
+  timestamp: number;
+  creationTime: string;
+}
+
+export interface ChronicleEvent {
+  id: ChronicleEventId;
+  text: string;
+  createdAt: string;
+  type: string;
+}
+
+export interface ChronicleEventsResponse {
+  events: ChronicleEvent[];
+  nextCursor?: string;
+  hasMore: boolean;
+}
+
+// Params for fetching chronicle events
+export interface GetChronicleEventsParams {
+  cursor?: string;
+  limit?: number;
+}
+
 // Auth payloads
 export interface User {
   id: string;

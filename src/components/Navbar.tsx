@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2, Star } from 'lucide-react';
+import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2, Star, Scroll, Clock } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 
@@ -356,6 +356,7 @@ export function Navbar() {
   const navItems = [
     { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
     { path: '/members', label: 'Family', icon: Users, accentIcon: Heart },
+    { path: '/chronicle', label: 'Chronicle', icon: Scroll, accentIcon: Clock },
   ];
 
   const isActive = (path: string) => location.pathname === path;

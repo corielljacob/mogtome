@@ -15,6 +15,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: true,
       },
+      '/eventsHub': {
+        target: 'https://mogtome-api-egate2htgze6anhd.westcentralus-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: true,
+        ws: true, // Enable WebSocket proxying for SignalR
+      },
     },
   },
   test: {
