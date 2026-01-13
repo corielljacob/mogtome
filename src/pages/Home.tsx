@@ -6,13 +6,13 @@ import {
   Compass, Feather, BookOpen, Gift
 } from 'lucide-react';
 import { Button } from '../components/Button';
-import welcomingMoogle from '../assets/moogles/mooglef fly transparent.gif';
-import jugglingMoogle from '../assets/moogles/final-fantasy-artemicion-moogle-amigurumi-on-storenvy-juggling-performer-bubble-transparent-png-2074996.png';
-import moogleMail from '../assets/moogles/moogle mail.png';
-import moogleWithPig from '../assets/moogles/moogle with pig thing.png';
-import wizardMoogle from '../assets/moogles/wizard moogle.png';
-import flyingMoogles from '../assets/moogles/moogles flying.png';
-import footerMoogle from '../assets/moogles/lil guy moogle.png';
+import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
+import jugglingMoogle from '../assets/moogles/final-fantasy-artemicion-moogle-amigurumi-on-storenvy-juggling-performer-bubble-transparent-png-2074996.webp';
+import moogleMail from '../assets/moogles/moogle mail.webp';
+import moogleWithPig from '../assets/moogles/moogle with pig thing.webp';
+import wizardMoogle from '../assets/moogles/wizard moogle.webp';
+import flyingMoogles from '../assets/moogles/moogles flying.webp';
+import footerMoogle from '../assets/moogles/lil guy moogle.webp';
 
 // Rotating set of moogle one-liners
 const kupoQuotes = [

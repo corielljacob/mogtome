@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2 } from 'lucide-react';
-import lilGuyMoogle from '../assets/moogles/lil guy moogle.png';
-import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.gif';
+import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
+import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 
 // Quirky snappy toggle - bouncy flip matching navbar style
 function ThemeToggleButton() {

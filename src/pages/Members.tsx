@@ -5,9 +5,9 @@ import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown } from 'lucid
 import { membersApi } from '../api/members';
 import { MemberCard } from '../components/MemberCard';
 import { FC_RANKS } from '../types';
-import pushingMoogles from '../assets/moogles/moogles pushing.png';
-import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.png';
-import deadMoogle from '../assets/moogles/dead moogle.png';
+import pushingMoogles from '../assets/moogles/moogles pushing.webp';
+import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
+import deadMoogle from '../assets/moogles/dead moogle.webp';
 
 // Memoized member card wrapper to prevent unnecessary re-renders
 const MemoizedMemberCard = memo(MemberCard);
