@@ -468,23 +468,23 @@ export function Members() {
 
           {/* Member list */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-10">
+            <div className="flex flex-col items-center justify-center py-16">
               <motion.img 
                 src={pushingMoogles} 
                 alt="Moogles working hard" 
-                className="w-32 md:w-36 -mb-2"
+                className="w-36 md:w-44 -mb-3"
                 animate={{ 
-                  x: [0, 3, -3, 3, 0],
-                  rotate: [0, 1, -1, 1, 0],
+                  x: [0, 4, -4, 4, 0],
+                  rotate: [0, 1.5, -1.5, 1.5, 0],
                 }}
                 transition={{ 
-                  duration: 0.8, 
+                  duration: 0.7, 
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
               />
               <motion.p 
-                className="font-accent text-lg text-[var(--bento-text-muted)]"
+                className="font-accent text-xl text-[var(--bento-text-muted)]"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
@@ -493,29 +493,31 @@ export function Members() {
             </div>
           ) : isError ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">
-              <img 
+              <motion.img 
                 src={deadMoogle} 
                 alt="Moogle down" 
-                className="w-32 h-32 mx-auto mb-4 object-contain"
+                className="w-36 h-36 mx-auto mb-5 object-contain"
+                animate={{ rotate: [0, -3, 3, -3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               />
-              <p className="text-xl font-display font-medium mb-2 text-[var(--bento-text)]">
+              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                 Something went wrong
               </p>
-              <p className="font-accent text-lg text-[var(--bento-text-muted)] mb-6">
+              <p className="font-accent text-xl text-[var(--bento-text-muted)] mb-6">
                 A moogle fell over, kupo...
               </p>
               <motion.button
                 onClick={() => refetch()}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 className="
                   inline-flex items-center justify-center gap-2
                   px-6 py-3 rounded-xl
                   bg-gradient-to-r from-[var(--bento-primary)] to-rose-500
-                  text-white font-soft font-medium
+                  text-white font-soft font-semibold
                   shadow-lg shadow-[var(--bento-primary)]/25
                   hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                  transition-shadow cursor-pointer
+                  transition-all cursor-pointer
                 "
               >
                 <RefreshCw className="w-4 h-4" />
@@ -524,27 +526,30 @@ export function Members() {
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
             <ContentCard padding="lg" className="text-center py-16 md:py-24">
-              <img 
+              <motion.img 
                 src={grumpyMoogle} 
                 alt="Confused moogle" 
-                className="w-32 h-32 mx-auto mb-4 object-contain"
+                className="w-36 h-36 mx-auto mb-5 object-contain"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               />
-              <p className="text-xl font-display font-medium mb-2 text-[var(--bento-text)]">No members found</p>
-              <p className="font-accent text-lg text-[var(--bento-text-muted)] mb-4">
+              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">No members found</p>
+              <p className="font-accent text-xl text-[var(--bento-text-muted)] mb-5">
                 Kupo? We couldn't find anyone by that name...
               </p>
               {hasActiveFilters && (
                 <motion.button
                   onClick={clearFilters}
-                  whileHover={{ scale: 1.03 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.97 }}
                   className="
                     inline-flex items-center justify-center gap-2
                     px-5 py-2.5 rounded-xl
                     bg-transparent border border-[var(--bento-border)]
-                    text-[var(--bento-text)] font-soft font-medium
+                    text-[var(--bento-text)] font-soft font-semibold
                     hover:bg-stone-100 dark:hover:bg-slate-700
-                    transition-colors cursor-pointer
+                    hover:border-[var(--bento-primary)]/30
+                    transition-all cursor-pointer
                   "
                 >
                   <X className="w-4 h-4" />
@@ -553,35 +558,47 @@ export function Members() {
               )}
             </ContentCard>
           ) : (
-            <div className={`space-y-10 transition-opacity duration-150 ${isFiltering ? 'opacity-60' : 'opacity-100'}`}>
+            <div className={`space-y-12 transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
               {deferredSelectedRanks.length === 0 && !deferredSearchQuery ? (
                 // Grouped view by rank when no filters
                 Array.from(membersByRank.entries()).map(([rankName, members]) => (
-                  <div key={rankName}>
-                    {/* Rank header */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <h2 className="font-display font-semibold text-lg text-[var(--bento-text)]">
-                        {rankName}
-                      </h2>
-                      <span className="px-2 py-0.5 rounded-full bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-sm font-soft font-medium">
-                        {members.length}
-                      </span>
-                      <div className="flex-1 h-px bg-[var(--bento-border)]" />
+                  <motion.section 
+                    key={rankName}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    {/* Rank header - refined style */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex items-center gap-2.5">
+                        <h2 className="font-display font-bold text-lg md:text-xl text-[var(--bento-text)]">
+                          {rankName}
+                        </h2>
+                        <span className="
+                          px-2.5 py-1 rounded-full 
+                          bg-gradient-to-r from-[var(--bento-primary)]/10 to-[var(--bento-secondary)]/10
+                          text-[var(--bento-primary)] text-sm font-soft font-bold
+                          border border-[var(--bento-primary)]/10
+                        ">
+                          {members.length}
+                        </span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-border)] to-transparent" />
                     </div>
                     
-                    {/* Members grid */}
-                    <div className="flex flex-wrap gap-4 md:gap-5">
-                      {members.map((member) => (
-                        <MemoizedMemberCard key={member.characterId} member={member} />
+                    {/* Members grid - responsive with better spacing */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6">
+                      {members.map((member, idx) => (
+                        <MemoizedMemberCard key={member.characterId} member={member} index={idx} />
                       ))}
                     </div>
-                  </div>
+                  </motion.section>
                 ))
               ) : (
-                // Flat grid when filters are active
-                <div className="flex flex-wrap gap-4 md:gap-5 justify-center">
-                  {filteredMembers.map((member) => (
-                    <MemoizedMemberCard key={member.characterId} member={member} />
+                // Flat grid when filters are active - centered with better responsiveness
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5 lg:gap-6 justify-items-center">
+                  {filteredMembers.map((member, idx) => (
+                    <MemoizedMemberCard key={member.characterId} member={member} index={idx} />
                   ))}
                 </div>
               )}
