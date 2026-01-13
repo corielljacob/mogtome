@@ -12,21 +12,12 @@ import deadMoogle from '../assets/moogles/dead moogle.webp';
 // Memoized member card wrapper to prevent unnecessary re-renders
 const MemoizedMemberCard = memo(MemberCard);
 
-// Content card for results area
-function ContentCard({ children, className = '', padding = 'md' }: { children: React.ReactNode; className?: string; padding?: 'sm' | 'md' | 'lg' }) {
-  const paddingClass = {
-    sm: 'p-3 md:p-4',
-    md: 'p-4 md:p-6',
-    lg: 'p-6 md:p-8',
-  }[padding];
-
+// Simplified content card for results area
+function ContentCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`
-      bg-white dark:bg-slate-800/90
-      border border-[var(--bento-border)]
-      rounded-2xl ${paddingClass}
-      shadow-sm
-      ${className}
+      bg-white dark:bg-slate-800/90 border border-[var(--bento-border)]
+      rounded-2xl p-6 md:p-8 shadow-sm ${className}
     `}>
       {children}
     </div>
@@ -150,46 +141,36 @@ export function Members() {
     <div className="min-h-screen relative">
       <div className="relative py-8 md:py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Page hero */}
-          <motion.div 
-            className="text-center mb-8 md:mb-10"
+          {/* Page header */}
+          <motion.header 
+            className="text-center mb-10"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-sm font-soft font-medium mb-4">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-sm font-soft font-medium mb-4">
               <Users className="w-4 h-4" />
-              <span>{allMembers.length} members</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 text-[var(--bento-text)]">
+              {allMembers.length} members
+            </span>
+            <h1 className="text-3xl md:text-5xl font-display font-bold mb-2 text-[var(--bento-text)]">
               The Family
             </h1>
-            <p className="text-[var(--bento-text-muted)] text-base md:text-lg font-soft flex items-center justify-center gap-2">
+            <p className="text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2">
               Our wonderful FC crew
               <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
             </p>
-          </motion.div>
+          </motion.header>
 
-          {/* Sticky search bar - optimized for performance */}
+          {/* Sticky search bar */}
           <div 
             ref={searchContainerRef}
-            className={`
-              sticky top-[5rem] z-30 mb-8 pt-2
-              transition-[margin] duration-200 ease-out will-change-[margin]
-              ${isCompact ? 'mx-4 md:mx-8' : ''}
-            `}
+            className={`sticky top-[5rem] z-30 mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-4 md:mx-8' : ''}`}
           >
             <div 
               className={`
-                relative overflow-hidden 
-                bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl 
-                border border-[var(--bento-border)]
-                rounded-2xl
-                transition-[padding,box-shadow] duration-200 ease-out
-                ${isCompact 
-                  ? 'p-3 shadow-lg shadow-black/5 dark:shadow-black/20' 
-                  : 'p-6 shadow-sm'
-                }
+                relative overflow-hidden bg-white/95 dark:bg-slate-900/95 
+                backdrop-blur-xl border border-[var(--bento-border)] rounded-2xl
+                transition-all duration-200 ${isCompact ? 'p-3 shadow-lg' : 'p-6 shadow-sm'}
               `}
             >
               {/* Decorative background blob - only when expanded */}
@@ -491,7 +472,7 @@ export function Members() {
               </motion.p>
             </div>
           ) : isError ? (
-            <ContentCard padding="lg" className="text-center py-16 md:py-24">
+            <ContentCard className="text-center py-12 md:py-16">
               <motion.img 
                 src={deadMoogle} 
                 alt="Moogle down" 
@@ -524,7 +505,7 @@ export function Members() {
               </motion.button>
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
-            <ContentCard padding="lg" className="text-center py-16 md:py-24">
+            <ContentCard className="text-center py-12 md:py-16">
               <motion.img 
                 src={grumpyMoogle} 
                 alt="Confused moogle" 
@@ -613,15 +594,15 @@ export function Members() {
             </div>
           )}
 
-          {/* Fun footer message */}
+          {/* Footer message */}
           {!isLoading && !isError && filteredMembers.length > 0 && (
-            <div className="text-center mt-12 pt-8 border-t border-[var(--bento-border)]">
-              <p className="font-accent text-lg text-[var(--bento-text-subtle)] flex items-center justify-center gap-2">
-                <Heart className="w-4 h-4 text-pink-500" />
+            <footer className="text-center mt-16 pt-8 border-t border-[var(--bento-border)]">
+              <p className="font-accent text-lg text-[var(--bento-text-subtle)]">
+                <Heart className="w-4 h-4 text-pink-500 inline mr-2" />
                 Every member makes us stronger, kupo!
-                <Heart className="w-4 h-4 text-pink-500" />
+                <Heart className="w-4 h-4 text-pink-500 inline ml-2" />
               </p>
-            </div>
+            </footer>
           )}
         </div>
       </div>

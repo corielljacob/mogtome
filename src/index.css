@@ -5,7 +5,7 @@
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Moogle Theme - Better Contrast */
+/* DaisyUI Theme */
 @plugin "daisyui/theme" {
   name: "moogle";
   default: true;
@@ -32,6 +32,7 @@
   --radius-box: 1rem;
 }
 
+/* Base Styles */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -51,383 +52,45 @@
   }
 }
 
-@layer components {
-  .card {
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-  
-  .card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  }
-  
-  .navbar {
-    backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.95);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  }
-  
-  .btn {
-    font-weight: 600;
-  }
-  
-  .btn-primary {
-    box-shadow: 0 2px 8px rgba(139, 95, 191, 0.35);
-  }
-  
-  .btn-primary:hover {
-    box-shadow: 0 4px 12px rgba(139, 95, 191, 0.45);
-  }
-  
-  .input:focus {
-    box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.2);
-  }
-}
-
-@layer utilities {
-  .bg-gradient-subtle {
-    background: linear-gradient(160deg, #FAF8FC 0%, #F3EEF8 40%, #FCF5F8 100%);
-  }
-  
-  .text-gradient {
-    background: linear-gradient(135deg, #8B5FBF 0%, #D4708F 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-}
-
-/* ==========================================
-   KUPO-BIT THEME - Tamagotchi x FFXIV Moogle
-   ========================================== */
-
+/* Design System Variables */
 :root {
-  /* Kupo-Bit Color Palette */
-  --kupo-shell: #FFFAF0;        /* Floral White/Cream - Plastic Shell */
-  --kupo-lcd: #F0FFF4;          /* Honeydew Green - LCD Screen */
-  --kupo-pom: #FF4D4D;          /* Sunset Red - Pom-Pom accent */
-  --kupo-wings: #D8BFD8;        /* Thistle/Pale Purple - Wings */
-  --kupo-ink: #2F4F4F;          /* Dark Slate Gray - Text */
-  --kupo-border: #2F4F4F;       /* Border color */
-  --kupo-shadow: #1a3030;       /* Darker shadow for 3D effect */
-  --kupo-lcd-shadow: rgba(0, 0, 0, 0.15);
-  --kupo-gold: #FFD700;         /* Kupo-nut gold */
-}
-
-/* Kupo-Bit Typography */
-
-/* Primary UI font - clean and readable */
-.font-inter {
-  font-family: 'Inter', system-ui, sans-serif;
-}
-
-/* Display font - bubbly and friendly, great for headings */
-.font-display {
-  font-family: 'Fredoka', 'Nunito', system-ui, sans-serif;
-}
-
-/* Numbers font - bold and stylized for stats */
-.font-number {
-  font-family: 'Righteous', 'Fredoka', system-ui, sans-serif;
-}
-
-/* Accent font - handwritten/whimsical for special text */
-.font-accent {
-  font-family: 'Caveat', cursive;
-}
-
-/* Soft rounded font - friendly body text */
-.font-soft {
-  font-family: 'Nunito', system-ui, sans-serif;
-}
-
-/* Legacy aliases for compatibility */
-.font-pixel {
-  font-family: 'Righteous', system-ui, sans-serif;
-}
-
-.font-pixel-alt {
-  font-family: 'Fredoka', system-ui, sans-serif;
-}
-
-.font-kupo {
-  font-family: 'Nunito', sans-serif;
-}
-
-/* Kupo-Bit Component Styles */
-@layer components {
-  /* Shell Container - The Device Frame */
-  .kupo-shell {
-    background-color: var(--kupo-shell);
-    border: 4px solid var(--kupo-border);
-    border-radius: 1.5rem;
-    box-shadow: 
-      8px 8px 0 var(--kupo-shadow),
-      inset 0 2px 0 rgba(255, 255, 255, 0.8);
-    position: relative;
-  }
-
-  .kupo-shell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 1.5rem;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      transparent 50%,
-      rgba(0, 0, 0, 0.05) 100%
-    );
-    pointer-events: none;
-  }
-
-  /* LCD Screen Area */
-  .kupo-screen {
-    background-color: var(--kupo-lcd);
-    border: 3px solid var(--kupo-border);
-    border-radius: 0.75rem;
-    box-shadow: 
-      inset 4px 4px 8px var(--kupo-lcd-shadow),
-      inset -2px -2px 4px rgba(255, 255, 255, 0.5);
-    position: relative;
-  }
-
-  .kupo-screen::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 30%;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.3) 0%,
-      transparent 100%
-    );
-    border-radius: 0.5rem 0.5rem 0 0;
-    pointer-events: none;
-  }
-
-  /* Tactile Rubber Buttons */
-  .kupo-btn {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.65rem;
-    background-color: var(--kupo-wings);
-    color: var(--kupo-ink);
-    border: 3px solid var(--kupo-border);
-    border-bottom-width: 6px;
-    border-radius: 9999px;
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    transition: all 0.05s ease;
-    box-shadow: 2px 2px 0 var(--kupo-shadow);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .kupo-btn:hover {
-    background-color: #E5D0E5;
-  }
-
-  .kupo-btn:active {
-    border-bottom-width: 3px;
-    transform: translateY(3px);
-    box-shadow: none;
-  }
-
-  .kupo-btn-primary {
-    background-color: var(--kupo-pom);
-    color: white;
-  }
-
-  .kupo-btn-primary:hover {
-    background-color: #ff6b6b;
-  }
-
-  /* Pom Toggle Switch */
-  .kupo-toggle-track {
-    width: 3.5rem;
-    height: 1.5rem;
-    background-color: var(--kupo-border);
-    border: 2px solid var(--kupo-border);
-    border-radius: 0.25rem;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .kupo-toggle-track::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 4px;
-    right: 4px;
-    height: 2px;
-    background: repeating-linear-gradient(
-      90deg,
-      var(--kupo-ink) 0px,
-      var(--kupo-ink) 2px,
-      transparent 2px,
-      transparent 4px
-    );
-    transform: translateY(-50%);
-  }
-
-  .kupo-toggle-pom {
-    position: absolute;
-    top: 50%;
-    left: 2px;
-    width: 1.25rem;
-    height: 1.25rem;
-    background: radial-gradient(
-      circle at 30% 30%,
-      #ff7b7b 0%,
-      var(--kupo-pom) 50%,
-      #cc3d3d 100%
-    );
-    border: 2px solid var(--kupo-border);
-    border-radius: 50%;
-    transform: translateY(-50%);
-    transition: all 0.2s ease;
-    box-shadow: 
-      1px 1px 0 var(--kupo-shadow),
-      inset 2px 2px 4px rgba(255, 255, 255, 0.4);
-  }
-
-  .kupo-toggle-track.active {
-    background-color: var(--kupo-wings);
-  }
-
-  .kupo-toggle-track.active .kupo-toggle-pom {
-    left: calc(100% - 1.5rem);
-  }
-
-  /* Kupo-Nut Progress Bar */
-  .kupo-progress-track {
-    width: 100%;
-    height: 1.5rem;
-    background-color: var(--kupo-shell);
-    border: 3px solid var(--kupo-border);
-    border-radius: 0.25rem;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .kupo-progress-fill {
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      var(--kupo-wings) 0%,
-      var(--kupo-gold) 100%
-    );
-    transition: width 0.3s ease;
-    position: relative;
-  }
-
-  .kupo-progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 6px,
-      rgba(0, 0, 0, 0.1) 6px,
-      rgba(0, 0, 0, 0.1) 8px
-    );
-  }
-
-  /* Pixel decorative elements */
-  .kupo-pixel-border {
-    image-rendering: pixelated;
-    border-image-slice: 4;
-    border-image-width: 4px;
-  }
-
-  /* Scanline effect for LCD */
-  .kupo-scanlines::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(0, 0, 0, 0.03) 4px
-    );
-    pointer-events: none;
-    border-radius: inherit;
-  }
-
-  /* Moogle decorative pom */
-  .kupo-pom-decoration {
-    width: 1.5rem;
-    height: 1.5rem;
-    background: radial-gradient(
-      circle at 30% 30%,
-      #ff7b7b 0%,
-      var(--kupo-pom) 50%,
-      #cc3d3d 100%
-    );
-    border: 2px solid var(--kupo-border);
-    border-radius: 50%;
-    box-shadow: 2px 2px 0 var(--kupo-shadow);
-  }
-}
-
-/* ==========================================
-   KUPO-BIT REFINED - "Soft Bento" Theme
-   Production-grade, clean, professional
-   ========================================== */
-
-:root {
-  /* Refined Color Palette - Light Mode */
-  --bento-bg: #FAFAF9;            /* Warm Stone - main background */
-  --bento-card: #FFFFFF;          /* Pure white cards */
-  --bento-text: #334155;          /* Slate 700 - body text */
-  --bento-text-muted: #64748B;    /* Slate 500 - secondary text */
-  --bento-text-subtle: #94A3B8;   /* Slate 400 - subtle text */
-  --bento-primary: #FF6B6B;       /* Soft Coral Red */
-  --bento-secondary: #A78BFA;     /* Soft Purple */
-  --bento-success: #22C55E;       /* Green */
-  --bento-warning: #F59E0B;       /* Amber */
+  --bento-bg: #FAFAF9;
+  --bento-card: #FFFFFF;
+  --bento-text: #334155;
+  --bento-text-muted: #64748B;
+  --bento-text-subtle: #94A3B8;
+  --bento-primary: #FF6B6B;
+  --bento-secondary: #A78BFA;
+  --bento-success: #22C55E;
+  --bento-warning: #F59E0B;
   --bento-border: rgba(0, 0, 0, 0.06);
   --bento-shadow: rgba(99, 102, 241, 0.08);
   --bento-glass: rgba(255, 255, 255, 0.7);
 }
 
-/* Dark Mode - "Midnight Softness" Theme */
 .dark {
-  --bento-bg: #020617;            /* Slate 950 - Deepest Navy/Black */
-  --bento-card: rgba(15, 23, 42, 0.9);  /* Slate 900 with transparency - Glassy dark surface */
-  --bento-text: #CBD5E1;          /* Slate 300 - Soft grey, never pure white */
-  --bento-text-muted: #94A3B8;    /* Slate 400 */
-  --bento-text-subtle: #64748B;   /* Slate 500 */
-  --bento-primary: #FF6B6B;       /* Soft Coral Red - keeps the same */
-  --bento-secondary: #A78BFA;     /* Soft Purple - keeps the same */
-  --bento-success: #4ADE80;       /* Brighter green for dark mode */
-  --bento-warning: #FBBF24;       /* Brighter amber for dark mode */
+  --bento-bg: #020617;
+  --bento-card: rgba(15, 23, 42, 0.9);
+  --bento-text: #CBD5E1;
+  --bento-text-muted: #94A3B8;
+  --bento-text-subtle: #64748B;
+  --bento-primary: #FF6B6B;
+  --bento-secondary: #A78BFA;
+  --bento-success: #4ADE80;
+  --bento-warning: #FBBF24;
   --bento-border: rgba(255, 255, 255, 0.05);
   --bento-shadow: rgba(139, 92, 246, 0.15);
   --bento-glass: rgba(15, 23, 42, 0.8);
 }
 
-/* Modern Typography */
-.font-inter {
-  font-family: 'Inter', system-ui, sans-serif;
-}
+/* Typography */
+.font-inter { font-family: 'Inter', system-ui, sans-serif; }
+.font-display { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }
+.font-number { font-family: 'Righteous', 'Fredoka', system-ui, sans-serif; }
+.font-accent { font-family: 'Caveat', cursive; }
+.font-soft { font-family: 'Nunito', system-ui, sans-serif; }
 
-/* Animated Mesh Gradient Background */
+/* Background */
 .bento-bg-mesh {
   background: 
     radial-gradient(ellipse at 0% 0%, rgba(250, 245, 255, 0.8) 0%, transparent 50%),
@@ -436,10 +99,8 @@
     radial-gradient(ellipse at 0% 100%, rgba(254, 252, 232, 0.6) 0%, transparent 50%),
     var(--bento-bg);
   background-attachment: fixed;
-  transition: background 0.3s ease;
 }
 
-/* Dark mode mesh gradient */
 .dark .bento-bg-mesh {
   background: 
     radial-gradient(ellipse at 0% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
@@ -450,407 +111,29 @@
   background-attachment: fixed;
 }
 
-/* Subtle animated background */
-.bento-bg-animated {
-  position: relative;
-  overflow: hidden;
-}
-
-.bento-bg-animated::before {
-  content: '';
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(167, 139, 250, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 40% 40%, rgba(250, 245, 255, 0.5) 0%, transparent 30%);
-  animation: meshFloat 20s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 0;
-  transition: background 0.3s ease;
-}
-
-.dark .bento-bg-animated::before {
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 40% 40%, rgba(30, 41, 59, 0.5) 0%, transparent 30%);
-}
-
-@keyframes meshFloat {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(2%, 2%) rotate(1deg); }
-  66% { transform: translate(-1%, 1%) rotate(-1deg); }
-}
-
-/* Bento Card - Claymorphism Style */
+/* Glass Card */
 @layer components {
-  .bento-card {
-    background: var(--bento-card);
-    border-radius: 1.5rem;
-    border: 1px solid var(--bento-border);
-    box-shadow: 
-      0 1px 2px rgba(0, 0, 0, 0.02),
-      0 4px 8px rgba(0, 0, 0, 0.02),
-      0 16px 32px var(--bento-shadow);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .bento-card:hover {
-    box-shadow: 
-      0 1px 2px rgba(0, 0, 0, 0.02),
-      0 8px 16px rgba(0, 0, 0, 0.04),
-      0 24px 48px var(--bento-shadow);
-    transform: translateY(-2px);
-  }
-
-  /* Dark mode card enhancements */
-  .dark .bento-card {
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 
-      0 1px 2px rgba(0, 0, 0, 0.1),
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 16px 32px var(--bento-shadow);
-  }
-
-  .dark .bento-card:hover {
-    box-shadow: 
-      0 1px 2px rgba(0, 0, 0, 0.1),
-      0 8px 16px rgba(0, 0, 0, 0.15),
-      0 24px 48px var(--bento-shadow),
-      0 0 40px rgba(167, 139, 250, 0.1);
-  }
-
-  /* Glass Card Variant */
   .bento-glass {
     background: var(--bento-glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 1.5rem;
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
 
   .dark .bento-glass {
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
+}
 
-  /* Squircle Button */
-  .bento-btn {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 500;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0.75rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
+/* Shimmer Animation */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
 
-  .bento-btn:hover {
-    transform: translateY(-1px);
-  }
-
-  .bento-btn:active {
-    transform: scale(0.98);
-  }
-
-  .bento-btn-primary {
-    background: var(--bento-primary);
-    color: white;
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
-  }
-
-  .bento-btn-primary:hover {
-    background: #ff5252;
-    box-shadow: 0 4px 16px rgba(255, 107, 107, 0.4);
-  }
-
-  /* Dark mode primary button glow */
-  .dark .bento-btn-primary {
-    box-shadow: 0 2px 12px rgba(255, 107, 107, 0.4);
-  }
-
-  .dark .bento-btn-primary:hover {
-    box-shadow: 0 4px 24px rgba(255, 107, 107, 0.5);
-  }
-
-  .bento-btn-secondary {
-    background: var(--bento-secondary);
-    color: white;
-    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.3);
-  }
-
-  /* Dark mode secondary button glow */
-  .dark .bento-btn-secondary {
-    box-shadow: 0 2px 12px rgba(167, 139, 250, 0.4);
-  }
-
-  .dark .bento-btn-secondary:hover {
-    box-shadow: 0 4px 24px rgba(167, 139, 250, 0.5);
-  }
-
-  .bento-btn-ghost {
-    background: transparent;
-    color: var(--bento-text);
-  }
-
-  .bento-btn-ghost:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .dark .bento-btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  /* Status Pills */
-  .bento-pill {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-  }
-
-  .bento-pill-success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #16a34a;
-  }
-
-  .bento-pill-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: #d97706;
-  }
-
-  .bento-pill-primary {
-    background: rgba(255, 107, 107, 0.1);
-    color: var(--bento-primary);
-  }
-
-  .bento-pill-secondary {
-    background: rgba(167, 139, 250, 0.1);
-    color: #7c3aed;
-  }
-
-  /* Shimmer Loading Effect */
-  .bento-shimmer {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* Glow Ring for Active Items */
-  .bento-glow-ring {
-    position: relative;
-  }
-
-  .bento-glow-ring::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, var(--bento-primary), var(--bento-secondary));
-    opacity: 0.5;
-    filter: blur(8px);
-    z-index: -1;
-    animation: glowPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes glowPulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.6; }
-  }
-
-  /* Progress Bar - Modern Style */
-  .bento-progress {
-    height: 6px;
-    background: rgba(0, 0, 0, 0.06);
-    border-radius: 9999px;
-    overflow: hidden;
-  }
-
-  .dark .bento-progress {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .bento-progress-fill {
-    height: 100%;
-    border-radius: 9999px;
-    background: linear-gradient(90deg, var(--bento-secondary), var(--bento-primary));
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Shimmer effect on progress fill */
-  .bento-progress-fill::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
-    );
-    animation: shimmerProgress 2s infinite;
-  }
-
-  @keyframes shimmerProgress {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
-  }
-
-  /* Shimmer utility animation */
-  .animate-shimmer {
-    animation: shimmerProgress 2s infinite linear;
-  }
-
-  /* Tabular numbers for consistent number widths */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Smooth color transitions for theme switching */
-  .theme-transition * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
-  }
-
-  /* Focus visible states for accessibility */
-  .bento-focusable:focus-visible {
-    outline: 2px solid var(--bento-primary);
-    outline-offset: 2px;
-  }
-
-  /* Celebration glow for complete states */
-  .bento-celebration {
-    animation: celebrationGlow 2s ease-in-out infinite;
-  }
-
-  @keyframes celebrationGlow {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    50% { box-shadow: 0 0 20px 4px rgba(34, 197, 94, 0.3); }
-  }
-
-  /* Floating animation for decorative elements */
-  .bento-float {
-    animation: floatUpDown 3s ease-in-out infinite;
-  }
-
-  @keyframes floatUpDown {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  /* Pom-pom landing bounce - plays once on page load */
-  .animate-pom-land {
-    animation: pomLand 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  @keyframes pomLand {
-    0% { 
-      transform: translateY(-24px) scale(0.6); 
-      opacity: 0; 
-    }
-    40% { 
-      transform: translateY(4px) scale(1.15); 
-      opacity: 1; 
-    }
-    55% { 
-      transform: translateY(-6px) scale(0.95); 
-    }
-    70% { 
-      transform: translateY(2px) scale(1.05); 
-    }
-    85% { 
-      transform: translateY(-1px) scale(0.98); 
-    }
-    100% { 
-      transform: translateY(0) scale(1); 
-      opacity: 1; 
-    }
-  }
-
-  /* Playful wiggle for kupo badge */
-  .animate-wiggle {
-    animation: wiggle 0.6s ease-in-out;
-  }
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    15% { transform: rotate(-6deg); }
-    30% { transform: rotate(5deg); }
-    45% { transform: rotate(-4deg); }
-    60% { transform: rotate(3deg); }
-    75% { transform: rotate(-2deg); }
-    90% { transform: rotate(1deg); }
-  }
-
-  /* Gentle continuous bob for floating elements */
-  .animate-float-gentle {
-    animation: floatGentle 3s ease-in-out infinite;
-  }
-
-  @keyframes floatGentle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
-
-  /* Subtle bounce for interactive elements */
-  .bento-bounce {
-    animation: subtleBounce 0.6s ease-in-out;
-  }
-
-  @keyframes subtleBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-
-  /* Rotating sparkle for decorative icons */
-  .bento-sparkle-rotate {
-    animation: sparkleRotate 4s linear infinite;
-  }
-
-  @keyframes sparkleRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* Number counting animation helper */
-  .bento-count-up {
-    animation: countFadeIn 0.3s ease-out;
-  }
-
-  @keyframes countFadeIn {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Dark mode enhanced card hover glow */
-  .dark .bento-card-glow:hover {
-    box-shadow: 
-      0 0 40px rgba(167, 139, 250, 0.15),
-      0 0 80px rgba(255, 107, 107, 0.08);
-  }
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
 }

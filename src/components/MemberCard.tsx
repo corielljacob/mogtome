@@ -100,40 +100,36 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
 
   return (
     <motion.div 
-      className="group relative"
+      className="group relative w-40 sm:w-44 md:w-48"
       initial={shouldAnimateEntrance ? { opacity: 0, y: 20, scale: 0.95 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={shouldAnimateEntrance ? { 
         duration: 0.4, 
-        delay: Math.min(index * 0.03, 0.6), // Cap delay at 0.6s
+        delay: Math.min(index * 0.03, 0.6),
         ease: [0.25, 0.46, 0.45, 0.94]
       } : undefined}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Hover glow effect - rank colored, appears smoothly */}
       <motion.div 
-        className="absolute -inset-3 rounded-3xl blur-2xl pointer-events-none"
+        className="absolute -inset-2 rounded-3xl blur-xl pointer-events-none"
         style={{ backgroundColor: theme.glow }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 1 : 0 }}
+        animate={{ opacity: isHovered ? 0.8 : 0 }}
         transition={{ duration: 0.3 }}
       />
       
       <motion.div 
         className="
-          relative
-          w-40 sm:w-44 md:w-48
+          relative w-full
           bg-white dark:bg-slate-800/90
           border border-[var(--bento-border)]
-          rounded-2xl
-          overflow-hidden
-          shadow-sm
-          backdrop-blur-sm
+          rounded-2xl overflow-hidden shadow-sm
         "
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         animate={isHovered ? { 
-          y: -8,
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+          y: -6,
+          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.15)',
         } : {
           y: 0,
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
