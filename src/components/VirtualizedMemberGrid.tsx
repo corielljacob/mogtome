@@ -109,19 +109,19 @@ function buildFlatRows(
   return rows;
 }
 
-// Section header component - responsive
+// Section header component
 function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: number }) {
   return (
-    <div className="flex items-center gap-2 sm:gap-4 pt-4 pb-2 sm:pt-5 sm:pb-3">
-      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)] flex-shrink-0" />
-        <h2 className="font-display font-bold text-base sm:text-xl md:text-2xl text-[var(--bento-text)] truncate">
+    <div className="flex items-center gap-4 py-4">
+      <div className="flex items-center gap-2.5">
+        <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
+        <h2 className="font-display font-bold text-xl md:text-2xl text-[var(--bento-text)]">
           {rankName}
         </h2>
         <span className="
-          px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex-shrink-0
+          px-3 py-1 rounded-full 
           bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15
-          text-[var(--bento-primary)] text-xs sm:text-sm font-soft font-bold
+          text-[var(--bento-primary)] text-sm font-soft font-bold
           border border-[var(--bento-primary)]/15
         ">
           {memberCount}
@@ -144,7 +144,7 @@ const MemberRow = memo(function MemberRow({
 }) {
   return (
     <div 
-      className="grid gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-2"
+      className="grid gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
       style={{ 
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
@@ -175,12 +175,13 @@ export function VirtualizedMemberGrid({
       : buildFlatRows(members, columnCount);
   }, [showGrouped, membersByRank, members, columnCount]);
 
-  // Static row heights - cards use fixed CSS heights
+  // Estimate row heights - memoized based on rows
   const estimateSize = useCallback((index: number) => {
     const row = rows[index];
-    if (row.type === 'header') return 56;
-    // Fixed card height: 230px + row padding (16px)
-    return 246;
+    if (row.type === 'header') return 72; // Header height
+    // Card height varies by screen size, estimate based on card aspect ratio + padding
+    // Cards are ~160-192px wide with 1:1 aspect ratio image + ~80px info section
+    return 280;
   }, [rows]);
 
   const virtualizer = useWindowVirtualizer({
@@ -189,11 +190,6 @@ export function VirtualizedMemberGrid({
     overscan: 5, // Render 5 extra rows above/below viewport for smoother scrolling
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
-
-  // Re-measure when column count changes (rows are restructured)
-  useEffect(() => {
-    virtualizer.measure();
-  }, [columnCount, virtualizer]);
 
   const virtualItems = virtualizer.getVirtualItems();
 
