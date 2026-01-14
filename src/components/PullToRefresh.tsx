@@ -156,65 +156,65 @@ export function PullToRefresh({
       ref={containerRef}
       className="relative"
     >
-      {/* Pull indicator - positioned below navbar */}
+      {/* Pull indicator - iOS-style positioned below navbar */}
       <motion.div 
-        className="fixed left-0 right-0 flex justify-center pointer-events-none z-40"
+        className="fixed left-0 right-0 flex flex-col items-center pointer-events-none z-40"
         style={{ 
-          top: 'calc(env(safe-area-inset-top, 0px) + 4.5rem + 0.5rem)',
+          top: 'calc(env(safe-area-inset-top, 0px) + 3rem + 0.75rem)',
           y: indicatorY,
           opacity: indicatorOpacity,
         }}
       >
         <motion.div
           className={`
-            relative w-11 h-11 rounded-full
+            relative w-10 h-10 rounded-full
             bg-[var(--bento-card)] 
-            shadow-xl shadow-[var(--bento-primary)]/20
-            border-2 flex items-center justify-center
-            transition-colors duration-200
+            shadow-lg
+            border flex items-center justify-center
+            transition-colors duration-150
             ${isReady || isRefreshing 
-              ? 'border-[var(--bento-primary)] shadow-[var(--bento-primary)]/30' 
+              ? 'border-[var(--bento-primary)]/40 shadow-[var(--bento-primary)]/20' 
               : 'border-[var(--bento-border)]'
             }
           `}
           style={{ scale: indicatorScale }}
         >
-          {/* Glow effect when ready */}
+          {/* Subtle glow when ready */}
           {(isReady || isRefreshing) && (
             <motion.div 
-              className="absolute inset-0 rounded-full bg-[var(--bento-primary)]/20 blur-md"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1.2 }}
-              transition={{ duration: 0.3 }}
+              className="absolute inset-0 rounded-full bg-[var(--bento-primary)]/15 blur-sm"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1.1 }}
+              transition={{ duration: 0.2 }}
             />
           )}
           
           {isRefreshing ? (
-            // Beautiful spinning loader
+            // iOS-style spinner
             <motion.svg 
-              className="w-6 h-6 text-[var(--bento-primary)]"
+              className="w-5 h-5 text-[var(--bento-primary)]"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 0.75, repeat: Infinity, ease: 'linear' }}
               viewBox="0 0 24 24"
               fill="none"
             >
               <circle 
                 cx="12" cy="12" r="9" 
                 stroke="currentColor" 
-                strokeOpacity="0.2"
-                strokeWidth="2.5"
+                strokeOpacity="0.15"
+                strokeWidth="2"
               />
               <path
                 d="M12 3a9 9 0 0 1 9 9"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
               />
             </motion.svg>
           ) : (
             // Progress circle with arrow
-            <div className="relative w-6 h-6">
-              <svg className="w-6 h-6 -rotate-90" viewBox="0 0 24 24">
+            <div className="relative w-5 h-5">
+              <svg className="w-5 h-5 -rotate-90" viewBox="0 0 24 24">
                 {/* Background track */}
                 <circle 
                   cx="12" cy="12" r="9" 
@@ -238,7 +238,7 @@ export function PullToRefresh({
               <div className="absolute inset-0 flex items-center justify-center">
                 {isReady ? (
                   <motion.svg 
-                    className="w-3.5 h-3.5 text-[var(--bento-primary)]"
+                    className="w-3 h-3 text-[var(--bento-primary)]"
                     viewBox="0 0 24 24"
                     fill="none"
                     initial={{ scale: 0, rotate: -45 }}
@@ -255,7 +255,7 @@ export function PullToRefresh({
                   </motion.svg>
                 ) : (
                   <motion.svg 
-                    className="w-3 h-3 text-[var(--bento-text-muted)]"
+                    className="w-2.5 h-2.5 text-[var(--bento-text-muted)]"
                     viewBox="0 0 24 24"
                     fill="none"
                     style={{ rotate: arrowRotation }}
@@ -274,25 +274,27 @@ export function PullToRefresh({
           )}
         </motion.div>
         
-        {/* "Release to refresh" label */}
+        {/* "Release to refresh" label - compact iOS style */}
         {isReady && !isRefreshing && (
-          <motion.div
-            className="absolute top-full mt-2"
-            initial={{ opacity: 0, y: -5 }}
+          <motion.span
+            className="mt-1.5 text-[11px] font-soft font-semibold text-[var(--bento-primary)]"
+            initial={{ opacity: 0, y: -3 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
           >
-            <span className="
-              px-3 py-1.5 rounded-full 
-              bg-[var(--bento-card)] 
-              shadow-lg shadow-[var(--bento-primary)]/10
-              border border-[var(--bento-primary)]/20
-              text-xs font-soft font-semibold text-[var(--bento-primary)]
-              whitespace-nowrap
-            ">
-              Release to refresh
-            </span>
-          </motion.div>
+            Release
+          </motion.span>
+        )}
+        
+        {/* Loading text */}
+        {isRefreshing && (
+          <motion.span
+            className="mt-1.5 text-[11px] font-soft font-medium text-[var(--bento-text-muted)]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Updating...
+          </motion.span>
         )}
       </motion.div>
       

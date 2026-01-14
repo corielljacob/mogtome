@@ -489,6 +489,27 @@
   }
 }
 
+/* Utility to hide scrollbar everywhere */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch feedback for mobile - subtle scale on press */
+@media (pointer: coarse) {
+  .touch-feedback {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .touch-feedback:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
  * SMOOTH MOMENTUM SCROLLING
  * Make all scrollable areas feel buttery smooth like native apps
@@ -557,4 +578,485 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * NATIVE APP-LIKE ENHANCEMENTS
+ * Extra polish for making the PWA feel like a native app
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  /* iOS-style sticky headers with blur */
+  .sticky-header-blur {
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+  
+  /* Disable on mobile for performance */
+  @media (pointer: coarse) {
+    .sticky-header-blur {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-color: var(--bento-bg);
+    }
+  }
+}
+
+/* Native-style press states */
+@media (pointer: coarse) {
+  /* Card press effect - iOS style */
+  .native-press {
+    transition: transform 60ms ease-out, opacity 60ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  
+  .native-press:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+  
+  /* Button press - snappy spring-like feel */
+  .native-button-press {
+    transition: transform 50ms ease-out, filter 50ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  
+  .native-button-press:active {
+    transform: scale(0.95);
+    filter: brightness(0.92);
+  }
+  
+  /* Subtle list item press - iOS highlight style */
+  .native-list-press {
+    transition: background-color 80ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .native-list-press:active {
+    background-color: var(--bento-primary-10, rgba(229, 75, 75, 0.08));
+  }
+  
+  /* iOS-style row highlight */
+  .native-row {
+    transition: background-color 60ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .native-row:active {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  
+  .dark .native-row:active {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * SPRING-LIKE BUTTON ANIMATIONS
+ * Makes buttons feel bouncy and responsive like native iOS/Android
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@media (pointer: coarse) {
+  /* Primary CTA buttons - bouncy press */
+  .btn-spring {
+    transition: transform 100ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  
+  .btn-spring:active {
+    transform: scale(0.94);
+    transition: transform 60ms ease-out;
+  }
+  
+  /* Icon buttons - quick tap response */
+  .btn-icon {
+    transition: transform 80ms ease-out, opacity 80ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .btn-icon:active {
+    transform: scale(0.88);
+    opacity: 0.7;
+  }
+  
+  /* Chip/tag buttons - subtle feedback */
+  .btn-chip {
+    transition: transform 60ms ease-out, background-color 60ms ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .btn-chip:active {
+    transform: scale(0.96);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * IMPROVED FOCUS STATES FOR ACCESSIBILITY
+ * Clear focus indicators that don't look jarring on mobile
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  /* Custom focus ring that matches the theme */
+  *:focus-visible {
+    outline: 2px solid var(--bento-primary);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+  
+  /* Remove focus ring on touch devices for cleaner UX */
+  @media (pointer: coarse) {
+    *:focus-visible {
+      outline: none;
+    }
+    
+    /* Keep focus ring for keyboard navigation (if user switches) */
+    .keyboard-user *:focus-visible {
+      outline: 2px solid var(--bento-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+/* iOS-style separator line */
+.native-separator {
+  height: 0.5px;
+  background: var(--bento-border);
+  margin-left: 1rem;
+}
+
+/* Full bleed separator */
+.native-separator-full {
+  height: 0.5px;
+  background: var(--bento-border);
+}
+
+/* iOS-style grouped list container */
+.native-grouped-list {
+  background: var(--bento-card);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* Native-style large title that collapses on scroll */
+.native-large-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  transition: all 200ms ease-out;
+}
+
+.native-large-title.collapsed {
+  font-size: 1.125rem;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Smooth pan gesture hint */
+.pan-x {
+  touch-action: pan-x;
+}
+
+.pan-y {
+  touch-action: pan-y;
+}
+
+/* Disable text selection on interactive surfaces */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Safe area padding utilities */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.safe-y {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* iOS-style inset grouped list margins */
+@media (max-width: 640px) {
+  .inset-grouped {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+}
+
+/* Radial gradient for hero sections */
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-stops));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * MOBILE-SPECIFIC TYPOGRAPHY
+ * Optimized text rendering for mobile devices
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  /* Slightly larger base text for mobile readability */
+  .mobile-readable {
+    font-size: 1rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Compact text for dense UIs */
+  .mobile-compact {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+  
+  /* Large display text - iOS style */
+  .mobile-title-lg {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  
+  .mobile-title-md {
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * NATIVE CARD STYLES
+ * iOS/Android-style cards with proper shadows and borders
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+.native-card {
+  background: var(--bento-card);
+  border-radius: 1rem;
+  border: 1px solid var(--bento-border);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dark .native-card {
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Elevated card - for modals, sheets */
+.native-card-elevated {
+  background: var(--bento-card);
+  border-radius: 1.25rem;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 16px 48px rgba(0, 0, 0, 0.06);
+}
+
+.dark .native-card-elevated {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * LOADING STATES
+ * Native-style loading indicators
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* iOS-style spinner */
+@keyframes spin-ios {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-ios {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bento-border);
+  border-top-color: var(--bento-primary);
+  border-radius: 50%;
+  animation: spin-ios 0.8s linear infinite;
+}
+
+.spinner-ios-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 1.5px;
+}
+
+.spinner-ios-lg {
+  width: 28px;
+  height: 28px;
+  border-width: 2.5px;
+}
+
+/* Skeleton pulse - smoother than shimmer for mobile */
+@keyframes skeleton-native {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.skeleton-native {
+  background: linear-gradient(
+    110deg,
+    var(--bento-bg) 0%,
+    var(--bento-card) 40%,
+    var(--bento-bg) 100%
+  );
+  animation: skeleton-native 1.2s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * BOTTOM SHEET / MODAL STYLES
+ * Native-style sheet presentations
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+.sheet-handle {
+  width: 36px;
+  height: 5px;
+  background: var(--bento-text-subtle);
+  border-radius: 2.5px;
+  opacity: 0.3;
+  margin: 8px auto 0;
+}
+
+.sheet-backdrop {
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.dark .sheet-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * GESTURE HINTS
+ * Visual cues that indicate swipeable/interactive elements
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Subtle bounce hint for scrollable areas */
+@keyframes bounce-hint {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.scroll-hint {
+  animation: bounce-hint 2s ease-in-out 3;
+}
+
+/* Edge fade for horizontal scroll containers */
+.scroll-edge-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * STANDALONE PWA MODE ENHANCEMENTS
+ * Additional styles when running as installed PWA
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@media (display-mode: standalone) {
+  /* Remove any browser-specific visual gaps */
+  body {
+    /* Prevent rubber banding at page edges on iOS */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Make the root scrollable instead */
+  #root {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure safe area coverage */
+  .pwa-safe-area {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * HIGH-CONTRAST MODE SUPPORT
+ * Accessibility improvements for users with high contrast preferences
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-contrast: high) {
+  :root {
+    --bento-border: rgba(0, 0, 0, 0.25);
+  }
+  
+  .dark {
+    --bento-border: rgba(255, 255, 255, 0.25);
+  }
+  
+  /* Stronger focus indicators */
+  *:focus-visible {
+    outline-width: 3px;
+  }
 }

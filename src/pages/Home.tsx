@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { Users, Heart, ArrowRight, Sparkles, Star } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'motion/react';
+import { Users, Heart, ArrowRight, Sparkles, Star, Scroll, ChevronRight, Sun, Moon } from 'lucide-react';
 
 // Shared components
-import { Button, StoryDivider, FloatingSparkles, FloatingMoogles, type MoogleConfig } from '../components';
+import { Button, StoryDivider, FloatingSparkles, FloatingMoogles, MobileHeader, type MoogleConfig } from '../components';
 
 // Assets
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
@@ -36,6 +36,7 @@ const kupoQuotes = [
   "Glad you're here, kupo!",
 ];
 
+// Desktop floating moogles
 const floatingMoogles: MoogleConfig[] = [
   { src: wizardMoogle, position: 'top-16 left-4 md:left-16', size: 'w-24 md:w-36', rotate: -12, delay: 0 },
   { src: flyingMoogles, position: 'top-24 right-0 md:right-8', size: 'w-32 md:w-48', rotate: 8, delay: 0.5 },
@@ -43,11 +44,31 @@ const floatingMoogles: MoogleConfig[] = [
   { src: lilGuyMoogle, position: 'bottom-20 right-8 md:right-24', size: 'w-18 md:w-28', rotate: -8, delay: 1.5 },
 ];
 
+// Mobile quick action cards
+const quickActions = [
+  {
+    to: '/members',
+    icon: Users,
+    title: 'The Family',
+    subtitle: 'Meet your FC crew',
+    gradient: 'from-rose-500 to-pink-600',
+    delay: 0.1,
+  },
+  {
+    to: '/chronicle',
+    icon: Scroll,
+    title: 'Chronicle',
+    subtitle: 'Recent happenings',
+    gradient: 'from-violet-500 to-purple-600',
+    delay: 0.2,
+  },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Decorative corner flourishes */
+/** Desktop: Decorative corner flourishes */
 function CornerFlourish({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
   const positionClasses = {
     'top-left': 'top-3 left-3',
@@ -83,12 +104,105 @@ function CornerFlourish({ position }: { position: 'top-left' | 'top-right' | 'bo
   );
 }
 
+/** Mobile: Simple theme toggle button */
+function MobileThemeToggle() {
+  const getInitialTheme = () => {
+    if (typeof window === 'undefined') return false;
+    const stored = localStorage.getItem('theme');
+    if (stored) return stored === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+
+  const [isDark, setIsDark] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    
+    // Update theme-color meta tag
+    const color = isDark ? '#1A1722' : '#FFF9F5';
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach(meta => {
+      meta.setAttribute('content', color);
+      meta.removeAttribute('media');
+    });
+  }, [isDark]);
+
+  return (
+    <button
+      onClick={() => setIsDark(prev => !prev)}
+      className="w-9 h-9 rounded-xl bg-[var(--bento-card)] border border-[var(--bento-border)] flex items-center justify-center active:scale-95 transition-transform"
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <Moon className="w-4 h-4 text-[var(--bento-secondary)]" />
+      ) : (
+        <Sun className="w-4 h-4 text-[var(--bento-primary)]" />
+      )}
+    </button>
+  );
+}
+
+/** Mobile: Native-style quick action card with improved touch feedback */
+function QuickActionCard({ 
+  to, 
+  icon: Icon, 
+  title, 
+  subtitle, 
+  gradient, 
+  delay 
+}: typeof quickActions[0]) {
+  return (
+    <Link to={to} className="block flex-1">
+      <motion.div
+        className={`
+          relative overflow-hidden
+          bg-gradient-to-br ${gradient}
+          rounded-2xl p-4
+          shadow-lg shadow-black/15
+        `}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay, type: "spring", stiffness: 300, damping: 25 }}
+        whileTap={{ scale: 0.96 }}
+      >
+        {/* Glossy overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-white/5 to-transparent pointer-events-none" />
+        
+        {/* Icon with subtle shadow */}
+        <motion.div 
+          className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-sm"
+          whileTap={{ scale: 0.9 }}
+        >
+          <Icon className="w-5 h-5 text-white drop-shadow-sm" />
+        </motion.div>
+        
+        <h3 className="font-display font-bold text-white text-base leading-tight drop-shadow-sm">{title}</h3>
+        <p className="text-white/80 text-xs font-soft mt-0.5">{subtitle}</p>
+        
+        {/* Chevron with animation hint */}
+        <motion.div 
+          className="absolute bottom-4 right-4"
+          animate={{ x: [0, 3, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ChevronRight className="w-5 h-5 text-white/60" />
+        </motion.div>
+      </motion.div>
+    </Link>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Home() {
   const [quoteIndex, setQuoteIndex] = useState(0);
+  
+  // Mobile: bouncy moogle on touch
+  const moogleY = useMotionValue(0);
+  const moogleScale = useTransform(moogleY, [-20, 0, 20], [0.95, 1, 1.05]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -97,19 +211,160 @@ export function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleMoogleTap = () => {
+    animate(moogleY, [0, -15, 0], {
+      type: "spring",
+      stiffness: 400,
+      damping: 10,
+    });
+  };
+
   return (
-    <div className="min-h-[calc(100dvh-4.5rem)] flex flex-col relative">
+    <div className="min-h-[100dvh] md:min-h-[calc(100dvh-4.5rem)] flex flex-col relative">
       {/* Warm gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
       
-      {/* Floating background moogles */}
-      <FloatingMoogles moogles={floatingMoogles} />
+      {/* Desktop: Floating background moogles */}
+      <div className="hidden md:block">
+        <FloatingMoogles moogles={floatingMoogles} />
+      </div>
       
-      {/* Floating sparkles */}
-      <FloatingSparkles />
+      {/* Desktop: Floating sparkles */}
+      <div className="hidden md:block">
+        <FloatingSparkles />
+      </div>
 
-      {/* Main content with decorative frame */}
-      <section className="flex-1 flex items-center justify-center px-4 py-8 md:py-16 relative z-10">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MOBILE VIEW (< md breakpoint)
+          Native app-style layout with quick actions
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="md:hidden flex-1 flex flex-col relative z-10">
+        {/* Home header with theme toggle */}
+        <MobileHeader 
+          title="MogTome"
+          rightContent={<MobileThemeToggle />}
+        />
+        
+        <div className="flex-1 flex flex-col px-5 py-4">
+        {/* Hero section */}
+        <motion.div 
+          className="flex-1 flex flex-col items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Tappable moogle */}
+          <motion.div 
+            className="relative mb-4 cursor-pointer select-none"
+            style={{ y: moogleY, scale: moogleScale }}
+            onTap={handleMoogleTap}
+          >
+            <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/25 via-[var(--bento-accent)]/15 to-transparent blur-2xl scale-150" />
+            <motion.img 
+              src={welcomingMoogle} 
+              alt="Welcoming moogle" 
+              className="relative w-32 drop-shadow-xl"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute -top-2 -right-2"
+              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Sparkles className="w-5 h-5 text-[var(--bento-primary)]" />
+            </motion.div>
+          </motion.div>
+
+          {/* Speech bubble */}
+          <motion.div
+            className="w-full max-w-[280px] mb-6"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <div className="relative bg-[var(--bento-card)] rounded-2xl px-5 py-4 shadow-lg border border-[var(--bento-primary)]/10">
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--bento-card)] rotate-45 border-l border-t border-[var(--bento-primary)]/10" />
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={quoteIndex}
+                  className="font-accent text-xl text-[var(--bento-text)] text-center leading-snug"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {kupoQuotes[quoteIndex]}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Brand */}
+          <motion.div className="text-center mb-2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <h1 className="text-5xl font-display font-bold tracking-tight">
+              <span className="text-[var(--bento-primary)]">Mog</span>
+              <span className="text-[var(--bento-secondary)]">Tome</span>
+            </h1>
+          </motion.div>
+          <motion.p className="text-sm text-[var(--bento-text-muted)] font-soft text-center mb-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
+            Your Free Company's cozy hearth
+          </motion.p>
+          <motion.div className="flex items-center gap-1 text-[var(--bento-secondary)]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+            <Star className="w-3 h-3 fill-current" />
+            <Star className="w-3 h-3 fill-current" />
+            <Star className="w-3 h-3 fill-current" />
+          </motion.div>
+        </motion.div>
+
+        {/* Quick actions */}
+        <div className="mt-auto space-y-4">
+          <div className="flex gap-3">
+            {quickActions.map((action) => (
+              <QuickActionCard key={action.to} {...action} />
+            ))}
+          </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Link to="/members" className="block">
+              <motion.button 
+                className="
+                  w-full flex items-center justify-center gap-3 
+                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] 
+                  text-white font-soft font-semibold text-base 
+                  py-4 px-6 rounded-2xl 
+                  shadow-xl shadow-[var(--bento-primary)]/30
+                  relative overflow-hidden
+                "
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              >
+                {/* Glossy highlight */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent pointer-events-none" />
+                
+                <Users className="w-5 h-5 relative z-10" />
+                <span className="relative z-10">Meet the Family</span>
+                <motion.div
+                  className="relative z-10"
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </motion.div>
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+        
+        {/* Bottom safe area spacer */}
+        <div className="h-20" />
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          DESKTOP VIEW (>= md breakpoint)
+          Original storybook design with decorative frame
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="hidden md:flex flex-1 items-center justify-center px-4 py-8 md:py-16 relative z-10">
         <div className="relative max-w-2xl mx-auto">
           {/* Decorative frame card */}
           <motion.div 
@@ -125,7 +380,7 @@ export function Home() {
             <CornerFlourish position="bottom-right" />
 
             <div className="text-center relative">
-              {/* "Once upon a time" opener - storybook style */}
+              {/* Opener */}
               <motion.p
                 className="font-accent text-2xl md:text-3xl text-[var(--bento-secondary)] mb-8"
                 initial={{ opacity: 0, y: -10 }}
@@ -135,75 +390,42 @@ export function Home() {
                 ~ A cozy corner awaits ~
               </motion.p>
 
-              {/* Moogle mascot with decorations */}
+              {/* Moogle with decorations */}
               <motion.div 
                 className="relative inline-block"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               >
-                {/* Soft dreamy glow */}
                 <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/30 via-[var(--bento-accent)]/20 to-transparent blur-3xl scale-[2]" />
-                
-                {/* Decorative elements - only on sides */}
-                <motion.div 
-                  className="absolute inset-0"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                >
-                  {/* Left side */}
-                  <motion.div 
-                    className="absolute top-1/3 -left-10 md:-left-14"
-                    animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  >
+                <motion.div className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.5 }}>
+                  <motion.div className="absolute top-1/3 -left-14" animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
                     <Star className="w-5 h-5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
                   </motion.div>
-                  {/* Right side */}
-                  <motion.div 
-                    className="absolute top-1/3 -right-10 md:-right-14"
-                    animate={{ y: [0, -6, 0], rotate: [0, -10, 0] }}
-                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  >
+                  <motion.div className="absolute top-1/3 -right-14" animate={{ y: [0, -6, 0], rotate: [0, -10, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
                     <Sparkles className="w-5 h-5 text-[var(--bento-primary)]" />
                   </motion.div>
-                  {/* Top left accent */}
-                  <motion.div 
-                    className="absolute top-0 -left-6 md:-left-8"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  >
+                  <motion.div className="absolute top-0 -left-8" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
                     <Heart className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                   </motion.div>
                 </motion.div>
-                
-                {/* Main moogle */}
                 <motion.img 
                   src={welcomingMoogle} 
                   alt="Welcoming moogle" 
                   className="relative w-44 md:w-56 lg:w-64 drop-shadow-2xl"
-                  animate={{ 
-                    y: [0, -8, 0],
-                  }}
-                  transition={{ 
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                 />
               </motion.div>
 
-              {/* Kupo speech bubble */}
+              {/* Speech bubble */}
               <motion.div
                 className="mb-5 relative -mt-4"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                {/* Speech bubble */}
-                <div className="relative bg-[var(--bento-card)] rounded-2xl px-4 sm:px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-4rem)] max-w-[300px] sm:max-w-[360px] min-h-[70px] sm:min-h-[80px] flex items-center justify-center mx-auto">
-                  {/* Bubble tail pointing up */}
+                <div className="relative bg-[var(--bento-card)] rounded-2xl px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 max-w-[360px] min-h-[80px] flex items-center justify-center mx-auto">
                   <div className="absolute -top-5 left-1/2 -translate-x-1/2">
                     <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
                     <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[24px] border-b-[var(--bento-primary)]/15 -z-10" />
@@ -226,42 +448,27 @@ export function Home() {
                 </p>
               </motion.div>
 
-              {/* Decorative divider */}
-              <motion.div 
-                className="flex justify-center mb-6"
-                initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
+              {/* Divider */}
+              <motion.div className="flex justify-center mb-6" initial={{ opacity: 0, scaleX: 0 }} animate={{ opacity: 1, scaleX: 1 }} transition={{ duration: 0.8, delay: 0.5 }}>
                 <StoryDivider size="lg" />
               </motion.div>
 
-              {/* Main heading */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
+              {/* Heading */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.6 }}>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-4">
                   <span className="text-[var(--bento-primary)]">Mog</span>
                   <span className="text-[var(--bento-secondary)]">Tome</span>
                 </h1>
                 <p className="text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-md mx-auto leading-relaxed mb-3">
-                  Where moogles gather, adventures are shared, 
-                  and everyone belongs.
+                  Where moogles gather, adventures are shared, and everyone belongs.
                 </p>
                 <p className="font-accent text-xl text-[var(--bento-secondary)]">
                   ✧ Your Free Company's cozy hearth ✧
                 </p>
               </motion.div>
 
-              {/* CTA button */}
-              <motion.div 
-                className="mt-8"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-              >
+              {/* CTA */}
+              <motion.div className="mt-8" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}>
                 <Link to="/members">
                   <Button 
                     size="lg" 
@@ -278,8 +485,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* Footer - storybook closing */}
-      <footer className="py-8 px-4 relative z-10" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
+      {/* Desktop footer */}
+      <footer className="hidden md:block py-8 px-4 relative z-10">
         <motion.div 
           className="max-w-md mx-auto text-center"
           initial={{ opacity: 0 }}

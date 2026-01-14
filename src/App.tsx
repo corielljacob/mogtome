@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { Navbar } from './components/Navbar';
 import { MobileNav } from './components/MobileNav';
@@ -21,12 +22,30 @@ const queryClient = new QueryClient({
   },
 });
 
-// Minimal loading fallback - keeps layout stable during lazy load
+// Minimal loading fallback - native-style skeleton
 function PageLoader() {
   return (
-    <div className="min-h-[calc(100dvh-4.5rem)] flex items-center justify-center pb-mobile-nav md:pb-0">
-      <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
-    </div>
+    <motion.div 
+      className="min-h-[100dvh] md:min-h-[calc(100dvh-4.5rem)] flex flex-col items-center justify-center pb-mobile-nav md:pb-0 px-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* iOS-style spinner */}
+      <motion.div 
+        className="w-8 h-8 rounded-full border-[2.5px] border-[var(--bento-primary)]/15 border-t-[var(--bento-primary)] mb-3"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.p 
+        className="text-sm font-soft text-[var(--bento-text-muted)]"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        Loading...
+      </motion.p>
+    </motion.div>
   );
 }
 
@@ -66,13 +85,29 @@ function AppContent() {
             paddingRight: 'env(safe-area-inset-right, 0px)'
           }}
         >
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/members" element={<Members />} />
-              <Route path="/chronicle" element={<Chronicle />} />
-            </Routes>
-          </Suspense>
+          <AnimatePresence mode="wait">
+            <Suspense fallback={<PageLoader />}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 35,
+                  mass: 0.8,
+                  opacity: { duration: 0.15 }
+                }}
+              >
+                <Routes location={location}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/members" element={<Members />} />
+                  <Route path="/chronicle" element={<Chronicle />} />
+                </Routes>
+              </motion.div>
+            </Suspense>
+          </AnimatePresence>
         </main>
       </PullToRefresh>
       

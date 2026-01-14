@@ -109,19 +109,19 @@ function buildFlatRows(
   return rows;
 }
 
-// Section header component
+// Section header component - responsive
 function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: number }) {
   return (
-    <div className="flex items-center gap-4 py-4">
-      <div className="flex items-center gap-2.5">
-        <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
-        <h2 className="font-display font-bold text-xl md:text-2xl text-[var(--bento-text)]">
+    <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)] flex-shrink-0" />
+        <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--bento-text)] truncate">
           {rankName}
         </h2>
         <span className="
-          px-3 py-1 rounded-full 
+          px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex-shrink-0
           bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15
-          text-[var(--bento-primary)] text-sm font-soft font-bold
+          text-[var(--bento-primary)] text-xs sm:text-sm font-soft font-bold
           border border-[var(--bento-primary)]/15
         ">
           {memberCount}
@@ -144,7 +144,7 @@ const MemberRow = memo(function MemberRow({
 }) {
   return (
     <div 
-      className="grid gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
+      className="grid gap-2 sm:gap-3 md:gap-5 lg:gap-6 justify-items-center py-1"
       style={{ 
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
@@ -178,11 +178,14 @@ export function VirtualizedMemberGrid({
   // Estimate row heights - memoized based on rows
   const estimateSize = useCallback((index: number) => {
     const row = rows[index];
-    if (row.type === 'header') return 72; // Header height
+    if (row.type === 'header') return 60; // Header height - smaller on mobile
     // Card height varies by screen size, estimate based on card aspect ratio + padding
-    // Cards are ~160-192px wide with 1:1 aspect ratio image + ~80px info section
-    return 280;
-  }, [rows]);
+    // Mobile: cards are smaller (~140px wide), Desktop: ~160-192px wide
+    // Using smaller estimate for mobile (2 cols) = tighter spacing
+    if (columnCount <= 2) return 220; // Mobile
+    if (columnCount <= 3) return 240; // Tablet portrait
+    return 280; // Desktop
+  }, [rows, columnCount]);
 
   const virtualizer = useWindowVirtualizer({
     count: rows.length,

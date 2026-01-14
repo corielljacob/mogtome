@@ -387,6 +387,12 @@ function KupoBadge() {
   );
 }
 
+/**
+ * Navbar - Desktop only navigation bar
+ * 
+ * On mobile, each page handles its own header via MobilePageHeader component.
+ * This keeps the mobile experience native-like where the top bar is contextual.
+ */
 export function Navbar() {
   const location = useLocation();
   const [logoHovered, setLogoHovered] = useState(false);
@@ -401,138 +407,143 @@ export function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
-      {/* Storybook-style backdrop with warmth - extends to cover safe area */}
-      {/* Note: backdrop-blur disabled on mobile via CSS for performance */}
-      <div className="absolute inset-0 bg-[var(--bento-card)]/95 md:bg-[var(--bento-card)]/90 md:backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      
-      {/* Floating whimsical sparkles */}
-      <NavbarSparkles />
-      
-      {/* Decorative top line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--bento-primary)]/30 to-transparent" />
-      
-      {/* Bottom border with storybook style */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
-      
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8" style={{ paddingLeft: 'max(1rem, var(--safe-area-inset-left, 0px))', paddingRight: 'max(1rem, var(--safe-area-inset-right, 0px))' }}>
-        <div className="flex items-center justify-between h-[4.5rem]">
-          {/* Brand mark */}
-          <Link 
-            to="/" 
-            className="flex items-center gap-3.5 group"
-            onMouseEnter={() => setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}
-          >
-            <LogoIcon hovered={logoHovered} />
-            
-            <div className="hidden sm:block">
-              <div className="flex items-baseline gap-0.5">
+    <>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          DESKTOP NAVBAR - Full storybook style with navigation
+          Mobile pages handle their own headers - see MobilePageHeader
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <nav className="hidden md:block sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+        {/* Storybook-style backdrop with warmth - extends to cover safe area */}
+        <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+        
+        {/* Floating whimsical sparkles */}
+        <NavbarSparkles />
+        
+        {/* Decorative top line */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--bento-primary)]/30 to-transparent" />
+        
+        {/* Bottom border with storybook style */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8" style={{ paddingLeft: 'max(1rem, var(--safe-area-inset-left, 0px))', paddingRight: 'max(1rem, var(--safe-area-inset-right, 0px))' }}>
+          <div className="flex items-center justify-between h-[4.5rem]">
+            {/* Brand mark */}
+            <Link 
+              to="/" 
+              className="flex items-center gap-3.5 group"
+              onMouseEnter={() => setLogoHovered(true)}
+              onMouseLeave={() => setLogoHovered(false)}
+            >
+              <LogoIcon hovered={logoHovered} />
+              
+              <div className="hidden sm:block">
+                <div className="flex items-baseline gap-0.5">
+                  <motion.span 
+                    className="font-display font-bold text-xl text-[var(--bento-text)]"
+                    animate={{ color: logoHovered ? 'var(--bento-primary)' : 'var(--bento-text)' }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Mog
+                  </motion.span>
+                  <span className="font-display font-bold text-xl bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent pb-0.5">
+                    Tome
+                  </span>
+                </div>
+                {/* Storybook tagline on hover */}
                 <motion.span 
-                  className="font-display font-bold text-xl text-[var(--bento-text)]"
-                  animate={{ color: logoHovered ? 'var(--bento-primary)' : 'var(--bento-text)' }}
+                  className="block text-xs font-accent text-[var(--bento-secondary)]"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ 
+                    height: logoHovered ? 'auto' : 0, 
+                    opacity: logoHovered ? 1 : 0 
+                  }}
                   transition={{ duration: 0.2 }}
                 >
-                  Mog
+                  ~ Where moogles gather ~
                 </motion.span>
-                <span className="font-display font-bold text-xl bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent pb-0.5">
-                  Tome
-                </span>
               </div>
-              {/* Storybook tagline on hover */}
-              <motion.span 
-                className="block text-xs font-accent text-[var(--bento-secondary)]"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ 
-                  height: logoHovered ? 'auto' : 0, 
-                  opacity: logoHovered ? 1 : 0 
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                ~ Where moogles gather ~
-              </motion.span>
-            </div>
-          </Link>
+            </Link>
 
-          {/* Desktop nav - storybook styled */}
-          <div className="hidden md:flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5">
-            {/* Decorative star on left */}
-            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" />
-            
-            {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
-              const active = isActive(path);
-              const hovered = hoveredNav === path;
+            {/* Desktop nav - storybook styled */}
+            <div className="flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5">
+              {/* Decorative star on left */}
+              <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" />
               
-              return (
-                <Link
-                  key={path}
-                  to={path}
-                  onMouseEnter={() => setHoveredNav(path)}
-                  onMouseLeave={() => setHoveredNav(null)}
-                  className={`
-                    relative flex items-center gap-2.5 px-4 py-2 rounded-xl
-                    font-soft text-sm font-semibold
-                    transition-all duration-200
-                    ${active
-                      ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] shadow-sm border border-[var(--bento-primary)]/10'
-                      : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/50'
-                    }
-                  `}
-                >
-                  <motion.div
-                    animate={{ 
-                      scale: hovered && !active ? 1.2 : 1,
-                      rotate: hovered && !active ? -10 : 0,
-                      y: hovered && !active ? -2 : 0,
-                    }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
+                const active = isActive(path);
+                const hovered = hoveredNav === path;
+                
+                return (
+                  <Link
+                    key={path}
+                    to={path}
+                    onMouseEnter={() => setHoveredNav(path)}
+                    onMouseLeave={() => setHoveredNav(null)}
+                    className={`
+                      relative flex items-center gap-2.5 px-4 py-2 rounded-xl
+                      font-soft text-sm font-semibold
+                      transition-all duration-200
+                      ${active
+                        ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] shadow-sm border border-[var(--bento-primary)]/10'
+                        : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/50'
+                      }
+                    `}
                   >
-                    <Icon className={`w-4 h-4 ${active ? 'text-[var(--bento-primary)]' : ''}`} />
-                  </motion.div>
-                  
-                  <span className="relative">
-                    {label}
-                    {/* Animated underline on active */}
-                    <motion.span 
-                      className="absolute -bottom-0.5 left-0 h-[2px] rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]"
-                      initial={false}
-                      animate={{ width: active ? "100%" : "0%" }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                    />
-                  </span>
-                  
-                  {/* Floating accent icon on hover */}
-                  {!active && (
                     <motion.div
-                      className="absolute -top-3 right-0 pointer-events-none"
-                      initial={{ opacity: 0, scale: 0, rotate: -20, y: 5 }}
                       animate={{ 
-                        opacity: hovered ? 1 : 0, 
-                        scale: hovered ? 1 : 0,
-                        rotate: hovered ? 15 : -20,
-                        y: hovered ? 0 : 5,
+                        scale: hovered && !active ? 1.2 : 1,
+                        rotate: hovered && !active ? -10 : 0,
+                        y: hovered && !active ? -2 : 0,
                       }}
-                      transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      <AccentIcon className="w-4 h-4 text-[var(--bento-secondary)]" />
+                      <Icon className={`w-4 h-4 ${active ? 'text-[var(--bento-primary)]' : ''}`} />
                     </motion.div>
-                  )}
-                </Link>
-              );
-            })}
-            
-            {/* Decorative star on right */}
-            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" />
-          </div>
+                    
+                    <span className="relative">
+                      {label}
+                      {/* Animated underline on active */}
+                      <motion.span 
+                        className="absolute -bottom-0.5 left-0 h-[2px] rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]"
+                        initial={false}
+                        animate={{ width: active ? "100%" : "0%" }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                      />
+                    </span>
+                    
+                    {/* Floating accent icon on hover */}
+                    {!active && (
+                      <motion.div
+                        className="absolute -top-3 right-0 pointer-events-none"
+                        initial={{ opacity: 0, scale: 0, rotate: -20, y: 5 }}
+                        animate={{ 
+                          opacity: hovered ? 1 : 0, 
+                          scale: hovered ? 1 : 0,
+                          rotate: hovered ? 15 : -20,
+                          y: hovered ? 0 : 5,
+                        }}
+                        transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                      >
+                        <AccentIcon className="w-4 h-4 text-[var(--bento-secondary)]" />
+                      </motion.div>
+                    )}
+                  </Link>
+                );
+              })}
+              
+              {/* Decorative star on right */}
+              <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" />
+            </div>
 
-          {/* Right-side controls */}
-          <div className="flex items-center gap-3">
-            <KupoBadge />
-            <ThemeToggleButton />
+            {/* Right-side controls */}
+            <div className="flex items-center gap-3">
+              <KupoBadge />
+              <ThemeToggleButton />
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

@@ -3,12 +3,21 @@
   "short_name": "MogTome",
   "description": "Where moogles gather, adventures are shared, and everyone belongs. Your cozy Free Company hub.",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#FFF9F5",
   "theme_color": "#E54B4B",
   "scope": "/",
   "categories": ["games", "social", "entertainment"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
