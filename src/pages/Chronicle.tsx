@@ -319,16 +319,6 @@ export function Chronicle() {
                 </button>
               )}
 
-              {/* Refresh button */}
-              <motion.button
-                onClick={() => refetch()}
-                className="p-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-              </motion.button>
-
               {/* Reconnect button (only if disconnected/error) */}
               {(status === 'disconnected' || status === 'error') && (
                 <motion.button

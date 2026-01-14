@@ -1,2 +1,2 @@
 // Date utilities
-export { formatRelativeTime, formatFullDate } from './dateFormatters';
+export { formatRelativeTime, formatFullDate, formatLastUpdated } from './dateFormatters';

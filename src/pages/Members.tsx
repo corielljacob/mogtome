@@ -159,7 +159,7 @@ export function Members() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['members-all'],
     queryFn: () => membersApi.getMembers({ pageSize: 1000 }),
     staleTime: 1000 * 60 * 5,
@@ -408,25 +408,6 @@ export function Members() {
                   </button>
                 )}
                 
-                {/* Refresh button - hidden on mobile */}
-                <motion.button
-                  onClick={() => refetch()}
-                  disabled={isFetching}
-                  className={`
-                    flex-shrink-0 p-2.5 rounded-xl
-                    bg-[var(--bento-bg)]
-                    hover:bg-[var(--bento-primary)]/10 
-                    text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] 
-                    cursor-pointer disabled:opacity-50 
-                    transition-all duration-200 ease-out
-                    hidden md:block
-                    ${isCompact ? 'md:opacity-0 md:w-0 md:p-0 md:overflow-hidden' : 'md:opacity-100'}
-                  `}
-                  whileHover={!isCompact ? { scale: 1.05 } : undefined}
-                  whileTap={!isCompact ? { scale: 0.95 } : undefined}
-                >
-                  <RefreshCw className={`w-4 h-4 transition-transform duration-500 ${isFetching ? 'animate-spin' : ''}`} />
-                </motion.button>
               </div>
               
               {/* Expanded content - filter section */}

@@ -32,3 +32,24 @@ export function formatFullDate(dateString: string): string {
     day: 'numeric',
   });
 }
+
+/**
+ * Format a timestamp as "last updated" text (e.g., "just now", "2m ago").
+ * Uses shorter format for UI indicators.
+ */
+export function formatLastUpdated(timestamp: number): string {
+  const now = Date.now();
+  const diffMs = now - timestamp;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+
+  if (diffSec < 10) return 'just now';
+  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffMin < 60) return `${diffMin}m ago`;
+  
+  return new Date(timestamp).toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  });
+}
