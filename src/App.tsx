@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
 // Minimal loading fallback - keeps layout stable during lazy load
 function PageLoader() {
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex items-center justify-center">
+    <div className="min-h-[calc(100dvh-4.5rem)] flex items-center justify-center">
       <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
     </div>
   );
@@ -30,9 +30,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+        {/* Edge-to-edge: background extends behind iOS status bar & home indicator */}
+        <div className="min-h-screen min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
           <Navbar />
-          <main>
+          <main 
+            className="pb-[env(safe-area-inset-bottom,0px)]"
+            style={{ 
+              paddingLeft: 'env(safe-area-inset-left, 0px)',
+              paddingRight: 'env(safe-area-inset-right, 0px)'
+            }}
+          >
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Home />} />

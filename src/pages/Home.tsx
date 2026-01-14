@@ -98,7 +98,7 @@ export function Home() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex flex-col relative">
+    <div className="min-h-[calc(100dvh-4.5rem)] flex flex-col relative">
       {/* Warm gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
       

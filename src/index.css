@@ -8,14 +8,15 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Fix for mobile viewport height (accounts for browser chrome) */
-    height: -webkit-fill-available;
+    /* Use dvh for proper mobile viewport height (accounts for browser chrome) */
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   body {
     font-family: 'Nunito', 'Inter', system-ui, sans-serif;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
     margin: 0;
     -webkit-font-smoothing: antialiased;
     /* Prevent horizontal overflow on mobile */
@@ -27,7 +28,7 @@
   /* Root element fills viewport properly on mobile */
   #root {
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -131,19 +132,16 @@
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
 }
 
-/* iOS Safari: Extend background behind status bar and home indicator */
+/* iOS Safari: Edge-to-edge design - background extends behind status bar & home indicator */
 @supports (padding: env(safe-area-inset-top)) {
-  body {
-    /* Ensure content doesn't overlap with iOS status bar or home indicator */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-  
-  /* Make background extend to full screen edges */
+  /* Background extends to full screen edges - no padding on html/body */
   html {
     background: var(--bento-bg);
+  }
+  
+  .dark html,
+  html:has(.dark) {
+    background: #1A1722;
   }
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2, Star, Scroll, Clock } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Moon, Sun, Wand2, Star, Scroll, Clock } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 
@@ -391,6 +391,23 @@ export function Navbar() {
   const [logoHovered, setLogoHovered] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
+  // Close menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const navItems = [
     { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
     { path: '/members', label: 'Family', icon: Users, accentIcon: Heart },
@@ -402,7 +419,8 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
       {/* Storybook-style backdrop with warmth - extends to cover safe area */}
-      <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
+      {/* Note: backdrop-blur disabled on mobile via CSS for performance */}
+      <div className="absolute inset-0 bg-[var(--bento-card)]/95 md:bg-[var(--bento-card)]/90 md:backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       
       {/* Floating whimsical sparkles */}
@@ -529,112 +547,145 @@ export function Navbar() {
             <KupoBadge />
             <ThemeToggleButton />
 
-            {/* Mobile menu button - min 44px touch target */}
-            <motion.button
+            {/* Mobile menu button - optimized hamburger animation */}
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative p-3 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="md:hidden relative w-11 h-11 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 active:scale-95 transition-transform duration-150"
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
             >
-              <AnimatePresence mode="wait" initial={false}>
-                {mobileMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="w-5 h-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu className="w-5 h-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
+              {/* Animated hamburger lines - pure CSS transforms for 60fps */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+                <span 
+                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out origin-center
+                    ${mobileMenuOpen 
+                      ? 'translate-y-2 rotate-45 bg-[var(--bento-primary)]' 
+                      : 'bg-[var(--bento-text-muted)]'
+                    }`}
+                />
+                <span 
+                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out
+                    ${mobileMenuOpen 
+                      ? 'opacity-0 scale-x-0' 
+                      : 'opacity-100 scale-x-100 bg-[var(--bento-text-muted)]'
+                    }`}
+                />
+                <span 
+                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out origin-center
+                    ${mobileMenuOpen 
+                      ? '-translate-y-2 -rotate-45 bg-[var(--bento-primary)]' 
+                      : 'bg-[var(--bento-text-muted)]'
+                    }`}
+                />
+              </div>
+            </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div 
-              className="md:hidden overflow-hidden"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <div className="py-4 border-t border-[var(--bento-primary)]/10">
-                <div className="space-y-2">
-                  {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }, index) => (
-                    <motion.div
-                      key={path}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.2 }}
-                    >
-                      <Link
-                        to={path}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`
-                          flex items-center justify-between px-4 py-4 rounded-2xl
-                          font-soft text-base font-semibold
-                          transition-all duration-200
-                          active:scale-[0.98]
-                          ${isActive(path)
-                            ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] border border-[var(--bento-primary)]/10'
-                            : 'text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)]'
-                          }
-                        `}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={`
-                            w-10 h-10 rounded-xl flex items-center justify-center
-                            ${isActive(path) 
-                              ? 'bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 shadow-sm' 
-                              : 'bg-[var(--bento-bg)]'
-                            }
-                          `}>
-                            <Icon className={`w-5 h-5 ${isActive(path) ? 'text-[var(--bento-primary)]' : ''}`} />
-                          </div>
-                          <span>{label}</span>
-                        </div>
-                        <AccentIcon className={`w-4 h-4 ${isActive(path) ? 'text-[var(--bento-secondary)]' : 'text-[var(--bento-text-subtle)]'}`} />
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-                
-                {/* Mobile footer - storybook style */}
-                <motion.div 
-                  className="mt-6 pt-4 border-t border-[var(--bento-primary)]/10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <div className="flex items-center justify-center gap-3 py-2">
+        {/* Mobile menu - GPU-accelerated slide animation */}
+        <div 
+          className={`
+            md:hidden fixed inset-x-0 top-[4.5rem] bottom-0 z-40
+            transition-all duration-300 ease-out
+            ${mobileMenuOpen 
+              ? 'opacity-100 pointer-events-auto' 
+              : 'opacity-0 pointer-events-none'
+            }
+          `}
+          style={{ 
+            paddingTop: 'var(--safe-area-inset-top)',
+            top: 'calc(4.5rem + var(--safe-area-inset-top, 0px))'
+          }}
+        >
+          {/* Backdrop overlay */}
+          <div 
+            className={`
+              absolute inset-0 bg-[var(--bento-bg)]/95 
+              transition-opacity duration-300
+              ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}
+            `}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          {/* Menu content - slides up from bottom */}
+          <div 
+            className={`
+              relative h-full flex flex-col
+              transition-transform duration-300 ease-out
+              ${mobileMenuOpen ? 'translate-y-0' : '-translate-y-4'}
+            `}
+          >
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-6">
+              {/* Nav items */}
+              <div className="space-y-3">
+                {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }, index) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`
+                      flex items-center justify-between px-4 py-4 rounded-2xl
+                      font-soft text-base font-semibold
+                      active:scale-[0.98] transition-transform duration-150
+                      ${isActive(path)
+                        ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] border border-[var(--bento-primary)]/10'
+                        : 'text-[var(--bento-text-muted)] bg-[var(--bento-card)]/60 active:bg-[var(--bento-card)]'
+                      }
+                    `}
+                    style={{ 
+                      transitionDelay: mobileMenuOpen ? `${index * 50}ms` : '0ms',
+                      transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-8px)',
+                      opacity: mobileMenuOpen ? 1 : 0,
+                      transition: 'transform 200ms ease-out, opacity 200ms ease-out'
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`
+                        w-12 h-12 rounded-xl flex items-center justify-center
+                        ${isActive(path) 
+                          ? 'bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 shadow-sm' 
+                          : 'bg-[var(--bento-bg)]'
+                        }
+                      `}>
+                        <Icon className={`w-6 h-6 ${isActive(path) ? 'text-[var(--bento-primary)]' : ''}`} />
+                      </div>
+                      <span className="text-lg">{label}</span>
+                    </div>
+                    <AccentIcon className={`w-5 h-5 ${isActive(path) ? 'text-[var(--bento-secondary)]' : 'text-[var(--bento-text-subtle)]'}`} />
+                  </Link>
+                ))}
+              </div>
+              
+              {/* Decorative moogle section */}
+              <div 
+                className="mt-8 pt-6 border-t border-[var(--bento-primary)]/10"
+                style={{ 
+                  opacity: mobileMenuOpen ? 1 : 0,
+                  transition: 'opacity 300ms ease-out 150ms'
+                }}
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <img 
+                    src={lilGuyMoogle} 
+                    alt="" 
+                    className="w-16 h-16 object-contain opacity-60"
+                    aria-hidden="true"
+                  />
+                  <div className="flex items-center gap-3">
                     <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                     <span className="font-accent text-xl text-[var(--bento-secondary)]">
                       ~ Happy adventuring, kupo! ~
                     </span>
                     <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
                   </div>
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+            
+            {/* Bottom safe area padding */}
+            <div style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }} />
+          </div>
+        </div>
       </div>
     </nav>
   );
