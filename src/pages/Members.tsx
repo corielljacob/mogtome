@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, Filter, ChevronUp } from 'lucide-react';
+import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, ChevronUp } from 'lucide-react';
 import { membersApi } from '../api/members';
 import { VirtualizedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, MobileHeader } from '../components';
 import { FC_RANKS } from '../types';
@@ -15,7 +15,7 @@ import musicMoogle from '../assets/moogles/moogle playing music.webp';
 // Mobile Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Mobile: Compact search field */
+/** Mobile: Award-winning search field with premium feel */
 function MobileSearchField({ 
   value, 
   onChange, 
@@ -30,9 +30,14 @@ function MobileSearchField({
   inputRef?: React.RefObject<HTMLInputElement | null>;
 }) {
   return (
-    <div className="relative flex-1">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search className="w-4 h-4 text-[var(--bento-text-muted)]" />
+    <motion.div 
+      className="relative"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <Search className="w-5 h-5 text-[var(--bento-text-muted)]" />
       </div>
       <input
         ref={inputRef}
@@ -41,34 +46,44 @@ function MobileSearchField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="
-          w-full pl-9 pr-8 py-2
-          bg-[var(--bento-card)] 
-          border border-[var(--bento-border)]
-          rounded-lg
-          text-sm font-soft text-[var(--bento-text)]
-          placeholder:text-[var(--bento-text-subtle)]
-          focus:outline-none focus:border-[var(--bento-primary)] focus:ring-1 focus:ring-[var(--bento-primary)]/20
-          transition-all duration-100
+          w-full pl-12 pr-11 py-3.5
+          bg-[var(--bento-card)]
+          border border-[var(--bento-border)]/50
+          rounded-2xl
+          text-[15px] text-[var(--bento-text)]
+          placeholder:text-[var(--bento-text-muted)]
+          focus:outline-none focus:border-[var(--bento-primary)]/50
+          focus:shadow-lg focus:shadow-[var(--bento-primary)]/10
+          transition-all duration-200
         "
       />
-      {value && (
-        <button
-          onClick={onClear}
-          className="absolute inset-y-0 right-0 pr-2.5 flex items-center cursor-pointer"
-        >
-          <div className="w-4 h-4 rounded-full bg-[var(--bento-text-muted)]/20 flex items-center justify-center">
-            <X className="w-2.5 h-2.5 text-[var(--bento-text-muted)]" />
-          </div>
-        </button>
-      )}
-    </div>
+      <AnimatePresence>
+        {value && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
+            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            onClick={onClear}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            <motion.div 
+              className="w-6 h-6 rounded-full bg-[var(--bento-primary)]/10 flex items-center justify-center"
+              whileTap={{ scale: 0.8 }}
+            >
+              <X className="w-3.5 h-3.5 text-[var(--bento-primary)]" />
+            </motion.div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
-/** Mobile: Horizontal scrolling filter chips - compact */
-function MobileFilterChips({ 
-  ranks, 
-  selectedRanks, 
+/** Mobile: Premium horizontal scrolling filter chips */
+function MobileFilterChips({
+  ranks,
+  selectedRanks,
   rankCounts,
   onToggle,
   onClearAll,
@@ -79,67 +94,103 @@ function MobileFilterChips({
   onToggle: (rank: string) => void;
   onClearAll: () => void;
 }) {
+  const hasSelection = selectedRanks.length > 0;
+  
   return (
     <div className="relative -mx-4">
-      {/* Edge fades */}
-      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-[var(--bento-bg)] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-[var(--bento-bg)] to-transparent z-10 pointer-events-none" />
-      
-      <div className="flex gap-1.5 px-4 overflow-x-auto scrollbar-none scroll-smooth">
-        {/* Clear button */}
-        {selectedRanks.length > 0 && (
-          <button
-            onClick={onClearAll}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--bento-primary)] text-white text-[11px] font-soft font-semibold active:scale-95 transition-transform"
-          >
-            <X className="w-3 h-3" />
-            Clear
-          </button>
-        )}
-        
-        {ranks.map((rank) => {
+      {/* Edge fade for scroll indication */}
+      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-[var(--bento-card)] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-[var(--bento-card)] to-transparent z-10 pointer-events-none" />
+
+      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-none scroll-smooth py-1">
+        {ranks.map((rank, index) => {
           const isSelected = selectedRanks.includes(rank.name);
           const count = rankCounts[rank.name] || 0;
-          
+
           return (
-            <button
+            <motion.button
               key={rank.name}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.02 }}
               onClick={() => onToggle(rank.name)}
+              whileTap={{ scale: 0.95 }}
               className={`
-                flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-soft font-medium
-                active:scale-95 transition-all duration-100
-                ${isSelected 
-                  ? 'bg-[var(--bento-primary)] text-white' 
-                  : 'bg-[var(--bento-card)] text-[var(--bento-text)] border border-[var(--bento-border)]'
+                flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold
+                transition-all duration-150
+                ${isSelected
+                  ? 'bg-[var(--bento-primary)] text-white shadow-md shadow-[var(--bento-primary)]/25'
+                  : 'bg-[var(--bento-card)] text-[var(--bento-text)] border border-[var(--bento-border)]/50'
                 }
               `}
             >
               <span className="whitespace-nowrap">{rank.name}</span>
-              <span className={`text-[10px] tabular-nums ${isSelected ? 'text-white/70' : 'text-[var(--bento-text-muted)]'}`}>
+              <span className={`tabular-nums text-[10px] px-1.5 py-0.5 rounded-full ${
+                isSelected
+                  ? 'bg-white/20 text-white'
+                  : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+              }`}>
                 {count}
               </span>
-            </button>
+            </motion.button>
           );
         })}
+        
+        {/* Clear button - smooth fade in/out at end */}
+        <motion.button
+          initial={false}
+          animate={{ 
+            opacity: hasSelection ? 1 : 0,
+            scale: hasSelection ? 1 : 0.8,
+            x: hasSelection ? 0 : -8,
+          }}
+          transition={{ duration: 0.15 }}
+          onClick={onClearAll}
+          disabled={!hasSelection}
+          className={`
+            flex-shrink-0 flex items-center gap-1 px-3 py-2 rounded-full 
+            bg-[var(--bento-text-muted)]/15 text-[var(--bento-text-muted)] 
+            text-xs font-semibold active:scale-95 transition-transform
+            ${!hasSelection ? 'pointer-events-none' : ''}
+          `}
+        >
+          <X className="w-3.5 h-3.5" />
+          Clear
+        </motion.button>
       </div>
     </div>
   );
 }
 
-/** Back to top floating button */
+/** Premium floating back-to-top button */
 function BackToTopButton({ show }: { show: boolean }) {
   return (
     <AnimatePresence>
       {show && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          initial={{ opacity: 0, scale: 0.6, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          exit={{ opacity: 0, scale: 0.6, y: 20 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 25,
+          }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 right-4 z-40 md:hidden w-12 h-12 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-xl shadow-black/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
-          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-24 right-4 z-40 md:hidden w-12 h-12 rounded-full bg-[var(--bento-card)]/95 border border-[var(--bento-border)]/50 flex items-center justify-center cursor-pointer"
+          whileTap={{ scale: 0.9 }}
+          style={{
+            boxShadow: '0 4px 20px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
+          }}
         >
-          <ChevronUp className="w-5 h-5 text-[var(--bento-text)]" />
+          <motion.div
+            animate={{ y: [0, -2, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronUp className="w-5 h-5 text-[var(--bento-primary)]" />
+          </motion.div>
         </motion.button>
       )}
     </AnimatePresence>
@@ -241,20 +292,20 @@ export function Members() {
 
       {/* ═══════════════════════════════════════════════════════════════════════
           MOBILE VIEW (< md breakpoint)
-          Dynamic header with title + search/filters
+          Award-winning header with gradient accent + search/filters
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="md:hidden">
         {/* Page header with search */}
         <MobileHeader 
           title="Family"
           rightContent={
-            <span className="px-2 py-0.5 rounded-full bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-bold tabular-nums">
+            <span className="px-3 py-1.5 text-[var(--bento-primary)] text-sm font-bold tabular-nums">
               {hasActiveFilters ? filteredMembers.length : allMembers.length}
             </span>
           }
         >
           {/* Search and filters */}
-          <div className="px-4 py-2 space-y-2 border-b border-[var(--bento-border)]/30">
+          <div className="px-5 pb-4 space-y-3">
             <MobileSearchField
               value={searchQuery}
               onChange={setSearchQuery}
@@ -263,45 +314,14 @@ export function Members() {
               inputRef={searchInputRef}
             />
             
-            {/* Filter row */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-soft font-medium active:scale-95 transition-all ${showFilters || selectedRanks.length > 0 ? 'bg-[var(--bento-primary)]/10 text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)] bg-[var(--bento-card)]'}`}
-              >
-                <Filter className="w-3.5 h-3.5" />
-                <span>Rank</span>
-                {selectedRanks.length > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-[var(--bento-primary)] text-white text-[10px] font-bold">
-                    {selectedRanks.length}
-                  </span>
-                )}
-              </button>
-              
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-soft font-medium text-[var(--bento-text-muted)] active:scale-95 transition-all"
-                >
-                  <X className="w-3 h-3" />
-                  Clear
-                </button>
-              )}
-            </div>
-            
-            {/* Filter chips */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }} 
-                  animate={{ opacity: 1, height: 'auto' }} 
-                  exit={{ opacity: 0, height: 0 }} 
-                  transition={{ duration: 0.15 }}
-                >
-                  <MobileFilterChips ranks={FC_RANKS} selectedRanks={selectedRanks} rankCounts={rankCounts} onToggle={toggleRank} onClearAll={() => setSelectedRanks([])} />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Filter chips - always visible, horizontally scrollable */}
+            <MobileFilterChips 
+              ranks={FC_RANKS} 
+              selectedRanks={selectedRanks} 
+              rankCounts={rankCounts} 
+              onToggle={toggleRank} 
+              onClearAll={() => setSelectedRanks([])} 
+            />
           </div>
         </MobileHeader>
 

@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Minimal loading fallback - native-style skeleton
+// Premium loading fallback - native-style with delight
 function PageLoader() {
   return (
     <motion.div 
@@ -30,18 +30,37 @@ function PageLoader() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.25 }}
     >
-      {/* iOS-style spinner */}
+      {/* Premium spinner with gradient */}
       <motion.div 
-        className="w-8 h-8 rounded-full border-[2.5px] border-[var(--bento-primary)]/15 border-t-[var(--bento-primary)] mb-3"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-      />
+        className="relative w-10 h-10 mb-4"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      >
+        {/* Outer glow */}
+        <div className="absolute inset-0 rounded-full bg-[var(--bento-primary)]/10 blur-xl scale-150" />
+        
+        {/* Spinner ring */}
+        <motion.div 
+          className="relative w-10 h-10 rounded-full"
+          style={{
+            background: `conic-gradient(from 0deg, transparent 0deg, var(--bento-primary) 60deg, transparent 120deg)`,
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          {/* Inner circle to create ring effect */}
+          <div className="absolute inset-[3px] rounded-full bg-[var(--bento-bg)]" />
+        </motion.div>
+      </motion.div>
+      
       <motion.p 
-        className="text-sm font-soft text-[var(--bento-text-muted)]"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+        className="text-sm font-soft font-medium text-[var(--bento-text-muted)]"
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: [0.6, 1, 0.6], y: 0 }}
+        transition={{ opacity: { duration: 1.5, repeat: Infinity }, y: { duration: 0.2 } }}
       >
         Loading...
       </motion.p>
@@ -89,15 +108,16 @@ function AppContent() {
             <Suspense fallback={<PageLoader />}>
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
+                initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.995 }}
                 transition={{
                   type: "spring",
-                  stiffness: 400,
+                  stiffness: 450,
                   damping: 35,
-                  mass: 0.8,
-                  opacity: { duration: 0.15 }
+                  mass: 0.7,
+                  opacity: { duration: 0.18, ease: "easeOut" },
+                  scale: { duration: 0.2, ease: "easeOut" }
                 }}
               >
                 <Routes location={location}>

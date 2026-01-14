@@ -4,7 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform, animate } from '
 import { Users, Heart, ArrowRight, Sparkles, Star, Scroll, ChevronRight, Sun, Moon } from 'lucide-react';
 
 // Shared components
-import { Button, StoryDivider, FloatingSparkles, FloatingMoogles, MobileHeader, type MoogleConfig } from '../components';
+import { Button, StoryDivider, FloatingSparkles, FloatingMoogles, type MoogleConfig } from '../components';
 
 // Assets
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
@@ -104,7 +104,7 @@ function CornerFlourish({ position }: { position: 'top-left' | 'top-right' | 'bo
   );
 }
 
-/** Mobile: Simple theme toggle button */
+/** Mobile: Premium theme toggle button */
 function MobileThemeToggle() {
   const getInitialTheme = () => {
     if (typeof window === 'undefined') return false;
@@ -119,7 +119,6 @@ function MobileThemeToggle() {
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     
-    // Update theme-color meta tag
     const color = isDark ? '#1A1722' : '#FFF9F5';
     const metas = document.querySelectorAll('meta[name="theme-color"]');
     metas.forEach(meta => {
@@ -129,21 +128,33 @@ function MobileThemeToggle() {
   }, [isDark]);
 
   return (
-    <button
+    <motion.button
       onClick={() => setIsDark(prev => !prev)}
-      className="w-9 h-9 rounded-xl bg-[var(--bento-card)] border border-[var(--bento-border)] flex items-center justify-center active:scale-95 transition-transform"
+      className="w-10 h-10 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-border)]/30 flex items-center justify-center"
+      style={{
+        WebkitBackdropFilter: 'blur(12px)',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      }}
+      whileTap={{ scale: 0.9 }}
       aria-label="Toggle theme"
     >
-      {isDark ? (
-        <Moon className="w-4 h-4 text-[var(--bento-secondary)]" />
-      ) : (
-        <Sun className="w-4 h-4 text-[var(--bento-primary)]" />
-      )}
-    </button>
+      <motion.div
+        initial={false}
+        animate={{ rotate: isDark ? 180 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
+        {isDark ? (
+          <Moon className="w-5 h-5 text-[var(--bento-secondary)]" />
+        ) : (
+          <Sun className="w-5 h-5 text-[var(--bento-primary)]" />
+        )}
+      </motion.div>
+    </motion.button>
   );
 }
 
-/** Mobile: Native-style quick action card with improved touch feedback */
+/** Mobile: Premium quick action card with depth and polish */
 function QuickActionCard({ 
   to, 
   icon: Icon, 
@@ -158,36 +169,55 @@ function QuickActionCard({
         className={`
           relative overflow-hidden
           bg-gradient-to-br ${gradient}
-          rounded-2xl p-4
-          shadow-lg shadow-black/15
+          rounded-[20px] p-4
         `}
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay, type: "spring", stiffness: 300, damping: 25 }}
-        whileTap={{ scale: 0.96 }}
+        transition={{ 
+          delay, 
+          type: "spring", 
+          stiffness: 350, 
+          damping: 25,
+        }}
+        whileTap={{ scale: 0.95, y: 2 }}
+        style={{
+          boxShadow: '0 8px 24px -4px rgba(0,0,0,0.15), 0 4px 8px -2px rgba(0,0,0,0.1)',
+        }}
       >
-        {/* Glossy overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-white/5 to-transparent pointer-events-none" />
+        {/* Premium glossy overlay with multiple layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
         
-        {/* Icon with subtle shadow */}
+        {/* Subtle noise texture for depth */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} 
+        />
+        
+        {/* Icon with glass effect */}
         <motion.div 
-          className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-sm"
+          className="relative w-11 h-11 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 border border-white/20"
           whileTap={{ scale: 0.9 }}
+          style={{
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.1)',
+          }}
         >
           <Icon className="w-5 h-5 text-white drop-shadow-sm" />
         </motion.div>
         
-        <h3 className="font-display font-bold text-white text-base leading-tight drop-shadow-sm">{title}</h3>
-        <p className="text-white/80 text-xs font-soft mt-0.5">{subtitle}</p>
+        <h3 className="relative font-display font-bold text-white text-[15px] leading-tight drop-shadow-sm">{title}</h3>
+        <p className="relative text-white/75 text-[12px] font-soft mt-0.5">{subtitle}</p>
         
-        {/* Chevron with animation hint */}
+        {/* Animated chevron with glow */}
         <motion.div 
           className="absolute bottom-4 right-4"
-          animate={{ x: [0, 3, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ x: [0, 4, 0] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <ChevronRight className="w-5 h-5 text-white/60" />
+          <ChevronRight className="w-5 h-5 text-white/50" />
         </motion.div>
+        
+        {/* Corner shine effect */}
+        <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl pointer-events-none" />
       </motion.div>
     </Link>
   );
@@ -236,127 +266,179 @@ export function Home() {
 
       {/* ═══════════════════════════════════════════════════════════════════════
           MOBILE VIEW (< md breakpoint)
-          Native app-style layout with quick actions
+          Award-winning native app-style layout with premium interactions
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="md:hidden flex-1 flex flex-col relative z-10">
-        {/* Home header with theme toggle */}
-        <MobileHeader 
-          title="MogTome"
-          rightContent={<MobileThemeToggle />}
-        />
+        {/* Minimal floating header - just theme toggle */}
+        <div 
+          className="sticky top-0 z-40 flex justify-end p-4"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+        >
+          <MobileThemeToggle />
+        </div>
         
         <div className="flex-1 flex flex-col px-5 py-4">
-        {/* Hero section */}
-        <motion.div 
-          className="flex-1 flex flex-col items-center justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Tappable moogle */}
+          {/* Hero section - centered with staggered animations */}
           <motion.div 
-            className="relative mb-4 cursor-pointer select-none"
-            style={{ y: moogleY, scale: moogleScale }}
-            onTap={handleMoogleTap}
+            className="flex-1 flex flex-col items-center justify-center py-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/25 via-[var(--bento-accent)]/15 to-transparent blur-2xl scale-150" />
-            <motion.img 
-              src={welcomingMoogle} 
-              alt="Welcoming moogle" 
-              className="relative w-32 drop-shadow-xl"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute -top-2 -right-2"
-              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+            {/* Tappable moogle with enhanced glow */}
+            <motion.div 
+              className="relative mb-6"
+              style={{ y: moogleY, scale: moogleScale }}
+              onTap={handleMoogleTap}
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 20,
+                delay: 0.1,
+              }}
             >
-              <Sparkles className="w-5 h-5 text-[var(--bento-primary)]" />
+              {/* Multi-layer glow effect */}
+              <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/25 via-transparent to-transparent blur-3xl scale-[2]" />
+              <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-secondary)]/15 via-transparent to-transparent blur-2xl scale-150 translate-y-2" />
+              
+              <motion.img 
+                src={welcomingMoogle} 
+                alt="Welcoming moogle" 
+                className="relative w-32 drop-shadow-2xl"
+                animate={{ 
+                  y: [0, -8, 0],
+                  rotate: [0, 1, -1, 0],
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                }}
+              />
+              
+              {/* Tap hint animation */}
+              <motion.div 
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-[var(--bento-text-muted)] font-soft"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.6, 0] }}
+                transition={{ delay: 2, duration: 2, repeat: Infinity }}
+              >
+                tap me!
+              </motion.div>
+            </motion.div>
+
+            {/* Premium speech bubble with glass effect */}
+            <motion.div
+              className="w-full max-w-[280px] mb-6"
+              initial={{ opacity: 0, y: 12, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ 
+                type: "spring",
+                stiffness: 350,
+                damping: 25,
+                delay: 0.25,
+              }}
+            >
+              <div 
+                className="relative bg-[var(--bento-card)]/95 rounded-[20px] px-5 py-4 border border-[var(--bento-border)]/40"
+                style={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03)',
+                }}
+              >
+                {/* Speech bubble pointer */}
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--bento-card)]/95 rotate-45 border-l border-t border-[var(--bento-border)]/40" />
+                
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={quoteIndex}
+                    className="font-accent text-xl text-[var(--bento-text)] text-center leading-snug"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {kupoQuotes[quoteIndex]}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Brand with staggered reveal */}
+            <motion.div 
+              className="text-center" 
+              initial={{ opacity: 0, y: 12 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ 
+                type: "spring",
+                stiffness: 350,
+                damping: 25,
+                delay: 0.35,
+              }}
+            >
+              <h1 className="text-[2.75rem] font-display font-bold tracking-[-0.02em] mb-1">
+                <span className="text-[var(--bento-primary)]">Mog</span>
+                <span className="text-[var(--bento-secondary)]">Tome</span>
+              </h1>
+              <p className="text-[15px] text-[var(--bento-text-muted)] font-soft">
+                Your Free Company's cozy hearth
+              </p>
             </motion.div>
           </motion.div>
 
-          {/* Speech bubble */}
-          <motion.div
-            className="w-full max-w-[280px] mb-6"
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 25 }}
-          >
-            <div className="relative bg-[var(--bento-card)] rounded-2xl px-5 py-4 shadow-lg border border-[var(--bento-primary)]/10">
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--bento-card)] rotate-45 border-l border-t border-[var(--bento-primary)]/10" />
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={quoteIndex}
-                  className="font-accent text-xl text-[var(--bento-text)] text-center leading-snug"
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {kupoQuotes[quoteIndex]}
-                </motion.p>
-              </AnimatePresence>
+          {/* Quick actions with premium styling */}
+          <div className="space-y-3 pb-2">
+            <div className="flex gap-3">
+              {quickActions.map((action) => (
+                <QuickActionCard key={action.to} {...action} />
+              ))}
             </div>
-          </motion.div>
-
-          {/* Brand */}
-          <motion.div className="text-center mb-2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h1 className="text-5xl font-display font-bold tracking-tight">
-              <span className="text-[var(--bento-primary)]">Mog</span>
-              <span className="text-[var(--bento-secondary)]">Tome</span>
-            </h1>
-          </motion.div>
-          <motion.p className="text-sm text-[var(--bento-text-muted)] font-soft text-center mb-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
-            Your Free Company's cozy hearth
-          </motion.p>
-          <motion.div className="flex items-center gap-1 text-[var(--bento-secondary)]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-            <Star className="w-3 h-3 fill-current" />
-            <Star className="w-3 h-3 fill-current" />
-            <Star className="w-3 h-3 fill-current" />
-          </motion.div>
-        </motion.div>
-
-        {/* Quick actions */}
-        <div className="mt-auto space-y-4">
-          <div className="flex gap-3">
-            {quickActions.map((action) => (
-              <QuickActionCard key={action.to} {...action} />
-            ))}
-          </div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Link to="/members" className="block">
-              <motion.button 
-                className="
-                  w-full flex items-center justify-center gap-3 
-                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] 
-                  text-white font-soft font-semibold text-base 
-                  py-4 px-6 rounded-2xl 
-                  shadow-xl shadow-[var(--bento-primary)]/30
-                  relative overflow-hidden
-                "
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              >
-                {/* Glossy highlight */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent pointer-events-none" />
-                
-                <Users className="w-5 h-5 relative z-10" />
-                <span className="relative z-10">Meet the Family</span>
-                <motion.div
-                  className="relative z-10"
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            
+            {/* Primary CTA button with premium feel */}
+            <motion.div 
+              initial={{ opacity: 0, y: 16 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ 
+                type: "spring",
+                stiffness: 350,
+                damping: 25,
+                delay: 0.3,
+              }}
+            >
+              <Link to="/members" className="block">
+                <motion.button 
+                  className="
+                    relative w-full flex items-center justify-center gap-2.5 
+                    bg-gradient-to-r from-[var(--bento-primary)] to-[#E86969]
+                    text-white font-bold text-[15px] 
+                    py-4 px-6 rounded-2xl 
+                    overflow-hidden
+                  "
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    boxShadow: '0 8px 24px -4px rgba(229, 75, 75, 0.35), 0 4px 8px -2px rgba(229, 75, 75, 0.2)',
+                  }}
                 >
-                  <ArrowRight className="w-5 h-5" />
-                </motion.div>
-              </motion.button>
-            </Link>
-          </motion.div>
-        </div>
-        
-        {/* Bottom safe area spacer */}
-        <div className="h-20" />
+                  {/* Glossy shine */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent pointer-events-none" />
+                  
+                  <Users className="w-5 h-5 relative" />
+                  <span className="relative">Meet the Family</span>
+                  <motion.div
+                    className="relative"
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.div>
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
+          
+          {/* Bottom safe area spacer for tab bar */}
+          <div className="h-16" />
         </div>
       </div>
 

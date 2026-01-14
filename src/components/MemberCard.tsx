@@ -2,6 +2,7 @@ import { useState, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
 import { ExternalLink, Crown, Shield, Sword, Leaf, Cat, Bird, Star, Heart, Sparkles } from 'lucide-react';
+import { haptics } from '../hooks';
 import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.webp';
 
 interface MemberCardProps {
@@ -9,39 +10,48 @@ interface MemberCardProps {
   index?: number;
 }
 
-// Rank theming
+// Rank theming - enhanced with mobile-optimized colors
 const rankThemes: Record<string, { 
   gradient: string; 
   glow: string; 
   bg: string;
+  bgMobile: string;
   icon: typeof Crown;
   accent: string;
 }> = {
-  'Moogle Guardian': { gradient: 'from-amber-400 to-orange-400', glow: 'rgba(251, 191, 36, 0.4)', bg: 'bg-amber-500/10', icon: Crown, accent: 'text-amber-500' },
-  'Moogle Knight': { gradient: 'from-violet-400 to-purple-500', glow: 'rgba(167, 139, 250, 0.4)', bg: 'bg-violet-500/10', icon: Shield, accent: 'text-violet-500' },
-  'Paissa Trainer': { gradient: 'from-rose-400 to-pink-500', glow: 'rgba(251, 113, 133, 0.4)', bg: 'bg-rose-500/10', icon: Heart, accent: 'text-rose-500' },
-  'Coeurl Hunter': { gradient: 'from-purple-300 to-violet-400', glow: 'rgba(196, 181, 253, 0.4)', bg: 'bg-purple-400/10', icon: Cat, accent: 'text-purple-400' },
-  'Mandragora': { gradient: 'from-orange-300 to-rose-400', glow: 'rgba(253, 186, 116, 0.4)', bg: 'bg-orange-400/10', icon: Leaf, accent: 'text-orange-400' },
-  'Apkallu Seeker': { gradient: 'from-pink-300 to-rose-400', glow: 'rgba(249, 168, 212, 0.4)', bg: 'bg-pink-400/10', icon: Bird, accent: 'text-pink-400' },
-  'Kupo Shelf': { gradient: 'from-violet-300 to-purple-400', glow: 'rgba(196, 181, 253, 0.35)', bg: 'bg-violet-400/10', icon: Star, accent: 'text-violet-400' },
-  'Bom Boko': { gradient: 'from-stone-300 to-stone-400', glow: 'rgba(168, 162, 158, 0.3)', bg: 'bg-stone-400/10', icon: Sparkles, accent: 'text-stone-400' },
+  'Moogle Guardian': { gradient: 'from-amber-400 to-orange-400', glow: 'rgba(251, 191, 36, 0.4)', bg: 'bg-amber-500/10', bgMobile: 'bg-amber-500/15', icon: Crown, accent: 'text-amber-500' },
+  'Moogle Knight': { gradient: 'from-violet-400 to-purple-500', glow: 'rgba(167, 139, 250, 0.4)', bg: 'bg-violet-500/10', bgMobile: 'bg-violet-500/15', icon: Shield, accent: 'text-violet-500' },
+  'Paissa Trainer': { gradient: 'from-rose-400 to-pink-500', glow: 'rgba(251, 113, 133, 0.4)', bg: 'bg-rose-500/10', bgMobile: 'bg-rose-500/15', icon: Heart, accent: 'text-rose-500' },
+  'Coeurl Hunter': { gradient: 'from-purple-300 to-violet-400', glow: 'rgba(196, 181, 253, 0.4)', bg: 'bg-purple-400/10', bgMobile: 'bg-purple-400/15', icon: Cat, accent: 'text-purple-400' },
+  'Mandragora': { gradient: 'from-orange-300 to-rose-400', glow: 'rgba(253, 186, 116, 0.4)', bg: 'bg-orange-400/10', bgMobile: 'bg-orange-400/15', icon: Leaf, accent: 'text-orange-400' },
+  'Apkallu Seeker': { gradient: 'from-pink-300 to-rose-400', glow: 'rgba(249, 168, 212, 0.4)', bg: 'bg-pink-400/10', bgMobile: 'bg-pink-400/15', icon: Bird, accent: 'text-pink-400' },
+  'Kupo Shelf': { gradient: 'from-violet-300 to-purple-400', glow: 'rgba(196, 181, 253, 0.35)', bg: 'bg-violet-400/10', bgMobile: 'bg-violet-400/15', icon: Star, accent: 'text-violet-400' },
+  'Bom Boko': { gradient: 'from-stone-300 to-stone-400', glow: 'rgba(168, 162, 158, 0.3)', bg: 'bg-stone-400/10', bgMobile: 'bg-stone-400/15', icon: Sparkles, accent: 'text-stone-400' },
 };
 
 const defaultTheme = {
   gradient: 'from-[var(--bento-primary)] to-[var(--bento-secondary)]',
   glow: 'rgba(199, 91, 122, 0.3)',
   bg: 'bg-[var(--bento-primary)]/10',
+  bgMobile: 'bg-[var(--bento-primary)]/15',
   icon: Sword,
   accent: 'text-[var(--bento-primary)]',
 };
 
 /**
- * MemberCard - Works for both mobile and desktop
- * Mobile: Simpler, touch-optimized
+ * MemberCard - Award-winning responsive member card
+ * 
+ * Mobile: Premium native-feel with:
+ * - Smooth image reveal animation
+ * - Spring-based press feedback
+ * - Haptic feedback on tap
+ * - Subtle rank glow effect
+ * 
  * Desktop: Rich hover effects and animations
  */
 export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
@@ -53,16 +63,26 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
+  
+  const handleTouchStart = useCallback(() => {
+    setIsPressed(true);
+    haptics.light();
+  }, []);
+  
+  const handleTouchEnd = useCallback(() => {
+    setIsPressed(false);
+  }, []);
 
   return (
     <motion.div 
-      className="group relative w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem]"
-      initial={shouldAnimateEntrance ? { opacity: 0, y: 20, scale: 0.95 } : false}
+      className="group relative w-full"
+      initial={shouldAnimateEntrance ? { opacity: 0, y: 16, scale: 0.95 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={shouldAnimateEntrance ? { 
-        duration: 0.4, 
-        delay: Math.min(index * 0.03, 0.6),
-        ease: [0.25, 0.46, 0.45, 0.94]
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+        delay: Math.min(index * 0.025, 0.5),
       } : undefined}
     >
       {/* Desktop: Hover glow effect */}
@@ -74,35 +94,71 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
         transition={{ duration: 0.3 }}
       />
       
+      {/* Mobile: Subtle ambient glow - always visible */}
+      <div 
+        className="md:hidden absolute -inset-1 rounded-2xl blur-xl pointer-events-none opacity-30"
+        style={{ backgroundColor: theme.glow }}
+      />
+      
       <motion.a
         href={lodestoneUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="
-          block relative w-full
+          block relative w-full h-[230px]
           bg-[var(--bento-card)]
-          border border-[var(--bento-primary)]/10
-          rounded-xl md:rounded-2xl overflow-hidden shadow-sm
+          border border-[var(--bento-border)]/40
+          rounded-2xl overflow-hidden
+          shadow-sm
           md:hover:shadow-xl
-          active:scale-[0.97] md:active:scale-100
-          transition-all duration-150
+          md:active:opacity-100
         "
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        // Desktop: hover lift effect
-        animate={isHovered ? { y: -6 } : { y: 0 }}
-        whileTap={{ scale: 0.97 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        initial={false}
+        animate={{ 
+          y: isHovered ? -6 : 0,
+          scale: isPressed ? 0.96 : 1,
+        }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 500, 
+          damping: 30,
+          mass: 0.8,
+        }}
+        style={{
+          boxShadow: isPressed 
+            ? '0 2px 8px rgba(0,0,0,0.1)' 
+            : '0 4px 12px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02)',
+        }}
       >
-        {/* Gradient rank banner */}
-        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} />
+        {/* Gradient rank banner - animated on mobile */}
+        <motion.div 
+          className={`h-1 md:h-1 bg-gradient-to-r ${theme.gradient}`}
+          initial={false}
+          animate={{ 
+            scaleX: isPressed ? 0.95 : 1,
+            opacity: isPressed ? 0.8 : 1,
+          }}
+          style={{ originX: 0.5 }}
+          transition={{ duration: 0.1 }}
+        />
         
         {/* Avatar */}
         <div className="relative overflow-hidden">
-          {/* Loading shimmer */}
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" />
-          )}
+          {/* Premium loading shimmer */}
+          <AnimatePresence>
+            {!imageLoaded && (
+              <motion.div 
+                className="absolute inset-0 premium-shimmer"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+          </AnimatePresence>
           
           <motion.img
             src={member.avatarLink}
@@ -110,16 +166,31 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             loading="lazy"
             decoding="async"
             onLoad={handleImageLoad}
-            className={`w-full aspect-square object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-            // Desktop: zoom on hover
-            animate={{ scale: isHovered ? 1.08 : 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="w-full h-[160px] object-cover"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ 
+              opacity: imageLoaded ? 1 : 0, 
+              scale: imageLoaded ? (isHovered ? 1.08 : 1) : 1.05,
+              filter: imageLoaded ? 'blur(0px)' : 'blur(4px)',
+            }}
+            transition={{ 
+              opacity: { duration: 0.4, ease: "easeOut" },
+              scale: { type: "spring", stiffness: 300, damping: 25 },
+              filter: { duration: 0.3 },
+            }}
           />
           
-          {/* Mobile: Always-visible external link indicator */}
-          <div className="md:hidden absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
-            <ExternalLink className="w-3 h-3 text-white" />
-          </div>
+          {/* Mobile: Premium external link badge */}
+          <motion.div 
+            className="md:hidden absolute bottom-2 right-2"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.8 }}
+            transition={{ delay: 0.1, duration: 0.2 }}
+          >
+            <div className="w-6 h-6 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center border border-white/10">
+              <ExternalLink className="w-3 h-3 text-white" />
+            </div>
+          </motion.div>
           
           {/* Desktop: Hover overlay with Lodestone chip */}
           <AnimatePresence>
@@ -167,18 +238,23 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           </AnimatePresence>
         </div>
 
-        {/* Member info */}
-        <div className="p-2 sm:p-3 text-center space-y-1 sm:space-y-1.5">
-          <h3 className="font-soft font-bold text-xs sm:text-sm text-[var(--bento-text)] truncate leading-tight">
+        {/* Member info - tighter on mobile with spring animations */}
+        <div className="p-2.5 md:p-3 text-center space-y-1.5">
+          <motion.h3 
+            className="font-semibold text-[13px] md:text-sm text-[var(--bento-text)] truncate leading-tight"
+            initial={false}
+            animate={{ scale: isPressed ? 0.98 : 1 }}
+            transition={{ duration: 0.1 }}
+          >
             {member.name}
-          </h3>
+          </motion.h3>
           
-          {/* Rank badge */}
+          {/* Rank badge - enhanced for mobile */}
           <motion.div 
-            className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full ${theme.bg} border border-transparent transition-colors duration-200`}
+            className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full md:${theme.bg} ${theme.bgMobile} md:${theme.bgMobile}`}
+            initial={false}
             animate={{ 
-              scale: isHovered ? 1.05 : 1,
-              borderColor: isHovered ? theme.glow : 'transparent',
+              scale: isHovered ? 1.05 : (isPressed ? 0.95 : 1),
             }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
@@ -186,14 +262,14 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               <motion.img 
                 src={member.freeCompanyRankIcon} 
                 alt="" 
-                className="w-3 h-3" 
+                className="w-3.5 h-3.5" 
                 animate={isHovered ? { rotate: [0, -8, 8, 0] } : {}}
                 transition={{ duration: 0.4 }}
               />
             ) : (
-              <RankIcon className={`w-2.5 h-2.5 ${theme.accent}`} />
+              <RankIcon className={`w-3 h-3 ${theme.accent}`} />
             )}
-            <span className={`text-[9px] sm:text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[70px]`}>
+            <span className={`text-[10px] font-bold ${theme.accent} truncate max-w-[70px]`}>
               {member.freeCompanyRank}
             </span>
           </motion.div>
@@ -208,12 +284,12 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
  */
 export function MemberCardSkeleton() {
   return (
-    <div className="w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem] bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-xl md:rounded-2xl overflow-hidden shadow-sm">
+    <div className="w-full h-[230px] bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-2xl overflow-hidden shadow-sm">
       <div className="h-1 bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/30 to-[var(--bento-primary)]/20 animate-shimmer" />
-      <div className="w-full aspect-square bg-gradient-to-br from-[var(--bento-bg)] to-[var(--bento-card)] relative overflow-hidden">
+      <div className="w-full h-[160px] bg-gradient-to-br from-[var(--bento-bg)] to-[var(--bento-card)] relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--bento-primary)]/10 to-transparent animate-shimmer" />
       </div>
-      <div className="p-2 sm:p-3 space-y-2">
+      <div className="p-2.5 space-y-2">
         <div className="h-3 bg-[var(--bento-bg)] rounded-full animate-pulse mx-auto w-4/5" />
         <div className="h-4 bg-[var(--bento-primary)]/10 rounded-full animate-pulse mx-auto w-3/5" />
       </div>

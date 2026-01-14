@@ -112,10 +112,10 @@ function buildFlatRows(
 // Section header component - responsive
 function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: number }) {
   return (
-    <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4">
+    <div className="flex items-center gap-2 sm:gap-4 pt-4 pb-2 sm:pt-5 sm:pb-3">
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)] flex-shrink-0" />
-        <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--bento-text)] truncate">
+        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)] flex-shrink-0" />
+        <h2 className="font-display font-bold text-base sm:text-xl md:text-2xl text-[var(--bento-text)] truncate">
           {rankName}
         </h2>
         <span className="
@@ -144,7 +144,7 @@ const MemberRow = memo(function MemberRow({
 }) {
   return (
     <div 
-      className="grid gap-2 sm:gap-3 md:gap-5 lg:gap-6 justify-items-center py-1"
+      className="grid gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-2"
       style={{ 
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
@@ -175,17 +175,13 @@ export function VirtualizedMemberGrid({
       : buildFlatRows(members, columnCount);
   }, [showGrouped, membersByRank, members, columnCount]);
 
-  // Estimate row heights - memoized based on rows
+  // Static row heights - cards use fixed CSS heights
   const estimateSize = useCallback((index: number) => {
     const row = rows[index];
-    if (row.type === 'header') return 60; // Header height - smaller on mobile
-    // Card height varies by screen size, estimate based on card aspect ratio + padding
-    // Mobile: cards are smaller (~140px wide), Desktop: ~160-192px wide
-    // Using smaller estimate for mobile (2 cols) = tighter spacing
-    if (columnCount <= 2) return 220; // Mobile
-    if (columnCount <= 3) return 240; // Tablet portrait
-    return 280; // Desktop
-  }, [rows, columnCount]);
+    if (row.type === 'header') return 56;
+    // Fixed card height: 230px + row padding (16px)
+    return 246;
+  }, [rows]);
 
   const virtualizer = useWindowVirtualizer({
     count: rows.length,
@@ -193,6 +189,11 @@ export function VirtualizedMemberGrid({
     overscan: 5, // Render 5 extra rows above/below viewport for smoother scrolling
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
+
+  // Re-measure when column count changes (rows are restructured)
+  useEffect(() => {
+    virtualizer.measure();
+  }, [columnCount, virtualizer]);
 
   const virtualItems = virtualizer.getVirtualItems();
 

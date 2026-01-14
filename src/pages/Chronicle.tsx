@@ -102,59 +102,140 @@ const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { stat
   );
 });
 
-/** Mobile: Compact connection pill */
+/** Mobile: Premium compact connection pill */
 const MobileConnectionPill = memo(function MobileConnectionPill({ status }: { status: ConnectionStatus }) {
-  const configs: Record<ConnectionStatus, { bg: string; text: string; label: string; pulse?: boolean }> = {
-    connected: { bg: 'bg-green-500/10', text: 'text-green-600', label: 'Live' },
-    connecting: { bg: 'bg-yellow-500/10', text: 'text-yellow-600', label: 'Connecting...', pulse: true },
-    reconnecting: { bg: 'bg-yellow-500/10', text: 'text-yellow-600', label: 'Reconnecting...', pulse: true },
+  const configs: Record<ConnectionStatus, { bg: string; text: string; label: string; glow?: string }> = {
+    connected: { bg: 'bg-green-500/15', text: 'text-green-600', label: 'Live', glow: 'rgba(34, 197, 94, 0.2)' },
+    connecting: { bg: 'bg-yellow-500/15', text: 'text-yellow-600', label: 'Connecting...' },
+    reconnecting: { bg: 'bg-yellow-500/15', text: 'text-yellow-600', label: 'Reconnecting...' },
     disconnected: { bg: 'bg-gray-500/10', text: 'text-gray-500', label: 'Offline' },
-    error: { bg: 'bg-red-500/10', text: 'text-red-500', label: 'Error' },
+    error: { bg: 'bg-red-500/15', text: 'text-red-500', label: 'Error' },
   };
   
   const config = configs[status];
   const Icon = status === 'disconnected' || status === 'error' ? WifiOff : Wifi;
+  const isPulsing = status === 'connecting' || status === 'reconnecting';
   
   return (
-    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${config.bg} ${config.text} ${config.pulse ? 'animate-pulse' : ''}`}>
+    <motion.div 
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${config.bg} ${config.text}`}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ 
+        opacity: isPulsing ? [0.7, 1, 0.7] : 1, 
+        scale: 1,
+      }}
+      transition={isPulsing ? { duration: 1.5, repeat: Infinity } : { duration: 0.2 }}
+      style={config.glow ? { boxShadow: `0 0 12px ${config.glow}` } : undefined}
+    >
       <Icon className="w-3.5 h-3.5" />
-      <span className="text-xs font-soft font-semibold">{config.label}</span>
-      {status === 'connected' && <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />}
-    </div>
+      <span className="text-[11px] font-bold">{config.label}</span>
+      {status === 'connected' && (
+        <motion.span 
+          className="w-2 h-2 rounded-full bg-green-500"
+          animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+      )}
+    </motion.div>
   );
 });
 
-/** Mobile: Date section header */
+/** Mobile: Premium date section header */
 function MobileDateHeader({ date }: { date: string }) {
   return (
-    <div className="sticky top-12 z-20 -mx-3 px-3 py-2 bg-[var(--bento-bg)]/95 backdrop-blur-sm">
-      <span className="text-xs font-soft font-bold text-[var(--bento-text-muted)] uppercase tracking-wider">{date}</span>
-    </div>
+    <motion.div 
+      className="sticky top-11 z-20 -mx-3 px-4 py-3 bg-[var(--bento-card)]/90"
+      style={{
+        WebkitBackdropFilter: 'saturate(180%) blur(16px)',
+        backdropFilter: 'saturate(180%) blur(16px)',
+      }}
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="flex items-center gap-3">
+        <span className="text-[13px] font-bold text-[var(--bento-text)] tracking-tight">
+          {date}
+        </span>
+        <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-border)]/50 to-transparent" />
+      </div>
+    </motion.div>
   );
 }
 
-/** Mobile: Compact event card */
-const MobileEventCard = memo(function MobileEventCard({ event, isNew = false }: { event: ChronicleEvent; isNew?: boolean }) {
+/** Mobile: Premium native-style event card */
+const MobileEventCard = memo(function MobileEventCard({ event, isNew = false, index = 0 }: { event: ChronicleEvent; isNew?: boolean; index?: number }) {
   const { Icon, color, bgColor, label } = getEventTypeConfig(event.type);
   
   return (
     <motion.div
       layout
-      initial={isNew ? { opacity: 0, x: -20, scale: 0.95 } : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className={`relative flex items-start gap-3 p-3 bg-[var(--bento-card)] rounded-xl border border-[var(--bento-border)] active:scale-[0.99] active:bg-[var(--bento-bg)] transition-colors duration-100 ${isNew ? 'ring-2 ring-[var(--bento-primary)]/20' : ''}`}
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+        delay: Math.min(index * 0.03, 0.3),
+      }}
+      whileTap={{ scale: 0.98 }}
+      className={`
+        relative flex items-start gap-3.5 p-4
+        bg-[var(--bento-card)] rounded-[18px]
+        border border-[var(--bento-border)]/40
+        active:bg-[var(--bento-bg)] transition-colors duration-75
+        ${isNew ? 'border-[var(--bento-primary)]/40' : ''}
+      `}
+      style={{
+        boxShadow: isNew 
+          ? '0 4px 16px rgba(229, 75, 75, 0.1), 0 2px 4px rgba(0,0,0,0.02)'
+          : '0 2px 8px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02)',
+      }}
     >
-      <div className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${bgColor}`}>
-        <Icon className={`w-4.5 h-4.5 ${color}`} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className={`text-[10px] font-soft font-bold uppercase tracking-wide ${color}`}>{label}</span>
-          {isNew && <motion.span className="w-1.5 h-1.5 rounded-full bg-[var(--bento-primary)]" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />}
-          <span className="ml-auto text-[10px] font-soft text-[var(--bento-text-muted)]">{formatRelativeTime(event.createdAt)}</span>
+      {/* New event glow */}
+      {isNew && (
+        <motion.div 
+          className="absolute inset-0 rounded-[18px] bg-[var(--bento-primary)]/[0.03] pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+      
+      {/* Icon with gradient background */}
+      <motion.div 
+        className={`relative flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center ${bgColor}`}
+        initial={isNew ? { scale: 0.8 } : false}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 500, damping: 25 }}
+      >
+        <Icon className={`w-5 h-5 ${color}`} />
+        {isNew && (
+          <motion.div 
+            className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[var(--bento-primary)] border-2 border-[var(--bento-card)]"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 20, delay: 0.1 }}
+          />
+        )}
+      </motion.div>
+      
+      {/* Content */}
+      <div className="flex-1 min-w-0 pt-0.5">
+        {/* Header row */}
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-bold ${color}`}>{label}</span>
+          </div>
+          <span className="text-[11px] text-[var(--bento-text-muted)] font-medium">
+            {formatRelativeTime(event.createdAt)}
+          </span>
         </div>
-        <p className="text-sm font-soft text-[var(--bento-text)] leading-snug">{event.text}</p>
+        
+        {/* Event text */}
+        <p className="text-[15px] text-[var(--bento-text)] leading-relaxed">
+          {event.text}
+        </p>
       </div>
     </motion.div>
   );
@@ -194,20 +275,35 @@ const TimelineEventCard = memo(function TimelineEventCard({ event, isRealtime = 
   );
 });
 
-/** Back to top floating button - mobile only */
+/** Premium floating back-to-top button */
 function BackToTopButton({ show }: { show: boolean }) {
   return (
     <AnimatePresence>
       {show && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          initial={{ opacity: 0, scale: 0.6, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          exit={{ opacity: 0, scale: 0.6, y: 20 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 25,
+          }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 right-4 z-40 md:hidden w-12 h-12 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-xl shadow-black/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
-          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-24 right-4 z-40 md:hidden w-12 h-12 rounded-full bg-[var(--bento-card)]/95 border border-[var(--bento-border)]/50 flex items-center justify-center cursor-pointer"
+          whileTap={{ scale: 0.9 }}
+          style={{
+            boxShadow: '0 4px 20px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
+          }}
         >
-          <ChevronUp className="w-5 h-5 text-[var(--bento-text)]" />
+          <motion.div
+            animate={{ y: [0, -2, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronUp className="w-5 h-5 text-[var(--bento-primary)]" />
+          </motion.div>
         </motion.button>
       )}
     </AnimatePresence>
@@ -276,7 +372,7 @@ export function Chronicle() {
 
       {/* ═══════════════════════════════════════════════════════════════════════
           MOBILE VIEW (< md breakpoint)
-          Dynamic header with title + connection/filter controls
+          Award-winning header with gradient accent + controls
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="md:hidden">
         {/* Page header with controls */}
@@ -286,36 +382,42 @@ export function Chronicle() {
         >
           {/* Control buttons - only show row if there's something to display */}
           {(realtimeEvents.length > 0 || unseenCount > 0 || status === 'disconnected' || status === 'error') && (
-            <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--bento-border)]/30">
+            <div className="flex items-center gap-2 px-5 pb-4">
               {/* Live events toggle */}
               {realtimeEvents.length > 0 && (
-                <button 
+                <motion.button 
                   onClick={() => setShowRealtimeEvents(!showRealtimeEvents)} 
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-soft font-semibold active:scale-95 transition-all ${showRealtimeEvents ? 'bg-[var(--bento-primary)] text-white' : 'bg-[var(--bento-card)] text-[var(--bento-text)] border border-[var(--bento-border)]'}`}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[13px] font-bold transition-all ${
+                    showRealtimeEvents 
+                      ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-accent)] text-white shadow-lg shadow-[var(--bento-primary)]/30' 
+                      : 'bg-[var(--bento-card)] text-[var(--bento-text)] border border-[var(--bento-border)]/50'
+                  }`}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Sparkles className="w-3 h-3" />
+                  <Sparkles className="w-4 h-4" />
                   {unseenCount > 0 ? `${unseenCount} new` : `${realtimeEvents.length} live`}
-                </button>
+                </motion.button>
               )}
               
               {/* Mark as read */}
               {unseenCount > 0 && (
-                <button 
+                <motion.button 
                   onClick={markAllAsSeen} 
-                  className="px-2.5 py-1.5 rounded-lg text-xs font-soft font-medium text-[var(--bento-text-muted)] bg-[var(--bento-card)] border border-[var(--bento-border)] active:bg-[var(--bento-bg)] transition-colors"
+                  className="px-4 py-2.5 rounded-2xl text-[13px] font-semibold text-[var(--bento-text-muted)]"
+                  whileTap={{ scale: 0.95 }}
                 >
                   Mark read
-                </button>
+                </motion.button>
               )}
               
               {/* Reconnect button */}
               {(status === 'disconnected' || status === 'error') && (
                 <motion.button 
                   onClick={reconnect} 
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-soft font-semibold bg-[var(--bento-primary)] text-white active:brightness-95 transition-all ml-auto" 
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[13px] font-bold bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-accent)] text-white shadow-lg shadow-[var(--bento-primary)]/30 ml-auto" 
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Wifi className="w-3 h-3" />
+                  <Wifi className="w-4 h-4" />
                   Reconnect
                 </motion.button>
               )}
@@ -351,7 +453,7 @@ export function Chronicle() {
                       <motion.div className="w-2 h-2 rounded-full bg-[var(--bento-primary)]" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
                       <span className="text-xs font-soft font-bold text-[var(--bento-primary)] uppercase tracking-wider">Live</span>
                     </div>
-                    {realtimeEvents.map((event, index) => <MobileEventCard key={`rt-${getEventKey(event, index)}`} event={event} isNew={index < unseenCount} />)}
+                    {realtimeEvents.map((event, index) => <MobileEventCard key={`rt-${getEventKey(event, index)}`} event={event} isNew={index < unseenCount} index={index} />)}
                     <div className="flex items-center gap-2 py-3">
                       <div className="flex-1 h-px bg-[var(--bento-border)]" />
                       <span className="text-[10px] font-soft text-[var(--bento-text-muted)] uppercase">Earlier</span>
@@ -363,7 +465,7 @@ export function Chronicle() {
               {Array.from(groupedEvents.entries()).map(([date, events]) => (
                 <div key={date}>
                   <MobileDateHeader date={date} />
-                  <div className="space-y-2">{events.map((event, index) => <MobileEventCard key={`hist-${getEventKey(event, index)}`} event={event} />)}</div>
+                  <div className="space-y-2.5">{events.map((event, index) => <MobileEventCard key={`hist-${getEventKey(event, index)}`} event={event} index={index} />)}</div>
                 </div>
               ))}
               {hasNextPage && (

@@ -1,32 +1,54 @@
-import { type ReactNode } from 'react';
-import { motion } from 'motion/react';
+import { type ReactNode, useRef, useEffect, useState } from 'react';
+import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 
 interface PageTransitionProps {
   children: ReactNode;
 }
 
+// Route hierarchy for determining transition direction
+const routeOrder = ['/', '/members', '/chronicle'];
+
 /**
- * PageTransition - Wraps page content with native-style transitions
+ * PageTransition - Premium native-style page transitions
  * 
- * Provides iOS-like slide and fade transitions between pages.
- * Uses spring physics for that native bounce feel.
+ * Features:
+ * - Directional awareness (slides left/right based on navigation)
+ * - Spring physics for buttery smooth feel
+ * - Respects reduced motion preferences
+ * - Staggered content reveal for polish
  */
 export function PageTransition({ children }: PageTransitionProps) {
   const location = useLocation();
+  const prefersReducedMotion = useReducedMotion();
+  const previousPath = useRef(location.pathname);
+  
+  // Determine transition direction
+  const currentIndex = routeOrder.indexOf(location.pathname);
+  const previousIndex = routeOrder.indexOf(previousPath.current);
+  const direction = currentIndex > previousIndex ? 1 : -1;
+  
+  useEffect(() => {
+    previousPath.current = location.pathname;
+  }, [location.pathname]);
+
+  if (prefersReducedMotion) {
+    return <>{children}</>;
+  }
 
   return (
     <motion.div
       key={location.pathname}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
+      initial={{ opacity: 0, x: direction * 20, scale: 0.98 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: direction * -10, scale: 0.99 }}
       transition={{
         type: "spring",
-        stiffness: 380,
-        damping: 30,
+        stiffness: 400,
+        damping: 35,
         mass: 0.8,
-        opacity: { duration: 0.2 }
+        opacity: { duration: 0.18 },
+        scale: { duration: 0.2 }
       }}
     >
       {children}
@@ -35,15 +57,89 @@ export function PageTransition({ children }: PageTransitionProps) {
 }
 
 /**
- * MobileHeader - Native-style header bar for mobile pages
+ * Hook to track if header should be collapsed
+ * Uses hysteresis to prevent jittering at transition points
+ */
+function useHeaderCollapse() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const lastScrollY = useRef(0);
+  const peakScrollY = useRef(0);    // Highest point scrolled while collapsed
+  const troughScrollY = useRef(0);  // Lowest point scrolled while expanded
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const COLLAPSE_THRESHOLD = 60;  // Scroll down this much to collapse
+    const EXPAND_THRESHOLD = 30;    // Scroll up this much to expand
+    const TOP_ZONE = 30;            // Always expanded when near top
+
+    const updateCollapse = () => {
+      const scrollY = window.scrollY;
+      const scrollingDown = scrollY > lastScrollY.current;
+      const scrollingUp = scrollY < lastScrollY.current;
+      
+      // Always expand when near top
+      if (scrollY < TOP_ZONE) {
+        setIsCollapsed(false);
+        troughScrollY.current = scrollY;
+        lastScrollY.current = scrollY;
+        ticking.current = false;
+        return;
+      }
+
+      if (!isCollapsed) {
+        // Currently expanded
+        if (scrollingDown) {
+          // Track the lowest point (trough) while expanded
+          // If we scroll down past threshold from trough, collapse
+          if (scrollY > troughScrollY.current + COLLAPSE_THRESHOLD) {
+            setIsCollapsed(true);
+            peakScrollY.current = scrollY;
+          }
+        } else if (scrollingUp) {
+          // Update trough to current position when scrolling up
+          troughScrollY.current = Math.min(troughScrollY.current, scrollY);
+        }
+      } else {
+        // Currently collapsed
+        if (scrollingUp) {
+          // Track the highest point (peak) while collapsed
+          // If we scroll up past threshold from peak, expand
+          if (scrollY < peakScrollY.current - EXPAND_THRESHOLD) {
+            setIsCollapsed(false);
+            troughScrollY.current = scrollY;
+          }
+        } else if (scrollingDown) {
+          // Update peak to current position when scrolling down
+          peakScrollY.current = Math.max(peakScrollY.current, scrollY);
+        }
+      }
+      
+      lastScrollY.current = scrollY;
+      ticking.current = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateCollapse);
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isCollapsed]);
+
+  return isCollapsed;
+}
+
+/**
+ * MobileHeader - Award-winning collapsible header
  * 
- * This replaces the global navbar on mobile. Each page uses this
- * to show its title and any relevant controls (search, filters, etc.)
- * 
- * Features:
- * - Safe area padding for notched devices
- * - Sticky positioning
- * - Subtle border
+ * Inspired by iOS native apps, Linear, and Arc Browser
+ * - Collapses on scroll down, expands on scroll up
+ * - Gradient accent line for brand identity
+ * - Floating glass pill for actions
+ * - Spring physics for buttery smooth animations
  */
 export function MobileHeader({ 
   title,
@@ -51,6 +147,7 @@ export function MobileHeader({
   rightContent,
   children,
   className = '',
+  collapsible = true,
 }: { 
   title: string;
   /** Optional left side content (e.g., back button) */
@@ -60,48 +157,114 @@ export function MobileHeader({
   /** Additional content below the title bar (e.g., search, filters) */
   children?: ReactNode;
   className?: string;
+  /** Whether the header should collapse on scroll (default: true) */
+  collapsible?: boolean;
 }) {
+  const shouldCollapse = useHeaderCollapse();
+  
+  // Only collapse if collapsible prop is true
+  const isCollapsed = collapsible && shouldCollapse;
+  
   return (
-    <header 
+    <motion.header 
       className={`
         md:hidden sticky top-0 z-40 
-        bg-[var(--bento-bg)]
+        bg-[var(--bento-bg)]/85
         ${className}
       `}
-      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(16px)',
+        backdropFilter: 'saturate(180%) blur(16px)',
+      }}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      {/* Title bar */}
-      <div 
-        className="flex items-center justify-between h-12 px-4 border-b border-[var(--bento-border)]/30"
-        style={{ 
-          paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))', 
-          paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))' 
-        }}
-      >
-        {/* Left side */}
-        <div className="flex items-center gap-2 min-w-0">
-          {leftContent}
-          <h1 className="text-lg font-display font-bold text-[var(--bento-text)] truncate">
-            {title}
-          </h1>
-        </div>
-        
-        {/* Right side */}
-        {rightContent && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {rightContent}
-          </div>
-        )}
-      </div>
+      {/* Gradient accent line at top - always visible */}
+      <div className="h-[3px] bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)]" />
       
-      {/* Additional content (search, filters, etc.) - only render if children has content */}
-      {children}
-    </header>
+      {/* Compact header - always visible */}
+      <motion.div 
+        className="px-5"
+        style={{ 
+          paddingLeft: 'max(1.25rem, env(safe-area-inset-left, 0px))', 
+          paddingRight: 'max(1.25rem, env(safe-area-inset-right, 0px))' 
+        }}
+        initial={false}
+        animate={{
+          paddingTop: isCollapsed ? 8 : 16,
+          paddingBottom: isCollapsed ? 8 : 12,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
+      >
+        {/* Title row with actions */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            {leftContent}
+            <motion.h1 
+              className="font-display font-bold text-[var(--bento-text)] tracking-[-0.02em] leading-none"
+              initial={false}
+              animate={{
+                fontSize: isCollapsed ? '18px' : '26px',
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 35 }}
+            >
+              {title}
+            </motion.h1>
+          </div>
+          
+          {/* Floating action pill - always visible */}
+          {rightContent && (
+            <motion.div 
+              className="flex items-center gap-2 px-1 py-1 rounded-2xl bg-[var(--bento-card)] border border-[var(--bento-border)]/40 shadow-sm"
+              initial={false}
+              animate={{
+                scale: isCollapsed ? 0.9 : 1,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              {rightContent}
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+      
+      {/* Collapsible content (search, filters, etc.) */}
+      <AnimatePresence initial={false}>
+        {children && !isCollapsed && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 35,
+              opacity: { duration: 0.15 }
+            }}
+            style={{ overflow: 'hidden' }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Bottom shadow gradient for depth */}
+      <motion.div 
+        className="bg-gradient-to-b from-[var(--bento-bg)]/50 to-transparent pointer-events-none"
+        initial={false}
+        animate={{ height: isCollapsed ? 8 : 16 }}
+        transition={{ duration: 0.15 }}
+      />
+    </motion.header>
   );
 }
 
 /**
- * MobilePageHeader - For pages that want a larger title area (like Home)
+ * MobilePageHeader - Premium large title header (like iOS Settings)
+ * 
+ * Features smooth collapse/expand with spring physics
  */
 export function MobilePageHeader({ 
   title, 
@@ -116,32 +279,59 @@ export function MobilePageHeader({
 }) {
   return (
     <motion.div 
-      className="transition-all duration-200 ease-out"
+      className="overflow-hidden"
+      initial={false}
       animate={{
         opacity: isCollapsed ? 0 : 1,
         height: isCollapsed ? 0 : 'auto',
-        marginBottom: isCollapsed ? 0 : 4,
+        marginBottom: isCollapsed ? 0 : 8,
       }}
-      transition={{ duration: 0.2 }}
+      transition={{ 
+        type: "spring",
+        stiffness: 400,
+        damping: 35,
+        opacity: { duration: 0.15 }
+      }}
     >
       <div className="flex items-end justify-between gap-3">
         <motion.h1 
-          className="text-[2rem] font-display font-bold text-[var(--bento-text)] leading-[1.1] tracking-tight"
+          className="text-[2rem] font-display font-bold text-[var(--bento-text)] leading-[1.05] tracking-[-0.02em]"
+          initial={false}
           animate={{ 
-            scale: isCollapsed ? 0.95 : 1,
-            y: isCollapsed ? -4 : 0,
+            scale: isCollapsed ? 0.92 : 1,
+            y: isCollapsed ? -8 : 0,
+            opacity: isCollapsed ? 0 : 1,
           }}
-          transition={{ duration: 0.2 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 350,
+            damping: 30,
+          }}
         >
           {title}
         </motion.h1>
-        {trailing}
+        {trailing && (
+          <motion.div
+            initial={false}
+            animate={{ 
+              opacity: isCollapsed ? 0 : 1,
+              scale: isCollapsed ? 0.9 : 1,
+            }}
+            transition={{ duration: 0.15 }}
+          >
+            {trailing}
+          </motion.div>
+        )}
       </div>
       {subtitle && (
         <motion.p 
-          className="text-sm text-[var(--bento-text-muted)] font-soft mt-0.5"
-          animate={{ opacity: isCollapsed ? 0 : 1 }}
-          transition={{ duration: 0.15 }}
+          className="text-[15px] text-[var(--bento-text-muted)] font-soft mt-1"
+          initial={false}
+          animate={{ 
+            opacity: isCollapsed ? 0 : 0.8,
+            y: isCollapsed ? -4 : 0,
+          }}
+          transition={{ duration: 0.15, delay: 0.02 }}
         >
           {subtitle}
         </motion.p>
