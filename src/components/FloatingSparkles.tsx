@@ -51,7 +51,7 @@ export const FloatingSparkles = memo(function FloatingSparkles({
       {sparkles.map((sparkle, i) => (
         <div
           key={i}
-          className="absolute animate-float-sparkle will-change-transform"
+          className="absolute animate-float-sparkle"
           style={{ 
             left: sparkle.left, 
             top: sparkle.top,

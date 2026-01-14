@@ -139,7 +139,15 @@
     radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
     radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
     var(--bento-bg);
-  background-attachment: fixed;
+  /* Use fixed attachment only on desktop - it's very slow on mobile */
+  background-attachment: scroll;
+}
+
+/* Enable fixed background only on devices with fine pointer (desktop/laptop) */
+@media (pointer: fine) {
+  .bento-bg-mesh {
+    background-attachment: fixed;
+  }
 }
 
 .dark .bento-bg-mesh {
@@ -149,18 +157,30 @@
     radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
     radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
     var(--bento-bg);
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@media (pointer: fine) {
+  .dark .bento-bg-mesh {
+    background-attachment: fixed;
+  }
 }
 
 /* Glass Card */
 @layer components {
   .bento-glass {
     background: var(--bento-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 1.5rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  
+  /* Only enable backdrop blur on desktop - it's expensive on mobile */
+  @media (pointer: fine) {
+    .bento-glass {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
   }
 
   .dark .bento-glass {
@@ -182,9 +202,18 @@
 /* ─────────────────────────────────────────────────────────────────────────────
  * PERFORMANCE: CSS Animations for decorative floating elements
  * These run on the compositor thread, avoiding main thread work.
+ * 
+ * Mobile optimization: On touch devices, we use simpler transform-only 
+ * animations (no opacity changes) for better performance on Android.
  * ───────────────────────────────────────────────────────────────────────────── */
 
-/* Floating moogle animation - combines opacity and transform for decorative bg images */
+/* Mobile-optimized: transform only, no opacity animation */
+@keyframes float-moogle-simple {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Desktop: full animation with opacity */
 @keyframes float-moogle {
   0%, 100% { 
     opacity: var(--float-opacity-min, 0.15);
@@ -197,12 +226,26 @@
 }
 
 .animate-float-moogle {
-  animation: float-moogle 5s ease-in-out infinite;
-  /* Ensure animation values apply immediately, even with delay */
+  /* Start with static opacity for mobile */
+  opacity: var(--float-opacity-min, 0.15);
+  animation: float-moogle-simple 5s ease-in-out infinite;
   animation-fill-mode: both;
 }
 
-/* Subtle variant for simpler floating decorations */
+/* Enable full opacity animation on desktop only */
+@media (pointer: fine) {
+  .animate-float-moogle {
+    animation-name: float-moogle;
+  }
+}
+
+/* Mobile-optimized subtle variant */
+@keyframes float-moogle-subtle-simple {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Desktop: full subtle animation with opacity */
 @keyframes float-moogle-subtle {
   0%, 100% { 
     opacity: var(--float-opacity-min, 0.06);
@@ -215,12 +258,26 @@
 }
 
 .animate-float-moogle-subtle {
-  animation: float-moogle-subtle 5s ease-in-out infinite;
-  /* Ensure animation values apply immediately, even with delay */
+  /* Start with static opacity for mobile */
+  opacity: var(--float-opacity-min, 0.06);
+  animation: float-moogle-subtle-simple 5s ease-in-out infinite;
   animation-fill-mode: both;
 }
 
-/* Sparkle animation - combines y, opacity, scale, and slight rotation */
+/* Enable full opacity animation on desktop only */
+@media (pointer: fine) {
+  .animate-float-moogle-subtle {
+    animation-name: float-moogle-subtle;
+  }
+}
+
+/* Mobile-optimized sparkle: simpler animation */
+@keyframes float-sparkle-simple {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.1); }
+}
+
+/* Desktop: full sparkle animation */
 @keyframes float-sparkle {
   0%, 100% { 
     opacity: 0.4;
@@ -233,9 +290,17 @@
 }
 
 .animate-float-sparkle {
-  animation: float-sparkle 3s ease-in-out infinite;
-  /* Ensure animation values apply immediately, even with delay */
+  /* Start with static opacity for mobile */
+  opacity: 0.5;
+  animation: float-sparkle-simple 3s ease-in-out infinite;
   animation-fill-mode: both;
+}
+
+/* Enable full opacity animation on desktop only */
+@media (pointer: fine) {
+  .animate-float-sparkle {
+    animation-name: float-sparkle;
+  }
 }
 
 /* Slow ping animation for status indicators */

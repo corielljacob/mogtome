@@ -35,7 +35,7 @@ export const FloatingMoogles = memo(function FloatingMoogles({
           alt=""
           aria-hidden="true"
           loading="lazy"
-          className={`absolute ${moogle.position} ${moogle.size} object-contain animate-float-moogle will-change-transform`}
+          className={`absolute ${moogle.position} ${moogle.size} object-contain animate-float-moogle`}
           style={{ 
             transform: `rotate(${moogle.rotate}deg)`,
             animationDelay: `${moogle.delay}s`,
@@ -72,7 +72,7 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="absolute top-32 left-4 md:left-16 w-24 md:w-32 object-contain animate-float-moogle-subtle will-change-transform"
+        className="absolute top-32 left-4 md:left-16 w-24 md:w-32 object-contain animate-float-moogle-subtle"
         style={{ 
           transform: 'rotate(-5deg)',
           animationDuration: '6s',
@@ -86,7 +86,7 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="absolute top-64 right-4 md:right-16 w-20 md:w-28 object-contain animate-float-moogle-subtle will-change-transform"
+        className="absolute top-64 right-4 md:right-16 w-20 md:w-28 object-contain animate-float-moogle-subtle"
         style={{ 
           transform: 'rotate(8deg)',
           animationDelay: '1.5s',
