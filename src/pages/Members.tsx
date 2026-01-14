@@ -3,8 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { VirtualizedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, PullToRefreshIndicator } from '../components';
-import { usePullToRefresh } from '../hooks';
+import { VirtualizedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
@@ -55,14 +54,6 @@ export function Members() {
     queryKey: ['members-all'],
     queryFn: () => membersApi.getMembers({ pageSize: 1000 }),
     staleTime: 1000 * 60 * 5,
-  });
-
-  // Pull-to-refresh for mobile
-  const { pullDistance, isRefreshing, progress } = usePullToRefresh({
-    onRefresh: async () => {
-      await refetch();
-    },
-    enabled: !isLoading,
   });
 
   const allMembers = useMemo(() => data?.items ?? [], [data]);
@@ -123,13 +114,6 @@ export function Members() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Pull-to-refresh indicator */}
-      <PullToRefreshIndicator 
-        pullDistance={pullDistance}
-        isRefreshing={isRefreshing}
-        progress={progress}
-      />
-      
       {/* Background decorations - use shared CSS-animated components for performance */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />

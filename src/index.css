@@ -369,21 +369,33 @@
  * ───────────────────────────────────────────────────────────────────────────── */
 
 @layer base {
-  /* Prevent overscroll bounce on iOS (gives native feel) */
+  /* 
+   * RUBBER BAND / BOUNCE SCROLLING
+   * 
+   * iOS Safari: Has native elastic bounce by default - we preserve this!
+   * Chrome/Android: Has pull-to-refresh which we want to control ourselves
+   * 
+   * Solution: Only disable overscroll on Android/Chrome, keep iOS bounce
+   */
+  
   html {
-    overscroll-behavior: none;
+    /* Allow natural overscroll bounce on iOS */
+    overscroll-behavior: auto;
   }
   
   body {
     /* Prevent text selection on long press for interactive elements */
     -webkit-touch-callout: none;
-    /* Smooth momentum scrolling on iOS */
+    /* Smooth momentum scrolling on iOS - this is key for the native feel! */
     -webkit-overflow-scrolling: touch;
-    /* Prevent pull-to-refresh in PWA mode on Chrome/Android */
-    overscroll-behavior-y: contain;
+    /* Keep natural overscroll behavior */
+    overscroll-behavior: auto;
   }
   
-  /* Standalone PWA mode adjustments */
+  /* 
+   * Only disable overscroll bounce in standalone PWA mode on Android
+   * This prevents the ugly Chrome reload gesture, but iOS keeps its bounce
+   */
   @media (display-mode: standalone) {
     /* Remove any browser-specific UI gaps */
     html, body, #root {
@@ -394,6 +406,17 @@
     body {
       margin: 0;
       padding: 0;
+    }
+    
+    /* 
+     * On Android PWA, contain overscroll to prevent accidental navigation
+     * iOS ignores this and keeps its native bounce (which is what we want!)
+     */
+    @supports not (-webkit-touch-callout: none) {
+      /* This targets non-iOS devices (Android, etc.) */
+      body {
+        overscroll-behavior-y: contain;
+      }
     }
   }
 }
@@ -464,6 +487,51 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * SMOOTH MOMENTUM SCROLLING
+ * Make all scrollable areas feel buttery smooth like native apps
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Apply momentum scrolling to any scrollable container */
+.momentum-scroll,
+[data-scroll="true"] {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Horizontal scroll containers (like carousels) */
+.scroll-x-smooth {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroll-x-smooth::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll snap for items in horizontal scroll */
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+/* Vertical scroll with bounce */
+.scroll-y-bounce {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto; /* Allow bounce */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

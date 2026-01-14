@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 // Shared components
-import { StoryDivider, FloatingSparkles, ContentCard, SimpleFloatingMoogles, PullToRefreshIndicator } from '../components';
+import { StoryDivider, FloatingSparkles, ContentCard, SimpleFloatingMoogles } from '../components';
 
 // Utils & Constants
 import { formatRelativeTime, formatFullDate } from '../utils';
@@ -20,7 +20,7 @@ import { getEventTypeConfig } from '../constants';
 
 // API & Hooks
 import { eventsApi } from '../api/events';
-import { useEventsHub, usePullToRefresh, type ConnectionStatus } from '../hooks';
+import { useEventsHub, type ConnectionStatus } from '../hooks';
 import type { ChronicleEvent } from '../types';
 
 // Assets
@@ -206,14 +206,6 @@ export function Chronicle() {
     }
   }, [dataUpdatedAt, clearEvents]);
 
-  // Pull-to-refresh for mobile
-  const { pullDistance, isRefreshing: isPullRefreshing, progress } = usePullToRefresh({
-    onRefresh: async () => {
-      await refetch();
-    },
-    enabled: !isLoading,
-  });
-
   // Flatten all pages of historical events
   const historicalEvents = useMemo(() => {
     if (!data?.pages) return [];
@@ -241,13 +233,6 @@ export function Chronicle() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Pull-to-refresh indicator */}
-      <PullToRefreshIndicator 
-        pullDistance={pullDistance}
-        isRefreshing={isPullRefreshing}
-        progress={progress}
-      />
-      
       {/* Background decorations */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       <SimpleFloatingMoogles primarySrc={flyingMoogles} secondarySrc={moogleMail} />
