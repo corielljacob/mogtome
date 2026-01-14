@@ -38,6 +38,13 @@ describe('eventTypes', () => {
       expect(config.Icon).toBeDefined();
       expect(config.color).toContain('amber');
     });
+
+    it('has configuration for Announcement', () => {
+      const config = EVENT_TYPE_CONFIG.Announcement;
+      expect(config).toBeDefined();
+      expect(config.label).toBe('Announcement');
+      expect(config.Icon).toBeDefined();
+    });
   });
 
   describe('DEFAULT_EVENT_TYPE_CONFIG', () => {
@@ -56,6 +63,7 @@ describe('eventTypes', () => {
       expect(getEventTypeConfig('MemberRejoined')).toBe(EVENT_TYPE_CONFIG.MemberRejoined);
       expect(getEventTypeConfig('NameChanged')).toBe(EVENT_TYPE_CONFIG.NameChanged);
       expect(getEventTypeConfig('RankPromoted')).toBe(EVENT_TYPE_CONFIG.RankPromoted);
+      expect(getEventTypeConfig('Announcement')).toBe(EVENT_TYPE_CONFIG.Announcement);
     });
 
     it('returns default config for unknown event types', () => {

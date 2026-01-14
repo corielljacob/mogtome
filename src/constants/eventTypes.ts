@@ -4,6 +4,7 @@ import {
   HeartHandshake,
   Wand2,
   Crown,
+  Scroll,
   Sparkles,
 } from 'lucide-react';
 
@@ -45,6 +46,12 @@ export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
     color: 'text-amber-500', 
     bgColor: 'bg-amber-500/10',
     label: 'Rank Up!',
+  },
+  Announcement: { 
+    Icon: Scroll, 
+    color: 'text-[var(--bento-primary)]', 
+    bgColor: 'bg-[var(--bento-primary)]/10',
+    label: 'Announcement',
   },
 };
 
