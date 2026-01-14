@@ -6,14 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
     
-    <!-- Android Chrome: Theme color for address bar -->
-    <meta name="theme-color" content="#E54B4B" media="(prefers-color-scheme: light)" />
+    <!-- Theme color for browser UI (address bar on Android, status bar tint on iOS) -->
+    <!-- iOS Safari 15+ uses theme-color for the entire browser chrome -->
     <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FFF9F5" media="(prefers-color-scheme: light)" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- iOS Safari: Full screen web app support -->
+    <!-- iOS Safari: Full screen web app support (when added to home screen) -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- black-translucent: status bar is transparent, content extends behind it -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="MogTome" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     

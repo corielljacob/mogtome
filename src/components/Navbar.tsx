@@ -43,6 +43,36 @@ function NavbarSparkles() {
   );
 }
 
+// Theme colors for dynamic meta tag updates (matches CSS variables)
+const THEME_COLORS = {
+  light: '#FFF9F5', // --bento-bg light
+  dark: '#1A1722',  // --bento-bg dark
+};
+
+// Update the theme-color meta tag for iOS Safari and Android Chrome
+function updateThemeColorMeta(isDark: boolean) {
+  const color = isDark ? THEME_COLORS.dark : THEME_COLORS.light;
+  
+  // Find existing theme-color meta tags and update them, or create one
+  const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
+  
+  if (existingMetas.length > 0) {
+    // Update all existing theme-color metas to the same color
+    // This overrides the media query based ones when user manually toggles
+    existingMetas.forEach(meta => {
+      meta.setAttribute('content', color);
+      // Remove media attribute so it applies universally
+      meta.removeAttribute('media');
+    });
+  } else {
+    // Create a new meta tag if none exist
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = color;
+    document.head.appendChild(meta);
+  }
+}
+
 // Quirky snappy toggle - bouncy flip matching navbar style
 function ThemeToggleButton() {
   const getInitialTheme = () => {
@@ -58,7 +88,15 @@ function ThemeToggleButton() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Update browser chrome color to match theme
+    updateThemeColorMeta(isDark);
   }, [isDark]);
+  
+  // Also update on mount to ensure meta tag matches saved preference
+  useEffect(() => {
+    updateThemeColorMeta(isDark);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.button
