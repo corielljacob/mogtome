@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Clock, 
   RefreshCw, 
   Wifi, 
   WifiOff, 
@@ -256,15 +255,6 @@ export function Chronicle() {
             >
               ~ The story of our adventures ~
             </motion.p>
-
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Scroll className="w-5 h-5 text-[var(--bento-primary)]" />
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20 text-[var(--bento-primary)] text-sm font-soft font-medium">
-                <Clock className="w-4 h-4" />
-                {totalCount} events
-              </span>
-              <Scroll className="w-5 h-5 text-[var(--bento-primary)]" />
-            </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3">
               <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
