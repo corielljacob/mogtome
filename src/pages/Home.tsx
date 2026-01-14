@@ -13,6 +13,15 @@ import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
+// PERFORMANCE: Preload critical hero image
+if (typeof window !== 'undefined') {
+  const preloadLink = document.createElement('link');
+  preloadLink.rel = 'preload';
+  preloadLink.as = 'image';
+  preloadLink.href = welcomingMoogle;
+  document.head.appendChild(preloadLink);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────

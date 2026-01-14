@@ -1,9 +1,11 @@
-import { motion } from 'motion/react';
+import { memo } from 'react';
 import { Sparkles, Star } from 'lucide-react';
 
 /**
  * Floating sparkle/star decorations for ambient page effects.
  * Positioned around edges to avoid overlapping center content.
+ * 
+ * PERFORMANCE: Uses CSS animations instead of Framer Motion for infinite loops.
  */
 
 export interface SparklePosition {
@@ -38,27 +40,23 @@ const minimalPositions: SparklePosition[] = [
   { left: '88%', top: '72%', size: 'w-4 h-4', color: 'text-[var(--bento-primary)]' },
 ];
 
-export function FloatingSparkles({ positions, minimal = false }: FloatingSparklesProps) {
+export const FloatingSparkles = memo(function FloatingSparkles({ 
+  positions, 
+  minimal = false 
+}: FloatingSparklesProps) {
   const sparkles = positions ?? (minimal ? minimalPositions : defaultPositions);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {sparkles.map((sparkle, i) => (
-        <motion.div
+        <div
           key={i}
-          className="absolute"
-          style={{ left: sparkle.left, top: sparkle.top }}
-          animate={{
-            y: [0, -10, 0],
-            opacity: [0.4, 0.8, 0.4],
-            scale: [0.9, 1.1, 0.9],
-            rotate: [0, 10, 0],
-          }}
-          transition={{
-            duration: 3 + i * 0.3,
-            repeat: Infinity,
-            delay: i * 0.5,
-            ease: "easeInOut",
+          className="absolute animate-float-sparkle will-change-transform"
+          style={{ 
+            left: sparkle.left, 
+            top: sparkle.top,
+            animationDelay: `${i * 0.5}s`,
+            animationDuration: `${3 + i * 0.3}s`,
           }}
         >
           {i % 3 === 0 ? (
@@ -66,8 +64,8 @@ export function FloatingSparkles({ positions, minimal = false }: FloatingSparkle
           ) : (
             <Sparkles className={`${sparkle.size ?? 'w-4 h-4'} ${sparkle.color ?? 'text-[var(--bento-primary)]'}`} />
           )}
-        </motion.div>
+        </div>
       ))}
     </div>
   );
-}
+});

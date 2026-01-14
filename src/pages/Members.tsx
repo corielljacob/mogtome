@@ -3,122 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { VirtualizedMemberGrid } from '../components/VirtualizedMemberGrid';
+import { VirtualizedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
 import deadMoogle from '../assets/moogles/dead moogle.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
-
-// Storybook divider matching home page
-function StoryDivider({ className = '' }: { className?: string }) {
-  return (
-    <svg 
-      viewBox="0 0 200 20" 
-      className={`w-48 md:w-64 h-5 ${className}`}
-      fill="none"
-    >
-      <path 
-        d="M10 10 Q 30 5, 50 10 T 90 10 T 130 10 T 170 10 T 190 10" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round"
-        className="text-[var(--bento-primary)]/40"
-      />
-      <circle cx="100" cy="10" r="3" className="fill-[var(--bento-secondary)]" />
-      <circle cx="80" cy="8" r="2" className="fill-[var(--bento-primary)]/50" />
-      <circle cx="120" cy="8" r="2" className="fill-[var(--bento-primary)]/50" />
-    </svg>
-  );
-}
-
-// Floating background moogles for this page
-function FloatingBackgroundMoogles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.img
-        src={wizardMoogle}
-        alt=""
-        aria-hidden
-        className="absolute top-32 left-4 md:left-16 w-20 md:w-28 object-contain"
-        style={{ rotate: '-10deg' }}
-        animate={{ 
-          opacity: [0.08, 0.14, 0.08],
-          y: [0, -12, 0],
-        }}
-        transition={{
-          opacity: { duration: 4, repeat: Infinity },
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-        }}
-      />
-      <motion.img
-        src={musicMoogle}
-        alt=""
-        aria-hidden
-        className="absolute top-48 right-4 md:right-16 w-16 md:w-24 object-contain"
-        style={{ rotate: '8deg' }}
-        animate={{ 
-          opacity: [0.08, 0.14, 0.08],
-          y: [0, -10, 0],
-        }}
-        transition={{
-          opacity: { duration: 4, repeat: Infinity, delay: 1 },
-          y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 },
-        }}
-      />
-    </div>
-  );
-}
-
-// Floating sparkles
-function FloatingSparkles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[
-        { left: '5%', top: '20%' },
-        { left: '90%', top: '15%' },
-        { left: '15%', top: '60%' },
-        { left: '85%', top: '70%' },
-      ].map((pos, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={pos}
-          animate={{
-            y: [0, -8, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [0.9, 1.1, 0.9],
-          }}
-          transition={{
-            duration: 3 + i * 0.5,
-            repeat: Infinity,
-            delay: i * 0.7,
-            ease: "easeInOut",
-          }}
-        >
-          {i % 2 === 0 ? (
-            <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
-          ) : (
-            <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
-          )}
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-// Content card with storybook styling
-function ContentCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`
-      bg-[var(--bento-card)]/80 backdrop-blur-sm border border-[var(--bento-primary)]/10
-      rounded-2xl p-6 md:p-8 shadow-lg shadow-[var(--bento-primary)]/5 ${className}
-    `}>
-      {children}
-    </div>
-  );
-}
 
 export function Members() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -223,10 +114,10 @@ export function Members() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background decorations */}
+      {/* Background decorations - use shared CSS-animated components for performance */}
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <FloatingBackgroundMoogles />
-      <FloatingSparkles />
+      <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />
+      <FloatingSparkles minimal />
 
       <div className="relative py-8 md:py-12 px-4 z-10">
         <div className="max-w-7xl mx-auto">

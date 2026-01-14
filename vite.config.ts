@@ -6,6 +6,41 @@ import tailwindcss from '@tailwindcss/vite'
 // Full config options: https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  
+  // PERFORMANCE: Build optimizations
+  build: {
+    // Target modern browsers for smaller bundles
+    target: 'es2020',
+    
+    // Enable minification
+    minify: 'esbuild',
+    
+    // Code splitting for better caching
+    rollupOptions: {
+      output: {
+        // Split vendor chunks for better caching
+        manualChunks: {
+          // React core - rarely changes
+          'react-vendor': ['react', 'react-dom'],
+          // React Router - separate chunk
+          'router': ['react-router-dom'],
+          // TanStack Query - data fetching
+          'query': ['@tanstack/react-query'],
+          // Framer Motion - large animation library
+          'motion': ['motion'],
+          // Virtualization
+          'virtual': ['@tanstack/react-virtual'],
+        },
+      },
+    },
+    
+    // Generate source maps for debugging in production
+    sourcemap: true,
+    
+    // Inline assets smaller than 4kb
+    assetsInlineLimit: 4096,
+  },
+  
   server: {
     port: 3000,
     proxy: {
@@ -23,6 +58,7 @@ export default defineConfig({
       },
     },
   },
+  
   test: {
     globals: true,
     environment: 'jsdom',

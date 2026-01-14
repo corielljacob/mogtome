@@ -178,3 +178,92 @@
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * PERFORMANCE: CSS Animations for decorative floating elements
+ * These run on the compositor thread, avoiding main thread work.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Floating moogle animation - combines opacity and transform for decorative bg images */
+@keyframes float-moogle {
+  0%, 100% { 
+    opacity: var(--float-opacity-min, 0.15);
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: var(--float-opacity-max, 0.25);
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float-moogle {
+  animation: float-moogle 5s ease-in-out infinite;
+  /* Ensure animation values apply immediately, even with delay */
+  animation-fill-mode: both;
+}
+
+/* Subtle variant for simpler floating decorations */
+@keyframes float-moogle-subtle {
+  0%, 100% { 
+    opacity: var(--float-opacity-min, 0.06);
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: var(--float-opacity-max, 0.12);
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float-moogle-subtle {
+  animation: float-moogle-subtle 5s ease-in-out infinite;
+  /* Ensure animation values apply immediately, even with delay */
+  animation-fill-mode: both;
+}
+
+/* Sparkle animation - combines y, opacity, scale, and slight rotation */
+@keyframes float-sparkle {
+  0%, 100% { 
+    opacity: 0.4;
+    transform: translateY(0) scale(0.9) rotate(0deg);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: translateY(-10px) scale(1.1) rotate(10deg);
+  }
+}
+
+.animate-float-sparkle {
+  animation: float-sparkle 3s ease-in-out infinite;
+  /* Ensure animation values apply immediately, even with delay */
+  animation-fill-mode: both;
+}
+
+/* Slow ping animation for status indicators */
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s ease-in-out infinite;
+}
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-moogle,
+  .animate-float-moogle-subtle,
+  .animate-float-sparkle,
+  .animate-shimmer,
+  .animate-ping-slow,
+  .animate-pulse,
+  .animate-spin {
+    animation: none;
+    opacity: var(--float-opacity-max, 0.2);
+  }
+  
+  /* Keep visibility for status indicators */
+  .animate-ping-slow {
+    opacity: 1;
+  }
+}

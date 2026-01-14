@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
 import { ExternalLink, Crown, Shield, Sword, Leaf, Cat, Bird, Star, Heart, Sparkles } from 'lucide-react';
@@ -94,8 +94,10 @@ const defaultTheme = {
 /**
  * MemberCard - Refined member card with delightful hover effects.
  * Matches the Soft Bento design system.
+ * 
+ * PERFORMANCE: Memoized to prevent re-renders when parent updates.
  */
-export function MemberCard({ member, index = 0 }: MemberCardProps) {
+export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
@@ -105,6 +107,11 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
   
   // Only animate entrance for first ~20 cards (visible on load) for performance
   const shouldAnimateEntrance = index < 20;
+  
+  // Memoize callbacks to prevent unnecessary child re-renders
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+  const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
     <motion.div 
@@ -133,8 +140,8 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
           border border-[var(--bento-primary)]/10
           rounded-2xl overflow-hidden shadow-sm
         "
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         animate={isHovered ? { 
           y: -6,
           boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.15)',
@@ -168,7 +175,8 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
             src={member.avatarLink}
             alt={member.name}
             loading="lazy"
-            onLoad={() => setImageLoaded(true)}
+            decoding="async"
+            onLoad={handleImageLoad}
             className={`w-full aspect-square object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             animate={{ scale: isHovered ? 1.08 : 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
@@ -264,7 +272,7 @@ export function MemberCard({ member, index = 0 }: MemberCardProps) {
       </motion.div>
     </motion.div>
   );
-}
+});
 
 /**
  * MemberCardSkeleton - Loading placeholder that matches MemberCard.

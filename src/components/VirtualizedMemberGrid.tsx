@@ -1,12 +1,11 @@
-import { useRef, useEffect, useState, memo, useCallback } from 'react';
+import { useRef, useEffect, useState, memo, useCallback, useMemo } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { Star } from 'lucide-react';
 import type { FreeCompanyMember } from '../types';
 import { MemberCard } from './MemberCard';
 
-// Memoized member card to prevent unnecessary re-renders
-const MemoizedMemberCard = memo(MemberCard);
+// MemberCard is already memoized internally
 
 interface VirtualizedMemberGridProps {
   members: FreeCompanyMember[];
@@ -151,7 +150,7 @@ const MemberRow = memo(function MemberRow({
       }}
     >
       {members.map((member, idx) => (
-        <MemoizedMemberCard 
+        <MemberCard 
           key={member.characterId} 
           member={member} 
           index={startIndex + idx} 
@@ -169,12 +168,14 @@ export function VirtualizedMemberGrid({
   const listRef = useRef<HTMLDivElement>(null);
   const { columnCount } = useResponsiveColumns(listRef);
 
-  // Build rows based on view mode
-  const rows = showGrouped && membersByRank
-    ? buildGroupedRows(membersByRank, columnCount)
-    : buildFlatRows(members, columnCount);
+  // PERFORMANCE: Memoize row calculations to avoid rebuilding on every render
+  const rows = useMemo(() => {
+    return showGrouped && membersByRank
+      ? buildGroupedRows(membersByRank, columnCount)
+      : buildFlatRows(members, columnCount);
+  }, [showGrouped, membersByRank, members, columnCount]);
 
-  // Estimate row heights
+  // Estimate row heights - memoized based on rows
   const estimateSize = useCallback((index: number) => {
     const row = rows[index];
     if (row.type === 'header') return 72; // Header height
