@@ -5,7 +5,18 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
-    <meta name="theme-color" content="#E54B4B" />
+    
+    <!-- Android Chrome: Theme color for address bar -->
+    <meta name="theme-color" content="#E54B4B" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    
+    <!-- iOS Safari: Full screen web app support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MogTome" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    
     <title>MogTome</title>
     
     <!-- Performance: DNS prefetch for external resources -->

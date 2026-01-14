@@ -131,6 +131,22 @@
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
 }
 
+/* iOS Safari: Extend background behind status bar and home indicator */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    /* Ensure content doesn't overlap with iOS status bar or home indicator */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Make background extend to full screen edges */
+  html {
+    background: var(--bento-bg);
+  }
+}
+
 /* Background - Pom-Pom Classic (Richer) */
 .bento-bg-mesh {
   background: 
