@@ -5,6 +5,8 @@ import { Home, Users, Heart, Sparkles, Moon, Sun, Wand2, Star, Scroll, Clock } f
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 
+// Note: Mobile navigation is now handled by MobileNav component (bottom tab bar)
+
 // Floating navbar sparkles for whimsy
 function NavbarSparkles() {
   return (
@@ -387,26 +389,8 @@ function KupoBadge() {
 
 export function Navbar() {
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoHovered, setLogoHovered] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
-
-  // Close menu on route change
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileMenuOpen]);
 
   const navItems = [
     { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
@@ -546,145 +530,6 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <KupoBadge />
             <ThemeToggleButton />
-
-            {/* Mobile menu button - optimized hamburger animation */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative w-11 h-11 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 active:scale-95 transition-transform duration-150"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileMenuOpen}
-            >
-              {/* Animated hamburger lines - pure CSS transforms for 60fps */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-                <span 
-                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out origin-center"
-                  style={{
-                    backgroundColor: mobileMenuOpen ? 'var(--bento-primary)' : 'var(--bento-text-muted)',
-                    transform: mobileMenuOpen ? 'translateY(0.5rem) rotate(45deg)' : 'none',
-                  }}
-                />
-                <span 
-                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out"
-                  style={{
-                    backgroundColor: 'var(--bento-text-muted)',
-                    opacity: mobileMenuOpen ? 0 : 1,
-                    transform: mobileMenuOpen ? 'scaleX(0)' : 'scaleX(1)',
-                  }}
-                />
-                <span 
-                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out origin-center"
-                  style={{
-                    backgroundColor: mobileMenuOpen ? 'var(--bento-primary)' : 'var(--bento-text-muted)',
-                    transform: mobileMenuOpen ? 'translateY(-0.5rem) rotate(-45deg)' : 'none',
-                  }}
-                />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu - GPU-accelerated slide animation */}
-        <div 
-          className={`
-            md:hidden fixed inset-x-0 top-[4.5rem] bottom-0 z-40
-            transition-all duration-300 ease-out
-            ${mobileMenuOpen 
-              ? 'opacity-100 pointer-events-auto' 
-              : 'opacity-0 pointer-events-none'
-            }
-          `}
-          style={{ 
-            paddingTop: 'var(--safe-area-inset-top)',
-            top: 'calc(4.5rem + var(--safe-area-inset-top, 0px))'
-          }}
-        >
-          {/* Backdrop overlay */}
-          <div 
-            className={`
-              absolute inset-0 bg-[var(--bento-bg)]/95 
-              transition-opacity duration-300
-              ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}
-            `}
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          
-          {/* Menu content - slides up from bottom */}
-          <div 
-            className={`
-              relative h-full flex flex-col
-              transition-transform duration-300 ease-out
-              ${mobileMenuOpen ? 'translate-y-0' : '-translate-y-4'}
-            `}
-          >
-            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-6">
-              {/* Nav items */}
-              <div className="space-y-3">
-                {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }, index) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`
-                      flex items-center justify-between px-4 py-4 rounded-2xl
-                      font-soft text-base font-semibold
-                      active:scale-[0.98] transition-transform duration-150
-                      ${isActive(path)
-                        ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] border border-[var(--bento-primary)]/10'
-                        : 'text-[var(--bento-text-muted)] bg-[var(--bento-card)]/60 active:bg-[var(--bento-card)]'
-                      }
-                    `}
-                    style={{ 
-                      transitionDelay: mobileMenuOpen ? `${index * 50}ms` : '0ms',
-                      transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-8px)',
-                      opacity: mobileMenuOpen ? 1 : 0,
-                      transition: 'transform 200ms ease-out, opacity 200ms ease-out'
-                    }}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`
-                        w-12 h-12 rounded-xl flex items-center justify-center
-                        ${isActive(path) 
-                          ? 'bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 shadow-sm' 
-                          : 'bg-[var(--bento-bg)]'
-                        }
-                      `}>
-                        <Icon className={`w-6 h-6 ${isActive(path) ? 'text-[var(--bento-primary)]' : ''}`} />
-                      </div>
-                      <span className="text-lg">{label}</span>
-                    </div>
-                    <AccentIcon className={`w-5 h-5 ${isActive(path) ? 'text-[var(--bento-secondary)]' : 'text-[var(--bento-text-subtle)]'}`} />
-                  </Link>
-                ))}
-              </div>
-              
-              {/* Decorative moogle section */}
-              <div 
-                className="mt-8 pt-6 border-t border-[var(--bento-primary)]/10"
-                style={{ 
-                  opacity: mobileMenuOpen ? 1 : 0,
-                  transition: 'opacity 300ms ease-out 150ms'
-                }}
-              >
-                <div className="flex flex-col items-center gap-4">
-                  <img 
-                    src={lilGuyMoogle} 
-                    alt="" 
-                    className="w-16 h-16 object-contain opacity-60"
-                    aria-hidden="true"
-                  />
-                  <div className="flex items-center gap-3">
-                    <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-                    <span className="font-accent text-xl text-[var(--bento-secondary)]">
-                      ~ Happy adventuring, kupo! ~
-                    </span>
-                    <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Bottom safe area padding */}
-            <div style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }} />
           </div>
         </div>
       </div>

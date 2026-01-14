@@ -12,7 +12,8 @@
     "start": "node ./scripts/start-preview.js",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "generate-icons": "node ./scripts/generate-icons.js"
   },
   "dependencies": {
     "@microsoft/signalr": "^10.0.0",
