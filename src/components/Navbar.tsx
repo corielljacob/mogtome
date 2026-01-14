@@ -557,25 +557,26 @@ export function Navbar() {
               {/* Animated hamburger lines - pure CSS transforms for 60fps */}
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
                 <span 
-                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out origin-center
-                    ${mobileMenuOpen 
-                      ? 'translate-y-2 rotate-45 bg-[var(--bento-primary)]' 
-                      : 'bg-[var(--bento-text-muted)]'
-                    }`}
+                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out origin-center"
+                  style={{
+                    backgroundColor: mobileMenuOpen ? 'var(--bento-primary)' : 'var(--bento-text-muted)',
+                    transform: mobileMenuOpen ? 'translateY(0.5rem) rotate(45deg)' : 'none',
+                  }}
                 />
                 <span 
-                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out
-                    ${mobileMenuOpen 
-                      ? 'opacity-0 scale-x-0' 
-                      : 'opacity-100 scale-x-100 bg-[var(--bento-text-muted)]'
-                    }`}
+                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out"
+                  style={{
+                    backgroundColor: 'var(--bento-text-muted)',
+                    opacity: mobileMenuOpen ? 0 : 1,
+                    transform: mobileMenuOpen ? 'scaleX(0)' : 'scaleX(1)',
+                  }}
                 />
                 <span 
-                  className={`block w-5 h-0.5 rounded-full bg-current transition-all duration-200 ease-out origin-center
-                    ${mobileMenuOpen 
-                      ? '-translate-y-2 -rotate-45 bg-[var(--bento-primary)]' 
-                      : 'bg-[var(--bento-text-muted)]'
-                    }`}
+                  className="block w-5 h-0.5 rounded-full transition-all duration-200 ease-out origin-center"
+                  style={{
+                    backgroundColor: mobileMenuOpen ? 'var(--bento-primary)' : 'var(--bento-text-muted)',
+                    transform: mobileMenuOpen ? 'translateY(-0.5rem) rotate(-45deg)' : 'none',
+                  }}
                 />
               </div>
             </button>
