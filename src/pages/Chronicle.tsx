@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -8,7 +8,6 @@ import {
   Heart,
   ChevronDown,
   Sparkles,
-  Scroll,
   Loader2,
 } from 'lucide-react';
 
@@ -60,8 +59,8 @@ function getEventKey(event: ChronicleEvent, index: number): string {
 // Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Connection status indicator */
-function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
+/** Connection status indicator - memoized since status changes infrequently */
+const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const statusConfig: Record<ConnectionStatus, { color: string; label: string; Icon: typeof Wifi }> = {
     connected: { color: 'text-green-500', label: 'Live', Icon: Wifi },
     connecting: { color: 'text-yellow-500', label: 'Connecting...', Icon: Wifi },
@@ -73,26 +72,28 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const { color, label, Icon } = statusConfig[status];
 
   return (
-    <motion.div 
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-border)] ${color}`}
-      animate={status === 'connecting' || status === 'reconnecting' ? { opacity: [0.5, 1, 0.5] } : {}}
-      transition={{ duration: 1.5, repeat: Infinity }}
+    <div 
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-border)] ${color} ${
+        status === 'connecting' || status === 'reconnecting' ? 'animate-pulse' : ''
+      }`}
     >
       <Icon className="w-4 h-4" />
       <span className="text-sm font-soft font-medium">{label}</span>
       {status === 'connected' && (
-        <motion.div
-          className="w-2 h-2 rounded-full bg-green-500"
-          animate={{ scale: [1, 1.3, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
+        <span className="w-2 h-2 rounded-full bg-green-500 animate-ping-slow" />
       )}
-    </motion.div>
+    </div>
   );
-}
+});
 
-/** Single timeline event card */
-function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEvent; isRealtime?: boolean }) {
+/** Single timeline event card - memoized for performance */
+const TimelineEventCard = memo(function TimelineEventCard({ 
+  event, 
+  isRealtime = false 
+}: { 
+  event: ChronicleEvent; 
+  isRealtime?: boolean 
+}) {
   const { Icon, color, bgColor, label } = getEventTypeConfig(event.type);
   
   return (
@@ -163,7 +164,7 @@ function TimelineEventCard({ event, isRealtime = false }: { event: ChronicleEven
       <div className="absolute left-7 md:left-8 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--bento-border)] to-transparent" />
     </motion.div>
   );
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component

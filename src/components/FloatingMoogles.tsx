@@ -1,7 +1,10 @@
-import { motion } from 'motion/react';
+import { memo } from 'react';
 
 /**
  * Floating moogle background decorations for ambient page effects.
+ * 
+ * PERFORMANCE: Uses CSS animations instead of Framer Motion for infinite loops.
+ * CSS animations run on the compositor thread, avoiding main thread work.
  */
 
 export interface MoogleConfig {
@@ -15,41 +18,41 @@ export interface MoogleConfig {
 export interface FloatingMooglesProps {
   /** Array of moogle configurations */
   moogles: MoogleConfig[];
-  /** Base opacity range [min, max] */
+  /** Base opacity range [min, max] - converted to CSS custom properties */
   opacityRange?: [number, number];
 }
 
-export function FloatingMoogles({ 
+export const FloatingMoogles = memo(function FloatingMoogles({ 
   moogles, 
   opacityRange = [0.15, 0.25] 
 }: FloatingMooglesProps) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {moogles.map((moogle, i) => (
-        <motion.img
+        <img
           key={i}
           src={moogle.src}
           alt=""
           aria-hidden="true"
-          className={`absolute ${moogle.position} ${moogle.size} object-contain`}
-          style={{ rotate: `${moogle.rotate}deg` }}
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: [opacityRange[0], opacityRange[1], opacityRange[0]],
-            y: [0, -15, 0],
-          }}
-          transition={{
-            opacity: { duration: 4, repeat: Infinity, delay: moogle.delay },
-            y: { duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: moogle.delay },
-          }}
+          loading="lazy"
+          className={`absolute ${moogle.position} ${moogle.size} object-contain animate-float-moogle will-change-transform`}
+          style={{ 
+            transform: `rotate(${moogle.rotate}deg)`,
+            animationDelay: `${moogle.delay}s`,
+            animationDuration: `${5 + i}s`,
+            opacity: opacityRange[0], // Initial opacity before animation starts
+            '--float-opacity-min': opacityRange[0],
+            '--float-opacity-max': opacityRange[1],
+          } as React.CSSProperties}
         />
       ))}
     </div>
   );
-}
+});
 
 /**
  * Simple two-moogle floating background for pages like Chronicle.
+ * Uses CSS animations for better performance.
  */
 export interface SimpleFloatingMooglesProps {
   /** First moogle image source */
@@ -58,39 +61,41 @@ export interface SimpleFloatingMooglesProps {
   secondarySrc: string;
 }
 
-export function SimpleFloatingMoogles({ primarySrc, secondarySrc }: SimpleFloatingMooglesProps) {
+export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({ 
+  primarySrc, 
+  secondarySrc 
+}: SimpleFloatingMooglesProps) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.img
+      <img
         src={primarySrc}
         alt=""
         aria-hidden="true"
-        className="absolute top-32 left-4 md:left-16 w-24 md:w-32 object-contain"
-        style={{ rotate: '-5deg' }}
-        animate={{ 
-          opacity: [0.06, 0.12, 0.06],
-          y: [0, -15, 0],
-        }}
-        transition={{
-          opacity: { duration: 5, repeat: Infinity },
-          y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-        }}
+        loading="lazy"
+        className="absolute top-32 left-4 md:left-16 w-24 md:w-32 object-contain animate-float-moogle-subtle will-change-transform"
+        style={{ 
+          transform: 'rotate(-5deg)',
+          animationDuration: '6s',
+          opacity: 0.06, // Initial opacity before animation starts
+          '--float-opacity-min': 0.06,
+          '--float-opacity-max': 0.12,
+        } as React.CSSProperties}
       />
-      <motion.img
+      <img
         src={secondarySrc}
         alt=""
         aria-hidden="true"
-        className="absolute top-64 right-4 md:right-16 w-20 md:w-28 object-contain"
-        style={{ rotate: '8deg' }}
-        animate={{ 
-          opacity: [0.06, 0.12, 0.06],
-          y: [0, -12, 0],
-        }}
-        transition={{
-          opacity: { duration: 4, repeat: Infinity, delay: 1.5 },
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 },
-        }}
+        loading="lazy"
+        className="absolute top-64 right-4 md:right-16 w-20 md:w-28 object-contain animate-float-moogle-subtle will-change-transform"
+        style={{ 
+          transform: 'rotate(8deg)',
+          animationDelay: '1.5s',
+          animationDuration: '5s',
+          opacity: 0.06, // Initial opacity before animation starts
+          '--float-opacity-min': 0.06,
+          '--float-opacity-max': 0.12,
+        } as React.CSSProperties}
       />
     </div>
   );
-}
+});
