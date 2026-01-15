@@ -2,10 +2,11 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // Full config options: https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), basicSsl()],
   
   // PERFORMANCE: Build optimizations
   build: {
@@ -45,13 +46,13 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://mogtome-api-egate2htgze6anhd.westcentralus-01.azurewebsites.net',
+        target: 'https://api.mogtome.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: true,
       },
       '/eventsHub': {
-        target: 'https://mogtome-api-egate2htgze6anhd.westcentralus-01.azurewebsites.net',
+        target: 'https://api.mogtome.com',
         changeOrigin: true,
         secure: true,
         ws: true, // Enable WebSocket proxying for SignalR

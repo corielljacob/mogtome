@@ -2,11 +2,13 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Navbar } from './components/Navbar';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const Members = lazy(() => import('./pages/Members').then(m => ({ default: m.Members })));
 const Chronicle = lazy(() => import('./pages/Chronicle').then(m => ({ default: m.Chronicle })));
+const AuthCallback = lazy(() => import('./pages/AuthCallback').then(m => ({ default: m.AuthCallback })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,18 +32,21 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
-          <Navbar />
-          <main>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/members" element={<Members />} />
-                <Route path="/chronicle" element={<Chronicle />} />
-              </Routes>
-            </Suspense>
-          </main>
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+            <Navbar />
+            <main>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/members" element={<Members />} />
+                  <Route path="/chronicle" element={<Chronicle />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                </Routes>
+              </Suspense>
+            </main>
+          </div>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
