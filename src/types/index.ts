@@ -78,6 +78,15 @@ export interface GetChronicleEventsParams {
   limit?: number;
 }
 
+// Discord user from OAuth
+export interface DiscordUser {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string | null;
+  globalName: string | null;
+}
+
 // Auth payloads
 export interface User {
   id: string;
@@ -85,9 +94,14 @@ export interface User {
   isAdmin: boolean;
 }
 
-export interface LoginCredentials {
-  username: string;
-  password: string;
+export interface AuthCallbackResponse {
+  user: DiscordUser;
+  token: string;
+}
+
+export interface CurrentUserResponse {
+  user: DiscordUser;
+  isAdmin: boolean;
 }
 
 export interface AuthResponse {
