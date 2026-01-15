@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { VirtualizedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { VirtualizedMemberGrid, PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
@@ -18,6 +19,10 @@ export function Members() {
   const [isCompact, setIsCompact] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Check for pagination mode via URL param: ?paginate=true
+  const [searchParams] = useSearchParams();
+  const usePagination = searchParams.get('paginate') === 'true';
   
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
@@ -521,11 +526,21 @@ export function Members() {
             </ContentCard>
           ) : (
             <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
-              <VirtualizedMemberGrid
-                members={filteredMembers}
-                membersByRank={membersByRank}
-                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
-              />
+              {/* Use paginated grid when ?paginate=true URL param is set */}
+              {usePagination ? (
+                <PaginatedMemberGrid
+                  members={filteredMembers}
+                  membersByRank={membersByRank}
+                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
+                  pageSize={24}
+                />
+              ) : (
+                <VirtualizedMemberGrid
+                  members={filteredMembers}
+                  membersByRank={membersByRank}
+                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
+                />
+              )}
             </div>
           )}
 

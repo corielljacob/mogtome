@@ -7,6 +7,7 @@ export { ContentCard } from './ContentCard';
 // Domain Components
 export { MemberCard, MemberCardSkeleton, MemberCardCompact } from './MemberCard';
 export { VirtualizedMemberGrid } from './VirtualizedMemberGrid';
+export { PaginatedMemberGrid } from './PaginatedMemberGrid';
 
 // Layout & Navigation
 export { Navbar } from './Navbar';
