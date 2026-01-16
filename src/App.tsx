@@ -25,7 +25,7 @@ const queryClient = new QueryClient({
 // Minimal loading fallback - keeps layout stable during lazy load
 function PageLoader() {
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex items-center justify-center">
+    <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
     </div>
   );
@@ -41,13 +41,14 @@ function AppContent() {
       // Set global transition duration to 0 when reduced motion is on
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
-      <div className="min-h-screen min-h-dvh bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+      <div className="min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+        
         {/* Skip to main content link for keyboard users */}
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
         <Navbar />
-        <main id="main-content" tabIndex={-1} className="pt-[calc(4.5rem+env(safe-area-inset-top))] pb-[calc(70px+env(safe-area-inset-bottom))] md:pb-0">
+        <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />

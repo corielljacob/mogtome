@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Star, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Star, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -450,48 +450,40 @@ function BottomNavItem({
   );
 }
 
-// Bottom navigation bar for mobile
+// Bottom navigation bar for mobile - floating pill style
 function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: string; icon: React.ElementType; accentIcon: React.ElementType }> }) {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav 
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50"
-      style={{ paddingBottom: 'var(--safe-area-inset-bottom)' }}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-3 pointer-events-none"
       aria-label="Mobile navigation"
     >
-      {/* Background with blur - extends into safe area at bottom behind home indicator */}
-      <div className="absolute inset-x-0 top-0 -bottom-[env(safe-area-inset-bottom)] bg-[var(--bento-card)]/80 backdrop-blur-xl" />
-      
-      {/* Top border gradient */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
-      
-      {/* Nav items container */}
-      <div 
-        className="relative flex items-center justify-around px-2 py-1"
-        style={{ 
-          paddingLeft: 'max(0.5rem, var(--safe-area-inset-left, 0px))', 
-          paddingRight: 'max(0.5rem, var(--safe-area-inset-right, 0px))' 
-        }}
-      >
-        {navItems.map(({ path, label, icon }) => (
-          <BottomNavItem
-            key={path}
-            path={path}
-            label={label}
-            icon={icon}
-            isActive={isActive(path)}
-          />
-        ))}
+      <div className="relative max-w-md mx-auto pointer-events-auto">
+        {/* Pill background */}
+        <div className="absolute inset-0 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-[var(--bento-primary)]/10" />
         
-        {/* Settings in bottom nav */}
-        <BottomNavItem
-          path="/settings"
-          label="Settings"
-          icon={Settings}
-          isActive={isActive('/settings')}
-        />
+        {/* Nav items container */}
+        <div className="relative flex items-center justify-around px-2 py-1">
+          {navItems.map(({ path, label, icon }) => (
+            <BottomNavItem
+              key={path}
+              path={path}
+              label={label}
+              icon={icon}
+              isActive={isActive(path)}
+            />
+          ))}
+          
+          {/* Settings in bottom nav */}
+          <BottomNavItem
+            path="/settings"
+            label="Settings"
+            icon={Settings}
+            isActive={isActive('/settings')}
+          />
+        </div>
       </div>
     </nav>
   );
@@ -512,19 +504,40 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pt-[env(safe-area-inset-top)]" aria-label="Main navigation">
-        {/* Storybook-style backdrop with warmth - extends into safe area behind Dynamic Island */}
-        <div className="absolute inset-0 -top-[env(safe-area-inset-top)] bg-[var(--bento-card)]/80 backdrop-blur-xl" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-        
-        {/* Decorative top line */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--bento-primary)]/30 to-transparent" />
-        
-        {/* Bottom border with storybook style */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
-        
-        <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8" style={{ paddingLeft: 'max(1rem, var(--safe-area-inset-left, 0px))', paddingRight: 'max(1rem, var(--safe-area-inset-right, 0px))' }}>
-          <div className="flex items-center justify-between h-[4.5rem]">
+      {/* Mobile floating header icons */}
+      <nav 
+        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-3 pointer-events-none"
+        aria-label="Mobile header"
+      >
+        <div className="flex items-center justify-between">
+          {/* Logo - floating pill */}
+          <Link 
+            to="/" 
+            className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+            aria-label="MogTome - Go to home page"
+          >
+            <LogoIcon hovered={false} />
+          </Link>
+
+          {/* Right side controls - floating pill */}
+          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
+            <LoginButton />
+            <UserMenu />
+          </div>
+        </div>
+      </nav>
+
+      {/* Desktop floating pill navbar */}
+      <nav 
+        className="hidden md:block fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-4 pointer-events-none"
+        aria-label="Main navigation"
+      >
+        <div className="relative max-w-4xl mx-auto pointer-events-auto">
+          {/* Pill background */}
+          <div className="absolute inset-0 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10" />
+          
+          <div className="relative px-5 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+            <div className="flex items-center justify-between h-14">
             {/* Brand mark */}
             <Link 
               to="/" 
@@ -535,7 +548,7 @@ export function Navbar() {
             >
               <LogoIcon hovered={logoHovered} />
               
-              <div className="hidden sm:block" aria-hidden="true">
+              <div aria-hidden="true">
                 <div className="flex items-baseline gap-0.5">
                   <motion.span 
                     className="font-display font-bold text-xl text-[var(--bento-text)]"
@@ -637,15 +650,13 @@ export function Navbar() {
               <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" aria-hidden="true" />
             </div>
 
-            {/* Right-side controls */}
-            <div className="flex items-center gap-2 md:gap-3">
+            {/* Right-side controls - desktop only */}
+            <div className="flex items-center gap-3">
               <KupoBadge />
               <LoginButton />
               <UserMenu />
-              {/* Settings button - hidden on mobile since it's in bottom nav */}
-              <div className="hidden md:block">
-                <SettingsButton />
-              </div>
+              <SettingsButton />
+            </div>
             </div>
           </div>
         </div>

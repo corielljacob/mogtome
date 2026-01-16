@@ -98,9 +98,9 @@ export function Home() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex flex-col relative">
-      {/* Warm gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
+    <div className="min-h-[100dvh] flex flex-col relative pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      {/* Warm gradient overlay - extends full viewport behind header/nav */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
       
       {/* Floating background moogles */}
       <FloatingMoogles moogles={floatingMoogles} />

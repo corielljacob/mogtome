@@ -253,9 +253,9 @@ export function Members() {
   }, [allMembers]);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background decorations - use shared CSS-animated components for performance */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      {/* Background decorations - extends full viewport behind header/nav */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />
       <FloatingSparkles minimal />
 

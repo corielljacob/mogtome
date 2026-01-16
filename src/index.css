@@ -11,8 +11,27 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Background extends into safe areas on iOS */
-    background-color: var(--bento-bg);
+    /* Ensure html covers entire viewport including safe areas */
+    min-height: 100%;
+    min-height: 100dvh;
+    /* Apply gradient background to html for full coverage behind fixed elements on mobile */
+    background: 
+      radial-gradient(ellipse at 0% 0%, rgba(150, 131, 184, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 0%, rgba(242, 139, 139, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
+      var(--bento-bg);
+    background-attachment: fixed;
+  }
+  
+  html.dark {
+    background: 
+      radial-gradient(ellipse at 0% 0%, rgba(184, 164, 216, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 0%, rgba(240, 96, 96, 0.14) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
+      var(--bento-bg);
+    background-attachment: fixed;
   }
   
   body {
@@ -26,16 +45,14 @@
     overflow-x: hidden;
     /* Enable smooth scrolling on iOS */
     -webkit-overflow-scrolling: touch;
-    /* Background extends into safe areas */
-    background-color: var(--bento-bg);
+    /* Transparent to let html background show through */
+    background: transparent;
   }
 
-  /* Root element - no clipping, allows content to extend into safe areas */
+  /* Root element */
   #root {
     min-height: 100vh;
     min-height: 100dvh;
-    /* Don't clip - allow content to extend into safe areas for iOS liquid glass */
-    overflow: visible;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -447,38 +464,11 @@
 }
 
 /* Background - Pom-Pom Classic (Richer) */
+/* The gradient is now applied to html for full viewport coverage on mobile.
+   This class is kept for compatibility but inherits the transparent background
+   so the html gradient shows through. */
 .bento-bg-mesh {
-  background: 
-    radial-gradient(ellipse at 0% 0%, rgba(150, 131, 184, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(242, 139, 139, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
-    var(--bento-bg);
-  /* Use fixed attachment only on desktop - it's very slow on mobile */
-  background-attachment: scroll;
-}
-
-/* Enable fixed background only on devices with fine pointer (desktop/laptop) */
-@media (pointer: fine) {
-  .bento-bg-mesh {
-    background-attachment: fixed;
-  }
-}
-
-.dark .bento-bg-mesh {
-  background: 
-    radial-gradient(ellipse at 0% 0%, rgba(184, 164, 216, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(240, 96, 96, 0.14) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
-    var(--bento-bg);
-  background-attachment: scroll;
-}
-
-@media (pointer: fine) {
-  .dark .bento-bg-mesh {
-    background-attachment: fixed;
-  }
+  background: transparent;
 }
 
 /* Glass Card */
