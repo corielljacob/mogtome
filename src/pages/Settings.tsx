@@ -36,27 +36,30 @@ function useTheme() {
     return 'system';
   };
 
-  const [theme, setTheme] = useState<ThemeOption>(getInitialTheme);
+  const [theme, setThemeState] = useState<ThemeOption>(getInitialTheme);
 
+  const applyTheme = (newTheme: ThemeOption) => {
+    let isDark: boolean;
+    if (newTheme === 'system') {
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      localStorage.removeItem('theme');
+    } else {
+      isDark = newTheme === 'dark';
+      localStorage.setItem('theme', newTheme);
+    }
+    document.documentElement.classList.toggle('dark', isDark);
+  };
+
+  const setTheme = (newTheme: ThemeOption) => {
+    setThemeState(newTheme);
+    applyTheme(newTheme);
+  };
+
+  // Listen for system theme changes when in system mode
   useEffect(() => {
-    const applyTheme = () => {
-      let isDark: boolean;
-      if (theme === 'system') {
-        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        localStorage.removeItem('theme');
-      } else {
-        isDark = theme === 'dark';
-        localStorage.setItem('theme', theme);
-      }
-      document.documentElement.classList.toggle('dark', isDark);
-    };
-
-    applyTheme();
-
-    // Listen for system theme changes when in system mode
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => applyTheme();
+      const handler = () => applyTheme('system');
       mediaQuery.addEventListener('change', handler);
       return () => mediaQuery.removeEventListener('change', handler);
     }
