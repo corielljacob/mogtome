@@ -461,8 +461,11 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
       style={{ paddingBottom: 'var(--safe-area-inset-bottom)' }}
       aria-label="Mobile navigation"
     >
-      {/* Background with blur */}
-      <div className="absolute inset-0 bg-[var(--bento-card)]/95 backdrop-blur-xl" />
+      {/* Background with blur - extends into safe area at bottom */}
+      <div 
+        className="absolute inset-x-0 top-0 bg-[var(--bento-card)]/95 backdrop-blur-xl"
+        style={{ bottom: 'calc(-1 * var(--safe-area-inset-bottom))' }}
+      />
       
       {/* Top border gradient */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />

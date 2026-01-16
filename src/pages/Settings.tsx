@@ -55,16 +55,32 @@ function useTheme() {
     // Update html background (extends into iOS safe areas)
     document.documentElement.style.backgroundColor = themeColor;
     
-    // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
-    // iOS Safari requires removing and re-adding the meta tag to pick up changes
-    const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
-    existingMetas.forEach(meta => meta.remove());
+    // Update theme-color meta tag for browser chrome
+    // iOS Safari is notoriously difficult - we need multiple tricks
+    const updateThemeColorMeta = () => {
+      const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
+      existingMetas.forEach(meta => meta.remove());
+      
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = themeColor;
+      document.head.appendChild(meta);
+    };
     
-    // Add fresh meta tag
-    const meta = document.createElement('meta');
-    meta.name = 'theme-color';
-    meta.content = themeColor;
-    document.head.appendChild(meta);
+    // Update immediately
+    updateThemeColorMeta();
+    
+    // iOS Safari trick: trigger a minimal scroll to force UI update
+    const scrollY = window.scrollY;
+    window.scrollTo(0, scrollY + 1);
+    
+    // Use requestAnimationFrame + setTimeout combo for iOS Safari
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.scrollTo(0, scrollY);
+        updateThemeColorMeta();
+      }, 50);
+    });
   };
 
   const setTheme = (newTheme: ThemeOption) => {
