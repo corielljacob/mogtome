@@ -21,16 +21,28 @@ const rankConfig: Record<string, {
   icon: typeof Crown;
   color: string;
   bg: string;
+  gradient: string;
+  glow: string;
+  label: string;
+  description: string;
 }> = {
   'Moogle Guardian': { 
     icon: Crown,
     color: 'text-amber-500',
     bg: 'bg-amber-500/10',
+    gradient: 'from-amber-400 to-orange-400',
+    glow: 'rgba(251, 191, 36, 0.4)',
+    label: 'FC Leader',
+    description: 'Our Moogle Guardian who leads Kupo Life',
   },
   'Moogle Knight': { 
     icon: Shield,
     color: 'text-violet-500',
     bg: 'bg-violet-500/10',
+    gradient: 'from-violet-400 to-purple-500',
+    glow: 'rgba(167, 139, 250, 0.3)',
+    label: 'Moogle Knights',
+    description: 'Our trusted officers who keep things running smoothly',
   },
 };
 
@@ -38,6 +50,10 @@ const defaultRankConfig = {
   icon: Star,
   color: 'text-[var(--bento-primary)]',
   bg: 'bg-[var(--bento-primary)]/10',
+  gradient: 'from-[var(--bento-primary)] to-[var(--bento-secondary)]',
+  glow: 'rgba(199, 91, 122, 0.3)',
+  label: 'Leadership',
+  description: 'Helping guide our FC',
 };
 
 interface StaffCardProps {
@@ -46,43 +62,179 @@ interface StaffCardProps {
 }
 
 /**
- * StaffCard - Consistent card design matching the app's style
+ * FeaturedLeaderCard - A special prominent card for the FC Leader (Moogle Guardian)
  */
-const StaffCard = memo(function StaffCard({ member, index = 0 }: StaffCardProps) {
+const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member }: { member: StaffMember }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
-  const RankIcon = config.icon;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
   
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
     <motion.article 
-      className="group"
-      initial={{ opacity: 0, y: 10 }}
+      className="group relative"
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      aria-label={`${member.name}, ${member.freeCompanyRank}`}
+      transition={{ duration: 0.5 }}
+      aria-label={`${member.name}, FC Leader`}
     >
+      {/* Ambient glow */}
       <div 
         className="
-          relative flex gap-4 p-4 md:p-5
-          bg-[var(--bento-card)]/80 backdrop-blur-sm
-          border border-[var(--bento-border)] rounded-2xl
-          shadow-sm hover:shadow-md hover:border-[var(--bento-primary)]/20
-          transition-all duration-200
+          absolute -inset-4 rounded-3xl blur-2xl pointer-events-none
+          opacity-40 group-hover:opacity-60
+          transition-opacity duration-500
+        "
+        style={{ backgroundColor: config.glow }}
+        aria-hidden="true"
+      />
+      
+      <div 
+        className="
+          relative flex flex-col items-center text-center
+          p-6 md:p-8
+          bg-[var(--bento-card)]/95 backdrop-blur-md
+          border-2 border-amber-400/30 rounded-3xl
+          shadow-xl shadow-amber-500/10
+          hover:shadow-2xl hover:border-amber-400/50
+          transition-all duration-300
         "
       >
+        {/* Decorative crown accent */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
+          <div className={`
+            px-4 py-1.5 rounded-full
+            bg-gradient-to-r ${config.gradient}
+            shadow-lg shadow-amber-500/30
+            flex items-center gap-2
+          `}>
+            <Crown className="w-4 h-4 text-white" />
+            <span className="text-xs font-soft font-bold text-white uppercase tracking-wide">
+              FC Leader
+            </span>
+          </div>
+        </div>
+        
         {/* Avatar */}
         <a 
           href={lodestoneUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="relative flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl"
+          className="
+            relative mt-4 mb-4
+            focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none rounded-2xl
+          "
           aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
         >
-          <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden shadow-md">
+          <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-amber-400/20">
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
+            )}
+            
+            <img
+              src={member.avatarLink}
+              alt=""
+              loading="eager"
+              decoding="async"
+              onLoad={handleImageLoad}
+              className={`
+                w-full h-full object-cover 
+                transition-all duration-300 ease-out
+                group-hover:scale-105
+                ${imageLoaded ? 'opacity-100' : 'opacity-0'}
+              `}
+            />
+            
+            {/* Hover overlay */}
+            <div 
+              className="
+                absolute inset-0 
+                bg-gradient-to-t from-black/70 to-transparent 
+                flex items-end justify-center pb-2
+                opacity-0 group-hover:opacity-100
+                transition-opacity duration-200
+              "
+              aria-hidden="true"
+            >
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-white/95 rounded-full text-[10px] font-soft font-bold text-gray-800 shadow-sm">
+                <ExternalLink className="w-2.5 h-2.5" />
+                Lodestone
+              </span>
+            </div>
+          </div>
+        </a>
+        
+        {/* Name */}
+        <h3 className="font-display font-bold text-xl md:text-2xl text-[var(--bento-text)] mb-3">
+          {member.name}
+        </h3>
+        
+        {/* Biography */}
+        <p className="text-[var(--bento-text-muted)] font-soft text-base leading-relaxed max-w-md">
+          {member.biography || (
+            <span className="italic opacity-75">Leading Kupo Life with heart and dedication, kupo~</span>
+          )}
+        </p>
+      </div>
+    </motion.article>
+  );
+});
+
+/**
+ * LeaderCard - A horizontal card that features the leader's bio prominently
+ * Distinct from MemberCard's square grid layout
+ */
+const LeaderCard = memo(function LeaderCard({ member, index = 0 }: StaffCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
+  const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
+  
+  const handleImageLoad = useCallback(() => setImageLoaded(true), []);
+
+  return (
+    <article 
+      className="group relative"
+      style={{
+        animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.5)}s both`,
+      }}
+      aria-label={`${member.name}, ${member.freeCompanyRank}`}
+    >
+      {/* Hover glow */}
+      <div 
+        className="
+          absolute -inset-2 rounded-2xl blur-xl pointer-events-none
+          opacity-0 group-hover:opacity-60
+          transition-opacity duration-300
+        "
+        style={{ backgroundColor: config.glow }}
+        aria-hidden="true"
+      />
+      
+      <div 
+        className="
+          relative flex flex-col sm:flex-row gap-4
+          p-4 sm:p-5
+          bg-[var(--bento-card)]/90 backdrop-blur-sm
+          border border-[var(--bento-border)] rounded-2xl
+          shadow-sm hover:shadow-lg hover:border-[var(--bento-primary)]/20
+          transition-all duration-200
+        "
+      >
+        {/* Left side: Avatar with Lodestone link */}
+        <a 
+          href={lodestoneUrl} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="
+            relative flex-shrink-0 self-center sm:self-start
+            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl
+          "
+          aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
+        >
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden shadow-md">
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
             )}
@@ -105,65 +257,130 @@ const StaffCard = memo(function StaffCard({ member, index = 0 }: StaffCardProps)
             <div 
               className="
                 absolute inset-0 
-                bg-gradient-to-t from-black/60 to-transparent 
+                bg-gradient-to-t from-black/70 to-transparent 
                 flex items-end justify-center pb-1.5
                 opacity-0 group-hover:opacity-100
                 transition-opacity duration-200
               "
               aria-hidden="true"
             >
-              <span className="flex items-center gap-1 px-2 py-1 bg-white/90 rounded-full text-[10px] font-soft font-bold text-gray-800">
-                <ExternalLink className="w-2.5 h-2.5" />
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-white/95 rounded-full text-[9px] font-soft font-bold text-gray-800 shadow-sm">
+                <ExternalLink className="w-2 h-2" />
                 Lodestone
               </span>
             </div>
           </div>
         </a>
         
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
+        {/* Right side: Info & Bio */}
+        <div className="flex-1 min-w-0 text-center sm:text-left">
+          {/* Header row: Name + badges */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+            <h3 className="font-display font-bold text-base sm:text-lg text-[var(--bento-text)] truncate">
+              {member.name}
+            </h3>
+            
+            <div className="flex items-center justify-center sm:justify-start gap-2">
               {/* Rank badge */}
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className={`
-                  inline-flex items-center gap-1.5
-                  px-2 py-0.5 rounded-full text-xs font-soft font-semibold
-                  ${config.bg} ${config.color}
-                `}>
-                  {member.freeCompanyRankIcon ? (
-                    <img 
-                      src={member.freeCompanyRankIcon} 
-                      alt="" 
-                      className="w-3.5 h-3.5"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <RankIcon className="w-3 h-3" aria-hidden="true" />
-                  )}
-                  {member.freeCompanyRank}
-                </span>
-                {member.recentlyPromoted && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-soft font-semibold bg-[var(--bento-secondary)]/10 text-[var(--bento-secondary)]">
-                    New!
-                  </span>
+              <span className={`
+                inline-flex items-center gap-1.5
+                px-2 py-0.5 rounded-full text-xs font-soft font-semibold
+                ${config.bg} ${config.color}
+              `}>
+                {member.freeCompanyRankIcon ? (
+                  <img 
+                    src={member.freeCompanyRankIcon} 
+                    alt="" 
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <config.icon className="w-3 h-3" aria-hidden="true" />
                 )}
-              </div>
-
-              {/* Name */}
-              <h3 className="font-display font-bold text-lg md:text-xl text-[var(--bento-text)] mb-1">
-                {member.name}
-              </h3>
+                {member.freeCompanyRank.replace('Moogle ', '')}
+              </span>
               
-              {/* Biography */}
-              <p className="text-[var(--bento-text-muted)] font-soft text-sm leading-relaxed line-clamp-2">
-                {member.biography || "Helping keep the FC magical, kupo~"}
-              </p>
+              {/* New badge */}
+              {member.recentlyPromoted && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-soft font-semibold bg-[var(--bento-secondary)]/15 text-[var(--bento-secondary)]">
+                  New!
+                </span>
+              )}
             </div>
           </div>
+          
+          {/* Biography - the star of the show */}
+          <p className="text-[var(--bento-text-muted)] font-soft text-sm leading-relaxed">
+            {member.biography || (
+              <span className="italic opacity-75">Helping keep the FC magical, kupo~</span>
+            )}
+          </p>
         </div>
       </div>
-    </motion.article>
+    </article>
+  );
+});
+
+interface RankSectionProps {
+  rank: string;
+  members: StaffMember[];
+  startIndex: number;
+}
+
+/**
+ * RankSection - Groups staff by rank with a stylized header
+ * Uses a 2-column grid for horizontal leader cards
+ */
+const RankSection = memo(function RankSection({ rank, members, startIndex }: RankSectionProps) {
+  const config = rankConfig[rank] || defaultRankConfig;
+  const RankIcon = config.icon;
+
+  return (
+    <section className="mb-10 last:mb-0" aria-labelledby={`rank-${rank.replace(/\s+/g, '-').toLowerCase()}`}>
+      {/* Rank header */}
+      <motion.div
+        className="flex items-center gap-3 mb-5"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3, delay: startIndex * 0.02 }}
+      >
+        <div className={`
+          w-9 h-9 rounded-xl flex items-center justify-center
+          bg-gradient-to-br ${config.gradient}
+          shadow-lg shadow-black/10
+        `}>
+          <RankIcon className="w-4.5 h-4.5 text-white" aria-hidden="true" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 
+            id={`rank-${rank.replace(/\s+/g, '-').toLowerCase()}`}
+            className="font-display font-bold text-lg text-[var(--bento-text)]"
+          >
+            {config.label}
+          </h3>
+          <p className="text-xs text-[var(--bento-text-muted)] font-soft">
+            {config.description}
+          </p>
+        </div>
+        <span className={`
+          flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-soft font-semibold
+          ${config.bg} ${config.color}
+        `}>
+          {members.length} {members.length === 1 ? 'leader' : 'leaders'}
+        </span>
+      </motion.div>
+
+      {/* Members - responsive 1-2 column grid for horizontal cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {members.map((member, idx) => (
+          <LeaderCard 
+            key={member.characterId} 
+            member={member} 
+            index={startIndex + idx} 
+          />
+        ))}
+      </div>
+    </section>
   );
 });
 
@@ -183,6 +400,27 @@ export function About() {
     });
   }, [data?.staff]);
 
+  // Separate FC Leader from officers
+  const { fcLeader, officers } = useMemo(() => {
+    const leader = staff.find(m => m.freeCompanyRank === 'Moogle Guardian');
+    const rest = staff.filter(m => m.freeCompanyRank !== 'Moogle Guardian');
+    return { fcLeader: leader, officers: rest };
+  }, [staff]);
+
+  // Group officers by rank for sectioned display
+  const officersByRank = useMemo(() => {
+    const grouped = new Map<string, StaffMember[]>();
+    for (const member of officers) {
+      const existing = grouped.get(member.freeCompanyRank);
+      if (existing) {
+        existing.push(member);
+      } else {
+        grouped.set(member.freeCompanyRank, [member]);
+      }
+    }
+    return grouped;
+  }, [officers]);
+
   return (
     <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       {/* Background decorations - extends full viewport behind header/nav */}
@@ -191,7 +429,7 @@ export function About() {
       <FloatingSparkles minimal />
 
       <div className="relative py-8 md:py-12 px-4 z-10">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Page header */}
           <motion.header 
             className="text-center mb-10"
@@ -260,6 +498,11 @@ export function About() {
               >
                 Our Leadership
               </h2>
+              {staff.length > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--bento-primary)]/10 text-[var(--bento-primary)]">
+                  {staff.length} leaders
+                </span>
+              )}
               <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
             </motion.div>
 
@@ -330,14 +573,34 @@ export function About() {
                 </p>
               </ContentCard>
             ) : (
-              <div className="space-y-4">
-                {staff.map((member, index) => (
-                  <StaffCard 
-                    key={member.characterId} 
-                    member={member} 
-                    index={index} 
-                  />
-                ))}
+              <div className="space-y-10">
+                {/* FC Leader - Featured prominently */}
+                {fcLeader && (
+                  <div className="max-w-xl mx-auto">
+                    <FeaturedLeaderCard member={fcLeader} />
+                  </div>
+                )}
+                
+                {/* Officers - Grouped by rank */}
+                {officers.length > 0 && (
+                  <div>
+                    {(() => {
+                      let runningIndex = 0;
+                      return Array.from(officersByRank.entries()).map(([rank, members]) => {
+                        const startIndex = runningIndex;
+                        runningIndex += members.length;
+                        return (
+                          <RankSection
+                            key={rank}
+                            rank={rank}
+                            members={members}
+                            startIndex={startIndex}
+                          />
+                        );
+                      });
+                    })()}
+                  </div>
+                )}
               </div>
             )}
           </section>
