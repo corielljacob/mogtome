@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import apiClient from '../api/client';
 
 // Discord user info returned after authentication
@@ -107,9 +107,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Redirect to Discord OAuth login
   const login = useCallback(() => {
-    // Use the API base URL for the login redirect
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    const loginUrl = apiBaseUrl ? `${apiBaseUrl}/auth/discord/login` : '/api/auth/discord/login';
+    // Always use the full API URL for OAuth - can't go through proxy
+    const loginUrl = 'https://api.mogtome.com/auth/discord/login';
     window.location.href = loginUrl;
   }, []);
 
