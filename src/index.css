@@ -14,24 +14,9 @@
     /* Ensure html covers entire viewport including safe areas */
     min-height: 100%;
     min-height: 100dvh;
-    /* Apply gradient background to html for full coverage behind fixed elements on mobile */
-    background: 
-      radial-gradient(ellipse at 0% 0%, rgba(150, 131, 184, 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 0%, rgba(242, 139, 139, 0.18) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
-      var(--bento-bg);
-    background-attachment: fixed;
-  }
-  
-  html.dark {
-    background: 
-      radial-gradient(ellipse at 0% 0%, rgba(184, 164, 216, 0.12) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 0%, rgba(240, 96, 96, 0.14) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
-      var(--bento-bg);
-    background-attachment: fixed;
+    /* Background color - gradients applied via bento-bg-mesh on content */
+    background-color: var(--bento-bg);
+    transition: background-color 0.3s ease;
   }
   
   body {
@@ -128,6 +113,11 @@
   --bento-border: rgba(60, 56, 72, 0.1);
   --bento-shadow: rgba(229, 75, 75, 0.18);
   --bento-glass: rgba(255, 255, 255, 0.92);
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(150, 131, 184, 0.15);
+  --gradient-2: rgba(242, 139, 139, 0.18);
+  --gradient-3: rgba(229, 75, 75, 0.1);
+  --gradient-4: rgba(150, 131, 184, 0.12);
 }
 
 .dark {
@@ -144,6 +134,11 @@
   --bento-border: rgba(240, 236, 245, 0.1);
   --bento-shadow: rgba(240, 96, 96, 0.22);
   --bento-glass: rgba(30, 26, 38, 0.94);
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(184, 164, 216, 0.12);
+  --gradient-2: rgba(240, 96, 96, 0.14);
+  --gradient-3: rgba(184, 164, 216, 0.1);
+  --gradient-4: rgba(240, 96, 96, 0.08);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -464,11 +459,16 @@
 }
 
 /* Background - Pom-Pom Classic (Richer) */
-/* The gradient is now applied to html for full viewport coverage on mobile.
-   This class is kept for compatibility but inherits the transparent background
-   so the html gradient shows through. */
+/* Uses CSS variables so it updates when theme changes */
 .bento-bg-mesh {
-  background: transparent;
+  background: 
+    radial-gradient(ellipse at 0% 0%, var(--gradient-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, var(--gradient-2) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, var(--gradient-3) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, var(--gradient-4) 0%, transparent 50%),
+    var(--bento-bg);
+  background-attachment: fixed;
+  transition: background 0.3s ease;
 }
 
 /* Glass Card */

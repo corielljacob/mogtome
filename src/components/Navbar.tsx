@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Star, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -632,14 +632,15 @@ export function Navbar() {
 
       {/* Desktop floating pill navbar */}
       <nav 
-        className="hidden md:block fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-4 pointer-events-none"
+        className="hidden md:block fixed top-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] pointer-events-none"
+        style={{ left: '0', width: '100vw' }}
         aria-label="Main navigation"
       >
-        <div className="relative max-w-4xl mx-auto pointer-events-auto">
+        <div className="relative mx-6 pointer-events-auto">
           {/* Pill background */}
           <div className="absolute inset-0 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10" />
           
-          <div className="relative px-5 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+          <div className="relative px-5">
             <div className="flex items-center justify-between h-14">
             {/* Brand mark */}
             <Link 
@@ -679,10 +680,8 @@ export function Navbar() {
               </div>
             </Link>
 
-            {/* Desktop nav - storybook styled */}
-            <div className="hidden md:flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5" role="navigation" aria-label="Main menu">
-              {/* Decorative star on left */}
-              <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" aria-hidden="true" />
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main menu">
               
               {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
                 const active = isActive(path);
@@ -748,9 +747,6 @@ export function Navbar() {
                   </Link>
                 );
               })}
-              
-              {/* Decorative star on right */}
-              <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" aria-hidden="true" />
             </div>
 
             {/* Right-side controls - desktop only */}
