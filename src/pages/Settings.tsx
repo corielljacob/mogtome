@@ -414,28 +414,22 @@ function AccountSection() {
     );
   }
 
-  const avatarUrl = user.avatar 
-    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
-    : `https://cdn.discordapp.com/embed/avatars/${parseInt(user.discriminator || '0') % 5}.png`;
-
-  const displayName = user.globalName || user.username;
-
   return (
     <ContentCard>
       <SectionHeader icon={User} title="Account" />
       
       <div className="flex items-center gap-4 p-4 rounded-xl bg-[var(--bento-bg)]">
         <img 
-          src={avatarUrl} 
+          src={user.memberPortraitUrl} 
           alt="" 
           className="w-16 h-16 rounded-xl object-cover shadow-md"
         />
         <div className="min-w-0 flex-1">
           <p className="font-display font-semibold text-lg text-[var(--bento-text)] truncate">
-            {displayName}
+            {user.memberName}
           </p>
           <p className="text-sm text-[var(--bento-text-muted)] truncate">
-            @{user.username}
+            {user.memberRank}
           </p>
           <p className="text-xs text-[var(--bento-text-subtle)] mt-1">
             Connected via Discord

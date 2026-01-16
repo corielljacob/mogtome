@@ -78,35 +78,11 @@ export interface GetChronicleEventsParams {
   limit?: number;
 }
 
-// Discord user from OAuth
-export interface DiscordUser {
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar: string | null;
-  globalName: string | null;
-}
-
-// Auth payloads
+// User info extracted from JWT token
 export interface User {
-  id: string;
-  username: string;
-  isAdmin: boolean;
-}
-
-export interface AuthCallbackResponse {
-  user: DiscordUser;
-  token: string;
-}
-
-export interface CurrentUserResponse {
-  user: DiscordUser;
-  isAdmin: boolean;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
+  memberName: string;
+  memberRank: string;
+  memberPortraitUrl: string;
 }
 
 // Common paginated response wrapper

@@ -219,11 +219,8 @@ function UserMenu() {
 
   if (isLoading || !user) return null;
 
-  const avatarUrl = user.avatar 
-    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-    : `https://cdn.discordapp.com/embed/avatars/${parseInt(user.discriminator || '0') % 5}.png`;
-
-  const displayName = user.globalName || user.username;
+  const avatarUrl = user.memberPortraitUrl;
+  const displayName = user.memberName;
 
   return (
     <div className="relative">
@@ -279,7 +276,7 @@ function UserMenu() {
                     {displayName}
                   </p>
                   <p className="text-xs text-[var(--bento-text-muted)] truncate">
-                    @{user.username}
+                    {user.memberRank}
                   </p>
                 </div>
 
