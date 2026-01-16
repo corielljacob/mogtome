@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X, Info, Crown } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -573,6 +573,7 @@ export function Navbar() {
     { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
     { path: '/members', label: 'Family', icon: Users, accentIcon: Heart },
     { path: '/chronicle', label: 'Chronicle', icon: Scroll, accentIcon: Clock },
+    { path: '/about', label: 'About', icon: Info, accentIcon: Crown },
   ];
 
   const isActive = (path: string) => location.pathname === path;

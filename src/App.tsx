@@ -10,6 +10,7 @@ import { AccessibilityProvider, useAccessibility } from './contexts/Accessibilit
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const Members = lazy(() => import('./pages/Members').then(m => ({ default: m.Members })));
 const Chronicle = lazy(() => import('./pages/Chronicle').then(m => ({ default: m.Chronicle })));
+const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 const AuthCallback = lazy(() => import('./pages/AuthCallback').then(m => ({ default: m.AuthCallback })));
 const Logout = lazy(() => import('./pages/Logout').then(m => ({ default: m.Logout })));
 const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
@@ -55,6 +56,7 @@ function AppContent() {
               <Route path="/" element={<Home />} />
               <Route path="/members" element={<Members />} />
               <Route path="/chronicle" element={<Chronicle />} />
+              <Route path="/about" element={<About />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/logout" element={<Logout />} />

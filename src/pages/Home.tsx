@@ -251,11 +251,11 @@ export function Home() {
                   <span className="text-[var(--bento-secondary)]">Tome</span>
                 </h1>
                 <p className="text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-md mx-auto leading-relaxed mb-3">
-                  Where moogles gather, adventures are shared, 
-                  and everyone belongs.
+                  The cozy home of <span className="text-[var(--bento-primary)] font-semibold">Kupo Life!</span> — where moogles gather, 
+                  adventures are shared, and everyone belongs.
                 </p>
                 <p className="font-accent text-xl text-[var(--bento-secondary)]">
-                  ✧ Your Free Company's cozy hearth ✧
+                  ✧ Our Free Company's digital hearth ✧
                 </p>
               </motion.div>
 

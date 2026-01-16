@@ -11,6 +11,27 @@ export interface FreeCompanyMember {
   avatarLink: string;
 }
 
+// Staff/Leadership member shape from /members/staff endpoint
+export interface StaffMember {
+  name: string;
+  freeCompanyRank: string;
+  freeCompanyRankIcon: string;
+  characterId: string;
+  activeMember: boolean;
+  lastUpdatedDate: string;
+  membershipHistory?: string;
+  avatarLink: string;
+  discordId?: string;
+  biography?: string;
+  promotionDate?: string;
+  recentlyPromoted?: boolean;
+}
+
+export interface StaffResponse {
+  totalCount: number;
+  staff: StaffMember[];
+}
+
 // FC ranks plus presentation metadata
 export const FC_RANKS = [
   { name: 'Moogle Guardian', color: 'rank-guardian', order: 0 },

@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { FreeCompanyMember, PaginatedResponse } from '../types';
+import type { FreeCompanyMember, PaginatedResponse, StaffResponse } from '../types';
 
 // Shape returned by the Azure API
 interface MembersApiResponse {
@@ -112,5 +112,13 @@ export const membersApi = {
     if (!characterId) return undefined;
     const { members } = await getAllMembers();
     return members.find((m) => m.characterId === characterId);
+  },
+
+  // Fetch staff/leadership members
+  getStaff: async (): Promise<StaffResponse> => {
+    const response = await apiClient.get<StaffResponse>('/members/staff');
+    const staff = Array.isArray(response.data?.staff) ? response.data.staff : [];
+    const totalCount = typeof response.data?.totalCount === 'number' ? response.data.totalCount : staff.length;
+    return { staff, totalCount };
   },
 };
