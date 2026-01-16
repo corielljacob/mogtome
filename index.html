@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #FFF9F5;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -30,8 +30,13 @@
         var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
         if (isDark) document.documentElement.classList.add('dark');
         
-        // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
+        // Set colors for theme (browser chrome + safe area background)
         var themeColor = isDark ? '#1A1722' : '#FFF9F5';
+        
+        // Update background color on html element (extends into iOS safe areas)
+        document.documentElement.style.backgroundColor = themeColor;
+        
+        // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
         var meta = document.querySelector('meta[name="theme-color"]:not([media])');
         if (!meta) {
           meta = document.createElement('meta');

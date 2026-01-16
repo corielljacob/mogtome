@@ -13,6 +13,8 @@
     scroll-behavior: smooth;
     /* Fix for mobile viewport height (accounts for browser chrome) */
     height: -webkit-fill-available;
+    /* Extend background color into safe areas on iOS */
+    background-color: var(--bento-bg);
   }
   
   body {
@@ -25,6 +27,8 @@
     overflow-x: hidden;
     /* Enable smooth scrolling on iOS */
     -webkit-overflow-scrolling: touch;
+    /* Extend background into safe areas (notch, home indicator) */
+    background-color: var(--bento-bg);
   }
 
   /* Root element fills viewport properly on mobile */

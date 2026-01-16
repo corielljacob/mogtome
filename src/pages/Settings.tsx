@@ -49,8 +49,13 @@ function useTheme() {
     }
     document.documentElement.classList.toggle('dark', isDark);
     
-    // Update browser chrome color (iOS Safari, Android Chrome)
+    // Update colors for browser chrome + safe area background
     const themeColor = isDark ? '#1A1722' : '#FFF9F5';
+    
+    // Update html background (extends into iOS safe areas)
+    document.documentElement.style.backgroundColor = themeColor;
+    
+    // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
     let meta = document.querySelector('meta[name="theme-color"]:not([media])') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement('meta');
