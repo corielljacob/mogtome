@@ -34,8 +34,8 @@ export default defineConfig({
       },
     },
     
-    // Generate source maps for debugging in production
-    sourcemap: true,
+    // Disable source maps for production to reduce bundle size
+    sourcemap: false,
     
     // Inline assets smaller than 4kb
     assetsInlineLimit: 4096,
