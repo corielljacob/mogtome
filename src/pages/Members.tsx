@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
-import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
+import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, ArrowUpDown } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, Dropdown } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
@@ -11,14 +12,107 @@ import deadMoogle from '../assets/moogles/dead moogle.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
 
+// Valid rank names for URL validation (typed as Set<string> for flexibility)
+const VALID_RANK_NAMES: Set<string> = new Set(FC_RANKS.map(r => r.name));
+
+// Rank order lookup for sorting
+const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
+
+// Sort options
+type SortOption = 'name-asc' | 'name-desc' | 'rank-asc';
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'rank-asc', label: 'Rank' },
+  { value: 'name-asc', label: 'Name (A → Z)' },
+  { value: 'name-desc', label: 'Name (Z → A)' },
+];
+const DEFAULT_SORT: SortOption = 'rank-asc';
+
 export function Members() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRanks, setSelectedRanks] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   
+  // Read search/filter/sort state from URL
+  const searchQuery = searchParams.get('q') || '';
+  const selectedRanks = useMemo(() => {
+    const ranksParam = searchParams.get('ranks');
+    if (!ranksParam) return [];
+    // Validate that ranks are valid FC ranks
+    return ranksParam.split(',').filter(r => VALID_RANK_NAMES.has(r));
+  }, [searchParams]);
+  const sortBy = (searchParams.get('sort') as SortOption) || DEFAULT_SORT;
+  // Validate sort option
+  const validSortBy = SORT_OPTIONS.some(o => o.value === sortBy) ? sortBy : DEFAULT_SORT;
+  
+  
+  // Update URL when search changes (debounced via input)
+  const setSearchQuery = useCallback((query: string) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (query.trim()) {
+        next.set('q', query);
+      } else {
+        next.delete('q');
+      }
+      // Reset page when searching
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  // Update URL when ranks change
+  const setSelectedRanks = useCallback((updater: string[] | ((prev: string[]) => string[])) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      const currentRanks = prev.get('ranks')?.split(',').filter(r => VALID_RANK_NAMES.has(r)) || [];
+      const newRanks = typeof updater === 'function' ? updater(currentRanks) : updater;
+      
+      if (newRanks.length > 0) {
+        next.set('ranks', newRanks.join(','));
+      } else {
+        next.delete('ranks');
+      }
+      // Reset page when filtering
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  // Update URL when sort changes
+  const setSortBy = useCallback((sort: SortOption) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (sort === DEFAULT_SORT) {
+        next.delete('sort'); // Keep URL clean for default
+      } else {
+        next.set('sort', sort);
+      }
+      // Reset page when sorting changes
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  
+  // For input field, we use local state that syncs to URL on change
+  const [inputValue, setInputValue] = useState(searchQuery);
+  
+  // Sync input value when URL changes (e.g., back button)
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
+  
+  // Debounce search input to URL
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputValue !== searchQuery) {
+        setSearchQuery(inputValue);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [inputValue, searchQuery, setSearchQuery]);
   
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
@@ -68,6 +162,7 @@ export function Members() {
   const filteredMembers = useMemo(() => {
     let result = allMembers;
 
+    // Filter by search query
     if (deferredSearchQuery.trim()) {
       const query = deferredSearchQuery.toLowerCase();
       result = result.filter(member => 
@@ -76,14 +171,31 @@ export function Members() {
       );
     }
 
+    // Filter by selected ranks
     if (deferredSelectedRanks.length > 0) {
       result = result.filter(member => 
         deferredSelectedRanks.includes(member.freeCompanyRank)
       );
     }
+    
+    // Sort results
+    result = [...result].sort((a, b) => {
+      switch (validSortBy) {
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'rank-asc':
+        default: {
+          // Sort by rank hierarchy, then alphabetically within each rank
+          const rankDiff = (RANK_ORDER.get(a.freeCompanyRank) ?? 999) - (RANK_ORDER.get(b.freeCompanyRank) ?? 999);
+          return rankDiff !== 0 ? rankDiff : a.name.localeCompare(b.name);
+        }
+      }
+    });
 
     return result;
-  }, [allMembers, deferredSearchQuery, deferredSelectedRanks]);
+  }, [allMembers, deferredSearchQuery, deferredSelectedRanks, validSortBy]);
 
   // Single-pass grouping: O(n) instead of O(n * ranks)
   const membersByRank = useMemo(() => {
@@ -117,12 +229,18 @@ export function Members() {
     setSelectedRanks((prev) =>
       prev.includes(rankName) ? prev.filter((r) => r !== rankName) : [...prev, rankName]
     );
-  }, []);
+  }, [setSelectedRanks]);
 
   const clearFilters = useCallback(() => {
-    setSearchQuery('');
-    setSelectedRanks([]);
-  }, []);
+    setInputValue('');
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('q');
+      next.delete('ranks');
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
 
   const hasActiveFilters = searchQuery || selectedRanks.length > 0;
 
@@ -252,8 +370,8 @@ export function Members() {
                     ref={searchInputRef}
                     type="text"
                     placeholder="Search members..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     className={`
                       w-full font-soft text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)] 
                       focus:outline-none bg-[var(--bento-bg)]
@@ -269,13 +387,13 @@ export function Members() {
                   
                   {/* Clear button */}
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => { setInputValue(''); setSearchQuery(''); }}
                     className={`
                       absolute inset-y-0 right-0 flex items-center cursor-pointer pr-3
                       transition-all duration-150
-                      ${searchQuery ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
+                      ${inputValue ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
                     `}
-                    tabIndex={searchQuery ? 0 : -1}
+                    tabIndex={inputValue ? 0 : -1}
                   >
                     <span className={`bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 rounded-lg transition-colors ${isCompact ? 'p-1' : 'p-1.5'}`}>
                       <X className={`text-[var(--bento-primary)] ${isCompact ? 'w-3 h-3' : 'w-4 h-4'}`} />
@@ -332,37 +450,49 @@ export function Members() {
               >
                 <div className="overflow-hidden">
                   <div className="pt-5">
-                    {/* Rank filter toggle */}
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="
-                        w-full flex items-center justify-between
-                        px-4 py-3 rounded-2xl
-                        bg-[var(--bento-bg)]
-                        border border-[var(--bento-border)]
-                        hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-primary)]/5
-                        transition-colors cursor-pointer
-                        group
-                      "
-                    >
-                      <div className="flex items-center gap-3">
-                        <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
-                        <span className="font-soft font-medium text-[var(--bento-text)]">
-                          Filter by Rank
-                        </span>
-                        {selectedRanks.length > 0 && (
-                          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white">
-                            {selectedRanks.length} selected
-                          </span>
-                        )}
-                      </div>
-                      <motion.div
-                        animate={{ rotate: showFilters ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
+                    {/* Filter and Sort row */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      {/* Rank filter toggle */}
+                      <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="
+                          flex-1 flex items-center justify-between
+                          px-4 py-3 rounded-xl
+                          bg-[var(--bento-bg)]
+                          border border-[var(--bento-border)]
+                          hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-primary)]/5
+                          transition-colors cursor-pointer
+                          group
+                        "
                       >
-                        <ChevronDown className="w-5 h-5 text-[var(--bento-text-muted)] group-hover:text-[var(--bento-primary)] transition-colors" />
-                      </motion.div>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
+                          <span className="font-soft font-medium text-[var(--bento-text)] text-sm">
+                            Ranks
+                          </span>
+                          {selectedRanks.length > 0 && (
+                            <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.25rem] text-center">
+                              {selectedRanks.length}
+                            </span>
+                          )}
+                        </div>
+                        <motion.div
+                          animate={{ rotate: showFilters ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="w-4 h-4 text-[var(--bento-text-muted)] group-hover:text-[var(--bento-primary)] transition-colors" />
+                        </motion.div>
+                      </button>
+                      
+                      {/* Sort dropdown */}
+                      <Dropdown
+                        options={SORT_OPTIONS}
+                        value={validSortBy}
+                        onChange={setSortBy}
+                        icon={<ArrowUpDown className="w-4 h-4" />}
+                        className="flex-1 sm:flex-none sm:min-w-[180px]"
+                      />
+                    </div>
 
                     {/* Rank chips */}
                     <div 
@@ -546,7 +676,7 @@ export function Members() {
               <PaginatedMemberGrid
                 members={filteredMembers}
                 membersByRank={membersByRank}
-                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
+                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery && validSortBy === 'rank-asc'}
                 pageSize={24}
               />
             </div>

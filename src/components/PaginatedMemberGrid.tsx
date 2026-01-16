@@ -125,18 +125,27 @@ export function PaginatedMemberGrid({
     }
   }, [urlPage, totalPages, pageParam, setSearchParams]);
   
-  // Reset to page 1 when member count changes significantly (filtering)
+  // Reset to page 1 when members array changes (filtering/searching)
+  // We track the first member's ID to detect actual content changes, not just count
+  const prevFirstMemberId = useRef(members[0]?.characterId);
   const prevMemberCount = useRef(members.length);
   useEffect(() => {
-    if (Math.abs(members.length - prevMemberCount.current) > pageSize / 2) {
+    const firstMemberId = members[0]?.characterId;
+    const countChanged = members.length !== prevMemberCount.current;
+    const contentChanged = firstMemberId !== prevFirstMemberId.current;
+    
+    // Reset to page 1 if content changed and we're not already on page 1
+    if ((countChanged || contentChanged) && currentPage !== 0) {
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
         next.delete(pageParam);
         return next;
       }, { replace: true });
     }
+    
+    prevFirstMemberId.current = firstMemberId;
     prevMemberCount.current = members.length;
-  }, [members.length, pageSize, pageParam, setSearchParams]);
+  }, [members, currentPage, pageParam, setSearchParams]);
   
   const paginatedMembers = useMemo(() => {
     const start = currentPage * pageSize;

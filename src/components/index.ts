@@ -1,6 +1,7 @@
 // UI Components
 export { Button, IconButton } from './Button';
 export { Input, Textarea, Select } from './Input';
+export { Dropdown, type DropdownOption } from './Dropdown';
 export { Card, CardBody, CardTitle, CardActions, CardHeader } from './Card';
 export { ContentCard } from './ContentCard';
 
