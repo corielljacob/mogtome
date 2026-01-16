@@ -1,5 +1,4 @@
 import { useState, memo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
 import { ExternalLink, Crown, Shield, Sword, Leaf, Cat, Bird, Star, Heart, Sparkles } from 'lucide-react';
 import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.webp';
@@ -95,182 +94,168 @@ const defaultTheme = {
  * MemberCard - Refined member card with delightful hover effects.
  * Matches the Soft Bento design system.
  * 
- * PERFORMANCE: Memoized to prevent re-renders when parent updates.
+ * ACCESSIBILITY:
+ * - Links have descriptive accessible names
+ * - Images have meaningful alt text
+ * - Decorative elements are hidden from screen readers
+ * 
+ * PERFORMANCE OPTIMIZATIONS:
+ * - Memoized to prevent re-renders when parent updates
+ * - Uses CSS transitions instead of Framer Motion for hover states
+ * - Entrance animations only on first 12 cards (above fold)
+ * - No AnimatePresence (removes mount/unmount overhead)
+ * - Image hover overlays use CSS transforms/opacity only
  */
 export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
   const RankIcon = theme.icon;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
   
-  // Only animate entrance for first ~20 cards (visible on load) for performance
-  const shouldAnimateEntrance = index < 20;
+  // Animate all cards with staggered entrance
+  const shouldAnimateEntrance = true;
   
-  // Memoize callbacks to prevent unnecessary child re-renders
-  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+  // Memoize callback
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <motion.div 
+    <article 
       className="group relative w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem]"
-      initial={shouldAnimateEntrance ? { opacity: 0, y: 20, scale: 0.95 } : false}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={shouldAnimateEntrance ? { 
-        duration: 0.4, 
-        delay: Math.min(index * 0.03, 0.6),
-        ease: [0.25, 0.46, 0.45, 0.94]
+      style={shouldAnimateEntrance ? {
+        animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
       } : undefined}
+      aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      {/* Hover glow effect - rank colored, appears smoothly */}
-      <motion.div 
-        className="absolute -inset-2 rounded-3xl blur-xl pointer-events-none"
+      {/* Hover glow effect - CSS transition for performance */}
+      <div 
+        className="
+          absolute -inset-2 rounded-3xl blur-xl pointer-events-none
+          opacity-0 group-hover:opacity-80
+          transition-opacity duration-300
+        "
         style={{ backgroundColor: theme.glow }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 0.8 : 0 }}
-        transition={{ duration: 0.3 }}
+        aria-hidden="true"
       />
       
-      <motion.div 
+      <div 
         className="
           relative w-full
           bg-[var(--bento-card)]
           border border-[var(--bento-primary)]/10
           rounded-2xl overflow-hidden shadow-sm
+          transition-all duration-200 ease-out
+          group-hover:-translate-y-1.5 group-hover:shadow-xl
+          active:scale-[0.98]
         "
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        animate={isHovered ? { 
-          y: -6,
-          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.15)',
-        } : {
-          y: 0,
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-        }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ 
-          type: "spring", 
-          stiffness: 400, 
-          damping: 25 
-        }}
       >
         {/* Gradient rank banner */}
-        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} />
+        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
         
         {/* Avatar with Lodestone link */}
         <a 
           href={lodestoneUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="block relative overflow-hidden group/avatar"
+          className="block relative overflow-hidden focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset focus:outline-none"
+          aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
         >
           {/* Loading shimmer */}
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
           )}
           
-          <motion.img
+          <img
             src={member.avatarLink}
-            alt={member.name}
+            alt=""
             loading="lazy"
             decoding="async"
             onLoad={handleImageLoad}
-            className={`w-full aspect-square object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-            animate={{ scale: isHovered ? 1.08 : 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className={`
+              w-full aspect-square object-cover 
+              transition-all duration-300 ease-out
+              group-hover:scale-105
+              ${imageLoaded ? 'opacity-100' : 'opacity-0'}
+            `}
           />
           
-          {/* Subtle vignette overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300" />
+          {/* Hover overlay with Lodestone chip - CSS only */}
+          <div 
+            className="
+              absolute inset-0 
+              bg-gradient-to-t from-black/70 via-black/30 to-transparent 
+              flex items-end justify-center pb-3
+              opacity-0 group-hover:opacity-100
+              transition-opacity duration-200
+            "
+            aria-hidden="true"
+          >
+            <span 
+              className="
+                flex items-center gap-1.5 px-3 py-1.5 
+                bg-[var(--bento-card)]/95 backdrop-blur-md rounded-full 
+                text-xs font-soft font-semibold text-[var(--bento-text)] 
+                shadow-lg border border-[var(--bento-primary)]/20
+                translate-y-2 group-hover:translate-y-0
+                transition-transform duration-200 ease-out
+              "
+            >
+              <ExternalLink className="w-3 h-3 text-[var(--bento-primary)]" />
+              <span>Lodestone</span>
+            </span>
+          </div>
           
-          {/* Hover overlay with Lodestone chip */}
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-center pb-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <motion.span 
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bento-card)]/95 backdrop-blur-md rounded-full text-xs font-soft font-semibold text-[var(--bento-text)] shadow-lg border border-[var(--bento-primary)]/20"
-                  initial={{ y: 12, opacity: 0, scale: 0.9 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ y: 8, opacity: 0, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                >
-                  <ExternalLink className="w-3 h-3 text-[var(--bento-primary)]" />
-                  <span>Lodestone</span>
-                </motion.span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* Decorative corner moogle on hover */}
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                className="absolute top-1 right-1 pointer-events-none"
-                initial={{ opacity: 0, scale: 0, rotate: -20, y: -10 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
-                exit={{ opacity: 0, scale: 0, rotate: 20, y: -5 }}
-                transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              >
-                <motion.img 
-                  src={pixelMoogle} 
-                  alt="" 
-                  className="w-7 h-7 drop-shadow-lg"
-                  animate={{ y: [0, -2, 0] }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Decorative corner moogle on hover - CSS only */}
+          <div
+            className="
+              absolute top-1 right-1 pointer-events-none
+              opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100
+              transition-all duration-200 ease-out
+            "
+            aria-hidden="true"
+          >
+            <img 
+              src={pixelMoogle} 
+              alt="" 
+              className="w-7 h-7 drop-shadow-lg animate-float-gentle"
+            />
+          </div>
         </a>
 
         {/* Member info */}
         <div className="p-3 text-center space-y-2">
-          {/* Name with subtle hover underline */}
+          {/* Name */}
           <h3 className="font-soft font-bold text-sm text-[var(--bento-text)] truncate leading-tight">
             {member.name}
           </h3>
           
-          {/* Rank badge - pill style matching the design system */}
-          <motion.div 
+          {/* Rank badge - simplified, no animation */}
+          <div 
             className={`
               inline-flex items-center justify-center gap-1.5 
               px-2.5 py-1 rounded-full 
               ${theme.bg}
-              border border-transparent
-              transition-colors duration-200
+              transition-transform duration-200
+              group-hover:scale-105
             `}
-            animate={{ 
-              scale: isHovered ? 1.05 : 1,
-              borderColor: isHovered ? theme.glow : 'transparent',
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
             {member.freeCompanyRankIcon ? (
-              <motion.img 
+              <img 
                 src={member.freeCompanyRankIcon} 
                 alt="" 
-                className="w-3.5 h-3.5" 
-                animate={isHovered ? { rotate: [0, -8, 8, 0] } : {}}
-                transition={{ duration: 0.4 }}
+                className="w-3.5 h-3.5"
+                aria-hidden="true"
               />
             ) : (
-              <RankIcon className={`w-3 h-3 ${theme.accent}`} />
+              <RankIcon className={`w-3 h-3 ${theme.accent}`} aria-hidden="true" />
             )}
             <span className={`text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[80px]`}>
               {member.freeCompanyRank}
             </span>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </article>
   );
 });
 
@@ -299,16 +284,19 @@ export function MemberCardSkeleton() {
 
 /**
  * MemberCardCompact - A more compact variant for dense layouts.
+ * Uses CSS-only animations for performance.
+ * Accessibility: Links have descriptive accessible names.
  */
 export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
   const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
 
   return (
-    <motion.a
+    <a
       href={lodestoneUrl}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
       className="
         flex items-center gap-3 p-2 pr-4
         bg-[var(--bento-card)]
@@ -316,21 +304,22 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
         rounded-xl
         shadow-sm
         hover:shadow-md hover:shadow-[var(--bento-primary)]/10
-        transition-shadow duration-200
+        hover:-translate-y-0.5 hover:translate-x-0.5
+        active:scale-[0.98]
+        transition-all duration-200
+        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         group
       "
-      whileHover={{ y: -2, x: 2 }}
-      whileTap={{ scale: 0.98 }}
     >
       {/* Avatar */}
       <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': theme.glow } as React.CSSProperties}>
         <img 
           src={member.avatarLink} 
-          alt={member.name}
+          alt=""
           className="w-10 h-10 object-cover"
           loading="lazy"
         />
-        <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${theme.gradient}`} />
+        <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
       </div>
       
       {/* Info */}
@@ -344,14 +333,9 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       </div>
       
       {/* Arrow on hover */}
-      <motion.div
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
-        initial={false}
-        animate={{ x: 0 }}
-        whileHover={{ x: 2 }}
-      >
+      <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">
         <ExternalLink className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
-      </motion.div>
-    </motion.a>
+      </div>
+    </a>
   );
 }

@@ -1,10 +1,10 @@
 import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'motion/react';
+import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, ArrowUpDown } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { VirtualizedMemberGrid, PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, Dropdown } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
@@ -12,17 +12,107 @@ import deadMoogle from '../assets/moogles/dead moogle.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
 
+// Valid rank names for URL validation (typed as Set<string> for flexibility)
+const VALID_RANK_NAMES: Set<string> = new Set(FC_RANKS.map(r => r.name));
+
+// Rank order lookup for sorting
+const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
+
+// Sort options
+type SortOption = 'name-asc' | 'name-desc' | 'rank-asc';
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'rank-asc', label: 'Rank' },
+  { value: 'name-asc', label: 'Name (A → Z)' },
+  { value: 'name-desc', label: 'Name (Z → A)' },
+];
+const DEFAULT_SORT: SortOption = 'rank-asc';
+
 export function Members() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRanks, setSelectedRanks] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   
-  // Check for pagination mode via URL param: ?paginate=true
-  const [searchParams] = useSearchParams();
-  const usePagination = searchParams.get('paginate') === 'true';
+  // Read search/filter/sort state from URL
+  const searchQuery = searchParams.get('q') || '';
+  const selectedRanks = useMemo(() => {
+    const ranksParam = searchParams.get('ranks');
+    if (!ranksParam) return [];
+    // Validate that ranks are valid FC ranks
+    return ranksParam.split(',').filter(r => VALID_RANK_NAMES.has(r));
+  }, [searchParams]);
+  const sortBy = (searchParams.get('sort') as SortOption) || DEFAULT_SORT;
+  // Validate sort option
+  const validSortBy = SORT_OPTIONS.some(o => o.value === sortBy) ? sortBy : DEFAULT_SORT;
+  
+  
+  // Update URL when search changes (debounced via input)
+  const setSearchQuery = useCallback((query: string) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (query.trim()) {
+        next.set('q', query);
+      } else {
+        next.delete('q');
+      }
+      // Reset page when searching
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  // Update URL when ranks change
+  const setSelectedRanks = useCallback((updater: string[] | ((prev: string[]) => string[])) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      const currentRanks = prev.get('ranks')?.split(',').filter(r => VALID_RANK_NAMES.has(r)) || [];
+      const newRanks = typeof updater === 'function' ? updater(currentRanks) : updater;
+      
+      if (newRanks.length > 0) {
+        next.set('ranks', newRanks.join(','));
+      } else {
+        next.delete('ranks');
+      }
+      // Reset page when filtering
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  // Update URL when sort changes
+  const setSortBy = useCallback((sort: SortOption) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (sort === DEFAULT_SORT) {
+        next.delete('sort'); // Keep URL clean for default
+      } else {
+        next.set('sort', sort);
+      }
+      // Reset page when sorting changes
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+  
+  
+  // For input field, we use local state that syncs to URL on change
+  const [inputValue, setInputValue] = useState(searchQuery);
+  
+  // Sync input value when URL changes (e.g., back button)
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
+  
+  // Debounce search input to URL
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputValue !== searchQuery) {
+        setSearchQuery(inputValue);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [inputValue, searchQuery, setSearchQuery]);
   
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
@@ -36,7 +126,13 @@ export function Members() {
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const shouldBeCompact = window.scrollY > 120;
+          const scrollY = window.scrollY;
+          // Hysteresis: use different thresholds to prevent oscillation
+          // Enter compact at 120px, exit compact at 60px
+          const shouldBeCompact = isCompactRef.current 
+            ? scrollY > 60   // Already compact: stay compact until scroll is well above threshold
+            : scrollY > 120; // Not compact: only become compact after scrolling past threshold
+          
           if (shouldBeCompact !== isCompactRef.current) {
             isCompactRef.current = shouldBeCompact;
             setIsCompact(shouldBeCompact);
@@ -66,6 +162,7 @@ export function Members() {
   const filteredMembers = useMemo(() => {
     let result = allMembers;
 
+    // Filter by search query
     if (deferredSearchQuery.trim()) {
       const query = deferredSearchQuery.toLowerCase();
       result = result.filter(member => 
@@ -74,38 +171,76 @@ export function Members() {
       );
     }
 
+    // Filter by selected ranks
     if (deferredSelectedRanks.length > 0) {
       result = result.filter(member => 
         deferredSelectedRanks.includes(member.freeCompanyRank)
       );
     }
-
-    return result;
-  }, [allMembers, deferredSearchQuery, deferredSelectedRanks]);
-
-  const membersByRank = useMemo(() => {
-    const grouped = new Map<string, typeof filteredMembers>();
     
-    FC_RANKS.forEach(rank => {
-      const membersInRank = filteredMembers.filter(m => m.freeCompanyRank === rank.name);
-      if (membersInRank.length > 0) {
-        grouped.set(rank.name, membersInRank);
+    // Sort results
+    result = [...result].sort((a, b) => {
+      switch (validSortBy) {
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'rank-asc':
+        default: {
+          // Sort by rank hierarchy, then alphabetically within each rank
+          const rankDiff = (RANK_ORDER.get(a.freeCompanyRank) ?? 999) - (RANK_ORDER.get(b.freeCompanyRank) ?? 999);
+          return rankDiff !== 0 ? rankDiff : a.name.localeCompare(b.name);
+        }
       }
     });
+
+    return result;
+  }, [allMembers, deferredSearchQuery, deferredSelectedRanks, validSortBy]);
+
+  // Single-pass grouping: O(n) instead of O(n * ranks)
+  const membersByRank = useMemo(() => {
+    // Build a lookup for rank order (use string key for type safety)
+    const rankOrder = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
     
-    return grouped;
+    // Group members in a single pass
+    const grouped = new Map<string, typeof filteredMembers>();
+    for (const member of filteredMembers) {
+      const existing = grouped.get(member.freeCompanyRank);
+      if (existing) {
+        existing.push(member);
+      } else {
+        grouped.set(member.freeCompanyRank, [member]);
+      }
+    }
+    
+    // Sort the map by rank order (Map iteration order is insertion order)
+    const sorted = new Map<string, typeof filteredMembers>();
+    const sortedEntries = Array.from(grouped.entries()).sort(
+      ([a], [b]) => (rankOrder.get(a) ?? 999) - (rankOrder.get(b) ?? 999)
+    );
+    for (const [rank, members] of sortedEntries) {
+      sorted.set(rank, members);
+    }
+    
+    return sorted;
   }, [filteredMembers]);
 
   const toggleRank = useCallback((rankName: string) => {
     setSelectedRanks((prev) =>
       prev.includes(rankName) ? prev.filter((r) => r !== rankName) : [...prev, rankName]
     );
-  }, []);
+  }, [setSelectedRanks]);
 
   const clearFilters = useCallback(() => {
-    setSearchQuery('');
-    setSelectedRanks([]);
-  }, []);
+    setInputValue('');
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('q');
+      next.delete('ranks');
+      next.delete('page');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
 
   const hasActiveFilters = searchQuery || selectedRanks.length > 0;
 
@@ -118,9 +253,9 @@ export function Members() {
   }, [allMembers]);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background decorations - use shared CSS-animated components for performance */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      {/* Background decorations - extends full viewport behind header/nav */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />
       <FloatingSparkles minimal />
 
@@ -166,7 +301,9 @@ export function Members() {
             <StoryDivider className="mx-auto" />
           </motion.header>
 
-          {/* Sticky search bar - storybook styled */}
+          {/* Search/filter bar - storybook styled */}
+          {/* On mobile: sticky with overlay filter panel */}
+          {/* On desktop: sticky with full search + filter bar */}
           <div 
             ref={searchContainerRef}
             className={`sticky z-30 mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-4 md:mx-8' : ''}`}
@@ -174,23 +311,25 @@ export function Members() {
           >
                 <div 
                   className={`
-                    relative overflow-hidden bg-[var(--bento-card)]/95
+                    relative bg-[var(--bento-card)]/95
                     backdrop-blur-xl border border-[var(--bento-primary)]/10 rounded-2xl
                     transition-all duration-200 ${isCompact ? 'p-3 shadow-lg' : 'p-4 md:p-6 shadow-xl shadow-[var(--bento-primary)]/5'}
                   `}
                 >
-              {/* Decorative background blob */}
+              {/* Decorative background blob - desktop only */}
               <div 
                 className={`
                   absolute top-0 right-0 w-48 h-48 
                   bg-gradient-to-br from-[var(--bento-primary)]/10 to-[var(--bento-secondary)]/10 rounded-full 
                   -translate-y-1/2 translate-x-1/2 blur-3xl 
                   pointer-events-none transition-opacity duration-200
+                  hidden md:block
                   ${isCompact ? 'opacity-0' : 'opacity-100'}
                 `}
               />
               
-              <div className="relative flex items-center gap-2 md:gap-3">
+              {/* Desktop: Full search bar row */}
+              <div className="relative hidden md:flex items-center gap-2 md:gap-3">
                 {/* Search icon badge */}
                 <div 
                   className={`
@@ -204,12 +343,12 @@ export function Members() {
                   <Search className={`text-white transition-all duration-200 ${isCompact ? 'w-4 h-4' : 'w-4 h-4 md:w-5 md:h-5'}`} />
                 </div>
                 
-                {/* Header text - hide when compact AND on mobile */}
+                {/* Header text - hide when compact */}
                 <div 
                   className={`
-                    flex-shrink-0 origin-left hidden md:block
+                    flex-shrink-0 origin-left
                     transition-[opacity,transform] duration-200 ease-out
-                    ${isCompact ? 'md:w-0 md:opacity-0 md:scale-95 md:overflow-hidden md:pointer-events-none' : 'md:opacity-100 md:scale-100'}
+                    ${isCompact ? 'w-0 opacity-0 scale-95 overflow-hidden pointer-events-none' : 'opacity-100 scale-100'}
                   `}
                 >
                   <h3 className="font-display font-semibold text-lg text-[var(--bento-text)] whitespace-nowrap">Find Members</h3>
@@ -218,25 +357,30 @@ export function Members() {
                 
                 {/* Search input */}
                 <div className="relative flex-1 min-w-0">
-                  {/* Search icon inside input - hidden on mobile since we have badge */}
+                  {/* Screen reader only label */}
+                  <label htmlFor="member-search" className="sr-only">Search members by name or rank</label>
+                  
+                  {/* Search icon inside input */}
                   <div 
                     className={`
-                      absolute inset-y-0 left-0 items-center 
+                      absolute inset-y-0 left-0 flex items-center 
                       pointer-events-none text-[var(--bento-text-muted)]
                       transition-all duration-200 ease-out
-                      hidden md:flex
                       ${isCompact ? 'pl-3 opacity-100' : 'pl-4 opacity-100'}
                     `}
+                    aria-hidden="true"
                   >
                     <Search className={`transition-all duration-200 ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />
                   </div>
                   
                   <input
                     ref={searchInputRef}
-                    type="text"
+                    id="member-search"
+                    type="search"
                     placeholder="Search members..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    aria-describedby="search-results-count"
                     className={`
                       w-full font-soft text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)] 
                       focus:outline-none bg-[var(--bento-bg)]
@@ -245,23 +389,24 @@ export function Members() {
                       transition-all duration-200 ease-out
                       ${isCompact 
                         ? 'pl-10 pr-10 py-2 text-sm rounded-xl' 
-                        : 'pl-4 pr-10 py-2.5 md:pl-12 md:pr-12 md:py-3 text-sm md:text-base rounded-xl'
+                        : 'pl-12 pr-12 py-3 text-base rounded-xl'
                       }
                     `}
                   />
                   
                   {/* Clear button */}
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => { setInputValue(''); setSearchQuery(''); }}
                     className={`
                       absolute inset-y-0 right-0 flex items-center cursor-pointer pr-3
                       transition-all duration-150
-                      ${searchQuery ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
+                      ${inputValue ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
                     `}
-                    tabIndex={searchQuery ? 0 : -1}
+                    tabIndex={inputValue ? 0 : -1}
+                    aria-label="Clear search"
                   >
                     <span className={`bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 rounded-lg transition-colors ${isCompact ? 'p-1' : 'p-1.5'}`}>
-                      <X className={`text-[var(--bento-primary)] ${isCompact ? 'w-3 h-3' : 'w-4 h-4'}`} />
+                      <X className={`text-[var(--bento-primary)] ${isCompact ? 'w-3 h-3' : 'w-4 h-4'}`} aria-hidden="true" />
                     </span>
                   </button>
                 </div>
@@ -306,112 +451,139 @@ export function Members() {
                 
               </div>
               
+              {/* Mobile: Tappable filter/sort toggle (search is in header) */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="relative flex md:hidden items-center gap-3 w-full text-left cursor-pointer"
+                aria-expanded={showFilters}
+                aria-controls="mobile-filter-panel"
+              >
+                {/* Filter icon badge */}
+                <div className="w-9 h-9 bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[var(--bento-primary)]/25 rounded-xl">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                
+                {/* Filter info */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-display font-semibold text-sm text-[var(--bento-text)]">Filters & Sort</p>
+                  <p className="text-xs text-[var(--bento-text-muted)] font-accent truncate">
+                    {hasActiveFilters 
+                      ? `${filteredMembers.length} of ${allMembers.length} members` 
+                      : 'Tap to filter by rank, kupo~'
+                    }
+                  </p>
+                </div>
+                
+                {/* Active filter badges + chevron */}
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {searchQuery && (
+                    <span className="px-2 py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
+                      <Search className="w-3 h-3" />
+                    </span>
+                  )}
+                  {selectedRanks.length > 0 && (
+                    <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
+                      {selectedRanks.length}
+                    </span>
+                  )}
+                  <motion.div
+                    animate={{ rotate: showFilters ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="w-5 h-5 text-[var(--bento-text-muted)]" />
+                  </motion.div>
+                </div>
+              </button>
+              
               {/* Expanded content - filter section */}
+              {/* Mobile: absolute overlay panel */}
+              {/* Desktop: inline, controlled by compact mode */}
+              
+              {/* Desktop filter section - inline */}
               <div 
                 className={`
-                  grid transition-all duration-200 ease-out
-                  ${isCompact ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}
+                  hidden md:grid transition-all duration-300 ease-out
+                  ${isCompact ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}
                 `}
               >
                 <div className="overflow-hidden">
                   <div className="pt-5">
-                    {/* Rank filter toggle */}
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="
-                        w-full flex items-center justify-between
-                        px-4 py-3 rounded-2xl
-                        bg-[var(--bento-bg)]
-                        border border-[var(--bento-border)]
-                        hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-primary)]/5
-                        transition-colors cursor-pointer
-                        group
-                      "
-                    >
-                      <div className="flex items-center gap-3">
-                        <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
-                        <span className="font-soft font-medium text-[var(--bento-text)]">
-                          Filter by Rank
-                        </span>
-                        {selectedRanks.length > 0 && (
-                          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white">
-                            {selectedRanks.length} selected
-                          </span>
-                        )}
-                      </div>
-                      <motion.div
-                        animate={{ rotate: showFilters ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ChevronDown className="w-5 h-5 text-[var(--bento-text-muted)] group-hover:text-[var(--bento-primary)] transition-colors" />
-                      </motion.div>
-                    </button>
-
-                    {/* Rank chips */}
-                    <div 
-                      className={`
-                        grid transition-all duration-200 ease-out
-                        ${showFilters ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}
-                      `}
-                    >
-                      <div className="overflow-hidden">
-                        <div className="pt-4 mt-4 border-t border-[var(--bento-border)]">
-                          <div className="flex flex-wrap gap-2">
-                            {FC_RANKS.map((rank) => {
-                              const count = rankCounts[rank.name] || 0;
-                              const isSelected = selectedRanks.includes(rank.name);
-                              return (
-                                <button
-                                  key={rank.name}
-                                  onClick={() => toggleRank(rank.name)}
-                                  className={`
-                                    inline-flex items-center gap-2
-                                    px-4 py-2.5 rounded-xl text-sm font-soft font-medium
-                                    cursor-pointer transition-all duration-150
-                                    active:scale-95
-                                    ${isSelected 
-                                      ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
-                                      : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
-                                    }
-                                  `}
-                                >
-                                  <span>{rank.name}</span>
-                                  <span className={`
-                                    text-xs px-2 py-0.5 rounded-full transition-colors duration-150
-                                    ${isSelected 
-                                      ? 'bg-white/20' 
-                                      : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
-                                    }
-                                  `}>
-                                    {count}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                          
-                          {/* Clear all button */}
-                          <div 
-                            className={`
-                              mt-3 pt-3 border-t border-[var(--bento-border)]
-                              transition-all duration-150
-                              ${selectedRanks.length > 0 ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden mt-0 pt-0 border-t-0'}
-                            `}
-                          >
-                            <button
-                              onClick={() => setSelectedRanks([])}
-                              className="text-sm font-soft text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
-                              tabIndex={selectedRanks.length > 0 ? 0 : -1}
-                            >
-                              <X className="w-3.5 h-3.5" />
-                              Clear rank filters
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                    {/* Sort dropdown - always visible when panel is open */}
+                    <div className="mb-4">
+                      <Dropdown
+                        options={SORT_OPTIONS}
+                        value={validSortBy}
+                        onChange={setSortBy}
+                        icon={<ArrowUpDown className="w-4 h-4" />}
+                        className="w-full"
+                        aria-label="Sort members by"
+                      />
                     </div>
 
-                    {/* Results summary */}
+                    {/* Rank filter header */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
+                      <span className="font-soft font-medium text-[var(--bento-text)] text-sm">
+                        Filter by Rank
+                      </span>
+                      {selectedRanks.length > 0 && (
+                        <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.25rem] text-center">
+                          {selectedRanks.length}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Rank chips */}
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
+                      {FC_RANKS.map((rank) => {
+                        const count = rankCounts[rank.name] || 0;
+                        const isSelected = selectedRanks.includes(rank.name);
+                        return (
+                          <button
+                            key={rank.name}
+                            onClick={() => toggleRank(rank.name)}
+                            aria-pressed={isSelected}
+                            className={`
+                              inline-flex items-center gap-2
+                              px-3 py-2 rounded-xl text-sm font-soft font-medium
+                              cursor-pointer transition-all duration-150
+                              active:scale-95
+                              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                              ${isSelected 
+                                ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
+                                : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
+                              }
+                            `}
+                          >
+                            <span>{rank.name}</span>
+                            <span className={`
+                              text-xs px-1.5 py-0.5 rounded-full transition-colors duration-150
+                              ${isSelected 
+                                ? 'bg-white/20' 
+                                : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+                              }
+                            `} aria-label={`${count} members`}>
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Clear all button */}
+                    {selectedRanks.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-[var(--bento-border)]">
+                        <button
+                          onClick={() => setSelectedRanks([])}
+                          className="text-sm font-soft text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          Clear rank filters
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Results summary - also used for screen reader announcement */}
                     <div 
                       className={`
                         transition-all duration-150 ease-out overflow-hidden
@@ -419,15 +591,16 @@ export function Members() {
                       `}
                     >
                       <div className={`flex items-center justify-between ${hasActiveFilters ? 'border-t border-[var(--bento-border)] pt-4' : ''}`}>
-                        <p className="font-soft text-sm text-[var(--bento-text-muted)]">
+                        <p id="search-results-count" className="font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite" aria-atomic="true">
                           Showing <span className="font-semibold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
                         </p>
                         <button
                           onClick={clearFilters}
-                          className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                          className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded"
                           tabIndex={hasActiveFilters ? 0 : -1}
+                          aria-label="Clear all filters"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-3.5 h-3.5" aria-hidden="true" />
                           Clear all
                         </button>
                       </div>
@@ -436,14 +609,130 @@ export function Members() {
                 </div>
               </div>
             </div>
+            
+              {/* Mobile: Overlay filter panel */}
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    id="mobile-filter-panel"
+                    className="md:hidden absolute left-0 right-0 top-full mt-2 z-40"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="bg-[var(--bento-card)] backdrop-blur-xl border border-[var(--bento-primary)]/10 rounded-2xl p-4 shadow-xl shadow-black/10">
+                      {/* Sort dropdown */}
+                      <div className="mb-4">
+                        <Dropdown
+                          options={SORT_OPTIONS}
+                          value={validSortBy}
+                          onChange={setSortBy}
+                          icon={<ArrowUpDown className="w-4 h-4" />}
+                          className="w-full"
+                          aria-label="Sort members by"
+                        />
+                      </div>
+
+                      {/* Rank filter header */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
+                        <span className="font-soft font-medium text-[var(--bento-text)] text-sm">
+                          Filter by Rank
+                        </span>
+                        {selectedRanks.length > 0 && (
+                          <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.25rem] text-center">
+                            {selectedRanks.length}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Rank chips */}
+                      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
+                        {FC_RANKS.map((rank) => {
+                          const count = rankCounts[rank.name] || 0;
+                          const isSelected = selectedRanks.includes(rank.name);
+                          return (
+                            <button
+                              key={rank.name}
+                              onClick={() => toggleRank(rank.name)}
+                              aria-pressed={isSelected}
+                              className={`
+                                inline-flex items-center gap-2
+                                px-3 py-2 rounded-xl text-sm font-soft font-medium
+                                cursor-pointer transition-all duration-150
+                                active:scale-95
+                                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                ${isSelected 
+                                  ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
+                                  : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
+                                }
+                              `}
+                            >
+                              <span>{rank.name}</span>
+                              <span className={`
+                                text-xs px-1.5 py-0.5 rounded-full transition-colors duration-150
+                                ${isSelected 
+                                  ? 'bg-white/20' 
+                                  : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+                                }
+                              `} aria-label={`${count} members`}>
+                                {count}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Clear filters + results summary */}
+                      {hasActiveFilters && (
+                        <div className="mt-4 pt-4 border-t border-[var(--bento-border)] flex items-center justify-between">
+                          <p className="font-soft text-sm text-[var(--bento-text-muted)]">
+                            <span className="font-semibold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length}
+                          </p>
+                          <button
+                            onClick={clearFilters}
+                            className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                            Clear all
+                          </button>
+                        </div>
+                      )}
+                      
+                      {/* Done button */}
+                      <button
+                        onClick={() => setShowFilters(false)}
+                        className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-soft font-semibold shadow-lg shadow-[var(--bento-primary)]/25 cursor-pointer"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
           </div>
+          
+          {/* Backdrop for mobile filter panel */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div 
+                className="md:hidden fixed inset-0 bg-black/20 z-20"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowFilters(false)}
+                aria-hidden="true"
+              />
+            )}
+          </AnimatePresence>
 
           {/* Member list */}
           {isLoading ? (
-            <ContentCard className="text-center py-16">
+            <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
               <motion.img 
                 src={pushingMoogles} 
-                alt="Moogles working hard" 
+                alt="" 
                 className="w-40 md:w-52 mx-auto mb-4"
                 animate={{ 
                   x: [0, 4, -4, 4, 0],
@@ -454,21 +743,24 @@ export function Members() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
+                aria-hidden="true"
               />
               <motion.p 
                 className="font-accent text-2xl text-[var(--bento-text-muted)]"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
+                role="status"
               >
                 Fetching members, kupo...
               </motion.p>
             </ContentCard>
           ) : isError ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" role="alert">
               <img 
                 src={deadMoogle} 
-                alt="Moogle down" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                 Something went wrong
@@ -488,18 +780,20 @@ export function Members() {
                   shadow-lg shadow-[var(--bento-primary)]/25
                   hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
                   transition-all cursor-pointer
+                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
                 "
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
                 Try Again
               </motion.button>
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
               <img 
                 src={grumpyMoogle} 
-                alt="Confused moogle" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">No members found</p>
               <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
@@ -517,30 +811,22 @@ export function Members() {
                     text-[var(--bento-primary)] font-soft font-semibold
                     hover:bg-[var(--bento-primary)]/10
                     transition-all cursor-pointer
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                   "
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                   Clear filters
                 </motion.button>
               )}
             </ContentCard>
           ) : (
             <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
-              {/* Use paginated grid when ?paginate=true URL param is set */}
-              {usePagination ? (
-                <PaginatedMemberGrid
-                  members={filteredMembers}
-                  membersByRank={membersByRank}
-                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
-                  pageSize={24}
-                />
-              ) : (
-                <VirtualizedMemberGrid
-                  members={filteredMembers}
-                  membersByRank={membersByRank}
-                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
-                />
-              )}
+              <PaginatedMemberGrid
+                members={filteredMembers}
+                membersByRank={membersByRank}
+                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery && validSortBy === 'rank-asc'}
+                pageSize={24}
+              />
             </div>
           )}
 

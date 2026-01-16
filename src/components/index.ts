@@ -1,16 +1,17 @@
 // UI Components
 export { Button, IconButton } from './Button';
 export { Input, Textarea, Select } from './Input';
+export { Dropdown, type DropdownOption } from './Dropdown';
 export { Card, CardBody, CardTitle, CardActions, CardHeader } from './Card';
 export { ContentCard } from './ContentCard';
 
 // Domain Components
 export { MemberCard, MemberCardSkeleton, MemberCardCompact } from './MemberCard';
-export { VirtualizedMemberGrid } from './VirtualizedMemberGrid';
 export { PaginatedMemberGrid } from './PaginatedMemberGrid';
 
 // Layout & Navigation
 export { Navbar } from './Navbar';
+export { AccessibilityMenu } from './AccessibilityMenu';
 
 // Decorative
 export { MooglePom, MooglePomCluster } from './MooglePom';

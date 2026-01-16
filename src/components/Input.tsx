@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, type ReactNode, forwardRef } from 'react';
+import { type InputHTMLAttributes, type ReactNode, forwardRef, useId } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,13 +11,20 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 /**
  * Input - KUPO BIT Refined Input Component
  * Clean, modern input with subtle styling and focus states.
+ * Accessibility: Labels are properly associated with inputs via id/htmlFor.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, icon, rightElement, className = '', ...props }, ref) => {
+  ({ label, error, hint, icon, rightElement, className = '', id: providedId, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = providedId || generatedId;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const hintId = hint && !error ? `${inputId}-hint` : undefined;
+    const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block mb-1.5">
+          <label htmlFor={inputId} className="block mb-1.5">
             <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
@@ -25,12 +32,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative">
           {icon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--bento-text-muted)]">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--bento-text-muted)]" aria-hidden="true">
               {icon}
             </div>
           )}
           <input
             ref={ref}
+            id={inputId}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={describedBy}
             className={`
               w-full
               px-4 py-2.5
@@ -63,10 +73,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p className="mt-1.5 font-inter text-xs text-red-500">{error}</p>
+          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
         )}
         {hint && !error && (
-          <p className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
+          <p id={hintId} className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
         )}
       </div>
     );
@@ -77,6 +87,7 @@ Input.displayName = 'Input';
 
 /**
  * Textarea - KUPO BIT Refined Textarea Component
+ * Accessibility: Labels are properly associated with textareas via id/htmlFor.
  */
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
@@ -85,11 +96,17 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, hint, className = '', ...props }, ref) => {
+  ({ label, error, hint, className = '', id: providedId, ...props }, ref) => {
+    const generatedId = useId();
+    const textareaId = providedId || generatedId;
+    const errorId = error ? `${textareaId}-error` : undefined;
+    const hintId = hint && !error ? `${textareaId}-hint` : undefined;
+    const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block mb-1.5">
+          <label htmlFor={textareaId} className="block mb-1.5">
             <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
@@ -97,6 +114,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         <textarea
           ref={ref}
+          id={textareaId}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={describedBy}
           className={`
             w-full
             px-4 py-3
@@ -119,10 +139,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <p className="mt-1.5 font-inter text-xs text-red-500">{error}</p>
+          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
         )}
         {hint && !error && (
-          <p className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
+          <p id={hintId} className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
         )}
       </div>
     );
@@ -133,6 +153,7 @@ Textarea.displayName = 'Textarea';
 
 /**
  * Select - KUPO BIT Refined Select Component
+ * Accessibility: Labels are properly associated with selects via id/htmlFor.
  */
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -141,11 +162,15 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, className = '', ...props }, ref) => {
+  ({ label, error, options, className = '', id: providedId, ...props }, ref) => {
+    const generatedId = useId();
+    const selectId = providedId || generatedId;
+    const errorId = error ? `${selectId}-error` : undefined;
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block mb-1.5">
+          <label htmlFor={selectId} className="block mb-1.5">
             <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
@@ -153,6 +178,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
         <select
           ref={ref}
+          id={selectId}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={errorId}
           className={`
             w-full
             px-4 py-2.5
@@ -180,7 +208,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <p className="mt-1.5 font-inter text-xs text-red-500">{error}</p>
+          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
         )}
       </div>
     );

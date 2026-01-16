@@ -98,9 +98,9 @@ export function Home() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex flex-col relative">
-      {/* Warm gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
+    <div className="min-h-[100dvh] flex flex-col relative pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      {/* Warm gradient overlay - extends full viewport behind header/nav */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.08] via-[var(--bento-accent)]/[0.04] to-[var(--bento-secondary)]/[0.06] pointer-events-none" />
       
       {/* Floating background moogles */}
       <FloatingMoogles moogles={floatingMoogles} />
@@ -178,20 +178,20 @@ export function Home() {
                   </motion.div>
                 </motion.div>
                 
-                {/* Main moogle */}
-                <motion.img 
-                  src={welcomingMoogle} 
-                  alt="Welcoming moogle" 
-                  className="relative w-44 md:w-56 lg:w-64 drop-shadow-2xl"
-                  animate={{ 
-                    y: [0, -8, 0],
-                  }}
-                  transition={{ 
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
+              {/* Main moogle */}
+              <motion.img 
+                src={welcomingMoogle} 
+                alt="A friendly moogle mascot welcoming you to MogTome" 
+                className="relative w-44 md:w-56 lg:w-64 drop-shadow-2xl"
+                animate={{ 
+                  y: [0, -8, 0],
+                }}
+                transition={{ 
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
               </motion.div>
 
               {/* Kupo speech bubble */}
@@ -200,11 +200,13 @@ export function Home() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
+                role="region"
+                aria-label="Moogle greeting"
               >
                 {/* Speech bubble */}
                 <div className="relative bg-[var(--bento-card)] rounded-2xl px-4 sm:px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-4rem)] max-w-[300px] sm:max-w-[360px] min-h-[70px] sm:min-h-[80px] flex items-center justify-center mx-auto">
                   {/* Bubble tail pointing up */}
-                  <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2" aria-hidden="true">
                     <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
                     <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[24px] border-b-[var(--bento-primary)]/15 -z-10" />
                   </div>
@@ -216,12 +218,14 @@ export function Home() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.4 }}
+                      aria-live="polite"
+                      aria-atomic="true"
                     >
                       "{kupoQuotes[quoteIndex]}"
                     </motion.p>
                   </AnimatePresence>
                 </div>
-                <p className="font-accent text-lg md:text-xl text-[var(--bento-text-muted)] mt-4">
+                <p className="font-accent text-lg md:text-xl text-[var(--bento-text-muted)] mt-4" aria-hidden="true">
                   ~ says the friendly moogle ~
                 </p>
               </motion.div>
@@ -279,7 +283,7 @@ export function Home() {
       </section>
 
       {/* Footer - storybook closing */}
-      <footer className="py-8 px-4 relative z-10" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
+      <footer className="py-8 px-4 relative z-10" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }} role="contentinfo">
         <motion.div 
           className="max-w-md mx-auto text-center"
           initial={{ opacity: 0 }}
@@ -289,10 +293,11 @@ export function Home() {
           <StoryDivider className="mx-auto mb-4 opacity-70" />
           <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
             Made with 
-            <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+            <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" aria-hidden="true" />
+            <span className="sr-only">love</span>
             by moogles, for moogles
           </p>
-          <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2">
+          <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2" aria-hidden="true">
             ~ fin ~
           </p>
         </motion.div>

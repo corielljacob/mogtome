@@ -26,9 +26,10 @@ describe('MemberCard', () => {
   });
 
   it('renders avatar with correct src', () => {
-    render(<MemberCard member={mockMember} />);
-    const avatar = screen.getByAltText('Test Character');
-    expect(avatar).toHaveAttribute('src', 'https://example.com/avatar.png');
+    const { container } = render(<MemberCard member={mockMember} />);
+    // Avatar uses empty alt (decorative) since the link has an accessible label
+    const avatar = container.querySelector(`img[src="${mockMember.avatarLink}"]`);
+    expect(avatar).toBeInTheDocument();
   });
 
   it('renders link to Lodestone profile', () => {
@@ -105,8 +106,9 @@ describe('MemberCardCompact', () => {
   });
 
   it('renders avatar', () => {
-    render(<MemberCardCompact member={mockMember} />);
-    const avatar = screen.getByAltText('Test Character');
+    const { container } = render(<MemberCardCompact member={mockMember} />);
+    // Avatar uses empty alt (decorative) since the link has an accessible label
+    const avatar = container.querySelector(`img[src="${mockMember.avatarLink}"]`);
     expect(avatar).toBeInTheDocument();
   });
 });

@@ -5,8 +5,17 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
-    <meta name="theme-color" content="#E54B4B" />
+    <!-- Theme color for browser chrome - matches page background -->
+    <meta name="theme-color" content="#FFF9F5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
+    <!-- PWA: Transparent status bar when added to home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>MogTome</title>
+    <style>
+      /* Prevent FOUC - initial background before CSS loads */
+      html, body { margin: 0; padding: 0; min-height: 100%; }
+    </style>
     
     <!-- Performance: DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -20,6 +29,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <script>
+      // Apply theme before React loads to prevent flash
+      (function() {
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
+        // Set background color that will be enhanced by CSS gradients
+        var bgColor = isDark ? '#1A1722' : '#FFF9F5';
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        }
+        document.documentElement.style.backgroundColor = bgColor;
+        document.body.style.backgroundColor = bgColor;
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

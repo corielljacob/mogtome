@@ -4,30 +4,40 @@
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Custom breakpoint for extra-small screens (pagination mobile indicator) */
+@custom-variant xs (@media (min-width: 480px));
+
 /* Base Styles */
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Fix for mobile viewport height (accounts for browser chrome) */
-    height: -webkit-fill-available;
+    /* Ensure html covers entire viewport including safe areas */
+    min-height: 100%;
+    min-height: 100dvh;
+    /* Background color - gradients applied via bento-bg-mesh on content */
+    background-color: var(--bento-bg);
+    transition: background-color 0.3s ease;
   }
   
   body {
     font-family: 'Nunito', 'Inter', system-ui, sans-serif;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
     margin: 0;
+    padding: 0;
     -webkit-font-smoothing: antialiased;
     /* Prevent horizontal overflow on mobile */
     overflow-x: hidden;
     /* Enable smooth scrolling on iOS */
     -webkit-overflow-scrolling: touch;
+    /* Transparent to let html background show through */
+    background: transparent;
   }
 
-  /* Root element fills viewport properly on mobile */
+  /* Root element */
   #root {
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -56,6 +66,12 @@
     
     /* Allow smaller inline buttons/links that are part of text */
     .inline, p a, span a {
+      min-height: auto;
+      min-width: auto;
+    }
+
+    /* Toggle switches have their own sizing */
+    [role="switch"] {
       min-height: auto;
       min-width: auto;
     }
@@ -97,6 +113,11 @@
   --bento-border: rgba(60, 56, 72, 0.1);
   --bento-shadow: rgba(229, 75, 75, 0.18);
   --bento-glass: rgba(255, 255, 255, 0.92);
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(150, 131, 184, 0.15);
+  --gradient-2: rgba(242, 139, 139, 0.18);
+  --gradient-3: rgba(229, 75, 75, 0.1);
+  --gradient-4: rgba(150, 131, 184, 0.12);
 }
 
 .dark {
@@ -113,6 +134,270 @@
   --bento-border: rgba(240, 236, 245, 0.1);
   --bento-shadow: rgba(240, 96, 96, 0.22);
   --bento-glass: rgba(30, 26, 38, 0.94);
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(184, 164, 216, 0.12);
+  --gradient-2: rgba(240, 96, 96, 0.14);
+  --gradient-3: rgba(184, 164, 216, 0.1);
+  --gradient-4: rgba(240, 96, 96, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ACCESSIBILITY MODES
+ * These classes are applied to the root element by AccessibilityContext
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* High Contrast Mode - Light theme */
+.high-contrast {
+  --bento-bg: #FFFFFF;
+  --bento-card: #FFFFFF;
+  --bento-text: #000000;
+  --bento-text-muted: #1A1A1A;
+  --bento-text-subtle: #333333;
+  --bento-primary: #CC0000;
+  --bento-secondary: #5500AA;
+  --bento-accent: #CC4444;
+  --bento-success: #006600;
+  --bento-warning: #CC6600;
+  --bento-border: rgba(0, 0, 0, 0.3);
+  --bento-shadow: rgba(0, 0, 0, 0.3);
+  --bento-glass: rgba(255, 255, 255, 1);
+}
+
+/* High Contrast Mode - Dark theme */
+.dark.high-contrast {
+  --bento-bg: #000000;
+  --bento-card: #0A0A0A;
+  --bento-text: #FFFFFF;
+  --bento-text-muted: #E5E5E5;
+  --bento-text-subtle: #CCCCCC;
+  --bento-primary: #FF6666;
+  --bento-secondary: #CC99FF;
+  --bento-accent: #FF8888;
+  --bento-success: #66FF66;
+  --bento-warning: #FFCC00;
+  --bento-border: rgba(255, 255, 255, 0.4);
+  --bento-shadow: rgba(255, 255, 255, 0.2);
+  --bento-glass: rgba(10, 10, 10, 1);
+}
+
+/* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
+.dark.extra-dark {
+  --bento-bg: #000000;
+  --bento-card: #0A0A0A;
+  --bento-text: #E8E8E8;
+  --bento-text-muted: #B0B0B0;
+  --bento-text-subtle: #808080;
+  --bento-border: rgba(255, 255, 255, 0.08);
+  --bento-glass: rgba(5, 5, 5, 0.98);
+}
+
+/* Extra Dark + High Contrast combined */
+.dark.extra-dark.high-contrast {
+  --bento-bg: #000000;
+  --bento-card: #000000;
+  --bento-text: #FFFFFF;
+  --bento-text-muted: #F0F0F0;
+  --bento-text-subtle: #DDDDDD;
+  --bento-border: rgba(255, 255, 255, 0.5);
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: 118%;
+}
+
+.large-text h1 { font-size: 2.75rem; }
+.large-text h2 { font-size: 2rem; }
+.large-text h3 { font-size: 1.5rem; }
+
+@media (min-width: 768px) {
+  .large-text {
+    font-size: 120%;
+  }
+  .large-text h1 { font-size: 3.5rem; }
+  .large-text h2 { font-size: 2.5rem; }
+  .large-text h3 { font-size: 1.75rem; }
+}
+
+/* Enhanced Focus Mode - more visible focus indicators */
+.enhanced-focus *:focus-visible {
+  outline: 3px solid var(--bento-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px rgba(229, 75, 75, 0.3) !important;
+}
+
+.dark.enhanced-focus *:focus-visible {
+  box-shadow: 0 0 0 6px rgba(240, 96, 96, 0.4) !important;
+}
+
+/* Dyslexia-friendly Font Mode */
+.dyslexia-font {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Nunito', system-ui, sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+.dyslexia-font h1,
+.dyslexia-font h2,
+.dyslexia-font h3,
+.dyslexia-font h4,
+.dyslexia-font h5,
+.dyslexia-font h6 {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Fredoka', system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* Reduced Motion Mode - controlled via class for manual toggle */
+/* Reduced Motion Mode - Comprehensive disable of all animations */
+.reduce-motion,
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  /* Disable CSS animations */
+  animation-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  
+  /* Disable CSS transitions */
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  
+  /* Disable scroll behavior */
+  scroll-behavior: auto !important;
+}
+
+/* Explicitly disable common animated classes */
+.reduce-motion .animate-float-moogle,
+.reduce-motion .animate-float-moogle-subtle,
+.reduce-motion .animate-float-sparkle,
+.reduce-motion .animate-shimmer,
+.reduce-motion .animate-ping-slow,
+.reduce-motion .animate-pulse,
+.reduce-motion .animate-spin,
+.reduce-motion .animate-bounce,
+.reduce-motion .animate-ping,
+.reduce-motion .animate-float-gentle,
+.reduce-motion [class*="animate-"] {
+  animation: none !important;
+}
+
+/* Hide purely decorative animated elements when reduced motion is on */
+.reduce-motion .pointer-events-none[class*="animate-"],
+.reduce-motion .animate-float-moogle,
+.reduce-motion .animate-float-sparkle {
+  opacity: 0.7 !important;
+}
+
+/* Disable hover transforms */
+.reduce-motion *:hover {
+  transform: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * COLORBLIND MODES
+ * These palettes are designed to be distinguishable for different types of
+ * color vision deficiency. Colors are carefully chosen to maintain meaning
+ * while being accessible.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Protanopia (Red-Blind) - Uses blue/yellow palette */
+.colorblind-protanopia {
+  --bento-primary: #0077BB;      /* Blue instead of red */
+  --bento-secondary: #EE7733;    /* Orange instead of purple */
+  --bento-accent: #33BBEE;       /* Cyan */
+  --bento-success: #009988;      /* Teal instead of green */
+  --bento-warning: #EE7733;      /* Orange */
+}
+
+.dark.colorblind-protanopia {
+  --bento-primary: #66CCEE;      /* Light blue */
+  --bento-secondary: #FFAA55;    /* Light orange */
+  --bento-accent: #99DDFF;       /* Light cyan */
+  --bento-success: #44BB99;      /* Light teal */
+  --bento-warning: #FFCC44;      /* Yellow */
+}
+
+/* Deuteranopia (Green-Blind) - Uses blue/yellow palette (similar to protanopia) */
+.colorblind-deuteranopia {
+  --bento-primary: #0077BB;      /* Blue instead of red */
+  --bento-secondary: #CC6677;    /* Rose/mauve */
+  --bento-accent: #44AA99;       /* Teal */
+  --bento-success: #117733;      /* Dark green (still distinguishable) */
+  --bento-warning: #DDCC77;      /* Yellow/gold */
+}
+
+.dark.colorblind-deuteranopia {
+  --bento-primary: #88CCEE;      /* Light blue */
+  --bento-secondary: #CC6677;    /* Rose */
+  --bento-accent: #44BB99;       /* Light teal */
+  --bento-success: #66BB55;      /* Light green */
+  --bento-warning: #FFDD55;      /* Bright yellow */
+}
+
+/* Tritanopia (Blue-Blind) - Uses red/green palette */
+.colorblind-tritanopia {
+  --bento-primary: #CC3311;      /* Red-orange */
+  --bento-secondary: #EE3377;    /* Magenta/pink */
+  --bento-accent: #EE7744;       /* Orange */
+  --bento-success: #009988;      /* Teal (distinguishable from red) */
+  --bento-warning: #EE7744;      /* Orange */
+}
+
+.dark.colorblind-tritanopia {
+  --bento-primary: #EE6677;      /* Salmon/pink */
+  --bento-secondary: #EE99AA;    /* Light pink */
+  --bento-accent: #FFAA77;       /* Peach */
+  --bento-success: #44BB99;      /* Light teal */
+  --bento-warning: #FFBB66;      /* Light orange */
+}
+
+/* Monochromacy (Complete Color Blindness) - Grayscale with high contrast */
+.colorblind-monochromacy {
+  --bento-primary: #404040;
+  --bento-secondary: #606060;
+  --bento-accent: #505050;
+  --bento-success: #333333;
+  --bento-warning: #555555;
+  --bento-text: #1A1A1A;
+  --bento-text-muted: #404040;
+  --bento-text-subtle: #606060;
+}
+
+.dark.colorblind-monochromacy {
+  --bento-primary: #D0D0D0;
+  --bento-secondary: #A0A0A0;
+  --bento-accent: #B0B0B0;
+  --bento-success: #C0C0C0;
+  --bento-warning: #B0B0B0;
+  --bento-text: #F0F0F0;
+  --bento-text-muted: #C0C0C0;
+  --bento-text-subtle: #909090;
+}
+
+/* 
+ * Monochromacy - Full grayscale mode
+ * We use a backdrop filter approach with a fixed overlay to catch ALL elements,
+ * including those rendered in portals outside the main React tree.
+ * 
+ * The overlay is pointer-events:none so it doesn't block interactions.
+ */
+.colorblind-monochromacy::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  backdrop-filter: grayscale(100%);
+  -webkit-backdrop-filter: grayscale(100%);
+}
+
+/* Fallback for browsers that don't support backdrop-filter well */
+@supports not (backdrop-filter: grayscale(100%)) {
+  .colorblind-monochromacy #root,
+  .colorblind-monochromacy body > div {
+    filter: grayscale(100%);
+  }
 }
 
 /* Typography */
@@ -123,6 +408,48 @@
 .font-soft { font-family: 'Nunito', system-ui, sans-serif; }
 .font-title { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }
 
+/* Screen reader only - visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible - consistent focus indicator for keyboard navigation */
+.focus-visible-ring:focus-visible {
+  outline: 2px solid var(--bento-primary);
+  outline-offset: 2px;
+}
+
+/* Skip link styles - visible on focus for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background: var(--bento-card);
+  color: var(--bento-primary);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid var(--bento-primary);
+  outline-offset: 2px;
+}
+
 /* Safe area insets for notched devices (iPhone X+, etc.) */
 :root {
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
@@ -132,38 +459,16 @@
 }
 
 /* Background - Pom-Pom Classic (Richer) */
+/* Uses CSS variables so it updates when theme changes */
 .bento-bg-mesh {
   background: 
-    radial-gradient(ellipse at 0% 0%, rgba(150, 131, 184, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(242, 139, 139, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(229, 75, 75, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(150, 131, 184, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 0%, var(--gradient-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, var(--gradient-2) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, var(--gradient-3) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, var(--gradient-4) 0%, transparent 50%),
     var(--bento-bg);
-  /* Use fixed attachment only on desktop - it's very slow on mobile */
-  background-attachment: scroll;
-}
-
-/* Enable fixed background only on devices with fine pointer (desktop/laptop) */
-@media (pointer: fine) {
-  .bento-bg-mesh {
-    background-attachment: fixed;
-  }
-}
-
-.dark .bento-bg-mesh {
-  background: 
-    radial-gradient(ellipse at 0% 0%, rgba(184, 164, 216, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(240, 96, 96, 0.14) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(184, 164, 216, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(240, 96, 96, 0.08) 0%, transparent 50%),
-    var(--bento-bg);
-  background-attachment: scroll;
-}
-
-@media (pointer: fine) {
-  .dark .bento-bg-mesh {
-    background-attachment: fixed;
-  }
+  background-attachment: fixed;
+  transition: background 0.3s ease;
 }
 
 /* Glass Card */
@@ -197,6 +502,28 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
+}
+
+/* Card entrance animation - used by MemberCard */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Gentle float for decorative elements (simpler than moogle float) */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 1.5s ease-in-out infinite;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

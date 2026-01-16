@@ -96,36 +96,36 @@ describe('Button', () => {
 
 describe('IconButton', () => {
   it('renders icon correctly', () => {
-    render(<IconButton icon={<Heart data-testid="heart-icon" />} />);
+    render(<IconButton icon={<Heart data-testid="heart-icon" />} aria-label="Like" />);
     expect(screen.getByTestId('heart-icon')).toBeInTheDocument();
   });
 
   it('applies different sizes', () => {
-    const { rerender } = render(<IconButton icon={<Heart />} size="sm" />);
+    const { rerender } = render(<IconButton icon={<Heart />} size="sm" aria-label="Like" />);
     expect(screen.getByRole('button')).toHaveClass('w-8', 'h-8');
 
-    rerender(<IconButton icon={<Heart />} size="md" />);
+    rerender(<IconButton icon={<Heart />} size="md" aria-label="Like" />);
     expect(screen.getByRole('button')).toHaveClass('w-10', 'h-10');
 
-    rerender(<IconButton icon={<Heart />} size="lg" />);
+    rerender(<IconButton icon={<Heart />} size="lg" aria-label="Like" />);
     expect(screen.getByRole('button')).toHaveClass('w-12', 'h-12');
   });
 
   it('applies ghost variant by default', () => {
-    render(<IconButton icon={<Heart />} />);
+    render(<IconButton icon={<Heart />} aria-label="Like" />);
     const button = screen.getByRole('button');
     expect(button).toHaveClass('bg-transparent');
   });
 
   it('applies primary variant when specified', () => {
-    render(<IconButton icon={<Heart />} variant="primary" />);
+    render(<IconButton icon={<Heart />} variant="primary" aria-label="Like" />);
     const button = screen.getByRole('button');
     expect(button).toBeInTheDocument();
   });
 
   it('calls onClick handler when clicked', () => {
     const handleClick = vi.fn();
-    render(<IconButton icon={<Heart />} onClick={handleClick} />);
+    render(<IconButton icon={<Heart />} onClick={handleClick} aria-label="Like" />);
     
     screen.getByRole('button').click();
     expect(handleClick).toHaveBeenCalledTimes(1);

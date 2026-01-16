@@ -208,9 +208,13 @@ export function Button({
 
 /**
  * IconButton - Icon-only control styled to match Button.
+ * Accessibility: Requires aria-label for screen reader support.
  */
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** The icon to display */
   icon: ReactNode;
+  /** Accessible label for screen readers (required for icon-only buttons) */
+  'aria-label': string;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'ghost' | 'primary' | 'secondary';
   fun?: boolean;
@@ -222,6 +226,7 @@ export function IconButton({
   variant = 'ghost',
   fun = true,
   className = '',
+  'aria-label': ariaLabel,
   onDrag,
   onDragStart,
   onDragEnd,
@@ -244,6 +249,7 @@ export function IconButton({
 
   return (
     <motion.button
+      aria-label={ariaLabel}
       className={`
         inline-flex items-center justify-center
         rounded-xl
@@ -259,7 +265,7 @@ export function IconButton({
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
       {...props}
     >
-      {icon}
+      <span aria-hidden="true">{icon}</span>
     </motion.button>
   );
 }
