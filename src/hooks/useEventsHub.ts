@@ -7,9 +7,7 @@ import type { ChronicleEvent } from '../types';
 // In production, connect directly to the API
 const EVENTS_HUB_URL = import.meta.env.DEV
   ? '/eventsHub'
-  : (import.meta.env.VITE_API_BASE_URL
-      ? `${import.meta.env.VITE_API_BASE_URL.replace('/api', '')}/eventsHub`
-      : 'https://mogtome-api-egate2htgze6anhd.westcentralus-01.azurewebsites.net/eventsHub');
+  : `${import.meta.env.VITE_API_BASE_URL || 'https://api.mogtome.com'}/eventsHub`;
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error';
 
