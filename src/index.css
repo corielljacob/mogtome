@@ -226,21 +226,49 @@
 }
 
 /* Reduced Motion Mode - controlled via class for manual toggle */
+/* Reduced Motion Mode - Comprehensive disable of all animations */
 .reduce-motion,
-.reduce-motion * {
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  /* Disable CSS animations */
   animation-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
   animation-iteration-count: 1 !important;
+  
+  /* Disable CSS transitions */
   transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  
+  /* Disable scroll behavior */
+  scroll-behavior: auto !important;
 }
 
+/* Explicitly disable common animated classes */
 .reduce-motion .animate-float-moogle,
 .reduce-motion .animate-float-moogle-subtle,
 .reduce-motion .animate-float-sparkle,
 .reduce-motion .animate-shimmer,
 .reduce-motion .animate-ping-slow,
 .reduce-motion .animate-pulse,
-.reduce-motion .animate-spin {
+.reduce-motion .animate-spin,
+.reduce-motion .animate-bounce,
+.reduce-motion .animate-ping,
+.reduce-motion .animate-float-gentle,
+.reduce-motion [class*="animate-"] {
   animation: none !important;
+}
+
+/* Hide purely decorative animated elements when reduced motion is on */
+.reduce-motion .pointer-events-none[class*="animate-"],
+.reduce-motion .animate-float-moogle,
+.reduce-motion .animate-float-sparkle {
+  opacity: 0.7 !important;
+}
+
+/* Disable hover transforms */
+.reduce-motion *:hover {
+  transform: none !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

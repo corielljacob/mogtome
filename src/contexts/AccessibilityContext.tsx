@@ -111,6 +111,18 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     // Reduced motion
     root.classList.toggle('reduce-motion', settings.reducedMotion);
     
+    // When reduced motion is enabled, force stop all CSS animations immediately
+    // by triggering a style recalculation
+    if (settings.reducedMotion) {
+      // Get all animated elements and force them to their final state
+      const animatedElements = document.querySelectorAll('[class*="animate-"], .animate-spin, .animate-pulse, .animate-bounce, .animate-ping');
+      animatedElements.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        // Force a reflow to immediately apply the animation: none style
+        htmlEl.style.animation = 'none';
+      });
+    }
+    
     // Enhanced focus
     root.classList.toggle('enhanced-focus', settings.enhancedFocus);
     
