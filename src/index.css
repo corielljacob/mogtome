@@ -11,30 +11,28 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Fix for mobile viewport height (accounts for browser chrome) */
-    height: -webkit-fill-available;
-    /* Extend background color into safe areas on iOS */
+    /* Background extends into safe areas on iOS */
     background-color: var(--bento-bg);
   }
   
   body {
     font-family: 'Nunito', 'Inter', system-ui, sans-serif;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
     margin: 0;
     -webkit-font-smoothing: antialiased;
     /* Prevent horizontal overflow on mobile */
     overflow-x: hidden;
     /* Enable smooth scrolling on iOS */
     -webkit-overflow-scrolling: touch;
-    /* Extend background into safe areas (notch, home indicator) */
+    /* Background extends into safe areas */
     background-color: var(--bento-bg);
   }
 
   /* Root element fills viewport properly on mobile */
   #root {
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
   }
   
   h1, h2, h3, h4, h5, h6 {

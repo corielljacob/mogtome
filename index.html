@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en" style="background-color: #FFFFFF;">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
-    <!-- Theme color matches navbar/card background -->
-    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1E1A26" media="(prefers-color-scheme: dark)" />
+    <!-- Theme color for browser chrome - matches page background -->
+    <meta name="theme-color" content="#FFF9F5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
     <title>MogTome</title>
     
     <!-- Performance: DNS prefetch for external resources -->
@@ -29,21 +29,6 @@
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
         if (isDark) document.documentElement.classList.add('dark');
-        
-        // Set colors for theme (browser chrome + safe area background)
-        var themeColor = isDark ? '#1A1722' : '#FFF9F5';
-        
-        // Update background color on html element (extends into iOS safe areas)
-        document.documentElement.style.backgroundColor = themeColor;
-        
-        // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
-        var meta = document.querySelector('meta[name="theme-color"]:not([media])');
-        if (!meta) {
-          meta = document.createElement('meta');
-          meta.name = 'theme-color';
-          document.head.appendChild(meta);
-        }
-        meta.content = themeColor;
       })();
     </script>
     <div id="root"></div>

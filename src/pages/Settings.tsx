@@ -48,39 +48,6 @@ function useTheme() {
       localStorage.setItem('theme', newTheme);
     }
     document.documentElement.classList.toggle('dark', isDark);
-    
-    // Update colors for browser chrome + safe area background
-    const themeColor = isDark ? '#1A1722' : '#FFF9F5';
-    
-    // Update html background (extends into iOS safe areas)
-    document.documentElement.style.backgroundColor = themeColor;
-    
-    // Update theme-color meta tag for browser chrome
-    // iOS Safari is notoriously difficult - we need multiple tricks
-    const updateThemeColorMeta = () => {
-      const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
-      existingMetas.forEach(meta => meta.remove());
-      
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.content = themeColor;
-      document.head.appendChild(meta);
-    };
-    
-    // Update immediately
-    updateThemeColorMeta();
-    
-    // iOS Safari trick: trigger a minimal scroll to force UI update
-    const scrollY = window.scrollY;
-    window.scrollTo(0, scrollY + 1);
-    
-    // Use requestAnimationFrame + setTimeout combo for iOS Safari
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.scrollTo(0, scrollY);
-        updateThemeColorMeta();
-      }, 50);
-    });
   };
 
   const setTheme = (newTheme: ThemeOption) => {
