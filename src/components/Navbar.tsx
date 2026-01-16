@@ -462,7 +462,7 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
       aria-label="Mobile navigation"
     >
       {/* Background with blur - extends into safe area at bottom behind home indicator */}
-      <div className="absolute inset-x-0 top-0 -bottom-[env(safe-area-inset-bottom)] bg-[var(--bento-card)]/95 backdrop-blur-xl" />
+      <div className="absolute inset-x-0 top-0 -bottom-[env(safe-area-inset-bottom)] bg-[var(--bento-card)]/80 backdrop-blur-xl" />
       
       {/* Top border gradient */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/25 to-transparent" />
@@ -512,9 +512,9 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 transition-all duration-300 pt-[env(safe-area-inset-top)]" aria-label="Main navigation">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pt-[env(safe-area-inset-top)]" aria-label="Main navigation">
         {/* Storybook-style backdrop with warmth - extends into safe area behind Dynamic Island */}
-        <div className="absolute inset-0 -top-[env(safe-area-inset-top)] bg-[var(--bento-card)]/90 backdrop-blur-xl" />
+        <div className="absolute inset-0 -top-[env(safe-area-inset-top)] bg-[var(--bento-card)]/80 backdrop-blur-xl" />
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
         
         {/* Decorative top line */}

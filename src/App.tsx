@@ -47,7 +47,7 @@ function AppContent() {
           Skip to main content
         </a>
         <Navbar />
-        <main id="main-content" tabIndex={-1} className="pb-[calc(70px+var(--safe-area-inset-bottom))] md:pb-0">
+        <main id="main-content" tabIndex={-1} className="pt-[calc(4.5rem+env(safe-area-inset-top))] pb-[calc(70px+env(safe-area-inset-bottom))] md:pb-0">
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />
