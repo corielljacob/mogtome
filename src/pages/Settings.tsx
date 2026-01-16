@@ -56,13 +56,15 @@ function useTheme() {
     document.documentElement.style.backgroundColor = themeColor;
     
     // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
-    let meta = document.querySelector('meta[name="theme-color"]:not([media])') as HTMLMetaElement | null;
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      document.head.appendChild(meta);
-    }
+    // iOS Safari requires removing and re-adding the meta tag to pick up changes
+    const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
+    existingMetas.forEach(meta => meta.remove());
+    
+    // Add fresh meta tag
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
     meta.content = themeColor;
+    document.head.appendChild(meta);
   };
 
   const setTheme = (newTheme: ThemeOption) => {
