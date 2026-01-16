@@ -108,9 +108,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Redirect to Discord OAuth login
   const login = useCallback(() => {
+    // Build the redirect URL to return to after auth completes
+    const redirectUrl = `${window.location.origin}/auth/callback`;
+    
     // Always use the full API URL for OAuth - can't go through proxy
-    const loginUrl = 'https://api.mogtome.com/auth/discord/login';
-    window.location.href = loginUrl;
+    const loginUrl = new URL('https://api.mogtome.com/auth/discord/login');
+    loginUrl.searchParams.set('redirect', redirectUrl);
+    
+    window.location.href = loginUrl.toString();
   }, []);
 
   // Logout the user
