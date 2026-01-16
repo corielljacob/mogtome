@@ -41,7 +41,7 @@ function AppContent() {
       // Set global transition duration to 0 when reduced motion is on
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
-      <div className="min-h-screen bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+      <div className="min-h-screen min-h-dvh bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
         {/* Skip to main content link for keyboard users */}
         <a href="#main-content" className="skip-link">
           Skip to main content

@@ -20,6 +20,7 @@
     min-height: 100vh;
     min-height: 100dvh;
     margin: 0;
+    padding: 0;
     -webkit-font-smoothing: antialiased;
     /* Prevent horizontal overflow on mobile */
     overflow-x: hidden;
@@ -29,10 +30,12 @@
     background-color: var(--bento-bg);
   }
 
-  /* Root element fills viewport properly on mobile */
+  /* Root element - no clipping, allows content to extend into safe areas */
   #root {
     min-height: 100vh;
     min-height: 100dvh;
+    /* Don't clip - allow content to extend into safe areas for iOS liquid glass */
+    overflow: visible;
   }
   
   h1, h2, h3, h4, h5, h6 {
