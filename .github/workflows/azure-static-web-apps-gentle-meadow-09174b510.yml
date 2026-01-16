@@ -20,6 +20,12 @@ jobs:
           submodules: true
           lfs: false
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
       - name: Install dependencies
         run: npm ci
 
@@ -40,6 +46,7 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: "dist"
+          skip_app_build: true
         env:
           VITE_API_BASE_URL: https://mogtome-api-egate2htgze6anhd.westcentralus-01.azurewebsites.net
 
