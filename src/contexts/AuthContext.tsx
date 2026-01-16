@@ -1,32 +1,34 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import apiClient from '../api/client';
 
-// Discord user info returned after authentication
-export interface DiscordUser {
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar: string | null;
-  globalName: string | null;
+// User info extracted from JWT token
+export interface User {
+  memberName: string;
+  memberRank: string;
+  memberPortraitUrl: string;
 }
 
-interface CurrentUserResponse {
-  user: DiscordUser;
-  isAdmin: boolean;
+// JWT payload structure from our API
+interface JwtPayload {
+  aud: string;
+  iss: string;
+  exp: number;
+  nbf: number;
+  memberName: string;
+  memberRank: string;
+  memberPortraitUrl: string;
 }
 
 interface AuthState {
-  user: DiscordUser | null;
-  isAdmin: boolean;
+  user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 interface AuthContextValue extends AuthState {
   login: () => void;
-  logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  logout: () => void;
+  refreshUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -46,6 +48,34 @@ export const clearAuthToken = (): void => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
 };
 
+// Decode JWT payload (without verification - server already verified it)
+function decodeJwtPayload(token: string): JwtPayload | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const payload = parts[1];
+    // Base64url decode
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
+// Check if token is expired
+function isTokenExpired(payload: JwtPayload): boolean {
+  const now = Math.floor(Date.now() / 1000);
+  return payload.exp < now;
+}
+
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -53,52 +83,45 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({
     user: null,
-    isAdmin: false,
     isLoading: true,
     isAuthenticated: false,
   });
 
-  // Refresh user data from the API
-  const refreshUser = useCallback(async () => {
+  // Load user from stored JWT token
+  const refreshUser = useCallback(() => {
     const token = getAuthToken();
     if (!token) {
       setState({
         user: null,
-        isAdmin: false,
         isLoading: false,
         isAuthenticated: false,
       });
       return;
     }
 
-    try {
-      const response = await apiClient.get<CurrentUserResponse>('/auth/me');
-      if (response.data) {
-        setState({
-          user: response.data.user,
-          isAdmin: response.data.isAdmin,
-          isLoading: false,
-          isAuthenticated: true,
-        });
-      } else {
-        clearAuthToken();
-        setState({
-          user: null,
-          isAdmin: false,
-          isLoading: false,
-          isAuthenticated: false,
-        });
-      }
-    } catch {
-      // Failed to get user, clear token
+    const payload = decodeJwtPayload(token);
+    
+    if (!payload || isTokenExpired(payload)) {
+      // Token invalid or expired
       clearAuthToken();
       setState({
         user: null,
-        isAdmin: false,
         isLoading: false,
         isAuthenticated: false,
       });
+      return;
     }
+
+    // Extract user info from JWT payload
+    setState({
+      user: {
+        memberName: payload.memberName,
+        memberRank: payload.memberRank,
+        memberPortraitUrl: payload.memberPortraitUrl,
+      },
+      isLoading: false,
+      isAuthenticated: true,
+    });
   }, []);
 
   // Initial load - check if user is authenticated
@@ -118,16 +141,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // Logout the user
-  const logout = useCallback(async () => {
-    try {
-      await apiClient.post('/auth/logout');
-    } catch {
-      // Logout might fail if already logged out
-    }
+  const logout = useCallback(() => {
     clearAuthToken();
     setState({
       user: null,
-      isAdmin: false,
       isLoading: false,
       isAuthenticated: false,
     });
