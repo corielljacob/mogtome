@@ -118,6 +118,237 @@
   --bento-glass: rgba(30, 26, 38, 0.94);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ACCESSIBILITY MODES
+ * These classes are applied to the root element by AccessibilityContext
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* High Contrast Mode - Light theme */
+.high-contrast {
+  --bento-bg: #FFFFFF;
+  --bento-card: #FFFFFF;
+  --bento-text: #000000;
+  --bento-text-muted: #1A1A1A;
+  --bento-text-subtle: #333333;
+  --bento-primary: #CC0000;
+  --bento-secondary: #5500AA;
+  --bento-accent: #CC4444;
+  --bento-success: #006600;
+  --bento-warning: #CC6600;
+  --bento-border: rgba(0, 0, 0, 0.3);
+  --bento-shadow: rgba(0, 0, 0, 0.3);
+  --bento-glass: rgba(255, 255, 255, 1);
+}
+
+/* High Contrast Mode - Dark theme */
+.dark.high-contrast {
+  --bento-bg: #000000;
+  --bento-card: #0A0A0A;
+  --bento-text: #FFFFFF;
+  --bento-text-muted: #E5E5E5;
+  --bento-text-subtle: #CCCCCC;
+  --bento-primary: #FF6666;
+  --bento-secondary: #CC99FF;
+  --bento-accent: #FF8888;
+  --bento-success: #66FF66;
+  --bento-warning: #FFCC00;
+  --bento-border: rgba(255, 255, 255, 0.4);
+  --bento-shadow: rgba(255, 255, 255, 0.2);
+  --bento-glass: rgba(10, 10, 10, 1);
+}
+
+/* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
+.dark.extra-dark {
+  --bento-bg: #000000;
+  --bento-card: #0A0A0A;
+  --bento-text: #E8E8E8;
+  --bento-text-muted: #B0B0B0;
+  --bento-text-subtle: #808080;
+  --bento-border: rgba(255, 255, 255, 0.08);
+  --bento-glass: rgba(5, 5, 5, 0.98);
+}
+
+/* Extra Dark + High Contrast combined */
+.dark.extra-dark.high-contrast {
+  --bento-bg: #000000;
+  --bento-card: #000000;
+  --bento-text: #FFFFFF;
+  --bento-text-muted: #F0F0F0;
+  --bento-text-subtle: #DDDDDD;
+  --bento-border: rgba(255, 255, 255, 0.5);
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: 118%;
+}
+
+.large-text h1 { font-size: 2.75rem; }
+.large-text h2 { font-size: 2rem; }
+.large-text h3 { font-size: 1.5rem; }
+
+@media (min-width: 768px) {
+  .large-text {
+    font-size: 120%;
+  }
+  .large-text h1 { font-size: 3.5rem; }
+  .large-text h2 { font-size: 2.5rem; }
+  .large-text h3 { font-size: 1.75rem; }
+}
+
+/* Enhanced Focus Mode - more visible focus indicators */
+.enhanced-focus *:focus-visible {
+  outline: 3px solid var(--bento-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px rgba(229, 75, 75, 0.3) !important;
+}
+
+.dark.enhanced-focus *:focus-visible {
+  box-shadow: 0 0 0 6px rgba(240, 96, 96, 0.4) !important;
+}
+
+/* Dyslexia-friendly Font Mode */
+.dyslexia-font {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Nunito', system-ui, sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+.dyslexia-font h1,
+.dyslexia-font h2,
+.dyslexia-font h3,
+.dyslexia-font h4,
+.dyslexia-font h5,
+.dyslexia-font h6 {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Fredoka', system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* Reduced Motion Mode - controlled via class for manual toggle */
+.reduce-motion,
+.reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+.reduce-motion .animate-float-moogle,
+.reduce-motion .animate-float-moogle-subtle,
+.reduce-motion .animate-float-sparkle,
+.reduce-motion .animate-shimmer,
+.reduce-motion .animate-ping-slow,
+.reduce-motion .animate-pulse,
+.reduce-motion .animate-spin {
+  animation: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * COLORBLIND MODES
+ * These palettes are designed to be distinguishable for different types of
+ * color vision deficiency. Colors are carefully chosen to maintain meaning
+ * while being accessible.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Protanopia (Red-Blind) - Uses blue/yellow palette */
+.colorblind-protanopia {
+  --bento-primary: #0077BB;      /* Blue instead of red */
+  --bento-secondary: #EE7733;    /* Orange instead of purple */
+  --bento-accent: #33BBEE;       /* Cyan */
+  --bento-success: #009988;      /* Teal instead of green */
+  --bento-warning: #EE7733;      /* Orange */
+}
+
+.dark.colorblind-protanopia {
+  --bento-primary: #66CCEE;      /* Light blue */
+  --bento-secondary: #FFAA55;    /* Light orange */
+  --bento-accent: #99DDFF;       /* Light cyan */
+  --bento-success: #44BB99;      /* Light teal */
+  --bento-warning: #FFCC44;      /* Yellow */
+}
+
+/* Deuteranopia (Green-Blind) - Uses blue/yellow palette (similar to protanopia) */
+.colorblind-deuteranopia {
+  --bento-primary: #0077BB;      /* Blue instead of red */
+  --bento-secondary: #CC6677;    /* Rose/mauve */
+  --bento-accent: #44AA99;       /* Teal */
+  --bento-success: #117733;      /* Dark green (still distinguishable) */
+  --bento-warning: #DDCC77;      /* Yellow/gold */
+}
+
+.dark.colorblind-deuteranopia {
+  --bento-primary: #88CCEE;      /* Light blue */
+  --bento-secondary: #CC6677;    /* Rose */
+  --bento-accent: #44BB99;       /* Light teal */
+  --bento-success: #66BB55;      /* Light green */
+  --bento-warning: #FFDD55;      /* Bright yellow */
+}
+
+/* Tritanopia (Blue-Blind) - Uses red/green palette */
+.colorblind-tritanopia {
+  --bento-primary: #CC3311;      /* Red-orange */
+  --bento-secondary: #EE3377;    /* Magenta/pink */
+  --bento-accent: #EE7744;       /* Orange */
+  --bento-success: #009988;      /* Teal (distinguishable from red) */
+  --bento-warning: #EE7744;      /* Orange */
+}
+
+.dark.colorblind-tritanopia {
+  --bento-primary: #EE6677;      /* Salmon/pink */
+  --bento-secondary: #EE99AA;    /* Light pink */
+  --bento-accent: #FFAA77;       /* Peach */
+  --bento-success: #44BB99;      /* Light teal */
+  --bento-warning: #FFBB66;      /* Light orange */
+}
+
+/* Monochromacy (Complete Color Blindness) - Grayscale with high contrast */
+.colorblind-monochromacy {
+  --bento-primary: #404040;
+  --bento-secondary: #606060;
+  --bento-accent: #505050;
+  --bento-success: #333333;
+  --bento-warning: #555555;
+  --bento-text: #1A1A1A;
+  --bento-text-muted: #404040;
+  --bento-text-subtle: #606060;
+}
+
+.dark.colorblind-monochromacy {
+  --bento-primary: #D0D0D0;
+  --bento-secondary: #A0A0A0;
+  --bento-accent: #B0B0B0;
+  --bento-success: #C0C0C0;
+  --bento-warning: #B0B0B0;
+  --bento-text: #F0F0F0;
+  --bento-text-muted: #C0C0C0;
+  --bento-text-subtle: #909090;
+}
+
+/* 
+ * Monochromacy - Full grayscale mode
+ * We use a backdrop filter approach with a fixed overlay to catch ALL elements,
+ * including those rendered in portals outside the main React tree.
+ * 
+ * The overlay is pointer-events:none so it doesn't block interactions.
+ */
+.colorblind-monochromacy::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  backdrop-filter: grayscale(100%);
+  -webkit-backdrop-filter: grayscale(100%);
+}
+
+/* Fallback for browsers that don't support backdrop-filter well */
+@supports not (backdrop-filter: grayscale(100%)) {
+  .colorblind-monochromacy #root,
+  .colorblind-monochromacy body > div {
+    filter: grayscale(100%);
+  }
+}
+
 /* Typography */
 .font-inter { font-family: 'Inter', system-ui, sans-serif; }
 .font-display { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }

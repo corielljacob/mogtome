@@ -598,7 +598,7 @@ export function Members() {
 
           {/* Member list */}
           {isLoading ? (
-            <ContentCard className="text-center py-16" aria-busy="true" aria-live="polite">
+            <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
               <motion.img 
                 src={pushingMoogles} 
                 alt="" 

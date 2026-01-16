@@ -1,99 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Menu, X, Heart, Sparkles, Moon, Sun, Wand2, Star, Scroll, Clock, LogIn, LogOut, ChevronDown } from 'lucide-react';
+import { Home, Users, Menu, X, Heart, Sparkles, Wand2, Star, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
 
-// Floating navbar sparkles for whimsy
-function NavbarSparkles() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[
-        { left: '10%', top: '20%', delay: 0 },
-        { left: '25%', top: '60%', delay: 0.5 },
-        { left: '70%', top: '30%', delay: 1 },
-        { left: '85%', top: '50%', delay: 1.5 },
-        { left: '50%', top: '25%', delay: 2 },
-      ].map((pos, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{ left: pos.left, top: pos.top }}
-          animate={{
-            y: [0, -4, 0],
-            opacity: [0.2, 0.5, 0.2],
-            scale: [0.8, 1, 0.8],
-          }}
-          transition={{
-            duration: 3 + i * 0.3,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut",
-          }}
-        >
-          {i % 2 === 0 ? (
-            <Sparkles className="w-3 h-3 text-[var(--bento-primary)]/40" />
-          ) : (
-            <Star className="w-2.5 h-2.5 text-[var(--bento-secondary)]/30 fill-[var(--bento-secondary)]/30" />
-          )}
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-// Quirky snappy toggle - bouncy flip matching navbar style
-function ThemeToggleButton() {
-  const getInitialTheme = () => {
-    if (typeof window === 'undefined') return false;
-    const stored = localStorage.getItem('theme');
-    if (stored) return stored === 'dark';
-    if (document.documentElement.classList.contains('dark')) return true;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  };
-
-  const [isDark, setIsDark] = useState(getInitialTheme);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
+// Settings button for navbar
+function SettingsButton() {
+  const location = useLocation();
+  const isActive = location.pathname === '/settings';
 
   return (
-    <motion.button
-      onClick={() => setIsDark((prev) => !prev)}
-      className="relative w-10 h-10 md:w-9 md:h-9 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm"
-      style={{ perspective: 600 }}
-      aria-label="Toggle theme"
-      whileHover={{ scale: 1.1, rotate: 5 }}
-      whileTap={{ scale: 0.9 }}
+    <Link
+      to="/settings"
+      className={`
+        relative w-10 h-10 md:w-9 md:h-9 rounded-xl 
+        bg-[var(--bento-card)]/80 border cursor-pointer shadow-sm
+        flex items-center justify-center
+        transition-colors duration-200
+        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        ${isActive 
+          ? 'border-[var(--bento-primary)]/30 text-[var(--bento-primary)]' 
+          : 'border-[var(--bento-primary)]/15 text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+        }
+      `}
+      aria-label="Settings"
+      aria-current={isActive ? 'page' : undefined}
     >
-      {/* The flipper */}
-      <motion.div
-        className="absolute inset-1.5 md:inset-1 rounded-lg"
-        style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateY: isDark ? 180 : 0 }}
-        transition={{ type: "spring", stiffness: 800, damping: 30 }}
-      >
-        {/* Sun face (front) */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-accent)]"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <Sun className="w-4 h-4 text-white" />
-        </div>
-        
-        {/* Moon face (back) */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[var(--bento-secondary)] to-[var(--bento-text-muted)]"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-        >
-          <Moon className="w-4 h-4 text-white" />
-        </div>
-      </motion.div>
-    </motion.button>
+      <Settings className="w-5 h-5" />
+    </Link>
   );
 }
 
@@ -492,9 +428,6 @@ export function Navbar() {
       <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       
-      {/* Floating whimsical sparkles */}
-      <NavbarSparkles />
-      
       {/* Decorative top line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--bento-primary)]/30 to-transparent" />
       
@@ -616,11 +549,11 @@ export function Navbar() {
           </div>
 
           {/* Right-side controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <KupoBadge />
             <LoginButton />
             <UserMenu />
-            <ThemeToggleButton />
+            <SettingsButton />
 
             {/* Mobile menu button - min 44px touch target */}
             <motion.button
