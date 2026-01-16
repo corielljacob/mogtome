@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
-import { setAuthToken, useAuth } from '../contexts/AuthContext';
+import { setAuthToken, useAuth, getReturnUrl, clearReturnUrl } from '../contexts/AuthContext';
 
 type CallbackStatus = 'processing' | 'success' | 'error';
 
@@ -12,6 +12,14 @@ export function AuthCallback() {
   const { refreshUser } = useAuth();
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [error, setError] = useState<string | null>(null);
+  
+  // Capture the return URL immediately on mount, before any effects run
+  // This prevents issues with React StrictMode running effects twice
+  const returnUrlRef = useRef<string | null>(null);
+  if (returnUrlRef.current === null) {
+    returnUrlRef.current = getReturnUrl() || '/';
+    clearReturnUrl();
+  }
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -34,9 +42,9 @@ export function AuthCallback() {
         await refreshUser();
         setStatus('success');
         
-        // Redirect to home after a brief delay to show success
+        // Redirect after a brief delay to show success
         setTimeout(() => {
-          navigate('/', { replace: true });
+          navigate(returnUrlRef.current!, { replace: true });
         }, 1500);
         return;
       }

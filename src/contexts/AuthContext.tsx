@@ -34,6 +34,7 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const AUTH_TOKEN_KEY = 'mogtome_auth_token';
+const RETURN_URL_KEY = 'mogtome_return_url';
 
 // Helper to get/set the auth token in localStorage
 export const getAuthToken = (): string | null => {
@@ -46,6 +47,21 @@ export const setAuthToken = (token: string): void => {
 
 export const clearAuthToken = (): void => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
+};
+
+// Helper to get/set the return URL for post-login redirect
+// Uses localStorage instead of sessionStorage because the OAuth redirect
+// to Discord and back can cause sessionStorage to be lost in some browsers
+export const getReturnUrl = (): string | null => {
+  return localStorage.getItem(RETURN_URL_KEY);
+};
+
+export const setReturnUrl = (url: string): void => {
+  localStorage.setItem(RETURN_URL_KEY, url);
+};
+
+export const clearReturnUrl = (): void => {
+  localStorage.removeItem(RETURN_URL_KEY);
 };
 
 // Decode JWT payload (without verification - server already verified it)
@@ -131,6 +147,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Redirect to Discord OAuth login
   const login = useCallback(() => {
+    // Save the current URL so we can redirect back after login
+    // Only save if we're not already on the auth callback page
+    const currentPath = window.location.pathname + window.location.search + window.location.hash;
+    if (!currentPath.startsWith('/auth/')) {
+      setReturnUrl(currentPath);
+    }
+    
     // Redirect back to the auth callback on the current origin (localhost, mogtome.com, etc.)
     const redirectUrl = `${window.location.origin}/auth/callback`;
     
