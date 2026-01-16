@@ -216,21 +216,25 @@ function UserMenu() {
     <div className="relative">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm hover:shadow-md transition-shadow focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        aria-label={`User menu for ${displayName}`}
       >
         <img
           src={avatarUrl}
-          alt={displayName}
+          alt=""
           className="w-7 h-7 rounded-lg object-cover"
         />
-        <span className="hidden sm:block font-soft text-sm font-medium text-[var(--bento-text)] max-w-[100px] truncate">
+        <span className="hidden sm:block font-soft text-sm font-medium text-[var(--bento-text)] max-w-[100px] truncate" aria-hidden="true">
           {displayName}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
+          aria-hidden="true"
         >
           <ChevronDown className="w-4 h-4 text-[var(--bento-text-muted)]" />
         </motion.div>
@@ -243,6 +247,7 @@ function UserMenu() {
             <div 
               className="fixed inset-0 z-40" 
               onClick={() => setIsOpen(false)}
+              aria-hidden="true"
             />
             
             <motion.div
@@ -251,6 +256,8 @@ function UserMenu() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
+              role="menu"
+              aria-label="User menu"
             >
               <div className="bg-[var(--bento-card)] rounded-2xl border border-[var(--bento-primary)]/15 shadow-xl overflow-hidden">
                 {/* User info header */}
@@ -270,9 +277,10 @@ function UserMenu() {
                       setIsOpen(false);
                       await logout();
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                    role="menuitem"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-4 h-4" aria-hidden="true" />
                     <span className="font-soft text-sm">Sign Out</span>
                   </button>
                 </div>
@@ -294,13 +302,14 @@ function LoginButton() {
   return (
     <motion.button
       onClick={login}
-      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#5865F2] text-white font-soft text-sm font-semibold cursor-pointer shadow-md shadow-[#5865F2]/25 hover:shadow-lg hover:bg-[#4752C4] transition-all"
+      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#5865F2] text-white font-soft text-sm font-semibold cursor-pointer shadow-md shadow-[#5865F2]/25 hover:shadow-lg hover:bg-[#4752C4] transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      aria-label="Login with Discord"
     >
-      <DiscordIcon className="w-4 h-4" />
+      <DiscordIcon className="w-4 h-4" aria-hidden="true" />
       <span className="hidden sm:inline">Login</span>
-      <LogIn className="w-4 h-4 sm:hidden" />
+      <LogIn className="w-4 h-4 sm:hidden" aria-hidden="true" />
     </motion.button>
   );
 }
@@ -478,7 +487,7 @@ export function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }}>
+    <nav className="sticky top-0 z-50 transition-all duration-300" style={{ paddingTop: 'var(--safe-area-inset-top)' }} aria-label="Main navigation">
       {/* Storybook-style backdrop with warmth - extends to cover safe area */}
       <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl" style={{ top: 'calc(-1 * var(--safe-area-inset-top))' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-primary)]/[0.03] via-[var(--bento-accent)]/[0.02] to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
@@ -497,13 +506,14 @@ export function Navbar() {
           {/* Brand mark */}
           <Link 
             to="/" 
-            className="flex items-center gap-3.5 group"
+            className="flex items-center gap-3.5 group focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none rounded-lg"
             onMouseEnter={() => setLogoHovered(true)}
             onMouseLeave={() => setLogoHovered(false)}
+            aria-label="MogTome - Go to home page"
           >
             <LogoIcon hovered={logoHovered} />
             
-            <div className="hidden sm:block">
+            <div className="hidden sm:block" aria-hidden="true">
               <div className="flex items-baseline gap-0.5">
                 <motion.span 
                   className="font-display font-bold text-xl text-[var(--bento-text)]"
@@ -532,9 +542,9 @@ export function Navbar() {
           </Link>
 
           {/* Desktop nav - storybook styled */}
-          <div className="hidden md:flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5">
+          <div className="hidden md:flex items-center gap-1.5 bg-[var(--bento-card)]/80 px-3 py-2 rounded-2xl border border-[var(--bento-primary)]/15 shadow-lg shadow-[var(--bento-primary)]/5" role="navigation" aria-label="Main menu">
             {/* Decorative star on left */}
-            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" />
+            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 mr-1" aria-hidden="true" />
             
             {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
               const active = isActive(path);
@@ -546,10 +556,12 @@ export function Navbar() {
                   to={path}
                   onMouseEnter={() => setHoveredNav(path)}
                   onMouseLeave={() => setHoveredNav(null)}
+                  aria-current={active ? 'page' : undefined}
                   className={`
                     relative flex items-center gap-2.5 px-4 py-2 rounded-xl
                     font-soft text-sm font-semibold
                     transition-all duration-200
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                     ${active
                       ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] shadow-sm border border-[var(--bento-primary)]/10'
                       : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/50'
@@ -563,6 +575,7 @@ export function Navbar() {
                       y: hovered && !active ? -2 : 0,
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    aria-hidden="true"
                   >
                     <Icon className={`w-4 h-4 ${active ? 'text-[var(--bento-primary)]' : ''}`} />
                   </motion.div>
@@ -599,7 +612,7 @@ export function Navbar() {
             })}
             
             {/* Decorative star on right */}
-            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" />
+            <Star className="w-3 h-3 text-[var(--bento-secondary)]/50 fill-[var(--bento-secondary)]/50 ml-1" aria-hidden="true" />
           </div>
 
           {/* Right-side controls */}
@@ -612,11 +625,12 @@ export function Navbar() {
             {/* Mobile menu button - min 44px touch target */}
             <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden relative p-3 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors"
+              className="md:hidden relative p-3 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/10 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {mobileMenuOpen ? (
@@ -654,11 +668,14 @@ export function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
+              id="mobile-menu"
+              role="navigation"
+              aria-label="Mobile navigation menu"
             >
               <div className="py-4 border-t border-[var(--bento-primary)]/10">
-                <div className="space-y-2">
+                <ul className="space-y-2" role="list">
                   {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }, index) => (
-                    <motion.div
+                    <motion.li
                       key={path}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -667,11 +684,13 @@ export function Navbar() {
                       <Link
                         to={path}
                         onClick={() => setMobileMenuOpen(false)}
+                        aria-current={isActive(path) ? 'page' : undefined}
                         className={`
                           flex items-center justify-between px-4 py-4 rounded-2xl
                           font-soft text-base font-semibold
                           transition-all duration-200
                           active:scale-[0.98]
+                          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                           ${isActive(path)
                             ? 'bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 text-[var(--bento-primary)] border border-[var(--bento-primary)]/10'
                             : 'text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)]'
@@ -685,16 +704,16 @@ export function Navbar() {
                               ? 'bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 shadow-sm' 
                               : 'bg-[var(--bento-bg)]'
                             }
-                          `}>
+                          `} aria-hidden="true">
                             <Icon className={`w-5 h-5 ${isActive(path) ? 'text-[var(--bento-primary)]' : ''}`} />
                           </div>
                           <span>{label}</span>
                         </div>
-                        <AccentIcon className={`w-4 h-4 ${isActive(path) ? 'text-[var(--bento-secondary)]' : 'text-[var(--bento-text-subtle)]'}`} />
+                        <AccentIcon className={`w-4 h-4 ${isActive(path) ? 'text-[var(--bento-secondary)]' : 'text-[var(--bento-text-subtle)]'}`} aria-hidden="true" />
                       </Link>
-                    </motion.div>
+                    </motion.li>
                   ))}
-                </div>
+                </ul>
                 
                 {/* Mobile footer - storybook style */}
                 <motion.div 
@@ -702,6 +721,7 @@ export function Navbar() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
+                  aria-hidden="true"
                 >
                   <div className="flex items-center justify-center gap-3 py-2">
                     <Star className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />

@@ -126,6 +126,48 @@
 .font-soft { font-family: 'Nunito', system-ui, sans-serif; }
 .font-title { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }
 
+/* Screen reader only - visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible - consistent focus indicator for keyboard navigation */
+.focus-visible-ring:focus-visible {
+  outline: 2px solid var(--bento-primary);
+  outline-offset: 2px;
+}
+
+/* Skip link styles - visible on focus for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background: var(--bento-card);
+  color: var(--bento-primary);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid var(--bento-primary);
+  outline-offset: 2px;
+}
+
 /* Safe area insets for notched devices (iPhone X+, etc.) */
 :root {
   --safe-area-inset-top: env(safe-area-inset-top, 0px);

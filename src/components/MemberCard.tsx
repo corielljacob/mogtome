@@ -94,6 +94,11 @@ const defaultTheme = {
  * MemberCard - Refined member card with delightful hover effects.
  * Matches the Soft Bento design system.
  * 
+ * ACCESSIBILITY:
+ * - Links have descriptive accessible names
+ * - Images have meaningful alt text
+ * - Decorative elements are hidden from screen readers
+ * 
  * PERFORMANCE OPTIMIZATIONS:
  * - Memoized to prevent re-renders when parent updates
  * - Uses CSS transitions instead of Framer Motion for hover states
@@ -115,11 +120,12 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <div 
+    <article 
       className="group relative w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem]"
       style={shouldAnimateEntrance ? {
         animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
       } : undefined}
+      aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
       {/* Hover glow effect - CSS transition for performance */}
       <div 
@@ -129,6 +135,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           transition-opacity duration-300
         "
         style={{ backgroundColor: theme.glow }}
+        aria-hidden="true"
       />
       
       <div 
@@ -143,23 +150,24 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
         "
       >
         {/* Gradient rank banner */}
-        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} />
+        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
         
         {/* Avatar with Lodestone link */}
         <a 
           href={lodestoneUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="block relative overflow-hidden"
+          className="block relative overflow-hidden focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset focus:outline-none"
+          aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
         >
           {/* Loading shimmer */}
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
           )}
           
           <img
             src={member.avatarLink}
-            alt={member.name}
+            alt=""
             loading="lazy"
             decoding="async"
             onLoad={handleImageLoad}
@@ -180,6 +188,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               opacity-0 group-hover:opacity-100
               transition-opacity duration-200
             "
+            aria-hidden="true"
           >
             <span 
               className="
@@ -203,6 +212,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100
               transition-all duration-200 ease-out
             "
+            aria-hidden="true"
           >
             <img 
               src={pixelMoogle} 
@@ -233,10 +243,11 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               <img 
                 src={member.freeCompanyRankIcon} 
                 alt="" 
-                className="w-3.5 h-3.5" 
+                className="w-3.5 h-3.5"
+                aria-hidden="true"
               />
             ) : (
-              <RankIcon className={`w-3 h-3 ${theme.accent}`} />
+              <RankIcon className={`w-3 h-3 ${theme.accent}`} aria-hidden="true" />
             )}
             <span className={`text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[80px]`}>
               {member.freeCompanyRank}
@@ -244,7 +255,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 });
 
@@ -274,6 +285,7 @@ export function MemberCardSkeleton() {
 /**
  * MemberCardCompact - A more compact variant for dense layouts.
  * Uses CSS-only animations for performance.
+ * Accessibility: Links have descriptive accessible names.
  */
 export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
   const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
@@ -284,6 +296,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       href={lodestoneUrl}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
       className="
         flex items-center gap-3 p-2 pr-4
         bg-[var(--bento-card)]
@@ -294,6 +307,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
         hover:-translate-y-0.5 hover:translate-x-0.5
         active:scale-[0.98]
         transition-all duration-200
+        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         group
       "
     >
@@ -301,11 +315,11 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': theme.glow } as React.CSSProperties}>
         <img 
           src={member.avatarLink} 
-          alt={member.name}
+          alt=""
           className="w-10 h-10 object-cover"
           loading="lazy"
         />
-        <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${theme.gradient}`} />
+        <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
       </div>
       
       {/* Info */}
@@ -319,7 +333,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       </div>
       
       {/* Arrow on hover */}
-      <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200">
+      <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">
         <ExternalLink className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
       </div>
     </a>

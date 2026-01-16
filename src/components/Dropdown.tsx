@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Check } from 'lucide-react';
 
@@ -15,12 +15,22 @@ interface DropdownProps<T extends string = string> {
   placeholder?: string;
   icon?: React.ReactNode;
   className?: string;
+  /** Accessible label for the dropdown (required for accessibility) */
+  'aria-label'?: string;
+  /** ID of element that labels this dropdown */
+  'aria-labelledby'?: string;
 }
 
 /**
  * Custom styled dropdown that matches the Soft Bento design system.
  * Replaces native <select> with a fully styled accessible dropdown.
  * Uses a portal to escape overflow:hidden containers.
+ * 
+ * Accessibility features:
+ * - Proper ARIA roles (listbox, option)
+ * - Keyboard navigation (Arrow keys, Enter, Escape, Tab)
+ * - Focus management
+ * - Screen reader announcements
  */
 export function Dropdown<T extends string = string>({
   options,
@@ -29,6 +39,8 @@ export function Dropdown<T extends string = string>({
   placeholder = 'Select...',
   icon,
   className = '',
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: DropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,6 +48,9 @@ export function Dropdown<T extends string = string>({
   const listRef = useRef<HTMLUListElement>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, width: 0 });
+  
+  const listboxId = useId();
+  const buttonId = useId();
 
   const selectedOption = options.find(o => o.value === value);
 
@@ -132,8 +147,11 @@ export function Dropdown<T extends string = string>({
   const menu = isOpen && createPortal(
     <ul
       ref={listRef}
+      id={listboxId}
       role="listbox"
-      aria-activedescendant={focusedIndex >= 0 ? `option-${focusedIndex}` : undefined}
+      aria-activedescendant={focusedIndex >= 0 ? `${listboxId}-option-${focusedIndex}` : undefined}
+      aria-label={ariaLabel}
+      tabIndex={-1}
       style={{
         position: 'fixed',
         top: menuPosition.top,
@@ -146,6 +164,7 @@ export function Dropdown<T extends string = string>({
         border border-[var(--bento-border)]
         rounded-xl shadow-xl shadow-black/10
         py-1.5 max-h-60 overflow-auto
+        focus:outline-none
       "
     >
       {options.map((option, index) => {
@@ -155,7 +174,7 @@ export function Dropdown<T extends string = string>({
         return (
           <li
             key={option.value}
-            id={`option-${index}`}
+            id={`${listboxId}-option-${index}`}
             role="option"
             aria-selected={isSelected}
             onClick={() => handleSelect(option.value)}
@@ -168,13 +187,13 @@ export function Dropdown<T extends string = string>({
             `}
           >
             {option.icon && (
-              <span className={isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'}>
+              <span className={isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'} aria-hidden="true">
                 {option.icon}
               </span>
             )}
             <span className="flex-1 text-sm font-soft">{option.label}</span>
             {isSelected && (
-              <Check className="w-4 h-4 text-[var(--bento-primary)]" />
+              <Check className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />
             )}
           </li>
         );
@@ -188,12 +207,15 @@ export function Dropdown<T extends string = string>({
       {/* Trigger button */}
       <button
         ref={triggerRef}
+        id={buttonId}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-labelledby="dropdown-label"
+        aria-controls={isOpen ? listboxId : undefined}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         className={`
           w-full flex items-center gap-2 px-3 py-3 rounded-xl
           bg-[var(--bento-bg)]
@@ -206,7 +228,7 @@ export function Dropdown<T extends string = string>({
         `}
       >
         {icon && (
-          <span className="text-[var(--bento-secondary)] flex-shrink-0">
+          <span className="text-[var(--bento-secondary)] flex-shrink-0" aria-hidden="true">
             {icon}
           </span>
         )}
@@ -218,7 +240,8 @@ export function Dropdown<T extends string = string>({
             w-4 h-4 text-[var(--bento-text-muted)] flex-shrink-0
             transition-transform duration-200
             ${isOpen ? 'rotate-180' : ''}
-          `} 
+          `}
+          aria-hidden="true"
         />
       </button>
 

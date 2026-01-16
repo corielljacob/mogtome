@@ -353,6 +353,9 @@ export function Members() {
                 
                 {/* Search input */}
                 <div className="relative flex-1 min-w-0">
+                  {/* Screen reader only label */}
+                  <label htmlFor="member-search" className="sr-only">Search members by name or rank</label>
+                  
                   {/* Search icon inside input - hidden on mobile since we have badge */}
                   <div 
                     className={`
@@ -362,16 +365,19 @@ export function Members() {
                       hidden md:flex
                       ${isCompact ? 'pl-3 opacity-100' : 'pl-4 opacity-100'}
                     `}
+                    aria-hidden="true"
                   >
                     <Search className={`transition-all duration-200 ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />
                   </div>
                   
                   <input
                     ref={searchInputRef}
-                    type="text"
+                    id="member-search"
+                    type="search"
                     placeholder="Search members..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    aria-describedby="search-results-count"
                     className={`
                       w-full font-soft text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)] 
                       focus:outline-none bg-[var(--bento-bg)]
@@ -394,9 +400,10 @@ export function Members() {
                       ${inputValue ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'}
                     `}
                     tabIndex={inputValue ? 0 : -1}
+                    aria-label="Clear search"
                   >
                     <span className={`bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 rounded-lg transition-colors ${isCompact ? 'p-1' : 'p-1.5'}`}>
-                      <X className={`text-[var(--bento-primary)] ${isCompact ? 'w-3 h-3' : 'w-4 h-4'}`} />
+                      <X className={`text-[var(--bento-primary)] ${isCompact ? 'w-3 h-3' : 'w-4 h-4'}`} aria-hidden="true" />
                     </span>
                   </button>
                 </div>
@@ -491,6 +498,7 @@ export function Members() {
                         onChange={setSortBy}
                         icon={<ArrowUpDown className="w-4 h-4" />}
                         className="flex-1 sm:flex-none sm:min-w-[180px]"
+                        aria-label="Sort members by"
                       />
                     </div>
 
@@ -503,7 +511,7 @@ export function Members() {
                     >
                       <div className="overflow-hidden">
                         <div className="pt-4 mt-4 border-t border-[var(--bento-border)]">
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
                             {FC_RANKS.map((rank) => {
                               const count = rankCounts[rank.name] || 0;
                               const isSelected = selectedRanks.includes(rank.name);
@@ -511,11 +519,13 @@ export function Members() {
                                 <button
                                   key={rank.name}
                                   onClick={() => toggleRank(rank.name)}
+                                  aria-pressed={isSelected}
                                   className={`
                                     inline-flex items-center gap-2
                                     px-4 py-2.5 rounded-xl text-sm font-soft font-medium
                                     cursor-pointer transition-all duration-150
                                     active:scale-95
+                                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                                     ${isSelected 
                                       ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
                                       : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
@@ -529,7 +539,7 @@ export function Members() {
                                       ? 'bg-white/20' 
                                       : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
                                     }
-                                  `}>
+                                  `} aria-label={`${count} members`}>
                                     {count}
                                   </span>
                                 </button>
@@ -558,7 +568,7 @@ export function Members() {
                       </div>
                     </div>
 
-                    {/* Results summary */}
+                    {/* Results summary - also used for screen reader announcement */}
                     <div 
                       className={`
                         transition-all duration-150 ease-out overflow-hidden
@@ -566,15 +576,16 @@ export function Members() {
                       `}
                     >
                       <div className={`flex items-center justify-between ${hasActiveFilters ? 'border-t border-[var(--bento-border)] pt-4' : ''}`}>
-                        <p className="font-soft text-sm text-[var(--bento-text-muted)]">
+                        <p id="search-results-count" className="font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite" aria-atomic="true">
                           Showing <span className="font-semibold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
                         </p>
                         <button
                           onClick={clearFilters}
-                          className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                          className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded"
                           tabIndex={hasActiveFilters ? 0 : -1}
+                          aria-label="Clear all filters"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-3.5 h-3.5" aria-hidden="true" />
                           Clear all
                         </button>
                       </div>
@@ -587,10 +598,10 @@ export function Members() {
 
           {/* Member list */}
           {isLoading ? (
-            <ContentCard className="text-center py-16">
+            <ContentCard className="text-center py-16" aria-busy="true" aria-live="polite">
               <motion.img 
                 src={pushingMoogles} 
-                alt="Moogles working hard" 
+                alt="" 
                 className="w-40 md:w-52 mx-auto mb-4"
                 animate={{ 
                   x: [0, 4, -4, 4, 0],
@@ -601,21 +612,24 @@ export function Members() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
+                aria-hidden="true"
               />
               <motion.p 
                 className="font-accent text-2xl text-[var(--bento-text-muted)]"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
+                role="status"
               >
                 Fetching members, kupo...
               </motion.p>
             </ContentCard>
           ) : isError ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" role="alert">
               <img 
                 src={deadMoogle} 
-                alt="Moogle down" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                 Something went wrong
@@ -635,18 +649,20 @@ export function Members() {
                   shadow-lg shadow-[var(--bento-primary)]/25
                   hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
                   transition-all cursor-pointer
+                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
                 "
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
                 Try Again
               </motion.button>
             </ContentCard>
           ) : filteredMembers.length === 0 ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
               <img 
                 src={grumpyMoogle} 
-                alt="Confused moogle" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">No members found</p>
               <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
@@ -664,9 +680,10 @@ export function Members() {
                     text-[var(--bento-primary)] font-soft font-semibold
                     hover:bg-[var(--bento-primary)]/10
                     transition-all cursor-pointer
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                   "
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                   Clear filters
                 </motion.button>
               )}

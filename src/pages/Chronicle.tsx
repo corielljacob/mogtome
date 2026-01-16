@@ -61,26 +61,29 @@ function getEventKey(event: ChronicleEvent, index: number): string {
 
 /** Connection status indicator - memoized since status changes infrequently */
 const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
-  const statusConfig: Record<ConnectionStatus, { color: string; label: string; Icon: typeof Wifi }> = {
-    connected: { color: 'text-green-500', label: 'Live', Icon: Wifi },
-    connecting: { color: 'text-yellow-500', label: 'Connecting...', Icon: Wifi },
-    reconnecting: { color: 'text-yellow-500', label: 'Reconnecting...', Icon: Wifi },
-    disconnected: { color: 'text-[var(--bento-text-muted)]', label: 'Offline', Icon: WifiOff },
-    error: { color: 'text-red-500', label: 'Error', Icon: WifiOff },
+  const statusConfig: Record<ConnectionStatus, { color: string; label: string; Icon: typeof Wifi; ariaLabel: string }> = {
+    connected: { color: 'text-green-500', label: 'Live', Icon: Wifi, ariaLabel: 'Real-time connection active' },
+    connecting: { color: 'text-yellow-500', label: 'Connecting...', Icon: Wifi, ariaLabel: 'Connecting to real-time updates' },
+    reconnecting: { color: 'text-yellow-500', label: 'Reconnecting...', Icon: Wifi, ariaLabel: 'Reconnecting to real-time updates' },
+    disconnected: { color: 'text-[var(--bento-text-muted)]', label: 'Offline', Icon: WifiOff, ariaLabel: 'Disconnected from real-time updates' },
+    error: { color: 'text-red-500', label: 'Error', Icon: WifiOff, ariaLabel: 'Error connecting to real-time updates' },
   };
 
-  const { color, label, Icon } = statusConfig[status];
+  const { color, label, Icon, ariaLabel } = statusConfig[status];
 
   return (
     <div 
       className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-border)] ${color} ${
         status === 'connecting' || status === 'reconnecting' ? 'animate-pulse' : ''
       }`}
+      role="status"
+      aria-live="polite"
+      aria-label={ariaLabel}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-4 h-4" aria-hidden="true" />
       <span className="text-sm font-soft font-medium">{label}</span>
       {status === 'connected' && (
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-ping-slow" />
+        <span className="w-2 h-2 rounded-full bg-green-500 animate-ping-slow" aria-hidden="true" />
       )}
     </div>
   );
@@ -327,10 +330,10 @@ export function Chronicle() {
 
           {/* Events timeline */}
           {isLoading && historicalEvents.length === 0 ? (
-            <ContentCard className="text-center py-16">
+            <ContentCard className="text-center py-16" aria-busy="true" aria-live="polite">
               <motion.img 
                 src={flyingMoogles} 
-                alt="Moogles flying" 
+                alt="" 
                 className="w-40 md:w-52 mx-auto mb-4"
                 animate={{ 
                   y: [0, -10, 0],
@@ -341,21 +344,24 @@ export function Chronicle() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
+                aria-hidden="true"
               />
               <motion.p 
                 className="font-accent text-2xl text-[var(--bento-text-muted)]"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
+                role="status"
               >
                 Gathering the chronicles, kupo...
               </motion.p>
             </ContentCard>
           ) : isError ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" role="alert">
               <img 
                 src={deadMoogle} 
-                alt="Moogle down" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                 Something went wrong
@@ -375,18 +381,20 @@ export function Chronicle() {
                   shadow-lg shadow-[var(--bento-primary)]/25
                   hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
                   transition-all cursor-pointer
+                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
                 "
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
                 Try Again
               </motion.button>
             </ContentCard>
           ) : totalCount === 0 ? (
-            <ContentCard className="text-center py-12 md:py-16">
+            <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
               <img 
                 src={moogleMail} 
-                alt="Moogle with mail" 
+                alt="" 
                 className="w-40 h-40 mx-auto mb-5 object-contain"
+                aria-hidden="true"
               />
               <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                 No events yet
@@ -396,7 +404,7 @@ export function Chronicle() {
               </p>
             </ContentCard>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4" role="feed" aria-label="Chronicle events timeline">
               {/* Realtime events section */}
               <AnimatePresence>
                 {showRealtimeEvents && realtimeEvents.length > 0 && (
@@ -405,17 +413,20 @@ export function Chronicle() {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-4"
+                    aria-live="polite"
+                    aria-label={`${unseenCount} new live updates`}
                   >
                     <div className="flex items-center gap-3 px-2">
                       <motion.div
                         className="w-2 h-2 rounded-full bg-[var(--bento-primary)]"
                         animate={{ scale: [1, 1.5, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
+                        aria-hidden="true"
                       />
                       <span className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
                         Live Updates
                       </span>
-                      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" />
+                      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
                     </div>
                     
                     {realtimeEvents.map((event, index) => (
@@ -457,6 +468,7 @@ export function Chronicle() {
                     disabled={isFetchingNextPage}
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
+                    aria-busy={isFetchingNextPage}
                     className="
                       inline-flex items-center justify-center gap-2
                       px-6 py-3 rounded-xl
@@ -464,17 +476,18 @@ export function Chronicle() {
                       text-[var(--bento-primary)] font-soft font-semibold
                       hover:bg-[var(--bento-primary)]/5 hover:border-[var(--bento-primary)]/30
                       disabled:opacity-50 disabled:cursor-not-allowed
+                      focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                       transition-all cursor-pointer
                     "
                   >
                     {isFetchingNextPage ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                         Loading more...
                       </>
                     ) : (
                       <>
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" aria-hidden="true" />
                         Load more events
                       </>
                     )}

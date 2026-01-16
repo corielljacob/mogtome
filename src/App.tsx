@@ -34,8 +34,12 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300">
+            {/* Skip to main content link for keyboard users */}
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Navbar />
-            <main>
+            <main id="main-content" tabIndex={-1}>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
