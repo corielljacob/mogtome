@@ -48,6 +48,16 @@ function useTheme() {
       localStorage.setItem('theme', newTheme);
     }
     document.documentElement.classList.toggle('dark', isDark);
+    
+    // Update browser chrome color (iOS Safari, Android Chrome)
+    const themeColor = isDark ? '#1A1722' : '#FFF9F5';
+    let meta = document.querySelector('meta[name="theme-color"]:not([media])') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.appendChild(meta);
+    }
+    meta.content = themeColor;
   };
 
   const setTheme = (newTheme: ThemeOption) => {

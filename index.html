@@ -5,7 +5,9 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
-    <meta name="theme-color" content="#E54B4B" />
+    <!-- Theme color is set dynamically by script below -->
+    <meta name="theme-color" content="#FFF9F5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
     <title>MogTome</title>
     
     <!-- Performance: DNS prefetch for external resources -->
@@ -23,10 +25,20 @@
     <script>
       // Apply theme before React loads to prevent flash
       (function() {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
         if (isDark) document.documentElement.classList.add('dark');
+        
+        // Update theme-color meta tag for browser chrome (iOS Safari, Android Chrome)
+        var themeColor = isDark ? '#1A1722' : '#FFF9F5';
+        var meta = document.querySelector('meta[name="theme-color"]:not([media])');
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.name = 'theme-color';
+          document.head.appendChild(meta);
+        }
+        meta.content = themeColor;
       })();
     </script>
     <div id="root"></div>
