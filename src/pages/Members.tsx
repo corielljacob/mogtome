@@ -1,10 +1,9 @@
 import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { VirtualizedMemberGrid, PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
 import { FC_RANKS } from '../types';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
@@ -20,9 +19,6 @@ export function Members() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   
-  // Check for pagination mode via URL param: ?paginate=true
-  const [searchParams] = useSearchParams();
-  const usePagination = searchParams.get('paginate') === 'true';
   
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
@@ -36,7 +32,13 @@ export function Members() {
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const shouldBeCompact = window.scrollY > 120;
+          const scrollY = window.scrollY;
+          // Hysteresis: use different thresholds to prevent oscillation
+          // Enter compact at 120px, exit compact at 60px
+          const shouldBeCompact = isCompactRef.current 
+            ? scrollY > 60   // Already compact: stay compact until scroll is well above threshold
+            : scrollY > 120; // Not compact: only become compact after scrolling past threshold
+          
           if (shouldBeCompact !== isCompactRef.current) {
             isCompactRef.current = shouldBeCompact;
             setIsCompact(shouldBeCompact);
@@ -83,17 +85,32 @@ export function Members() {
     return result;
   }, [allMembers, deferredSearchQuery, deferredSelectedRanks]);
 
+  // Single-pass grouping: O(n) instead of O(n * ranks)
   const membersByRank = useMemo(() => {
+    // Build a lookup for rank order (use string key for type safety)
+    const rankOrder = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
+    
+    // Group members in a single pass
     const grouped = new Map<string, typeof filteredMembers>();
-    
-    FC_RANKS.forEach(rank => {
-      const membersInRank = filteredMembers.filter(m => m.freeCompanyRank === rank.name);
-      if (membersInRank.length > 0) {
-        grouped.set(rank.name, membersInRank);
+    for (const member of filteredMembers) {
+      const existing = grouped.get(member.freeCompanyRank);
+      if (existing) {
+        existing.push(member);
+      } else {
+        grouped.set(member.freeCompanyRank, [member]);
       }
-    });
+    }
     
-    return grouped;
+    // Sort the map by rank order (Map iteration order is insertion order)
+    const sorted = new Map<string, typeof filteredMembers>();
+    const sortedEntries = Array.from(grouped.entries()).sort(
+      ([a], [b]) => (rankOrder.get(a) ?? 999) - (rankOrder.get(b) ?? 999)
+    );
+    for (const [rank, members] of sortedEntries) {
+      sorted.set(rank, members);
+    }
+    
+    return sorted;
   }, [filteredMembers]);
 
   const toggleRank = useCallback((rankName: string) => {
@@ -526,21 +543,12 @@ export function Members() {
             </ContentCard>
           ) : (
             <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
-              {/* Use paginated grid when ?paginate=true URL param is set */}
-              {usePagination ? (
-                <PaginatedMemberGrid
-                  members={filteredMembers}
-                  membersByRank={membersByRank}
-                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
-                  pageSize={24}
-                />
-              ) : (
-                <VirtualizedMemberGrid
-                  members={filteredMembers}
-                  membersByRank={membersByRank}
-                  showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
-                />
-              )}
+              <PaginatedMemberGrid
+                members={filteredMembers}
+                membersByRank={membersByRank}
+                showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery}
+                pageSize={24}
+              />
             </div>
           )}
 

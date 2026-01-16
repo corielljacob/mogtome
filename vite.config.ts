@@ -2,11 +2,10 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // Full config options: https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), basicSsl()],
+  plugins: [react(), tailwindcss()],
   
   // PERFORMANCE: Build optimizations
   build: {
