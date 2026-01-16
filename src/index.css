@@ -62,6 +62,12 @@
       min-height: auto;
       min-width: auto;
     }
+
+    /* Toggle switches have their own sizing */
+    [role="switch"] {
+      min-height: auto;
+      min-width: auto;
+    }
   }
 
   /* Better touch feedback */

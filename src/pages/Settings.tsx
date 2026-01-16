@@ -101,15 +101,15 @@ function ToggleSwitch({ enabled, onChange, disabled = false }: {
       role="switch"
       aria-checked={enabled}
       className={`
-        relative w-12 h-7 rounded-full p-0.5 transition-colors duration-200 cursor-pointer
+        relative w-[52px] h-[31px] rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-        ${enabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-border)]'}
+        ${enabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-text-subtle)]/40'}
       `}
     >
       <motion.div 
-        className="w-6 h-6 rounded-full bg-white shadow-sm"
-        animate={{ x: enabled ? 20 : 0 }}
+        className="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-md"
+        animate={{ x: enabled ? 21 : 0 }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />
     </button>
