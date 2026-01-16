@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
@@ -214,7 +214,8 @@ function DiscordIcon({ className }: { className?: string }) {
 
 // User menu dropdown for authenticated users
 function UserMenu() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   if (isLoading || !user) return null;
@@ -283,9 +284,9 @@ function UserMenu() {
                 {/* Menu items */}
                 <div className="p-2">
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       setIsOpen(false);
-                      await logout();
+                      navigate('/auth/logout');
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
                     role="menuitem"
