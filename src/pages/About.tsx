@@ -44,6 +44,15 @@ const rankConfig: Record<string, {
     label: 'Moogle Knights',
     description: 'Our trusted officers who keep things running smoothly',
   },
+  'Paissa Trainer': { 
+    icon: Star,
+    color: 'text-emerald-500',
+    bg: 'bg-emerald-500/10',
+    gradient: 'from-emerald-400 to-teal-500',
+    glow: 'rgba(52, 211, 153, 0.3)',
+    label: 'Paissa Trainers',
+    description: 'Exemplary community members hoping to make your day a little brighter',
+  },
 };
 
 const defaultRankConfig = {

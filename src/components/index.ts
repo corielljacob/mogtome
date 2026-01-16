@@ -12,6 +12,7 @@ export { PaginatedMemberGrid } from './PaginatedMemberGrid';
 // Layout & Navigation
 export { Navbar } from './Navbar';
 export { AccessibilityMenu } from './AccessibilityMenu';
+export { ProtectedRoute } from './ProtectedRoute';
 
 // Decorative
 export { MooglePom, MooglePomCluster } from './MooglePom';
