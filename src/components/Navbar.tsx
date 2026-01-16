@@ -483,6 +483,72 @@ function KupoBadge() {
   );
 }
 
+// Knight Dashboard pill - only shows for users with knighthood
+function KnightDashboardPill() {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  // Only show if user has knighthood (permanent or temporary)
+  const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
+  
+  if (!isAuthenticated || !hasKnighthood) return null;
+  
+  const isActive = location.pathname === '/dashboard';
+  
+  return (
+    <Link
+      to="/dashboard"
+      className={`
+        pointer-events-auto h-14 flex items-center gap-2 px-4
+        bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border
+        font-soft text-sm font-semibold
+        transition-all duration-200
+        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        ${isActive
+          ? 'border-amber-500/30 text-amber-500 shadow-amber-500/10'
+          : 'border-white/10 text-[var(--bento-text-muted)] hover:text-amber-500 hover:border-amber-500/20'
+        }
+      `}
+      aria-current={isActive ? 'page' : undefined}
+    >
+      <motion.div
+        animate={{ 
+          scale: isActive ? 1 : [1, 1.1, 1],
+        }}
+        transition={{ 
+          duration: 2,
+          repeat: isActive ? 0 : Infinity,
+          repeatDelay: 4,
+        }}
+      >
+        <Crown className="w-4 h-4" />
+      </motion.div>
+      <span>Dashboard</span>
+    </Link>
+  );
+}
+
+// Mobile Knight Dashboard button for bottom nav
+function MobileKnightDashboardButton() {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
+  
+  if (!isAuthenticated || !hasKnighthood) return null;
+  
+  const isActive = location.pathname === '/dashboard';
+  
+  return (
+    <BottomNavItem
+      path="/dashboard"
+      label="Dashboard"
+      icon={Crown}
+      isActive={isActive}
+    />
+  );
+}
+
 // Bottom navigation item for mobile
 function BottomNavItem({ 
   path, 
@@ -550,6 +616,9 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
               isActive={isActive(path)}
             />
           ))}
+          
+          {/* Knight Dashboard in bottom nav (conditional) */}
+          <MobileKnightDashboardButton />
           
           {/* Settings in bottom nav */}
           <BottomNavItem
@@ -721,12 +790,18 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Right pill - Controls */}
-          <div className="pointer-events-auto h-full flex items-center gap-2 px-3 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border border-white/10">
-            <KupoBadge />
-            <LoginButton />
-            <UserMenu />
-            <SettingsButton />
+          {/* Right side - Knight Dashboard pill + Controls pill */}
+          <div className="flex items-center gap-2">
+            {/* Knight Dashboard pill - only for knights */}
+            <KnightDashboardPill />
+
+            {/* Controls pill */}
+            <div className="pointer-events-auto h-14 flex items-center gap-2 px-3 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border border-white/10">
+              <KupoBadge />
+              <LoginButton />
+              <UserMenu />
+              <SettingsButton />
+            </div>
           </div>
         </div>
       </nav>

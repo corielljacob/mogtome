@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
-import { Navbar, ProtectedRoute } from './components';
+import { Navbar, ProtectedRoute, KnightRoute } from './components';
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 
@@ -14,6 +14,7 @@ const About = lazy(() => import('./pages/About').then(m => ({ default: m.About }
 const AuthCallback = lazy(() => import('./pages/AuthCallback').then(m => ({ default: m.AuthCallback })));
 const Logout = lazy(() => import('./pages/Logout').then(m => ({ default: m.Logout })));
 const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
+const KnightDashboard = lazy(() => import('./pages/KnightDashboard').then(m => ({ default: m.KnightDashboard })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,6 +61,7 @@ function AppContent() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/logout" element={<Logout />} />
+              <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
             </Routes>
           </Suspense>
         </main>

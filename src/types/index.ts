@@ -104,6 +104,8 @@ export interface User {
   memberName: string;
   memberRank: string;
   memberPortraitUrl: string;
+  hasKnighthood: boolean;
+  hasTemporaryKnighthood: boolean;
 }
 
 // Common paginated response wrapper

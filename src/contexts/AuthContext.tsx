@@ -6,6 +6,8 @@ export interface User {
   memberName: string;
   memberRank: string;
   memberPortraitUrl: string;
+  hasKnighthood: boolean;
+  hasTemporaryKnighthood: boolean;
 }
 
 // JWT payload structure from our API
@@ -17,6 +19,8 @@ interface JwtPayload {
   memberName: string;
   memberRank: string;
   memberPortraitUrl: string;
+  hasKnighthood: boolean;
+  hasTemporaryKnighthood: boolean;
 }
 
 interface AuthState {
@@ -134,6 +138,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberName: payload.memberName,
         memberRank: payload.memberRank,
         memberPortraitUrl: payload.memberPortraitUrl,
+        hasKnighthood: payload.hasKnighthood,
+        hasTemporaryKnighthood: payload.hasTemporaryKnighthood,
       },
       isLoading: false,
       isAuthenticated: true,
