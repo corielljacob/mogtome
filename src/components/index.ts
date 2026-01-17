@@ -24,3 +24,4 @@ export { FloatingMoogles, SimpleFloatingMoogles, type MoogleConfig } from './Flo
 
 // Dialogs
 export { WelcomeDialog } from './WelcomeDialog';
+export { MissingUserDataDialog } from './MissingUserDataDialog';
