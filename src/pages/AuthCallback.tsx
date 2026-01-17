@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { setAuthToken, useAuth, getReturnUrl, clearReturnUrl } from '../contexts/AuthContext';
 import type { User } from '../contexts/AuthContext';
-import { MembershipCard, getTheme } from '../components/MembershipCard';
+import { MembershipCard } from '../components/MembershipCard';
+import { getTheme } from '../components/membershipCardThemes';
 
 import moogleWizard from '../assets/moogles/wizard moogle.webp';
 

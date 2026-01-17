@@ -24,14 +24,19 @@ export function Button({
   fun = true,
   className = '',
   disabled,
-  onDrag,
-  onDragStart,
-  onDragEnd,
-  onAnimationStart,
-  onAnimationEnd,
-  onAnimationIteration,
+  // Destructure motion event handlers to prevent conflicts with motion.button
+  onDrag: _onDrag,
+  onDragStart: _onDragStart,
+  onDragEnd: _onDragEnd,
+  onAnimationStart: _onAnimationStart,
+  onAnimationEnd: _onAnimationEnd,
+  onAnimationIteration: _onAnimationIteration,
   ...props
 }: ButtonProps) {
+  // Suppress unused variable warnings - these are intentionally destructured
+  // to prevent React's native event handlers from being passed to motion.button
+  void _onDrag; void _onDragStart; void _onDragEnd;
+  void _onAnimationStart; void _onAnimationEnd; void _onAnimationIteration;
   const [isHovered, setIsHovered] = useState(false);
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([]);
 
@@ -227,14 +232,19 @@ export function IconButton({
   fun = true,
   className = '',
   'aria-label': ariaLabel,
-  onDrag,
-  onDragStart,
-  onDragEnd,
-  onAnimationStart,
-  onAnimationEnd,
-  onAnimationIteration,
+  // Destructure motion event handlers to prevent conflicts with motion.button
+  onDrag: _onDrag,
+  onDragStart: _onDragStart,
+  onDragEnd: _onDragEnd,
+  onAnimationStart: _onAnimationStart,
+  onAnimationEnd: _onAnimationEnd,
+  onAnimationIteration: _onAnimationIteration,
   ...props
 }: IconButtonProps) {
+  // Suppress unused variable warnings - these are intentionally destructured
+  // to prevent React's native event handlers from being passed to motion.button
+  void _onDrag; void _onDragStart; void _onDragEnd;
+  void _onAnimationStart; void _onAnimationEnd; void _onAnimationIteration;
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-10 h-10',

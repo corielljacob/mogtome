@@ -19,6 +19,13 @@ export function MissingUserDataDialog() {
     }
   }, [searchParams]);
 
+  const handleClose = () => {
+    setIsOpen(false);
+    // Remove the query param from URL
+    searchParams.delete('missingUserData');
+    setSearchParams(searchParams, { replace: true });
+  };
+
   useEffect(() => {
     if (isOpen) {
       // Focus the dialog when it opens
@@ -42,14 +49,7 @@ export function MissingUserDataDialog() {
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  const handleClose = () => {
-    setIsOpen(false);
-    // Remove the query param from URL
-    searchParams.delete('missingUserData');
-    setSearchParams(searchParams, { replace: true });
-  };
+  }, [isOpen, handleClose]);
 
   return (
     <AnimatePresence>

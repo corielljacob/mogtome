@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Search, X, Info, Crown } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,101 +30,6 @@ function SettingsButton() {
     >
       <Settings className="w-5 h-5" />
     </Link>
-  );
-}
-
-// Mobile search bar for Members page - syncs with URL params
-function MobileHeaderSearch() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [isFocused, setIsFocused] = useState(false);
-  const searchQuery = searchParams.get('q') || '';
-  const [inputValue, setInputValue] = useState(searchQuery);
-  
-  // Sync input value when URL changes (e.g., back button, clear from page)
-  useEffect(() => {
-    setInputValue(searchQuery);
-  }, [searchQuery]);
-  
-  // Debounce search input to URL
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (inputValue !== searchQuery) {
-        setSearchParams(prev => {
-          const next = new URLSearchParams(prev);
-          if (inputValue.trim()) {
-            next.set('q', inputValue);
-          } else {
-            next.delete('q');
-          }
-          // Reset page when searching
-          next.delete('page');
-          return next;
-        }, { replace: true });
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [inputValue, searchQuery, setSearchParams]);
-
-  const handleClear = () => {
-    setInputValue('');
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.delete('q');
-      next.delete('page');
-      return next;
-    }, { replace: true });
-  };
-
-  return (
-    <div className={`
-      relative flex-1 min-w-0 transition-all duration-200
-      ${isFocused ? 'scale-[1.02]' : ''}
-    `}>
-      <div className={`
-        absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none
-        transition-colors duration-200
-        ${isFocused ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'}
-      `}>
-        <Search className="w-4 h-4" />
-      </div>
-      <input
-        type="search"
-        placeholder="Search members..."
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        className={`
-          w-full pl-10 pr-10 py-2.5 text-sm font-soft
-          bg-[var(--bento-bg)]
-          border-2 rounded-xl
-          text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
-          focus:outline-none
-          transition-all duration-200
-          ${isFocused 
-            ? 'border-[var(--bento-primary)] shadow-lg shadow-[var(--bento-primary)]/10' 
-            : 'border-[var(--bento-border)]'
-          }
-        `}
-        aria-label="Search members"
-      />
-      <AnimatePresence>
-        {inputValue && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={handleClear}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-            aria-label="Clear search"
-          >
-            <span className="p-1.5 rounded-lg bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 active:bg-[var(--bento-primary)]/30 transition-colors">
-              <X className="w-3.5 h-3.5 text-[var(--bento-primary)]" />
-            </span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
 
@@ -665,8 +570,6 @@ export function Navbar() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const isMembersPage = location.pathname === '/members';
-
   return (
     <>
       {/* Mobile floating header */}
@@ -674,46 +577,23 @@ export function Navbar() {
         className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.375rem)] sm:pt-[calc(env(safe-area-inset-top)+0.5rem)] px-2 sm:px-3 pointer-events-none"
         aria-label="Mobile header"
       >
-        {/* Single unified header bar on Members page with search */}
-        {isMembersPage ? (
-          <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 max-w-full overflow-hidden">
-            {/* Compact logo */}
-            <Link 
-              to="/" 
-              className="flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl"
-              aria-label="MogTome - Go to home page"
-            >
-              <LogoIcon hovered={false} />
-            </Link>
-            
-            {/* Search input */}
-            <MobileHeaderSearch />
-            
-            {/* Auth controls */}
-            <div className="flex-shrink-0 flex items-center gap-1">
-              <LoginButton />
-              <UserMenu />
-            </div>
-          </div>
-        ) : (
-          /* Default: Split logo left, controls right */
-          <div className="flex items-center justify-between">
-            {/* Logo - floating pill */}
-            <Link 
-              to="/" 
-              className="pointer-events-auto flex items-center gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
-              aria-label="MogTome - Go to home page"
-            >
-              <LogoIcon hovered={false} />
-            </Link>
+        {/* Default: Split logo left, controls right */}
+        <div className="flex items-center justify-between">
+          {/* Logo - floating pill */}
+          <Link 
+            to="/" 
+            className="pointer-events-auto flex items-center gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+            aria-label="MogTome - Go to home page"
+          >
+            <LogoIcon hovered={false} />
+          </Link>
 
-            {/* Right side controls - floating pill */}
-            <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
-              <LoginButton />
-              <UserMenu />
-            </div>
+          {/* Right side controls - floating pill */}
+          <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
+            <LoginButton />
+            <UserMenu />
           </div>
-        )}
+        </div>
       </nav>
 
       {/* Desktop floating pill navbar - 3 separate pills */}

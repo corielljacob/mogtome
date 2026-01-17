@@ -23,6 +23,11 @@ export function WelcomeDialog() {
     }
   }, []);
 
+  const handleClose = () => {
+    localStorage.setItem(STORAGE_KEY, 'true');
+    setIsOpen(false);
+  };
+
   useEffect(() => {
     if (isOpen) {
       // Focus the dialog when it opens
@@ -46,12 +51,7 @@ export function WelcomeDialog() {
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  const handleClose = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
-    setIsOpen(false);
-  };
+  }, [isOpen, handleClose]);
 
   const handleNext = () => {
     if (step < 2) {

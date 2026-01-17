@@ -4,7 +4,8 @@ export { Input, Textarea, Select } from './Input';
 export { Dropdown, type DropdownOption } from './Dropdown';
 export { Card, CardBody, CardTitle, CardActions, CardHeader } from './Card';
 export { ContentCard } from './ContentCard';
-export { MembershipCard, getTheme, rankThemes, defaultTheme, type RankTheme, type MembershipCardProps } from './MembershipCard';
+export { MembershipCard, type MembershipCardProps } from './MembershipCard';
+export { getTheme, rankThemes, defaultTheme, type RankTheme } from './membershipCardThemes';
 
 // Domain Components
 export { MemberCard, MemberCardSkeleton, MemberCardCompact } from './MemberCard';

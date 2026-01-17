@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, X } from 'lucide-react';
-import { MembershipCard, getTheme } from '../components/MembershipCard';
+import { MembershipCard } from '../components/MembershipCard';
+import { getTheme } from '../components/membershipCardThemes';
 import { ContentCard } from '../components';
 
 // Mock user data for testing
