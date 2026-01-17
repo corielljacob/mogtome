@@ -16,11 +16,11 @@ import {
   User,
   ChevronRight,
   Check,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
-import { ContentCard } from '../components';
+import { ContentCard, MembershipCard } from '../components';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme Management
@@ -415,32 +415,28 @@ function AccountSection() {
   }
 
   return (
-    <ContentCard>
+    <ContentCard className="overflow-visible">
       <SectionHeader icon={User} title="Account" />
       
-      <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-[var(--bento-bg)]">
-        <img 
-          src={user.memberPortraitUrl} 
-          alt="" 
-          className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl object-cover shadow-md"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)] truncate">
-            {user.memberName}
-          </p>
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] truncate">
-            {user.memberRank}
-          </p>
-          <p className="text-[10px] sm:text-xs text-[var(--bento-text-subtle)] mt-0.5 sm:mt-1">
-            Connected via Discord
-          </p>
-        </div>
+      {/* MogTome Membership Card */}
+      <MembershipCard
+        name={user.memberName}
+        rank={user.memberRank}
+        avatarUrl={user.memberPortraitUrl}
+        characterId={user.memberId}
+        memberSince={user.createdAt ? new Date(user.createdAt) : undefined}
+      />
+      
+      {/* Connected status */}
+      <div className="flex items-center justify-center gap-2 text-xs text-[var(--bento-text-muted)] mt-2">
+        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+        <span>Connected via Discord</span>
       </div>
 
-      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[var(--bento-border)]">
+      <div className="mt-4 pt-4 border-t border-[var(--bento-border)]">
         <button
           onClick={logout}
-          className="flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none w-full"
+          className="flex items-center justify-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none w-full"
         >
           <LogOut className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
           <span className="font-soft font-semibold text-sm sm:text-base">Sign Out</span>

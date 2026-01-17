@@ -15,6 +15,7 @@ const AuthCallback = lazy(() => import('./pages/AuthCallback').then(m => ({ defa
 const Logout = lazy(() => import('./pages/Logout').then(m => ({ default: m.Logout })));
 const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
 const KnightDashboard = lazy(() => import('./pages/KnightDashboard').then(m => ({ default: m.KnightDashboard })));
+const Debug = lazy(() => import('./pages/Debug').then(m => ({ default: m.Debug })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +63,7 @@ function AppContent() {
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/logout" element={<Logout />} />
               <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
+              <Route path="/debug" element={<Debug />} />
             </Routes>
           </Suspense>
         </main>

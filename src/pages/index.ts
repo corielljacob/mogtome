@@ -5,3 +5,4 @@ export { About } from './About';
 export { AuthCallback } from './AuthCallback';
 export { Settings } from './Settings';
 export { KnightDashboard } from './KnightDashboard';
+export { Debug } from './Debug';
