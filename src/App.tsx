@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
-import { Navbar, ProtectedRoute, KnightRoute } from './components';
+import { Navbar, ProtectedRoute, KnightRoute, WelcomeDialog } from './components';
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 
@@ -46,6 +46,9 @@ function AppContent() {
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div className="min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300 overflow-x-hidden">
+        
+        {/* First-visit welcome dialog */}
+        <WelcomeDialog />
         
         {/* Skip to main content link for keyboard users */}
         <a href="#main-content" className="skip-link">

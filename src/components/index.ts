@@ -21,3 +21,6 @@ export { MooglePom, MooglePomCluster } from './MooglePom';
 export { StoryDivider } from './StoryDivider';
 export { FloatingSparkles } from './FloatingSparkles';
 export { FloatingMoogles, SimpleFloatingMoogles, type MoogleConfig } from './FloatingMoogles';
+
+// Dialogs
+export { WelcomeDialog } from './WelcomeDialog';
