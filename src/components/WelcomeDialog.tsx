@@ -16,7 +16,9 @@ export function WelcomeDialog() {
   useEffect(() => {
     // Check if user has seen welcome dialog before
     const hasSeenWelcome = localStorage.getItem(STORAGE_KEY);
-    if (!hasSeenWelcome) {
+    // Skip on mobile devices
+    const isMobile = window.innerWidth < 768;
+    if (!hasSeenWelcome && !isMobile) {
       // Small delay to let the page load first
       const timer = setTimeout(() => setIsOpen(true), 800);
       return () => clearTimeout(timer);
@@ -54,7 +56,7 @@ export function WelcomeDialog() {
   }, [isOpen, handleClose]);
 
   const handleNext = () => {
-    if (step < 2) {
+    if (step < 1) {
       setStep(step + 1);
     } else {
       handleClose();
@@ -65,17 +67,17 @@ export function WelcomeDialog() {
     {
       title: "Welcome to MogTome!",
       content: (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-center gap-2 text-[var(--bento-secondary)]">
-            <PartyPopper className="w-5 h-5" />
-            <span className="font-accent text-xl">Grand Opening, kupo!</span>
-            <PartyPopper className="w-5 h-5 scale-x-[-1]" />
+            <PartyPopper className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-accent text-lg sm:text-xl">Grand Opening, kupo!</span>
+            <PartyPopper className="w-4 h-4 sm:w-5 sm:h-5 scale-x-[-1]" />
           </div>
-          <p className="text-[var(--bento-text)] leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--bento-text)] leading-relaxed">
             We're so excited you're here! MogTome is the cozy digital home for our Free Company, 
             <span className="font-semibold text-[var(--bento-primary)]"> Kupo Life!</span>
           </p>
-          <p className="text-[var(--bento-text-muted)] leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--bento-text-muted)] leading-relaxed">
             This is a place where our moogle family can gather, share adventures, 
             and keep up with everything happening in our little corner of Eorzea.
           </p>
@@ -83,54 +85,23 @@ export function WelcomeDialog() {
       ),
     },
     {
-      title: "A Message From Us",
-      content: (
-        <div className="space-y-5">
-          {/* Joint message card */}
-          <div className="p-5 rounded-2xl bg-[var(--bento-bg)]/60 border border-[var(--bento-primary)]/10">
-            <p className="text-[var(--bento-text)] leading-relaxed mb-4">
-              We've been working hard to build this cozy little corner of the internet for our FC family. 
-              It's been a labor of love, and we're so excited to finally share it with you!
-            </p>
-            <p className="text-[var(--bento-text)] leading-relaxed mb-4">
-              Whether you're here to check out our members, catch up on FC happenings, or just hang out — 
-              we hope MogTome feels like home.
-            </p>
-            <p className="text-[var(--bento-text)] leading-relaxed mb-4">
-              This is just the beginning! We have a lot more planned for MogTome, so stay tuned~
-            </p>
-            <p className="text-[var(--bento-text-muted)] leading-relaxed">
-              Thank you for being part of Kupo Life. We couldn't do this without you, kupo~
-            </p>
-          </div>
-
-          {/* Signature - handwritten style */}
-          <div className="text-center pt-2">
-            <p className="font-accent text-2xl text-[var(--bento-primary)]">
-              — Plane & Agility
-            </p>
-          </div>
-        </div>
-      ),
-    },
-    {
       title: "Ready to Explore?",
       content: (
-        <div className="space-y-4 text-center">
+        <div className="space-y-3 sm:space-y-4 text-center">
           <div className="flex justify-center">
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Heart className="w-12 h-12 text-[var(--bento-primary)] fill-[var(--bento-primary)]/30" />
+              <Heart className="w-10 h-10 sm:w-12 sm:h-12 text-[var(--bento-primary)] fill-[var(--bento-primary)]/30" />
             </motion.div>
           </div>
-          <p className="text-[var(--bento-text)] leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--bento-text)] leading-relaxed">
             Browse our <span className="font-semibold text-[var(--bento-primary)]">Members</span> page to see our FC family, 
             check out the <span className="font-semibold text-[var(--bento-secondary)]">Chronicle</span> for updates, 
             or just enjoy the vibes!
           </p>
-          <p className="text-[var(--bento-text-muted)] font-accent text-lg">
+          <p className="text-[var(--bento-text-muted)] font-accent text-base sm:text-lg">
             Thank you for being part of Kupo Life! ✧
           </p>
         </div>
@@ -142,7 +113,7 @@ export function WelcomeDialog() {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -164,30 +135,30 @@ export function WelcomeDialog() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="welcome-title"
-            className="relative w-full max-w-lg bg-[var(--bento-card)] rounded-3xl shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/10 overflow-hidden"
+            className="relative w-full max-w-lg max-h-[90vh] max-h-[90dvh] overflow-y-auto bg-[var(--bento-card)] rounded-2xl sm:rounded-3xl shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/10"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             {/* Decorative header gradient */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[var(--bento-primary)]/10 via-[var(--bento-accent)]/5 to-transparent pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-b from-[var(--bento-primary)]/10 via-[var(--bento-accent)]/5 to-transparent pointer-events-none" />
 
-            {/* Floating sparkles decoration */}
-            <div className="absolute top-4 left-6 opacity-60">
+            {/* Floating sparkles decoration - hidden on very small screens */}
+            <div className="absolute top-3 sm:top-4 left-4 sm:left-6 opacity-60 hidden xs:block">
               <motion.div
                 animate={{ rotate: [0, 15, 0], scale: [1, 1.1, 1] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkles className="w-5 h-5 text-[var(--bento-secondary)]" />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-secondary)]" />
               </motion.div>
             </div>
-            <div className="absolute top-20 right-16 opacity-60 pointer-events-none">
+            <div className="absolute top-16 sm:top-20 right-12 sm:right-16 opacity-60 pointer-events-none hidden xs:block">
               <motion.div
                 animate={{ rotate: [0, -15, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
               >
-                <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
               </motion.div>
             </div>
 
@@ -195,20 +166,20 @@ export function WelcomeDialog() {
             <button
               ref={closeButtonRef}
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-[var(--bento-bg)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-2 rounded-full hover:bg-[var(--bento-bg)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
               aria-label="Close welcome dialog"
             >
               <X className="w-5 h-5 text-[var(--bento-text-muted)]" />
             </button>
 
             {/* Content */}
-            <div className="relative p-6 pt-8 sm:p-8 sm:pt-10">
+            <div className="relative px-4 py-5 pt-6 sm:p-6 sm:pt-8 md:p-8 md:pt-10">
               {/* Moogle mascot */}
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-3 sm:mb-4">
                 <motion.img
                   src={mailMoogle}
                   alt="A moogle delivering a welcome message"
-                  className="w-24 sm:w-28 drop-shadow-lg"
+                  className="w-20 sm:w-24 md:w-28 drop-shadow-lg"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -219,7 +190,7 @@ export function WelcomeDialog() {
               <div>
                 <h2
                   id="welcome-title"
-                  className="text-2xl sm:text-3xl font-display font-bold text-center text-[var(--bento-text)] mb-5"
+                  className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-center text-[var(--bento-text)] mb-3 sm:mb-4 md:mb-5"
                 >
                   {steps[step].title}
                 </h2>
@@ -244,19 +215,19 @@ export function WelcomeDialog() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex justify-center gap-3 mt-4">
+              <div className="flex justify-center gap-2 sm:gap-3 mt-3 sm:mt-4">
                 {step > 0 && (
                   <Button
                     variant="ghost"
                     onClick={() => setStep(step - 1)}
-                    className="px-6"
+                    className="px-4 sm:px-6 text-sm sm:text-base"
                   >
                     Back
                   </Button>
                 )}
                 <Button
                   onClick={handleNext}
-                  className="px-8 gap-2 group"
+                  className="px-6 sm:px-8 gap-2 group text-sm sm:text-base"
                 >
                   {step === steps.length - 1 ? (
                     <>
@@ -276,7 +247,7 @@ export function WelcomeDialog() {
               {step < steps.length - 1 && (
                 <button
                   onClick={handleClose}
-                  className="block mx-auto mt-4 text-sm text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] transition-colors underline-offset-4 hover:underline"
+                  className="block mx-auto mt-3 sm:mt-4 text-xs sm:text-sm text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] transition-colors underline-offset-4 hover:underline"
                 >
                   Skip for now
                 </button>
