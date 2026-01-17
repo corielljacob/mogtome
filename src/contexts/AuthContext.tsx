@@ -8,6 +8,8 @@ export interface User {
   memberPortraitUrl: string;
   hasKnighthood: boolean;
   hasTemporaryKnighthood: boolean;
+  /** Date of user's first MogTome login (ISO string), set by backend */
+  firstLoginDate?: string;
 }
 
 // JWT payload structure from our API
@@ -21,6 +23,8 @@ interface JwtPayload {
   memberPortraitUrl: string;
   hasKnighthood: boolean;
   hasTemporaryKnighthood: boolean;
+  /** Date of user's first MogTome login (ISO string) */
+  firstLoginDate?: string;
 }
 
 interface AuthState {
@@ -140,6 +144,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberPortraitUrl: payload.memberPortraitUrl,
         hasKnighthood: payload.hasKnighthood,
         hasTemporaryKnighthood: payload.hasTemporaryKnighthood,
+        firstLoginDate: payload.firstLoginDate,
       },
       isLoading: false,
       isAuthenticated: true,

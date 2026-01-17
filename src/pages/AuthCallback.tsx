@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo, memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { setAuthToken, useAuth, getReturnUrl, clearReturnUrl } from '../contexts/AuthContext';
 import type { User } from '../contexts/AuthContext';
 import { MembershipCard, getTheme } from '../components/MembershipCard';
@@ -240,23 +240,24 @@ function ProcessingScreen() {
 
 // Check if this is a first-time user
 function isFirstTimeUser(user: User): boolean {
-  // Check local storage for previous logins
+  // Check local storage for previous logins on this device
   const hasLoggedInBefore = localStorage.getItem('mogtome_has_logged_in');
   if (hasLoggedInBefore) {
     return false;
   }
   
   // No local storage means they haven't logged in on this device before
-  // Check if their account was created today (if date is available)
-  if (user.createdAt) {
-    const createdDate = new Date(user.createdAt);
+  // Check if their first login date is today (set by backend on first-ever login)
+  if (user.firstLoginDate) {
+    const firstLogin = new Date(user.firstLoginDate);
     const today = new Date();
-    const isToday = createdDate.toDateString() === today.toDateString();
+    const isToday = firstLogin.toDateString() === today.toDateString();
     if (isToday) {
       return true;
     }
   } else {
-    // No createdAt date available AND no local storage = treat as first time
+    // No firstLoginDate available AND no local storage = treat as first time
+    // (Backend hasn't set it yet, so this must be their first login)
     return true;
   }
   
@@ -436,8 +437,7 @@ function FirstTimeWelcome({
               name={user.memberName || 'Adventurer'}
               rank={user.memberRank || 'Member'}
               avatarUrl={user.memberPortraitUrl || ''}
-              characterId={user.memberId}
-              memberSince={user.createdAt}
+              memberSince={user.firstLoginDate}
               compact
             />
           </motion.div>
@@ -466,7 +466,11 @@ function FirstTimeWelcome({
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
-              ✨ You're officially one of us, kupo! ✨
+              <span className="inline-flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Welcome to MogTome, kupo!</span>
+                <Sparkles className="w-4 h-4" />
+              </span>
             </motion.p>
           )}
         </AnimatePresence>
@@ -499,7 +503,10 @@ function FirstTimeWelcome({
                 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
               "
             >
-              Let's go, kupo! →
+              <span className="inline-flex items-center gap-2">
+                Let's go, kupo!
+                <ArrowRight className="w-4 h-4" />
+              </span>
             </motion.button>
           )}
         </AnimatePresence>
@@ -568,8 +575,7 @@ function ReturningUserWelcome({
           name={user.memberName || 'Adventurer'}
           rank={user.memberRank || 'Member'}
           avatarUrl={user.memberPortraitUrl || ''}
-          characterId={user.memberId}
-          memberSince={user.createdAt}
+          memberSince={user.firstLoginDate}
           compact
         />
       </motion.div>

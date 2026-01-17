@@ -423,8 +423,7 @@ function AccountSection() {
         name={user.memberName}
         rank={user.memberRank}
         avatarUrl={user.memberPortraitUrl}
-        characterId={user.memberId}
-        memberSince={user.createdAt ? new Date(user.createdAt) : undefined}
+        memberSince={user.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
       />
       
       {/* Connected status */}
