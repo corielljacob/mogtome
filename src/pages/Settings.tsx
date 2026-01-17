@@ -110,10 +110,13 @@ function ToggleSwitch({ enabled, onChange, disabled = false }: {
         ${enabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-text-subtle)]/40'}
       `}
     >
-      <motion.div 
-        className="absolute top-[2px] left-[2px] w-[22px] h-[22px] sm:w-[27px] sm:h-[27px] rounded-full bg-white shadow-md"
-        animate={{ x: enabled ? (typeof window !== 'undefined' && window.innerWidth < 640 ? 18 : 21) : 0 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+      {/* Using CSS transform instead of motion to avoid reduced-motion conflicts */}
+      <div 
+        className={`
+          absolute top-[2px] left-[2px] w-[22px] h-[22px] sm:w-[27px] sm:h-[27px] rounded-full bg-white shadow-md
+          transition-transform duration-200 ease-out
+          ${enabled ? 'translate-x-[18px] sm:translate-x-[21px]' : 'translate-x-0'}
+        `}
       />
     </button>
   );
@@ -273,7 +276,23 @@ const ACCESSIBILITY_OPTIONS: AccessibilityOption[] = [
 function AccessibilitySection() {
   const { settings, toggleSetting, updateSetting } = useAccessibility();
   const [colorblindExpanded, setColorblindExpanded] = useState(false);
-  const isDarkMode = document.documentElement.classList.contains('dark');
+  const [isDarkMode, setIsDarkMode] = useState(() => 
+    document.documentElement.classList.contains('dark')
+  );
+
+  // Watch for dark mode class changes on the document element
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.attributeName === 'class') {
+          setIsDarkMode(document.documentElement.classList.contains('dark'));
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <ContentCard>

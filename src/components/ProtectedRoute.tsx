@@ -107,28 +107,31 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
               </motion.p>
 
               {/* Discord login button */}
-              <motion.button
-                onClick={login}
-                className="
-                  group w-full flex items-center justify-center gap-3
-                  px-6 py-4 rounded-2xl
-                  bg-[#5865F2] text-white
-                  font-soft font-semibold text-lg
-                  shadow-lg shadow-[#5865F2]/30
-                  hover:bg-[#4752C4] hover:shadow-xl hover:shadow-[#5865F2]/40
-                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-                  transition-all duration-200 cursor-pointer
-                "
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
               >
-                <DiscordIcon className="w-6 h-6" />
-                <span>Login with Discord</span>
-                <LogIn className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </motion.button>
+                <motion.button
+                  onClick={login}
+                  className="
+                    group w-full flex items-center justify-center gap-3
+                    px-6 py-4 rounded-2xl
+                    bg-[#5865F2] text-white
+                    font-soft font-semibold text-lg
+                    shadow-lg shadow-[#5865F2]/30
+                    hover:bg-[#4752C4] hover:shadow-xl hover:shadow-[#5865F2]/40
+                    focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
+                    transition-all duration-200 cursor-pointer
+                  "
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <DiscordIcon className="w-6 h-6" />
+                  <span>Login with Discord</span>
+                  <LogIn className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                </motion.button>
+              </motion.div>
 
               {/* Feature hints */}
               <motion.div

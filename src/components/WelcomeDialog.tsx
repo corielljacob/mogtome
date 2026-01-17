@@ -227,12 +227,12 @@ export function WelcomeDialog() {
               </div>
 
               {/* Step indicators */}
-              <div className="flex justify-center gap-2 mt-6 mb-4">
+              <div className="flex justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 mb-3 sm:mb-4">
                 {steps.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setStep(i)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${
                       i === step
                         ? 'bg-[var(--bento-primary)] scale-110'
                         : 'bg-[var(--bento-border)] hover:bg-[var(--bento-text-muted)]/30'
