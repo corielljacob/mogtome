@@ -96,6 +96,9 @@ export function WelcomeDialog() {
               Whether you're here to check out our members, catch up on FC happenings, or just hang out — 
               we hope MogTome feels like home.
             </p>
+            <p className="text-[var(--bento-text)] leading-relaxed mb-4">
+              This is just the beginning! We have a lot more planned for MogTome, so stay tuned~
+            </p>
             <p className="text-[var(--bento-text-muted)] leading-relaxed">
               Thank you for being part of Kupo Life. We couldn't do this without you, kupo~
             </p>
@@ -179,7 +182,7 @@ export function WelcomeDialog() {
                 <Sparkles className="w-5 h-5 text-[var(--bento-secondary)]" />
               </motion.div>
             </div>
-            <div className="absolute top-8 right-8 opacity-60">
+            <div className="absolute top-20 right-16 opacity-60 pointer-events-none">
               <motion.div
                 animate={{ rotate: [0, -15, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
