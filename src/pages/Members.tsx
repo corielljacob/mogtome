@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } f
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, ArrowUpDown } from 'lucide-react';
+import { Search, RefreshCw, Users, X, Heart, Sparkles, ChevronDown, Star, ArrowUpDown, ArrowUp } from 'lucide-react';
 import { membersApi } from '../api/members';
 import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, Dropdown } from '../components';
 import { FC_RANKS } from '../types';
@@ -259,18 +259,18 @@ export function Members() {
       <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />
       <FloatingSparkles minimal />
 
-      <div className="relative py-8 md:py-12 px-4 z-10">
+      <div className="relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10">
         <div className="max-w-7xl mx-auto">
           {/* Page header - storybook style */}
           <motion.header 
-            className="text-center mb-10"
+            className="text-center mb-6 sm:mb-10"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             {/* Decorative opener */}
             <motion.p
-              className="font-accent text-xl md:text-2xl text-[var(--bento-secondary)] mb-4"
+              className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-secondary)] mb-3 sm:mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -278,24 +278,24 @@ export function Members() {
               ~ The ones who make it special ~
             </motion.p>
 
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Star className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20 text-[var(--bento-primary)] text-sm font-soft font-medium">
-                <Users className="w-4 h-4" />
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20 text-[var(--bento-primary)] text-xs sm:text-sm font-soft font-medium">
+                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {allMembers.length} members
               </span>
-              <Star className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3">
               <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
                 The Family
               </span>
             </h1>
 
-            <p className="text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-4">
+            <p className="text-base sm:text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-3 sm:mb-4">
               Our wonderful FC crew
-              <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
             </p>
 
             <StoryDivider className="mx-auto" />
@@ -306,14 +306,14 @@ export function Members() {
           {/* On desktop: sticky with full search + filter bar */}
           <div 
             ref={searchContainerRef}
-            className={`sticky z-30 mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-4 md:mx-8' : ''}`}
+            className={`sticky z-30 mb-6 sm:mb-8 pt-2 transition-[margin] duration-200 ${isCompact ? 'mx-2 sm:mx-4 md:mx-8' : ''}`}
             style={{ top: 'calc(4.5rem + var(--safe-area-inset-top, 0px))' }}
           >
                 <div 
                   className={`
                     relative bg-[var(--bento-card)]/95
                     backdrop-blur-xl border border-[var(--bento-primary)]/10 rounded-2xl
-                    transition-all duration-200 ${isCompact ? 'p-3 shadow-lg' : 'p-4 md:p-6 shadow-xl shadow-[var(--bento-primary)]/5'}
+                    transition-all duration-200 ${isCompact ? 'p-2.5 sm:p-3 shadow-lg' : 'p-3 sm:p-4 md:p-6 shadow-xl shadow-[var(--bento-primary)]/5'}
                   `}
                 >
               {/* Decorative background blob - desktop only */}
@@ -454,19 +454,19 @@ export function Members() {
               {/* Mobile: Tappable filter/sort toggle (search is in header) */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="relative flex md:hidden items-center gap-3 w-full text-left cursor-pointer"
+                className="relative flex md:hidden items-center gap-2.5 sm:gap-3 w-full text-left cursor-pointer"
                 aria-expanded={showFilters}
                 aria-controls="mobile-filter-panel"
               >
                 {/* Filter icon badge */}
-                <div className="w-9 h-9 bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[var(--bento-primary)]/25 rounded-xl">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[var(--bento-primary)]/25 rounded-xl">
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 </div>
                 
                 {/* Filter info */}
                 <div className="flex-1 min-w-0">
-                  <p className="font-display font-semibold text-sm text-[var(--bento-text)]">Filters & Sort</p>
-                  <p className="text-xs text-[var(--bento-text-muted)] font-accent truncate">
+                  <p className="font-display font-semibold text-xs sm:text-sm text-[var(--bento-text)]">Filters & Sort</p>
+                  <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] font-accent truncate">
                     {hasActiveFilters 
                       ? `${filteredMembers.length} of ${allMembers.length} members` 
                       : 'Tap to filter by rank, kupo~'
@@ -475,14 +475,14 @@ export function Members() {
                 </div>
                 
                 {/* Active filter badges + chevron */}
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
                   {searchQuery && (
-                    <span className="px-2 py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
+                    <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
                       <Search className="w-3 h-3" />
                     </span>
                   )}
                   {selectedRanks.length > 0 && (
-                    <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
+                    <span className="flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] text-xs font-soft font-semibold">
                       {selectedRanks.length}
                     </span>
                   )}
@@ -490,7 +490,7 @@ export function Members() {
                     animate={{ rotate: showFilters ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChevronDown className="w-5 h-5 text-[var(--bento-text-muted)]" />
+                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-text-muted)]" />
                   </motion.div>
                 </div>
               </button>
@@ -507,104 +507,127 @@ export function Members() {
                 `}
               >
                 <div className="overflow-hidden">
-                  <div className="pt-5">
-                    {/* Sort dropdown - always visible when panel is open */}
-                    <div className="mb-4">
-                      <Dropdown
-                        options={SORT_OPTIONS}
-                        value={validSortBy}
-                        onChange={setSortBy}
-                        icon={<ArrowUpDown className="w-4 h-4" />}
-                        className="w-full"
-                        aria-label="Sort members by"
-                      />
-                    </div>
-
-                    {/* Rank filter header */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
-                      <span className="font-soft font-medium text-[var(--bento-text)] text-sm">
-                        Filter by Rank
-                      </span>
-                      {selectedRanks.length > 0 && (
-                        <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.25rem] text-center">
-                          {selectedRanks.length}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Rank chips */}
-                    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
-                      {FC_RANKS.map((rank) => {
-                        const count = rankCounts[rank.name] || 0;
-                        const isSelected = selectedRanks.includes(rank.name);
-                        return (
-                          <button
-                            key={rank.name}
-                            onClick={() => toggleRank(rank.name)}
-                            aria-pressed={isSelected}
-                            className={`
-                              inline-flex items-center gap-2
-                              px-3 py-2 rounded-xl text-sm font-soft font-medium
-                              cursor-pointer transition-all duration-150
-                              active:scale-95
-                              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                              ${isSelected 
-                                ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
-                                : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
-                              }
-                            `}
-                          >
-                            <span>{rank.name}</span>
-                            <span className={`
-                              text-xs px-1.5 py-0.5 rounded-full transition-colors duration-150
-                              ${isSelected 
-                                ? 'bg-white/20' 
-                                : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
-                              }
-                            `} aria-label={`${count} members`}>
-                              {count}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Clear all button */}
-                    {selectedRanks.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-[var(--bento-border)]">
-                        <button
-                          onClick={() => setSelectedRanks([])}
-                          className="text-sm font-soft text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                          Clear rank filters
-                        </button>
+                  <div className="pt-6">
+                    {/* Two-column layout for sort + filter sections */}
+                    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                      {/* Sort section */}
+                      <div className="lg:w-56 flex-shrink-0">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[var(--bento-secondary)]/20 to-[var(--bento-primary)]/10 flex items-center justify-center">
+                            <ArrowUpDown className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
+                          </div>
+                          <span className="font-soft font-semibold text-[var(--bento-text)] text-sm">
+                            Sort by
+                          </span>
+                        </div>
+                        <Dropdown
+                          options={SORT_OPTIONS}
+                          value={validSortBy}
+                          onChange={setSortBy}
+                          icon={<ArrowUpDown className="w-4 h-4" />}
+                          className="w-full"
+                          aria-label="Sort members by"
+                        />
                       </div>
-                    )}
+
+                      {/* Filter section */}
+                      <div className="flex-1">
+                        {/* Rank filter header */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/10 flex items-center justify-center">
+                            <Sparkles className="w-3.5 h-3.5 text-[var(--bento-primary)]" />
+                          </div>
+                          <span className="font-soft font-semibold text-[var(--bento-text)] text-sm">
+                            Filter by Rank
+                          </span>
+                          {selectedRanks.length > 0 && (
+                            <motion.span 
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.5rem] text-center"
+                            >
+                              {selectedRanks.length}
+                            </motion.span>
+                          )}
+                          {selectedRanks.length > 0 && (
+                            <button
+                              onClick={() => setSelectedRanks([])}
+                              className="ml-auto text-xs font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] transition-colors cursor-pointer flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-[var(--bento-primary)]/5"
+                            >
+                              <X className="w-3 h-3" />
+                              Clear
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Rank chips */}
+                        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
+                          {FC_RANKS.map((rank) => {
+                            const count = rankCounts[rank.name] || 0;
+                            const isSelected = selectedRanks.includes(rank.name);
+                            return (
+                              <motion.button
+                                key={rank.name}
+                                onClick={() => toggleRank(rank.name)}
+                                aria-pressed={isSelected}
+                                whileHover={{ scale: 1.02, y: -1 }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`
+                                  inline-flex items-center gap-2
+                                  px-3.5 py-2.5 rounded-xl text-sm font-soft font-medium
+                                  cursor-pointer transition-all duration-150
+                                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                  ${isSelected 
+                                    ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
+                                    : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/40 hover:bg-[var(--bento-primary)]/5 hover:shadow-md text-[var(--bento-text)]'
+                                  }
+                                `}
+                              >
+                                <span>{rank.name}</span>
+                                <span className={`
+                                  text-xs px-2 py-0.5 rounded-full transition-colors duration-150
+                                  ${isSelected 
+                                    ? 'bg-white/25' 
+                                    : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)]'
+                                  }
+                                `} aria-label={`${count} members`}>
+                                  {count}
+                                </span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Results summary - also used for screen reader announcement */}
-                    <div 
-                      className={`
-                        transition-all duration-150 ease-out overflow-hidden
-                        ${hasActiveFilters ? 'opacity-100 max-h-20 pt-4 mt-4' : 'opacity-0 max-h-0 pt-0 mt-0'}
-                      `}
+                    <motion.div 
+                      initial={false}
+                      animate={{ 
+                        height: hasActiveFilters ? 'auto' : 0,
+                        opacity: hasActiveFilters ? 1 : 0,
+                        marginTop: hasActiveFilters ? 24 : 0,
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
                     >
-                      <div className={`flex items-center justify-between ${hasActiveFilters ? 'border-t border-[var(--bento-border)] pt-4' : ''}`}>
-                        <p id="search-results-count" className="font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite" aria-atomic="true">
-                          Showing <span className="font-semibold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
+                      <div className="flex items-center justify-between pt-5 border-t border-[var(--bento-border)]">
+                        <p id="search-results-count" className="font-soft text-sm text-[var(--bento-text)]" aria-live="polite" aria-atomic="true">
+                          Showing <span className="font-bold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
                         </p>
-                        <button
+                        <motion.button
                           onClick={clearFilters}
-                          className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="text-sm font-soft font-semibold text-white bg-gradient-to-r from-[var(--bento-primary)]/80 to-[var(--bento-secondary)]/80 hover:from-[var(--bento-primary)] hover:to-[var(--bento-secondary)] px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
                           tabIndex={hasActiveFilters ? 0 : -1}
                           aria-label="Clear all filters"
                         >
-                          <X className="w-3.5 h-3.5" aria-hidden="true" />
-                          Clear all
-                        </button>
+                          <X className="w-4 h-4" aria-hidden="true" />
+                          Clear all filters
+                        </motion.button>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               </div>
@@ -616,97 +639,119 @@ export function Members() {
                   <motion.div
                     id="mobile-filter-panel"
                     className="md:hidden absolute left-0 right-0 top-full mt-2 z-40"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                   >
-                    <div className="bg-[var(--bento-card)] backdrop-blur-xl border border-[var(--bento-primary)]/10 rounded-2xl p-4 shadow-xl shadow-black/10">
-                      {/* Sort dropdown */}
-                      <div className="mb-4">
-                        <Dropdown
-                          options={SORT_OPTIONS}
-                          value={validSortBy}
-                          onChange={setSortBy}
-                          icon={<ArrowUpDown className="w-4 h-4" />}
-                          className="w-full"
-                          aria-label="Sort members by"
-                        />
-                      </div>
-
-                      {/* Rank filter header */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
-                        <span className="font-soft font-medium text-[var(--bento-text)] text-sm">
-                          Filter by Rank
-                        </span>
-                        {selectedRanks.length > 0 && (
-                          <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.25rem] text-center">
-                            {selectedRanks.length}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Rank chips */}
-                      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
-                        {FC_RANKS.map((rank) => {
-                          const count = rankCounts[rank.name] || 0;
-                          const isSelected = selectedRanks.includes(rank.name);
-                          return (
-                            <button
-                              key={rank.name}
-                              onClick={() => toggleRank(rank.name)}
-                              aria-pressed={isSelected}
-                              className={`
-                                inline-flex items-center gap-2
-                                px-3 py-2 rounded-xl text-sm font-soft font-medium
-                                cursor-pointer transition-all duration-150
-                                active:scale-95
-                                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                                ${isSelected 
-                                  ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
-                                  : 'bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
-                                }
-                              `}
-                            >
-                              <span>{rank.name}</span>
-                              <span className={`
-                                text-xs px-1.5 py-0.5 rounded-full transition-colors duration-150
-                                ${isSelected 
-                                  ? 'bg-white/20' 
-                                  : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
-                                }
-                              `} aria-label={`${count} members`}>
-                                {count}
-                              </span>
-                            </button>
-                          );
-                        })}
+                    <div className="bg-[var(--bento-card)]/98 backdrop-blur-2xl border border-[var(--bento-primary)]/15 rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
+                      {/* Handle bar for visual swipe hint */}
+                      <div className="flex justify-center pt-3 pb-1">
+                        <div className="w-10 h-1 rounded-full bg-[var(--bento-border)]" />
                       </div>
                       
-                      {/* Clear filters + results summary */}
-                      {hasActiveFilters && (
-                        <div className="mt-4 pt-4 border-t border-[var(--bento-border)] flex items-center justify-between">
-                          <p className="font-soft text-sm text-[var(--bento-text-muted)]">
-                            <span className="font-semibold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length}
-                          </p>
-                          <button
-                            onClick={clearFilters}
-                            className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1.5"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            Clear all
-                          </button>
+                      <div className="p-4 pt-2">
+                        {/* Section: Sort */}
+                        <div className="mb-5">
+                          <div className="flex items-center gap-2 mb-2.5">
+                            <ArrowUpDown className="w-4 h-4 text-[var(--bento-secondary)]" />
+                            <span className="font-soft font-semibold text-[var(--bento-text)] text-sm">
+                              Sort by
+                            </span>
+                          </div>
+                          <Dropdown
+                            options={SORT_OPTIONS}
+                            value={validSortBy}
+                            onChange={setSortBy}
+                            icon={<ArrowUpDown className="w-4 h-4" />}
+                            className="w-full"
+                            aria-label="Sort members by"
+                          />
                         </div>
-                      )}
-                      
-                      {/* Done button */}
-                      <button
-                        onClick={() => setShowFilters(false)}
-                        className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-soft font-semibold shadow-lg shadow-[var(--bento-primary)]/25 cursor-pointer"
-                      >
-                        Done
-                      </button>
+
+                        {/* Section: Filter by Rank */}
+                        <div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
+                            <span className="font-soft font-semibold text-[var(--bento-text)] text-sm">
+                              Filter by Rank
+                            </span>
+                            {selectedRanks.length > 0 && (
+                              <motion.span 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--bento-primary)] text-white min-w-[1.5rem] text-center"
+                              >
+                                {selectedRanks.length}
+                              </motion.span>
+                            )}
+                          </div>
+
+                          {/* Rank chips - 2 column grid for better touch targets */}
+                          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Filter by rank">
+                            {FC_RANKS.map((rank) => {
+                              const count = rankCounts[rank.name] || 0;
+                              const isSelected = selectedRanks.includes(rank.name);
+                              return (
+                                <motion.button
+                                  key={rank.name}
+                                  onClick={() => toggleRank(rank.name)}
+                                  aria-pressed={isSelected}
+                                  whileTap={{ scale: 0.95 }}
+                                  className={`
+                                    flex items-center justify-between
+                                    px-3 py-3 rounded-xl text-sm font-soft font-medium
+                                    cursor-pointer transition-all duration-150
+                                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                    ${isSelected 
+                                      ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
+                                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] active:border-[var(--bento-primary)]/30 active:bg-[var(--bento-primary)]/10 text-[var(--bento-text)]'
+                                    }
+                                  `}
+                                >
+                                  <span className="truncate">{rank.name}</span>
+                                  <span className={`
+                                    text-xs px-1.5 py-0.5 rounded-full transition-colors duration-150 flex-shrink-0 ml-1
+                                    ${isSelected 
+                                      ? 'bg-white/20' 
+                                      : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)]'
+                                    }
+                                  `} aria-label={`${count} members`}>
+                                    {count}
+                                  </span>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        
+                        {/* Results summary + actions */}
+                        <div className="mt-5 pt-4 border-t border-[var(--bento-border)]">
+                          <div className="flex items-center justify-between mb-4">
+                            <p className="font-soft text-sm text-[var(--bento-text)]">
+                              Showing <span className="font-bold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
+                            </p>
+                            {hasActiveFilters && (
+                              <button
+                                onClick={clearFilters}
+                                className="text-sm font-soft font-medium text-[var(--bento-primary)] active:text-[var(--bento-primary)]/70 transition-colors cursor-pointer flex items-center gap-1.5 px-2 py-1 -mr-2 rounded-lg active:bg-[var(--bento-primary)]/10"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                                Clear
+                              </button>
+                            )}
+                          </div>
+                          
+                          {/* Done button - full width, prominent */}
+                          <motion.button
+                            onClick={() => setShowFilters(false)}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white text-base font-soft font-bold shadow-lg shadow-[var(--bento-primary)]/25 cursor-pointer active:shadow-md transition-shadow"
+                          >
+                            Show Results
+                          </motion.button>
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -846,6 +891,36 @@ export function Members() {
           )}
         </div>
       </div>
+      
+      {/* Mobile scroll-to-top button - appears when scrolled down */}
+      <AnimatePresence>
+        {isCompact && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="
+              md:hidden fixed right-4 z-40
+              w-12 h-12 rounded-full
+              bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)]
+              text-white
+              shadow-xl shadow-[var(--bento-primary)]/30
+              flex items-center justify-center
+              cursor-pointer
+              active:scale-95
+              focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+            "
+            style={{ 
+              bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)'
+            }}
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

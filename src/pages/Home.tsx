@@ -98,15 +98,15 @@ function DiscordIcon({ className }: { className?: string }) {
 /** Discord login CTA for unauthenticated users */
 function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
       {/* Discord login button */}
       <motion.button
         onClick={onLogin}
         className="
-          group w-full flex items-center justify-center gap-3
-          px-8 py-4 rounded-2xl
+          group w-full flex items-center justify-center gap-2 sm:gap-3
+          px-6 sm:px-8 py-3 sm:py-4 rounded-2xl
           bg-[#5865F2] text-white
-          font-soft font-semibold text-lg
+          font-soft font-semibold text-base sm:text-lg
           shadow-xl shadow-[#5865F2]/30
           hover:bg-[#4752C4] hover:shadow-2xl hover:shadow-[#5865F2]/40
           focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
@@ -115,13 +115,13 @@ function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
         whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
       >
-        <DiscordIcon className="w-6 h-6" />
+        <DiscordIcon className="w-5 h-5 sm:w-6 sm:h-6" />
         <span>Login with Discord</span>
-        <LogIn className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+        <LogIn className="w-4 h-4 sm:w-5 sm:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
       </motion.button>
 
       {/* Feature preview */}
-      <p className="mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft">
+      <p className="mt-3 sm:mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft">
         Sign in to unlock the full experience
       </p>
     </div>
@@ -159,7 +159,7 @@ export function Home() {
         <div className="relative max-w-2xl mx-auto">
           {/* Decorative frame card */}
           <motion.div 
-            className="relative bg-[var(--bento-card)]/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-[var(--bento-primary)]/10 shadow-xl shadow-[var(--bento-primary)]/5"
+            className="relative bg-[var(--bento-card)]/60 backdrop-blur-sm rounded-3xl p-5 sm:p-8 md:p-12 border border-[var(--bento-primary)]/10 shadow-xl shadow-[var(--bento-primary)]/5"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
@@ -173,7 +173,7 @@ export function Home() {
             <div className="text-center relative">
               {/* "Once upon a time" opener - storybook style */}
               <motion.p
-                className="font-accent text-2xl md:text-3xl text-[var(--bento-secondary)] mb-8"
+                className="font-accent text-xl sm:text-2xl md:text-3xl text-[var(--bento-secondary)] mb-6 sm:mb-8"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
@@ -228,7 +228,7 @@ export function Home() {
               <motion.img 
                 src={welcomingMoogle} 
                 alt="A friendly moogle mascot welcoming you to MogTome" 
-                className="relative w-44 md:w-56 lg:w-64 drop-shadow-2xl"
+                className="relative w-36 sm:w-44 md:w-56 lg:w-64 drop-shadow-2xl"
                 animate={{ 
                   y: [0, -8, 0],
                 }}
@@ -250,7 +250,7 @@ export function Home() {
                 aria-label="Moogle greeting"
               >
                 {/* Speech bubble */}
-                <div className="relative bg-[var(--bento-card)] rounded-2xl px-4 sm:px-6 py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-4rem)] max-w-[300px] sm:max-w-[360px] min-h-[70px] sm:min-h-[80px] flex items-center justify-center mx-auto">
+                <div className="relative bg-[var(--bento-card)] rounded-2xl px-3 sm:px-6 py-3 sm:py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-3rem)] max-w-[280px] sm:max-w-[360px] min-h-[60px] sm:min-h-[80px] flex items-center justify-center mx-auto">
                   {/* Bubble tail pointing up */}
                   <div className="absolute -top-5 left-1/2 -translate-x-1/2" aria-hidden="true">
                     <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
@@ -259,7 +259,7 @@ export function Home() {
                   <AnimatePresence mode="wait">
                     <motion.p
                       key={quoteIndex}
-                      className="font-accent text-2xl md:text-3xl text-[var(--bento-text)] text-center"
+                      className="font-accent text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)] text-center leading-tight"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -271,7 +271,7 @@ export function Home() {
                     </motion.p>
                   </AnimatePresence>
                 </div>
-                <p className="font-accent text-lg md:text-xl text-[var(--bento-text-muted)] mt-4" aria-hidden="true">
+                <p className="font-accent text-base sm:text-lg md:text-xl text-[var(--bento-text-muted)] mt-3 sm:mt-4" aria-hidden="true">
                   ~ says the friendly moogle ~
                 </p>
               </motion.div>
@@ -292,15 +292,15 @@ export function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-4">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-3 sm:mb-4">
                   <span className="text-[var(--bento-primary)]">Mog</span>
                   <span className="text-[var(--bento-secondary)]">Tome</span>
                 </h1>
-                <p className="text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-md mx-auto leading-relaxed mb-3">
+                <p className="text-base sm:text-lg md:text-xl text-[var(--bento-text-muted)] font-soft max-w-md mx-auto leading-relaxed mb-2 sm:mb-3 px-2 sm:px-0">
                   The cozy home of <span className="text-[var(--bento-primary)] font-semibold">Kupo Life!</span> — where moogles gather, 
                   adventures are shared, and everyone belongs.
                 </p>
-                <p className="font-accent text-xl text-[var(--bento-secondary)]">
+                <p className="font-accent text-lg sm:text-xl text-[var(--bento-secondary)]">
                   ✧ Our Free Company's digital hearth ✧
                 </p>
               </motion.div>
@@ -318,11 +318,11 @@ export function Home() {
                   <Link to="/members">
                     <Button 
                       size="lg" 
-                      className="gap-2.5 px-10 py-4 text-lg group shadow-xl shadow-[var(--bento-primary)]/30 hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40 transition-all duration-300"
+                      className="gap-2 sm:gap-2.5 px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg group shadow-xl shadow-[var(--bento-primary)]/30 hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40 transition-all duration-300"
                     >
-                      <Users className="w-5 h-5" />
+                      <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span className="font-soft font-semibold">Meet the Family</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" />
                     </Button>
                   </Link>
                 )}

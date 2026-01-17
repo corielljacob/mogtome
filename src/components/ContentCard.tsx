@@ -28,7 +28,7 @@ export function ContentCard({
       className={`
         bg-[var(--bento-card)]/80 backdrop-blur-sm 
         border border-[var(--bento-primary)]/10
-        rounded-2xl p-6 md:p-8 
+        rounded-2xl p-4 sm:p-6 md:p-8 
         shadow-lg shadow-[var(--bento-primary)]/5 
         ${className}
       `}

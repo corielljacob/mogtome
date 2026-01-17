@@ -121,18 +121,19 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
 
   return (
     <article 
-      className="group relative w-full max-w-[10rem] sm:max-w-[11rem] md:max-w-[12rem]"
+      className="group relative w-full max-w-[10rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]"
       style={shouldAnimateEntrance ? {
         animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
       } : undefined}
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      {/* Hover glow effect - CSS transition for performance */}
+      {/* Hover glow effect - CSS transition for performance, hidden on touch */}
       <div 
         className="
           absolute -inset-2 rounded-3xl blur-xl pointer-events-none
           opacity-0 group-hover:opacity-80
           transition-opacity duration-300
+          hidden sm:block
         "
         style={{ backgroundColor: theme.glow }}
         aria-hidden="true"
@@ -143,10 +144,10 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           relative w-full
           bg-[var(--bento-card)]
           border border-[var(--bento-primary)]/10
-          rounded-2xl overflow-hidden shadow-sm
+          rounded-xl sm:rounded-2xl overflow-hidden shadow-sm
           transition-all duration-200 ease-out
-          group-hover:-translate-y-1.5 group-hover:shadow-xl
-          active:scale-[0.98]
+          sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
+          active:scale-[0.97] sm:active:scale-[0.98]
         "
       >
         {/* Gradient rank banner */}
@@ -223,9 +224,9 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
         </a>
 
         {/* Member info */}
-        <div className="p-3 text-center space-y-2">
+        <div className="p-2.5 sm:p-3 text-center space-y-1.5 sm:space-y-2">
           {/* Name */}
-          <h3 className="font-soft font-bold text-sm text-[var(--bento-text)] truncate leading-tight">
+          <h3 className="font-soft font-bold text-[11px] sm:text-sm text-[var(--bento-text)] truncate leading-tight">
             {member.name}
           </h3>
           
@@ -236,7 +237,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               px-2.5 py-1 rounded-full 
               ${theme.bg}
               transition-transform duration-200
-              group-hover:scale-105
+              sm:group-hover:scale-105
             `}
           >
             {member.freeCompanyRankIcon ? (
@@ -249,7 +250,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             ) : (
               <RankIcon className={`w-3 h-3 ${theme.accent}`} aria-hidden="true" />
             )}
-            <span className={`text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[80px]`}>
+            <span className={`text-[10px] sm:text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[70px] sm:max-w-[80px]`}>
               {member.freeCompanyRank}
             </span>
           </div>
@@ -264,7 +265,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
  */
 export function MemberCardSkeleton() {
   return (
-    <div className="w-40 sm:w-44 md:w-48 bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-2xl overflow-hidden shadow-sm">
+    <div className="w-36 sm:w-40 md:w-44 lg:w-48 bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-2xl overflow-hidden shadow-sm">
       {/* Rank banner skeleton */}
       <div className="h-1 bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/30 to-[var(--bento-primary)]/20 animate-shimmer" />
       

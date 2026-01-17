@@ -73,17 +73,17 @@ const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { stat
 
   return (
     <div 
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-border)] ${color} ${
+      className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-border)] ${color} ${
         status === 'connecting' || status === 'reconnecting' ? 'animate-pulse' : ''
       }`}
       role="status"
       aria-live="polite"
       aria-label={ariaLabel}
     >
-      <Icon className="w-4 h-4" aria-hidden="true" />
-      <span className="text-sm font-soft font-medium">{label}</span>
+      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+      <span className="text-xs sm:text-sm font-soft font-medium">{label}</span>
       {status === 'connected' && (
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-ping-slow" aria-hidden="true" />
+        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-ping-slow" aria-hidden="true" />
       )}
     </div>
   );
@@ -105,7 +105,7 @@ const TimelineEventCard = memo(function TimelineEventCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={`
-        relative flex gap-4 p-4 md:p-5
+        relative flex gap-2.5 sm:gap-4 p-3 sm:p-4 md:p-5
         bg-[var(--bento-card)]/80 backdrop-blur-sm
         border border-[var(--bento-border)] rounded-2xl
         shadow-sm hover:shadow-md hover:border-[var(--bento-primary)]/20
@@ -115,28 +115,28 @@ const TimelineEventCard = memo(function TimelineEventCard({
     >
       {/* Event type icon */}
       <div className={`
-        flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl
+        flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl
         flex items-center justify-center
         ${bgColor} ${color}
       `}>
-        <Icon className="w-5 h-5 md:w-6 md:h-6" />
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
       </div>
 
       {/* Event content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
           <div className="flex-1 min-w-0">
             {/* Event type badge */}
-            <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
               <span className={`
-                px-2 py-0.5 rounded-full text-xs font-soft font-semibold
+                px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-soft font-semibold
                 ${bgColor} ${color}
               `}>
                 {label}
               </span>
               {isRealtime && (
                 <motion.span
-                  className="px-2 py-0.5 rounded-full text-xs font-soft font-semibold bg-[var(--bento-primary)] text-white"
+                  className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-soft font-semibold bg-[var(--bento-primary)] text-white"
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -146,17 +146,17 @@ const TimelineEventCard = memo(function TimelineEventCard({
             </div>
 
             {/* Event text */}
-            <p className="text-[var(--bento-text)] font-soft text-sm md:text-base leading-relaxed">
+            <p className="text-[var(--bento-text)] font-soft text-xs sm:text-sm md:text-base leading-relaxed">
               {event.text}
             </p>
           </div>
 
           {/* Timestamp */}
           <div className="flex-shrink-0 text-right">
-            <p className="text-xs font-soft font-medium text-[var(--bento-primary)]">
+            <p className="text-[10px] sm:text-xs font-soft font-medium text-[var(--bento-primary)]">
               {formatRelativeTime(event.createdAt)}
             </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5 hidden sm:block">
+            <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] mt-0.5 hidden sm:block">
               {formatFullDate(event.createdAt)}
             </p>
           </div>
@@ -164,7 +164,7 @@ const TimelineEventCard = memo(function TimelineEventCard({
       </div>
 
       {/* Timeline connector line (for visual continuity) */}
-      <div className="absolute left-7 md:left-8 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--bento-border)] to-transparent" />
+      <div className="absolute left-5 sm:left-7 md:left-8 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--bento-border)] to-transparent" />
     </motion.div>
   );
 });
@@ -241,18 +241,18 @@ export function Chronicle() {
       <SimpleFloatingMoogles primarySrc={flyingMoogles} secondarySrc={moogleMail} />
       <FloatingSparkles minimal />
 
-      <div className="relative py-8 md:py-12 px-4 z-10">
+      <div className="relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10">
         <div className="max-w-4xl mx-auto">
           {/* Page header */}
           <motion.header 
-            className="text-center mb-10"
+            className="text-center mb-6 sm:mb-10"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             {/* Decorative opener */}
             <motion.p
-              className="font-accent text-xl md:text-2xl text-[var(--bento-secondary)] mb-4"
+              className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-secondary)] mb-3 sm:mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -260,15 +260,15 @@ export function Chronicle() {
               ~ The story of our adventures ~
             </motion.p>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3">
               <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
                 The Chronicle
               </span>
             </h1>
 
-            <p className="text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-4">
+            <p className="text-base sm:text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-3 sm:mb-4 px-2 sm:px-0">
               Every tale from our FC, unfolding in real-time
-              <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
             </p>
 
             <StoryDivider className="mx-auto" size="sm" />
@@ -276,20 +276,20 @@ export function Chronicle() {
 
           {/* Controls bar */}
           <motion.div
-            className="flex flex-wrap items-center justify-between gap-4 mb-8"
+            className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-6 sm:mb-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <ConnectionIndicator status={status} />
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Toggle realtime events visibility */}
               {realtimeEvents.length > 0 && (
                 <button
                   onClick={() => setShowRealtimeEvents(!showRealtimeEvents)}
                   className={`
-                    flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-soft font-medium
+                    flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium
                     transition-all cursor-pointer
                     ${showRealtimeEvents 
                       ? 'bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] border border-[var(--bento-primary)]/20' 
@@ -297,9 +297,9 @@ export function Chronicle() {
                     }
                   `}
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   {unseenCount > 0 ? `${unseenCount} new` : `${realtimeEvents.length} live`}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
                 </button>
               )}
 
@@ -307,7 +307,7 @@ export function Chronicle() {
               {unseenCount > 0 && (
                 <button
                   onClick={markAllAsSeen}
-                  className="px-3 py-1.5 rounded-full text-sm font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer"
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer hidden xs:block"
                 >
                   Mark as read
                 </button>
@@ -317,11 +317,11 @@ export function Chronicle() {
               {(status === 'disconnected' || status === 'error') && (
                 <motion.button
                   onClick={reconnect}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-soft font-medium bg-[var(--bento-primary)] text-white hover:bg-[var(--bento-primary)]/90 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium bg-[var(--bento-primary)] text-white hover:bg-[var(--bento-primary)]/90 transition-all cursor-pointer"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Wifi className="w-3.5 h-3.5" />
+                  <Wifi className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   Reconnect
                 </motion.button>
               )}

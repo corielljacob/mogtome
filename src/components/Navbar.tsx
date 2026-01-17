@@ -36,6 +36,7 @@ function SettingsButton() {
 // Mobile search bar for Members page - syncs with URL params
 function MobileHeaderSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isFocused, setIsFocused] = useState(false);
   const searchQuery = searchParams.get('q') || '';
   const [inputValue, setInputValue] = useState(searchQuery);
   
@@ -75,37 +76,54 @@ function MobileHeaderSearch() {
   };
 
   return (
-    <div className="relative flex-1 min-w-0">
-      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-        <Search className="w-4 h-4 text-[var(--bento-text-muted)]" />
+    <div className={`
+      relative flex-1 min-w-0 transition-all duration-200
+      ${isFocused ? 'scale-[1.02]' : ''}
+    `}>
+      <div className={`
+        absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none
+        transition-colors duration-200
+        ${isFocused ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'}
+      `}>
+        <Search className="w-4 h-4" />
       </div>
       <input
         type="search"
         placeholder="Search members..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        className="
-          w-full pl-9 pr-8 py-2 text-sm font-soft
-          bg-[var(--bento-bg)]/80 
-          border border-[var(--bento-border)]
-          rounded-xl
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className={`
+          w-full pl-10 pr-10 py-2.5 text-sm font-soft
+          bg-[var(--bento-bg)]
+          border-2 rounded-xl
           text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
-          focus:outline-none focus:border-[var(--bento-primary)] focus:ring-1 focus:ring-[var(--bento-primary)]/20
-          transition-colors
-        "
+          focus:outline-none
+          transition-all duration-200
+          ${isFocused 
+            ? 'border-[var(--bento-primary)] shadow-lg shadow-[var(--bento-primary)]/10' 
+            : 'border-[var(--bento-border)]'
+          }
+        `}
         aria-label="Search members"
       />
-      {inputValue && (
-        <button
-          onClick={handleClear}
-          className="absolute inset-y-0 right-0 flex items-center pr-2.5 cursor-pointer"
-          aria-label="Clear search"
-        >
-          <span className="p-1 rounded-md bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 transition-colors">
-            <X className="w-3 h-3 text-[var(--bento-primary)]" />
-          </span>
-        </button>
-      )}
+      <AnimatePresence>
+        {inputValue && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={handleClear}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            aria-label="Clear search"
+          >
+            <span className="p-1.5 rounded-lg bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 active:bg-[var(--bento-primary)]/30 transition-colors">
+              <X className="w-3.5 h-3.5 text-[var(--bento-primary)]" />
+            </span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -566,7 +584,7 @@ function BottomNavItem({
       to={path}
       aria-current={isActive ? 'page' : undefined}
       className={`
-        relative flex flex-col items-center justify-center gap-1.5 py-3 px-3 min-w-[64px]
+        relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 px-2 sm:px-3 min-w-[52px] sm:min-w-[64px]
         transition-colors duration-200
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset rounded-xl
         ${isActive 
@@ -581,10 +599,10 @@ function BottomNavItem({
         }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
-        <Icon className="w-5 h-5" />
+        <Icon className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
       </motion.div>
       
-      <span className={`text-[10px] font-soft font-semibold leading-none ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+      <span className={`text-[9px] sm:text-[10px] font-soft font-semibold leading-none ${isActive ? 'opacity-100' : 'opacity-70'}`}>
         {label}
       </span>
     </Link>
@@ -598,7 +616,7 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
 
   return (
     <nav 
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-3 pointer-events-none"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] sm:pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-2 sm:px-3 pointer-events-none"
       aria-label="Mobile navigation"
     >
       <div className="relative max-w-md mx-auto pointer-events-auto">
@@ -606,7 +624,7 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
         <div className="absolute inset-0 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-[var(--bento-primary)]/10" />
         
         {/* Nav items container */}
-        <div className="relative flex items-center justify-around px-2 py-1">
+        <div className="relative flex items-center justify-around px-1 sm:px-2 py-0.5 sm:py-1">
           {navItems.map(({ path, label, icon }) => (
             <BottomNavItem
               key={path}
@@ -653,12 +671,12 @@ export function Navbar() {
     <>
       {/* Mobile floating header */}
       <nav 
-        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-3 pointer-events-none"
+        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.375rem)] sm:pt-[calc(env(safe-area-inset-top)+0.5rem)] px-2 sm:px-3 pointer-events-none"
         aria-label="Mobile header"
       >
         {/* Single unified header bar on Members page with search */}
         {isMembersPage ? (
-          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 max-w-full overflow-hidden">
+          <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 max-w-full overflow-hidden">
             {/* Compact logo */}
             <Link 
               to="/" 
@@ -683,14 +701,14 @@ export function Navbar() {
             {/* Logo - floating pill */}
             <Link 
               to="/" 
-              className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+              className="pointer-events-auto flex items-center gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
               aria-label="MogTome - Go to home page"
             >
               <LogoIcon hovered={false} />
             </Link>
 
             {/* Right side controls - floating pill */}
-            <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
+            <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
               <LoginButton />
               <UserMenu />
             </div>
