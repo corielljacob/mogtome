@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
-import { Shield, Sparkles } from 'lucide-react';
-import { PendingSubmissions } from '../components';
+import { Shield, Sparkles, MessageCircle, Lightbulb } from 'lucide-react';
+import { PendingSubmissions, ContentCard } from '../components';
 
 /**
  * Knight Dashboard - Only accessible to users with knighthood
@@ -53,22 +53,41 @@ export function KnightDashboard() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            {/* Pending Bio Submissions - spans full width on mobile, half on desktop */}
+            {/* Pending Bio Submissions */}
             <div className="lg:col-span-1">
               <PendingSubmissions />
             </div>
 
-            {/* Placeholder for future dashboard cards */}
-            {/* Example structure for additional cards:
+            {/* Feature Request Card */}
             <div className="lg:col-span-1">
-              <SomeOtherDashboardCard />
+              <ContentCard className="h-full flex flex-col">
+                <div className="flex items-start gap-2.5 sm:gap-3 mb-4">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400/15 to-orange-400/15 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
+                      Have an Idea?
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
+                      Help shape the dashboard
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-6 sm:py-8">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400/10 to-orange-400/10 flex items-center justify-center mb-4">
+                    <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8 text-amber-500" />
+                  </div>
+                  <p className="text-sm sm:text-base text-[var(--bento-text)] font-soft font-medium mb-2">
+                    Want a new dashboard feature?
+                  </p>
+                  <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] max-w-xs">
+                    Discuss it with <span className="text-[var(--bento-primary)] font-semibold">Plane</span> and help us make the Knight Dashboard even better!
+                  </p>
+                </div>
+              </ContentCard>
             </div>
-            
-            // Full-width card spanning both columns:
-            <div className="lg:col-span-2">
-              <WideCard />
-            </div>
-            */}
           </motion.div>
         </div>
       </div>
