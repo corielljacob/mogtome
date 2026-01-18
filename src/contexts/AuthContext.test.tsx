@@ -39,7 +39,8 @@ const mockUserPayload = {
   memberPortraitUrl: 'https://example.com/portrait.jpg',
   hasKnighthood: true,
   hasTemporaryKnighthood: false,
-  firstLoginDate: '2024-01-01T00:00:00Z',
+  // JWT uses firstMogTomeLoginDate, which maps to firstLoginDate in User
+  firstMogTomeLoginDate: '2024-01-01T00:00:00Z',
 };
 
 describe('Auth Token Helpers', () => {
