@@ -78,11 +78,11 @@ function ProfilePreviewCard({
  * BiographyEditor - Form for editing/submitting biography
  */
 function BiographyEditor({ 
-  isKnight, 
+  canSetDirectly, 
   onBioChange,
   initialBio,
 }: { 
-  isKnight: boolean;
+  canSetDirectly: boolean;
   onBioChange: (bio: string) => void;
   initialBio: string;
 }) {
@@ -119,7 +119,7 @@ function BiographyEditor({
     },
   });
 
-  const activeMutation = isKnight ? setBioMutation : submitBioMutation;
+  const activeMutation = canSetDirectly ? setBioMutation : submitBioMutation;
   const isSubmitting = activeMutation.isPending;
   const error = activeMutation.error;
 
@@ -145,7 +145,7 @@ function BiographyEditor({
           htmlFor="biography" 
           className="block text-sm font-soft font-semibold text-[var(--bento-text)] mb-2"
         >
-          {isKnight ? 'Your Biography' : 'Submit Your Biography'}
+          {canSetDirectly ? 'Your Biography' : 'Submit Your Biography'}
         </label>
         <textarea
           id="biography"
@@ -183,7 +183,7 @@ function BiographyEditor({
       </div>
 
       {/* Info banner for Paissa */}
-      {!isKnight && (
+      {!canSetDirectly && (
         <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--bento-secondary)]/10 border border-[var(--bento-secondary)]/20">
           <AlertCircle className="w-4 h-4 text-[var(--bento-secondary)] flex-shrink-0 mt-0.5" aria-hidden="true" />
           <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">
@@ -239,12 +239,12 @@ function BiographyEditor({
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            {isKnight ? 'Updating...' : 'Submitting...'}
+            {canSetDirectly ? 'Updating...' : 'Submitting...'}
           </>
         ) : (
           <>
             <Send className="w-4 h-4" aria-hidden="true" />
-            {isKnight ? 'Update Biography' : 'Submit for Approval'}
+            {canSetDirectly ? 'Update Biography' : 'Submit for Approval'}
           </>
         )}
       </button>
@@ -259,7 +259,8 @@ export function Profile() {
   const { user, isAuthenticated, isLoading, login } = useAuth();
   const [previewBio, setPreviewBio] = useState('');
 
-  const isKnight = user?.hasKnighthood || user?.hasTemporaryKnighthood;
+  // Only permanent knights can set bio directly - temp knights still submit for approval
+  const canSetBioDirectly = user?.hasKnighthood === true;
 
   // Fetch staff list to find user's existing bio
   const { data: staffData } = useQuery({
@@ -405,7 +406,7 @@ export function Profile() {
                     Write Your Story
                   </h2>
                   <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
-                    {isKnight 
+                    {canSetBioDirectly 
                       ? "Your bio will appear on the About page immediately"
                       : "Your bio will be reviewed before appearing on the About page"
                     }
@@ -414,7 +415,7 @@ export function Profile() {
               </div>
 
               <BiographyEditor 
-                isKnight={isKnight || false}
+                canSetDirectly={canSetBioDirectly}
                 onBioChange={setPreviewBio}
                 initialBio={existingBio}
               />

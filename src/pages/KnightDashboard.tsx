@@ -6,7 +6,8 @@ import { PendingSubmissions } from '../components';
  * Knight Dashboard - Only accessible to users with knighthood
  * 
  * This dashboard is reserved for Moogle Knights and those with 
- * temporary knighthood permissions.
+ * temporary knighthood permissions. Uses a bento-box layout for
+ * multiple dashboard functions.
  */
 export function KnightDashboard() {
   return (
@@ -15,7 +16,7 @@ export function KnightDashboard() {
       <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.06] via-[var(--bento-accent)]/[0.03] to-[var(--bento-secondary)]/[0.05] pointer-events-none" />
       
       <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Page Header */}
           <motion.div
             className="mb-6 sm:mb-8"
@@ -45,15 +46,29 @@ export function KnightDashboard() {
             </div>
           </motion.div>
 
-          {/* Dashboard Sections */}
+          {/* Bento Grid Dashboard */}
           <motion.div
-            className="space-y-4 sm:space-y-6"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            {/* Pending Bio Submissions */}
-            <PendingSubmissions />
+            {/* Pending Bio Submissions - spans full width on mobile, half on desktop */}
+            <div className="lg:col-span-1">
+              <PendingSubmissions />
+            </div>
+
+            {/* Placeholder for future dashboard cards */}
+            {/* Example structure for additional cards:
+            <div className="lg:col-span-1">
+              <SomeOtherDashboardCard />
+            </div>
+            
+            // Full-width card spanning both columns:
+            <div className="lg:col-span-2">
+              <WideCard />
+            </div>
+            */}
           </motion.div>
         </div>
       </div>

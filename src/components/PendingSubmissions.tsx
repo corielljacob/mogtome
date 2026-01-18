@@ -12,16 +12,18 @@ import {
   User,
 } from 'lucide-react';
 import { biographyApi } from '../api/biography';
-import type { BiographySubmission } from '../types';
+import { membersApi } from '../api/members';
+import type { BiographySubmission, StaffMember } from '../types';
 import { ContentCard } from './ContentCard';
 
 interface SubmissionCardProps {
   submission: BiographySubmission;
+  submitter?: StaffMember;
   onApprove: (submissionId: string) => void;
   isApproving: boolean;
 }
 
-function SubmissionCard({ submission, onApprove, isApproving }: SubmissionCardProps) {
+function SubmissionCard({ submission, submitter, onApprove, isApproving }: SubmissionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Format the submission date
@@ -57,14 +59,28 @@ function SubmissionCard({ submission, onApprove, isApproving }: SubmissionCardPr
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-secondary)]/10 flex items-center justify-center flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
-          </div>
+          {submitter ? (
+            <img 
+              src={submitter.avatarLink} 
+              alt="" 
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-secondary)]/10 flex items-center justify-center flex-shrink-0">
+              <User className="w-4 h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
+            </div>
+          )}
           <div className="min-w-0">
             <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
-              Discord: {submission.submittedByDiscordId}
+              {submitter?.name || `Discord ID: ${submission.submittedByDiscordId}`}
             </p>
             <div className="flex items-center gap-1.5 text-xs text-[var(--bento-text-muted)]">
+              {submitter && (
+                <>
+                  <span className="text-[var(--bento-primary)]">{submitter.freeCompanyRank}</span>
+                  <span>•</span>
+                </>
+              )}
               <Clock className="w-3 h-3" aria-hidden="true" />
               <span>{formattedDate} at {formattedTime}</span>
             </div>
@@ -74,7 +90,7 @@ function SubmissionCard({ submission, onApprove, isApproving }: SubmissionCardPr
         {/* Status badge */}
         <span className={`
           flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-soft font-medium
-          ${submission.status === 'pending' 
+          ${submission.status === 'Pending' 
             ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' 
             : 'bg-[var(--bento-text-muted)]/10 text-[var(--bento-text-muted)]'
           }
@@ -144,7 +160,7 @@ export function PendingSubmissions() {
   // Fetch pending submissions
   const { 
     data: submissions = [], 
-    isLoading, 
+    isLoading: isLoadingSubmissions, 
     isError, 
     refetch 
   } = useQuery({
@@ -153,8 +169,24 @@ export function PendingSubmissions() {
     staleTime: 1000 * 30, // 30 seconds
   });
 
+  // Fetch staff to look up submitter info by Discord ID
+  const { data: staffData } = useQuery({
+    queryKey: ['staff'],
+    queryFn: () => membersApi.getStaff(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  // Create a lookup map from Discord ID to staff member
+  const staffByDiscordId = new Map(
+    (staffData?.staff || [])
+      .filter((m) => m.discordId)
+      .map((m) => [m.discordId!, m])
+  );
+
   // Filter to only show pending submissions
-  const pendingSubmissions = submissions.filter(s => s.status === 'pending');
+  const pendingSubmissions = submissions.filter(s => s.status === 'Pending');
+  
+  const isLoading = isLoadingSubmissions;
 
   // Mutation for approving submissions
   const approveMutation = useMutation({
@@ -257,32 +289,35 @@ export function PendingSubmissions() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="flex flex-col">
           {/* Count badge */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 flex-shrink-0">
             <span className="px-2.5 py-1 rounded-full text-xs font-soft font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">
               {pendingSubmissions.length} pending
             </span>
           </div>
 
-          {/* Submission cards */}
-          <AnimatePresence mode="popLayout">
-            {pendingSubmissions.map((submission) => (
-              <SubmissionCard
-                key={submission.submissionId}
-                submission={submission}
-                onApprove={handleApprove}
-                isApproving={approvingId === submission.submissionId}
-              />
-            ))}
-          </AnimatePresence>
+          {/* Scrollable submission cards container */}
+          <div className="overflow-y-auto max-h-[400px] sm:max-h-[500px] pr-1 -mr-1 space-y-3 scrollbar-thin scrollbar-thumb-[var(--bento-border)] scrollbar-track-transparent">
+            <AnimatePresence mode="popLayout">
+              {pendingSubmissions.map((submission) => (
+                <SubmissionCard
+                  key={submission.submissionId}
+                  submission={submission}
+                  submitter={staffByDiscordId.get(submission.submittedByDiscordId)}
+                  onApprove={handleApprove}
+                  isApproving={approvingId === submission.submissionId}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
 
-          {/* Error message */}
+          {/* Error message - outside scroll area so it's always visible */}
           {approveMutation.isError && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+              className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-3 flex-shrink-0"
             >
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" aria-hidden="true" />
               <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">
