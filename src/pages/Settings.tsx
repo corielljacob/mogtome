@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
-import { ContentCard, MembershipCard } from '../components';
+import { ContentCard } from '../components';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme Management
@@ -434,21 +434,27 @@ function AccountSection() {
   }
 
   return (
-    <ContentCard className="overflow-visible">
+    <ContentCard>
       <SectionHeader icon={User} title="Account" />
       
-      {/* MogTome Membership Card */}
-      <MembershipCard
-        name={user.memberName}
-        rank={user.memberRank}
-        avatarUrl={user.memberPortraitUrl}
-        memberSince={user.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
-      />
-      
-      {/* Connected status */}
-      <div className="flex items-center justify-center gap-2 text-xs text-[var(--bento-text-muted)] mt-2">
-        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-        <span>Connected via Discord</span>
+      {/* User info */}
+      <div className="flex items-center gap-3 sm:gap-4 py-2">
+        <img
+          src={user.memberPortraitUrl}
+          alt=""
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover ring-2 ring-[var(--bento-primary)]/20"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-text)] truncate">
+            {user.memberName}
+          </p>
+          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">{user.memberRank}</p>
+        </div>
+        {/* Connected status */}
+        <div className="flex items-center gap-1.5 text-xs text-[var(--bento-text-muted)]">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="hidden sm:inline">Connected via Discord</span>
+        </div>
       </div>
 
       <div className="mt-4 pt-4 border-t border-[var(--bento-border)]">

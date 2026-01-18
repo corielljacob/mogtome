@@ -15,7 +15,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
-import { ContentCard } from '../components';
+import { ContentCard, MembershipCard } from '../components';
 
 const MAX_BIO_LENGTH = 300;
 
@@ -361,6 +361,14 @@ export function Profile() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
+            {/* Membership Card */}
+            <MembershipCard
+              name={user?.memberName || ''}
+              rank={user?.memberRank || ''}
+              avatarUrl={user?.memberPortraitUrl || ''}
+              memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
+            />
+
             {/* Preview Card */}
             <ContentCard>
               <div className="flex items-start gap-2.5 sm:gap-3 mb-4">
