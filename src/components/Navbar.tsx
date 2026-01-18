@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown, User, FileText } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown, FileText } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';

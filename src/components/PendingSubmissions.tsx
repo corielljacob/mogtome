@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   FileText, 
   Check, 
-  X,
   Loader2, 
   AlertCircle, 
   RefreshCw,
