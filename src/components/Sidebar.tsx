@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Users, Scroll, Info, Crown, Settings,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, UserCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
@@ -163,6 +163,26 @@ function NavItem({ path, label, icon: Icon, isActive, isCollapsed, accentColor }
   );
 }
 
+function ProfileItem({ isCollapsed }: { isCollapsed: boolean }) {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  if (!isAuthenticated) return null;
+  
+  const isActive = location.pathname === '/profile';
+  
+  return (
+    <NavItem
+      path="/profile"
+      label="My Profile"
+      icon={UserCircle}
+      isActive={isActive}
+      isCollapsed={isCollapsed}
+      accentColor="text-[var(--bento-secondary)]"
+    />
+  );
+}
+
 function KnightDashboardItem({ isCollapsed }: { isCollapsed: boolean }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -278,9 +298,10 @@ export function Sidebar() {
             ))}
           </div>
 
-          {/* Knight Dashboard (conditional) */}
-          <div className="pt-3 mt-3">
+          {/* Profile & Dashboard (conditional based on auth) */}
+          <div className="pt-3 mt-3 space-y-1">
             <div className="mx-0 mb-2 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/15 to-transparent" />
+            <ProfileItem isCollapsed={isCollapsed} />
             <KnightDashboardItem isCollapsed={isCollapsed} />
           </div>
         </nav>

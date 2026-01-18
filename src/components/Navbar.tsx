@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, LogOut, ChevronDown, Settings, Info, Crown, FileText } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, LogOut, ChevronDown, Settings, Info, Crown, FileText, UserCircle } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -409,6 +409,25 @@ function KupoBadge() {
   );
 }
 
+// Mobile Profile button for bottom nav (shows for authenticated users)
+function MobileProfileButton() {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  if (!isAuthenticated) return null;
+  
+  const isActive = location.pathname === '/profile';
+  
+  return (
+    <BottomNavItem
+      path="/profile"
+      label="Profile"
+      icon={UserCircle}
+      isActive={isActive}
+    />
+  );
+}
+
 // Mobile Knight Dashboard button for bottom nav
 function MobileKnightDashboardButton() {
   const { user, isAuthenticated } = useAuth();
@@ -498,7 +517,10 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
             />
           ))}
           
-          {/* Knight Dashboard in bottom nav (conditional) */}
+          {/* Profile in bottom nav (conditional - authenticated users) */}
+          <MobileProfileButton />
+          
+          {/* Knight Dashboard in bottom nav (conditional - knights only) */}
           <MobileKnightDashboardButton />
           
           {/* Settings in bottom nav */}

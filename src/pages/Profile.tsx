@@ -14,7 +14,6 @@ import {
   Clock,
   Pencil,
   XCircle,
-  PartyPopper,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
@@ -389,9 +388,6 @@ export function Profile() {
     staleTime: 1000 * 30, // 30 seconds
   });
 
-  // Check if the user's submission was approved (status from API)
-  const wasApproved = userSubmission?.status === 'Approved';
-
   // Callback to refetch submission after updates
   const handleSubmissionUpdate = () => {
     refetchSubmission();
@@ -478,29 +474,6 @@ export function Profile() {
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
             </div>
           </motion.div>
-
-          {/* Approved Notification Banner */}
-          {wasApproved && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="mb-4 sm:mb-6 p-4 rounded-xl border bg-green-500/10 border-green-500/20"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-green-500/20">
-                  <PartyPopper className="w-5 h-5 text-green-500" />
-                </div>
-                <div>
-                  <h3 className="font-soft font-semibold text-sm sm:text-base text-green-600 dark:text-green-400">
-                    Biography Approved!
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
-                    Your biography is now visible on the About page.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
 
           {/* Profile Content */}
           <motion.div

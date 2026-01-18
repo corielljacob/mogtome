@@ -1,9 +1,11 @@
 import { memo, useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
-import { ExternalLink, Heart, Sparkles, RefreshCw, Crown, Shield, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, Heart, Sparkles, RefreshCw, Crown, Shield, Star, Pencil } from 'lucide-react';
 import { membersApi } from '../api/members';
 import { StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { useAuth } from '../contexts/AuthContext';
 import type { StaffMember } from '../types';
 import { FC_RANKS } from '../types';
 
@@ -73,12 +75,13 @@ const defaultRankConfig = {
 interface StaffCardProps {
   member: StaffMember;
   index?: number;
+  isCurrentUser?: boolean;
 }
 
 /**
  * FeaturedLeaderCard - A special prominent card for the FC Leader (Moogle Guardian)
  */
-const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member }: { member: StaffMember }) {
+const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentUser = false }: { member: StaffMember; isCurrentUser?: boolean }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
@@ -191,6 +194,24 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member }: { member
             <span className="italic opacity-75">Leading Kupo Life with heart and dedication, kupo~</span>
           )}
         </p>
+        
+        {/* Edit Bio button for current user */}
+        {isCurrentUser && (
+          <Link
+            to="/profile"
+            className="
+              inline-flex items-center gap-1.5 mt-3 sm:mt-4
+              px-3 py-2 rounded-xl
+              bg-amber-500/10 hover:bg-amber-500/20
+              text-amber-600 dark:text-amber-400 font-soft font-semibold text-sm
+              transition-colors
+              focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none
+            "
+          >
+            <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+            Edit Your Bio
+          </Link>
+        )}
       </div>
     </motion.article>
   );
@@ -200,7 +221,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member }: { member
  * LeaderCard - A horizontal card that features the leader's bio prominently
  * Distinct from MemberCard's square grid layout
  */
-const LeaderCard = memo(function LeaderCard({ member, index = 0 }: StaffCardProps) {
+const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser = false }: StaffCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
@@ -329,6 +350,24 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0 }: StaffCardProp
               <span className="italic opacity-75">Helping keep the FC magical, kupo~</span>
             )}
           </p>
+          
+          {/* Edit Bio button for current user */}
+          {isCurrentUser && (
+            <Link
+              to="/profile"
+              className="
+                inline-flex items-center gap-1.5 mt-2.5 sm:mt-3
+                px-2.5 py-1.5 rounded-lg
+                bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20
+                text-[var(--bento-primary)] font-soft font-semibold text-xs
+                transition-colors
+                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+              "
+            >
+              <Pencil className="w-3 h-3" aria-hidden="true" />
+              Edit Your Bio
+            </Link>
+          )}
         </div>
       </div>
     </article>
@@ -339,13 +378,14 @@ interface RankSectionProps {
   rank: string;
   members: StaffMember[];
   startIndex: number;
+  currentUserName?: string;
 }
 
 /**
  * RankSection - Groups staff by rank with a stylized header
  * Uses a 2-column grid for horizontal leader cards
  */
-const RankSection = memo(function RankSection({ rank, members, startIndex }: RankSectionProps) {
+const RankSection = memo(function RankSection({ rank, members, startIndex, currentUserName }: RankSectionProps) {
   const config = rankConfig[rank] || defaultRankConfig;
   const RankIcon = config.icon;
 
@@ -390,7 +430,8 @@ const RankSection = memo(function RankSection({ rank, members, startIndex }: Ran
           <LeaderCard 
             key={member.characterId} 
             member={member} 
-            index={startIndex + idx} 
+            index={startIndex + idx}
+            isCurrentUser={currentUserName === member.name}
           />
         ))}
       </div>
@@ -399,11 +440,16 @@ const RankSection = memo(function RankSection({ rank, members, startIndex }: Ran
 });
 
 export function About() {
+  const { user, isAuthenticated } = useAuth();
+  
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['staff'],
     queryFn: () => membersApi.getStaff(),
     staleTime: 1000 * 60 * 5,
   });
+  
+  // Get current user's name for highlighting their card
+  const currentUserName = isAuthenticated ? user?.memberName : undefined;
 
   // Sort staff by rank order (same ordering as Members page)
   const staff = useMemo(() => {
@@ -591,7 +637,10 @@ export function About() {
                 {/* FC Leader - Featured prominently */}
                 {fcLeader && (
                   <div className="max-w-xl mx-auto">
-                    <FeaturedLeaderCard member={fcLeader} />
+                    <FeaturedLeaderCard 
+                      member={fcLeader} 
+                      isCurrentUser={currentUserName === fcLeader.name}
+                    />
                   </div>
                 )}
                 
@@ -609,6 +658,7 @@ export function About() {
                             rank={rank}
                             members={members}
                             startIndex={startIndex}
+                            currentUserName={currentUserName}
                           />
                         );
                       });
