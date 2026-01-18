@@ -239,35 +239,17 @@ function ProcessingScreen() {
   );
 }
 
-// Check if this is a first-time user
+// Check if this is a first-time user based on their firstLoginDate from the backend
 function isFirstTimeUser(user: User): boolean {
-  // Check local storage for previous logins on this device
-  const hasLoggedInBefore = localStorage.getItem('mogtome_has_logged_in');
-  if (hasLoggedInBefore) {
-    return false;
-  }
-  
-  // No local storage means they haven't logged in on this device before
-  // Check if their first login date is today (set by backend on first-ever login)
-  if (user.firstLoginDate) {
-    const firstLogin = new Date(user.firstLoginDate);
-    const today = new Date();
-    const isToday = firstLogin.toDateString() === today.toDateString();
-    if (isToday) {
-      return true;
-    }
-  } else {
-    // No firstLoginDate available AND no local storage = treat as first time
-    // (Backend hasn't set it yet, so this must be their first login)
+  if (!user.firstLoginDate) {
+    // No firstLoginDate means backend hasn't set it yet - treat as first time
     return true;
   }
   
-  return false;
-}
-
-// Mark that user has logged in before
-function markUserAsReturning() {
-  localStorage.setItem('mogtome_has_logged_in', 'true');
+  // Check if their first login date is today
+  const firstLogin = new Date(user.firstLoginDate);
+  const today = new Date();
+  return firstLogin.toDateString() === today.toDateString();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -286,11 +268,6 @@ function FirstTimeWelcome({
   const [animationState, setAnimationState] = useState<
     'entering' | 'card-reveal' | 'celebrating' | 'complete'
   >('entering');
-  
-  // Mark as returning user
-  useEffect(() => {
-    markUserAsReturning();
-  }, []);
 
   // Smooth orchestrated timeline - each stage flows into the next
   useEffect(() => {
