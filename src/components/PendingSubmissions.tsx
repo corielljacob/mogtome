@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   FileText, 
   Check, 
+  X,
   Loader2, 
   AlertCircle, 
   RefreshCw,
@@ -20,10 +21,12 @@ interface SubmissionCardProps {
   submission: BiographySubmission;
   submitter?: StaffMember;
   onApprove: (submissionId: string) => void;
+  onReject: (submissionId: string) => void;
   isApproving: boolean;
+  isRejecting: boolean;
 }
 
-function SubmissionCard({ submission, submitter, onApprove, isApproving }: SubmissionCardProps) {
+function SubmissionCard({ submission, submitter, onApprove, onReject, isApproving, isRejecting }: SubmissionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Format the submission date
@@ -120,7 +123,7 @@ function SubmissionCard({ submission, submitter, onApprove, isApproving }: Submi
       <div className="flex items-center gap-2">
         <button
           onClick={() => onApprove(submission.submissionId)}
-          disabled={isApproving}
+          disabled={isApproving || isRejecting}
           className="
             flex-1 flex items-center justify-center gap-2
             px-3 py-2 rounded-lg
@@ -143,6 +146,31 @@ function SubmissionCard({ submission, submitter, onApprove, isApproving }: Submi
             </>
           )}
         </button>
+        <button
+          onClick={() => onReject(submission.submissionId)}
+          disabled={isApproving || isRejecting}
+          className="
+            flex-1 flex items-center justify-center gap-2
+            px-3 py-2 rounded-lg
+            bg-red-500 hover:bg-red-600 
+            text-white font-soft font-semibold text-sm
+            transition-colors cursor-pointer
+            disabled:opacity-50 disabled:cursor-not-allowed
+            focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none
+          "
+        >
+          {isRejecting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              Rejecting...
+            </>
+          ) : (
+            <>
+              <X className="w-4 h-4" aria-hidden="true" />
+              Reject
+            </>
+          )}
+        </button>
       </div>
     </motion.div>
   );
@@ -156,6 +184,7 @@ function SubmissionCard({ submission, submitter, onApprove, isApproving }: Submi
 export function PendingSubmissions() {
   const queryClient = useQueryClient();
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   // Fetch pending submissions
   const { 
@@ -205,8 +234,27 @@ export function PendingSubmissions() {
     },
   });
 
+  // Mutation for rejecting submissions
+  const rejectMutation = useMutation({
+    mutationFn: (submissionId: string) => biographyApi.rejectSubmission(submissionId),
+    onMutate: (submissionId) => {
+      setRejectingId(submissionId);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch submissions
+      queryClient.invalidateQueries({ queryKey: ['biography-submissions'] });
+    },
+    onSettled: () => {
+      setRejectingId(null);
+    },
+  });
+
   const handleApprove = (submissionId: string) => {
     approveMutation.mutate(submissionId);
+  };
+
+  const handleReject = (submissionId: string) => {
+    rejectMutation.mutate(submissionId);
   };
 
   return (
@@ -306,14 +354,16 @@ export function PendingSubmissions() {
                   submission={submission}
                   submitter={staffByDiscordId.get(submission.submittedByDiscordId)}
                   onApprove={handleApprove}
+                  onReject={handleReject}
                   isApproving={approvingId === submission.submissionId}
+                  isRejecting={rejectingId === submission.submissionId}
                 />
               ))}
             </AnimatePresence>
           </div>
 
           {/* Error message - outside scroll area so it's always visible */}
-          {approveMutation.isError && (
+          {(approveMutation.isError || rejectMutation.isError) && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -321,7 +371,7 @@ export function PendingSubmissions() {
             >
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" aria-hidden="true" />
               <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">
-                Failed to approve submission. Please try again.
+                Failed to {approveMutation.isError ? 'approve' : 'reject'} submission. Please try again.
               </p>
             </motion.div>
           )}

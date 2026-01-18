@@ -11,6 +11,8 @@ export interface User {
   hasTemporaryKnighthood: boolean;
   /** Date of user's first MogTome login (ISO string), set by backend on first-ever login */
   firstLoginDate?: string;
+  /** User's Discord ID */
+  discordId: string;
 }
 
 // JWT payload structure from our API
@@ -218,6 +220,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         hasKnighthood: payload.hasKnighthood,
         hasTemporaryKnighthood: payload.hasTemporaryKnighthood,
         firstLoginDate: payload.firstMogTomeLoginDate,
+        discordId: payload.discordId,
       },
       isLoading: false,
       isAuthenticated: true,

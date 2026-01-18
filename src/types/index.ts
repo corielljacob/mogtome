@@ -119,6 +119,10 @@ export interface User {
   memberPortraitUrl: string;
   hasKnighthood: boolean;
   hasTemporaryKnighthood: boolean;
+  /** Date of user's first MogTome login (ISO string), set by backend on first-ever login */
+  firstLoginDate?: string;
+  /** User's Discord ID */
+  discordId: string;
 }
 
 // Common paginated response wrapper

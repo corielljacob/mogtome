@@ -11,6 +11,10 @@ import {
   Loader2,
   ExternalLink,
   Eye,
+  Clock,
+  Pencil,
+  XCircle,
+  PartyPopper,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
@@ -74,6 +78,8 @@ function ProfilePreviewCard({
   );
 }
 
+import type { BiographySubmission } from '../types';
+
 /**
  * BiographyEditor - Form for editing/submitting biography
  */
@@ -81,15 +87,22 @@ function BiographyEditor({
   canSetDirectly, 
   onBiographyChange,
   initialBiography,
+  pendingSubmission,
+  onSubmissionUpdate,
 }: { 
   canSetDirectly: boolean;
   onBiographyChange: (biography: string) => void;
   initialBiography: string;
+  pendingSubmission?: BiographySubmission | null;
+  onSubmissionUpdate?: () => void;
 }) {
   const queryClient = useQueryClient();
   const [biography, setBiography] = useState(initialBiography);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
+
+  const hasPendingSubmission = pendingSubmission?.status === 'Pending';
+  const hasRejectedSubmission = pendingSubmission?.status === 'Rejected';
 
   // Update biography when initialBiography changes (e.g., after fetching from API)
   useEffect(() => {
@@ -99,6 +112,15 @@ function BiographyEditor({
       setHasInitialized(true);
     }
   }, [initialBiography, hasInitialized, onBiographyChange]);
+
+  // If there's a pending or rejected submission, use that as the initial value
+  useEffect(() => {
+    if ((hasPendingSubmission || hasRejectedSubmission) && pendingSubmission?.biography && !hasInitialized) {
+      setBiography(pendingSubmission.biography);
+      onBiographyChange(pendingSubmission.biography);
+      setHasInitialized(true);
+    }
+  }, [hasPendingSubmission, hasRejectedSubmission, pendingSubmission, hasInitialized, onBiographyChange]);
 
   // Mutation for Knights setting biography directly
   const setBiographyMutation = useMutation({
@@ -116,13 +138,32 @@ function BiographyEditor({
     mutationFn: (biography: string) => biographyApi.submitBiography(biography),
     onSuccess: () => {
       setSuccessMessage('Biography submitted for approval! A Moogle Knight will review it soon.');
-      setBiography('');
-      onBiographyChange('');
       setTimeout(() => setSuccessMessage(null), 5000);
+      // Refetch submission data
+      onSubmissionUpdate?.();
     },
   });
 
-  const activeMutation = canSetDirectly ? setBiographyMutation : submitBiographyMutation;
+  // Mutation for editing a pending submission
+  const editSubmissionMutation = useMutation({
+    mutationFn: (biography: string) => 
+      biographyApi.editSubmission(pendingSubmission!.submissionId, biography),
+    onSuccess: () => {
+      setSuccessMessage('Your pending submission has been updated!');
+      setTimeout(() => setSuccessMessage(null), 5000);
+      // Refetch submission data
+      onSubmissionUpdate?.();
+    },
+  });
+
+  // Determine which mutation to use
+  const getActiveMutation = () => {
+    if (canSetDirectly) return setBiographyMutation;
+    if (hasPendingSubmission) return editSubmissionMutation;
+    return submitBiographyMutation;
+  };
+
+  const activeMutation = getActiveMutation();
   const isSubmitting = activeMutation.isPending;
   const error = activeMutation.error;
 
@@ -140,15 +181,73 @@ function BiographyEditor({
   const charactersRemaining = MAX_BIO_LENGTH - biography.length;
   const isOverLimit = charactersRemaining < 0;
 
+  // Determine button text
+  const getButtonText = () => {
+    if (canSetDirectly) return 'Update Biography';
+    if (hasPendingSubmission) return 'Update Pending Submission';
+    return 'Submit for Approval';
+  };
+
+  const getButtonLoadingText = () => {
+    if (canSetDirectly) return 'Updating...';
+    if (hasPendingSubmission) return 'Updating...';
+    return 'Submitting...';
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Pending submission status banner */}
+      {hasPendingSubmission && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-start gap-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20"
+        >
+          <Clock className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="text-xs sm:text-sm font-soft font-semibold text-amber-600 dark:text-amber-400">
+              Pending Review
+            </p>
+            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
+              You have a biography awaiting approval. You can edit it below until it's reviewed.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Rejected submission status banner */}
+      {hasRejectedSubmission && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-start gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+        >
+          <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="text-xs sm:text-sm font-soft font-semibold text-red-600 dark:text-red-400">
+              Submission Not Approved
+            </p>
+            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
+              Your previous biography submission was not approved. Please revise and resubmit below.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {/* Biography textarea */}
       <div>
         <label 
           htmlFor="biography" 
           className="block text-sm font-soft font-semibold text-[var(--bento-text)] mb-2"
         >
-          {canSetDirectly ? 'Your Biography' : 'Submit Your Biography'}
+          {canSetDirectly 
+            ? 'Your Biography' 
+            : hasPendingSubmission 
+              ? 'Edit Your Pending Submission'
+              : hasRejectedSubmission
+                ? 'Revise Your Biography'
+                : 'Submit Your Biography'
+          }
         </label>
         <textarea
           id="biography"
@@ -185,8 +284,8 @@ function BiographyEditor({
         </div>
       </div>
 
-      {/* Info banner for Paissa */}
-      {!canSetDirectly && (
+      {/* Info banner for Paissa (only show when no pending or rejected submission) */}
+      {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission && (
         <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--bento-secondary)]/10 border border-[var(--bento-secondary)]/20">
           <AlertCircle className="w-4 h-4 text-[var(--bento-secondary)] flex-shrink-0 mt-0.5" aria-hidden="true" />
           <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">
@@ -242,12 +341,16 @@ function BiographyEditor({
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            {canSetDirectly ? 'Updating...' : 'Submitting...'}
+            {getButtonLoadingText()}
           </>
         ) : (
           <>
-            <Send className="w-4 h-4" aria-hidden="true" />
-            {canSetDirectly ? 'Update Biography' : 'Submit for Approval'}
+            {hasPendingSubmission ? (
+              <Pencil className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <Send className="w-4 h-4" aria-hidden="true" />
+            )}
+            {getButtonText()}
           </>
         )}
       </button>
@@ -260,6 +363,7 @@ function BiographyEditor({
  */
 export function Profile() {
   const { user, isAuthenticated, isLoading, login } = useAuth();
+  const queryClient = useQueryClient();
   const [previewBiography, setPreviewBiography] = useState('');
 
   // Only permanent knights can set biography directly - temp knights still submit for approval
@@ -272,6 +376,27 @@ export function Profile() {
     enabled: isAuthenticated && !!user?.memberName,
     staleTime: 1000 * 60 * 5,
   });
+
+  // Fetch user's current submission (pending or most recent approved)
+  const { 
+    data: userSubmission, 
+    refetch: refetchSubmission,
+    isLoading: isLoadingSubmission,
+  } = useQuery({
+    queryKey: ['user-submission', user?.discordId],
+    queryFn: () => biographyApi.getSubmission(user!.discordId),
+    enabled: isAuthenticated && !!user?.discordId && !canSetBiographyDirectly,
+    staleTime: 1000 * 30, // 30 seconds
+  });
+
+  // Check if the user's submission was approved (status from API)
+  const wasApproved = userSubmission?.status === 'Approved';
+
+  // Callback to refetch submission after updates
+  const handleSubmissionUpdate = () => {
+    refetchSubmission();
+    queryClient.invalidateQueries({ queryKey: ['user-submission'] });
+  };
 
   // Find the current user in the staff list to get their existing biography
   const existingBiography = staffData?.staff.find(
@@ -354,6 +479,29 @@ export function Profile() {
             </div>
           </motion.div>
 
+          {/* Approved Notification Banner */}
+          {wasApproved && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="mb-4 sm:mb-6 p-4 rounded-xl border bg-green-500/10 border-green-500/20"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-green-500/20">
+                  <PartyPopper className="w-5 h-5 text-green-500" />
+                </div>
+                <div>
+                  <h3 className="font-soft font-semibold text-sm sm:text-base text-green-600 dark:text-green-400">
+                    Biography Approved!
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
+                    Your biography is now visible on the About page.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Profile Content */}
           <motion.div
             className="space-y-4 sm:space-y-6"
@@ -425,11 +573,22 @@ export function Profile() {
                 </div>
               </div>
 
-              <BiographyEditor 
-                canSetDirectly={canSetBiographyDirectly}
-                onBiographyChange={setPreviewBiography}
-                initialBiography={existingBiography}
-              />
+              {isLoadingSubmission ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 text-[var(--bento-primary)] animate-spin mb-2" />
+                  <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+                    Checking for existing submissions...
+                  </p>
+                </div>
+              ) : (
+                <BiographyEditor 
+                  canSetDirectly={canSetBiographyDirectly}
+                  onBiographyChange={setPreviewBiography}
+                  initialBiography={existingBiography}
+                  pendingSubmission={userSubmission}
+                  onSubmissionUpdate={handleSubmissionUpdate}
+                />
+              )}
             </ContentCard>
           </motion.div>
 
