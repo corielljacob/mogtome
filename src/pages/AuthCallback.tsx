@@ -239,17 +239,50 @@ function ProcessingScreen() {
   );
 }
 
-// Check if this is a first-time user based on their firstLoginDate from the backend
+// Storage key for tracking if user has seen the welcome screen
+const WELCOME_SEEN_KEY = 'mogtome_welcome_seen';
+
+/**
+ * Check if this is a first-time user who hasn't seen the welcome screen yet.
+ * 
+ * We use a combination of:
+ * 1. The backend's firstLoginDate (set on first-ever login)
+ * 2. Local storage to track if the user has already seen the welcome
+ * 
+ * This prevents showing the welcome screen on repeated logins within the same day.
+ */
 function isFirstTimeUser(user: User): boolean {
   if (!user.firstLoginDate) {
     // No firstLoginDate means backend hasn't set it yet - treat as first time
     return true;
   }
   
-  // Check if their first login date is today
+  // Check if we've already shown the welcome screen for this user
+  // We store the firstLoginDate they've seen, so if it changes (new account), they see it again
+  const seenWelcome = localStorage.getItem(WELCOME_SEEN_KEY);
+  if (seenWelcome === user.firstLoginDate) {
+    // User has already seen the welcome for this account
+    return false;
+  }
+  
+  // Check if their first login date is within the last few minutes (genuinely new)
+  // This handles the case where it's truly their first login
   const firstLogin = new Date(user.firstLoginDate);
-  const today = new Date();
-  return firstLogin.toDateString() === today.toDateString();
+  const now = new Date();
+  const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+  
+  // If their first login was within the last 5 minutes, they're a new user
+  return firstLogin >= fiveMinutesAgo;
+}
+
+/**
+ * Mark that the user has seen the welcome screen.
+ * Called when the first-time welcome animation completes.
+ */
+function markWelcomeSeen(user: User): void {
+  if (user.firstLoginDate) {
+    localStorage.setItem(WELCOME_SEEN_KEY, user.firstLoginDate);
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -283,8 +316,10 @@ function FirstTimeWelcome({
   }, []);
 
   const handleContinue = useCallback(() => {
+    // Mark that this user has seen the welcome screen
+    markWelcomeSeen(user);
     onComplete();
-  }, [onComplete]);
+  }, [onComplete, user]);
 
   const firstName = user.memberName?.split(' ')[0] || 'Adventurer';
   
