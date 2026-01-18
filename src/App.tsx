@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
-import { Navbar, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUserDataDialog } from './components';
+import { Navbar, Sidebar, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUserDataDialog } from './components';
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 
@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
 // Minimal loading fallback - keeps layout stable during lazy load
 function PageLoader() {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-[100dvh] flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
     </div>
   );
@@ -46,7 +46,7 @@ function AppContent() {
       // Set global transition duration to 0 when reduced motion is on
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
-      <div className="min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300 overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300 overflow-x-hidden flex">
         
         {/* First-visit welcome dialog */}
         <WelcomeDialog />
@@ -58,23 +58,32 @@ function AppContent() {
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <Navbar />
-        <main id="main-content" tabIndex={-1}>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/members" element={<Members />} />
-              <Route path="/chronicle" element={<ProtectedRoute><Chronicle /></ProtectedRoute>} />
-              <Route path="/about" element={<About />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/auth/logout" element={<Logout />} />
-              <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
-              <Route path="/debug" element={<Debug />} />
-            </Routes>
-          </Suspense>
-        </main>
+        
+        {/* Desktop sidebar navigation */}
+        <Sidebar />
+        
+        {/* Main content area */}
+        <div className="flex-1 min-w-0 overflow-x-hidden">
+          {/* Mobile top bar + desktop user controls */}
+          <Navbar />
+          
+          <main id="main-content" tabIndex={-1}>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/members" element={<Members />} />
+                <Route path="/chronicle" element={<ProtectedRoute><Chronicle /></ProtectedRoute>} />
+                <Route path="/about" element={<About />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/auth/logout" element={<Logout />} />
+                <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
+                <Route path="/debug" element={<Debug />} />
+              </Routes>
+            </Suspense>
+          </main>
+        </div>
       </div>
     </MotionConfig>
   );

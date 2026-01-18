@@ -1,37 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown, FileText } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, LogOut, ChevronDown, Settings, Info, Crown, FileText } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
-
-// Settings button for navbar
-function SettingsButton() {
-  const location = useLocation();
-  const isActive = location.pathname === '/settings';
-
-  return (
-    <Link
-      to="/settings"
-      className={`
-        relative w-10 h-10 md:w-9 md:h-9 rounded-xl 
-        bg-[var(--bento-card)]/80 border cursor-pointer shadow-sm
-        flex items-center justify-center
-        transition-colors duration-200
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-        ${isActive 
-          ? 'border-[var(--bento-primary)]/30 text-[var(--bento-primary)]' 
-          : 'border-[var(--bento-primary)]/15 text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
-        }
-      `}
-      aria-label="Settings"
-      aria-current={isActive ? 'page' : undefined}
-    >
-      <Settings className="w-5 h-5" />
-    </Link>
-  );
-}
 
 // Floating pom-pom with Framer Motion
 function FloatingPom({ isHovered }: { isHovered: boolean }) {
@@ -140,6 +113,32 @@ function UserMenu() {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleEscapeKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen]);
 
   if (isLoading || !user) return null;
 
@@ -147,11 +146,15 @@ function UserMenu() {
   const displayName = user.memberName;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/15 cursor-pointer shadow-sm hover:shadow-md transition-shadow focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
-        whileHover={{ scale: 1.02 }}
+        className={`
+          group flex items-center gap-2 px-1.5 py-1 rounded-xl
+          cursor-pointer transition-all duration-200
+          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+          ${isOpen ? 'bg-[var(--bento-bg)]' : 'hover:bg-[var(--bento-bg)]/60'}
+        `}
         whileTap={{ scale: 0.98 }}
         aria-expanded={isOpen}
         aria-haspopup="menu"
@@ -160,9 +163,9 @@ function UserMenu() {
         <img
           src={avatarUrl}
           alt=""
-          className="w-7 h-7 rounded-lg object-cover"
+          className="w-7 h-7 rounded-lg object-cover ring-1 ring-[var(--bento-border)] group-hover:ring-[var(--bento-primary)]/30 transition-all"
         />
-        <span className="hidden sm:block font-soft text-sm font-medium text-[var(--bento-text)] max-w-[100px] truncate" aria-hidden="true">
+        <span className="hidden lg:block font-soft text-sm font-medium text-[var(--bento-text)] max-w-[90px] truncate">
           {displayName}
         </span>
         <motion.div
@@ -170,68 +173,59 @@ function UserMenu() {
           transition={{ duration: 0.2 }}
           aria-hidden="true"
         >
-          <ChevronDown className="w-4 h-4 text-[var(--bento-text-muted)]" />
+          <ChevronDown className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
         </motion.div>
       </motion.button>
 
       <AnimatePresence>
         {isOpen && (
-          <>
-            {/* Backdrop to close menu */}
-            <div 
-              className="fixed inset-0 z-40" 
-              onClick={() => setIsOpen(false)}
-              aria-hidden="true"
-            />
-            
-            <motion.div
-              className="absolute right-0 top-full mt-2 z-50 min-w-[180px]"
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              role="menu"
-              aria-label="User menu"
-            >
-              <div className="bg-[var(--bento-card)] rounded-2xl border border-[var(--bento-primary)]/15 shadow-xl overflow-hidden">
-                {/* User info header */}
-                <div className="px-4 py-3 border-b border-[var(--bento-primary)]/10">
-                  <p className="font-soft font-semibold text-[var(--bento-text)] truncate">
-                    {displayName}
-                  </p>
-                  <p className="text-xs text-[var(--bento-text-muted)] truncate">
-                    {user.memberRank}
-                  </p>
-                </div>
-
-                {/* Menu items */}
-                <div className="p-2 space-y-1">
-                  <button
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate('/profile');
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
-                    role="menuitem"
-                  >
-                    <FileText className="w-4 h-4" aria-hidden="true" />
-                    <span className="font-soft text-sm">My Profile</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate('/auth/logout');
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
-                    role="menuitem"
-                  >
-                    <LogOut className="w-4 h-4" aria-hidden="true" />
-                    <span className="font-soft text-sm">Sign Out</span>
-                  </button>
-                </div>
+          <motion.div
+            className="absolute right-0 top-full mt-2 z-50 min-w-[180px]"
+            initial={{ opacity: 0, y: -6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.96 }}
+            transition={{ duration: 0.12, ease: 'easeOut' }}
+            role="menu"
+            aria-label="User menu"
+          >
+            <div className="bg-[var(--bento-card)] rounded-xl border border-[var(--bento-border)] shadow-lg shadow-black/8 overflow-hidden">
+              {/* User info header */}
+              <div className="px-3 py-2.5 border-b border-[var(--bento-border)] bg-[var(--bento-bg)]/30">
+                <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+                  {displayName}
+                </p>
+                <p className="text-xs text-[var(--bento-text-muted)] truncate">
+                  {user.memberRank}
+                </p>
               </div>
-            </motion.div>
-          </>
+
+              {/* Menu items */}
+              <div className="p-1.5">
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/profile');
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                  role="menuitem"
+                >
+                  <FileText className="w-4 h-4" aria-hidden="true" />
+                  <span className="font-soft text-sm">My Profile</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/auth/logout');
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                  role="menuitem"
+                >
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
+                  <span className="font-soft text-sm">Sign Out</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
@@ -247,14 +241,12 @@ function LoginButton() {
   return (
     <motion.button
       onClick={login}
-      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#5865F2] text-white font-soft text-sm font-semibold cursor-pointer shadow-md shadow-[#5865F2]/25 hover:shadow-lg hover:bg-[#4752C4] transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5865F2] text-white font-soft text-sm font-medium cursor-pointer hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none"
+      whileTap={{ scale: 0.97 }}
       aria-label="Login with Discord"
     >
       <DiscordIcon className="w-4 h-4" aria-hidden="true" />
-      <span className="hidden sm:inline">Login</span>
-      <LogIn className="w-4 h-4 sm:hidden" aria-hidden="true" />
+      <span className="hidden lg:inline">Login</span>
     </motion.button>
   );
 }
@@ -417,51 +409,6 @@ function KupoBadge() {
   );
 }
 
-// Knight Dashboard pill - only shows for users with knighthood
-function KnightDashboardPill() {
-  const { user, isAuthenticated } = useAuth();
-  const location = useLocation();
-  
-  // Only show if user has knighthood (permanent or temporary)
-  const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
-  
-  if (!isAuthenticated || !hasKnighthood) return null;
-  
-  const isActive = location.pathname === '/dashboard';
-  
-  return (
-    <Link
-      to="/dashboard"
-      className={`
-        pointer-events-auto h-14 flex items-center gap-2 px-4
-        bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border
-        font-soft text-sm font-semibold
-        transition-all duration-200
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-        ${isActive
-          ? 'border-amber-500/30 text-amber-500 shadow-amber-500/10'
-          : 'border-white/10 text-[var(--bento-text-muted)] hover:text-amber-500 hover:border-amber-500/20'
-        }
-      `}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      <motion.div
-        animate={{ 
-          scale: isActive ? 1 : [1, 1.1, 1],
-        }}
-        transition={{ 
-          duration: 2,
-          repeat: isActive ? 0 : Infinity,
-          repeatDelay: 4,
-        }}
-      >
-        <Crown className="w-4 h-4" />
-      </motion.div>
-      <span>Dashboard</span>
-    </Link>
-  );
-}
-
 // Mobile Knight Dashboard button for bottom nav
 function MobileKnightDashboardButton() {
   const { user, isAuthenticated } = useAuth();
@@ -526,7 +473,7 @@ function BottomNavItem({
 }
 
 // Bottom navigation bar for mobile - floating pill style
-function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: string; icon: React.ElementType; accentIcon: React.ElementType }> }) {
+function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: string; icon: React.ElementType }> }) {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
 
@@ -568,27 +515,20 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
 }
 
 export function Navbar() {
-  const location = useLocation();
-  const [logoHovered, setLogoHovered] = useState(false);
-  const [hoveredNav, setHoveredNav] = useState<string | null>(null);
-
   const navItems = [
-    { path: '/', label: 'Home', icon: Home, accentIcon: Sparkles },
-    { path: '/members', label: 'Family', icon: Users, accentIcon: Heart },
-    { path: '/chronicle', label: 'Chronicle', icon: Scroll, accentIcon: Clock },
-    { path: '/about', label: 'About', icon: Info, accentIcon: Crown },
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/members', label: 'Family', icon: Users },
+    { path: '/chronicle', label: 'Chronicle', icon: Scroll },
+    { path: '/about', label: 'About', icon: Info },
   ];
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
-      {/* Mobile floating header */}
+      {/* Mobile floating header - logo left, user controls right */}
       <nav 
         className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.375rem)] sm:pt-[calc(env(safe-area-inset-top)+0.5rem)] px-2 sm:px-3 pointer-events-none"
         aria-label="Mobile header"
       >
-        {/* Default: Split logo left, controls right */}
         <div className="flex items-center justify-between">
           {/* Logo - floating pill */}
           <Link 
@@ -607,113 +547,17 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Desktop floating pill navbar - 3 separate pills */}
-      <nav 
-        className="hidden md:block fixed top-0 left-0 right-0 z-50 pt-4 pointer-events-none"
-        aria-label="Main navigation"
+      {/* Desktop top bar - modern floating pill with user controls */}
+      <header 
+        className="hidden md:block fixed top-0 right-0 z-50 pt-3 pr-4 lg:pr-5 pointer-events-none"
+        aria-label="User controls"
       >
-        <div className="relative mx-4 lg:mx-6 flex items-center justify-between h-14">
-          {/* Left pill - Brand */}
-          <Link 
-            to="/" 
-            className="pointer-events-auto h-full flex items-center gap-3 pl-3 pr-4 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border border-white/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none transition-shadow hover:shadow-xl hover:shadow-black/10"
-            onMouseEnter={() => setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}
-            aria-label="MogTome - Go to home page"
-          >
-            <LogoIcon hovered={logoHovered} />
-            
-            <div aria-hidden="true" className="flex flex-col justify-center">
-              <div className="flex items-baseline gap-0.5">
-                <motion.span 
-                  className="font-display font-bold text-xl text-[var(--bento-text)]"
-                  animate={{ color: logoHovered ? 'var(--bento-primary)' : 'var(--bento-text)' }}
-                  transition={{ duration: 0.2 }}
-                >
-                  Mog
-                </motion.span>
-                <span className="font-display font-bold text-xl bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                  Tome
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Center pill - Navigation (absolutely positioned for true centering) */}
-          <div 
-            className="pointer-events-auto absolute left-1/2 -translate-x-1/2 h-full flex items-center gap-1 px-2 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border border-white/10"
-            role="navigation" 
-            aria-label="Main menu"
-          >
-            {navItems.map(({ path, label, icon: Icon, accentIcon: AccentIcon }) => {
-              const active = isActive(path);
-              const hovered = hoveredNav === path;
-              
-              return (
-                <Link
-                  key={path}
-                  to={path}
-                  onMouseEnter={() => setHoveredNav(path)}
-                  onMouseLeave={() => setHoveredNav(null)}
-                  aria-current={active ? 'page' : undefined}
-                  className={`
-                    relative flex items-center gap-2 px-3.5 py-2 rounded-xl
-                    font-soft text-sm font-medium
-                    transition-all duration-200
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                    ${active
-                      ? 'bg-[var(--bento-primary)]/15 text-[var(--bento-primary)]'
-                      : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-white/5'
-                    }
-                  `}
-                >
-                  <motion.div
-                    animate={{ 
-                      scale: hovered && !active ? 1.15 : 1,
-                      rotate: hovered && !active ? -8 : 0,
-                    }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    aria-hidden="true"
-                  >
-                    <Icon className="w-4 h-4" />
-                  </motion.div>
-                  
-                  <span>{label}</span>
-                  
-                  {/* Floating accent icon on hover */}
-                  <AnimatePresence>
-                    {hovered && !active && (
-                      <motion.div
-                        className="absolute -top-2 -right-1 pointer-events-none"
-                        initial={{ opacity: 0, scale: 0, y: 4 }}
-                        animate={{ opacity: 1, scale: 1, y: 0, rotate: 12 }}
-                        exit={{ opacity: 0, scale: 0, y: 4 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                      >
-                        <AccentIcon className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right side - Knight Dashboard pill + Controls pill */}
-          <div className="flex items-center gap-2">
-            {/* Knight Dashboard pill - only for knights */}
-            <KnightDashboardPill />
-
-            {/* Controls pill */}
-            <div className="pointer-events-auto h-14 flex items-center gap-2 px-3 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/8 border border-white/10">
-              <KupoBadge />
-              <LoginButton />
-              <UserMenu />
-              <SettingsButton />
-            </div>
-          </div>
+        <div className="pointer-events-auto flex items-center gap-2 py-2 px-2.5 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-md shadow-black/5 border border-[var(--bento-border)]">
+          <KupoBadge />
+          <LoginButton />
+          <UserMenu />
         </div>
-      </nav>
+      </header>
 
       {/* Mobile bottom navigation */}
       <MobileBottomNav navItems={navItems} />

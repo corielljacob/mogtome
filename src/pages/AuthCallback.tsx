@@ -685,7 +685,7 @@ export function AuthCallback() {
   const handleReturnHome = () => navigate('/', { replace: true });
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
       {/* Background decoration */}
       <motion.img
         src={moogleWizard}

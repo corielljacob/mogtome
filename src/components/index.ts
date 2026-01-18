@@ -13,6 +13,7 @@ export { PaginatedMemberGrid } from './PaginatedMemberGrid';
 
 // Layout & Navigation
 export { Navbar } from './Navbar';
+export { Sidebar, SIDEBAR_WIDTH_EXPANDED, SIDEBAR_WIDTH_COLLAPSED } from './Sidebar';
 export { AccessibilityMenu } from './AccessibilityMenu';
 export { ProtectedRoute } from './ProtectedRoute';
 export { KnightRoute } from './KnightRoute';
