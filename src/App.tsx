@@ -14,6 +14,7 @@ const About = lazy(() => import('./pages/About').then(m => ({ default: m.About }
 const AuthCallback = lazy(() => import('./pages/AuthCallback').then(m => ({ default: m.AuthCallback })));
 const Logout = lazy(() => import('./pages/Logout').then(m => ({ default: m.Logout })));
 const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
+const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
 const KnightDashboard = lazy(() => import('./pages/KnightDashboard').then(m => ({ default: m.KnightDashboard })));
 const Debug = lazy(() => import('./pages/Debug').then(m => ({ default: m.Debug })));
 
@@ -66,6 +67,7 @@ function AppContent() {
               <Route path="/chronicle" element={<ProtectedRoute><Chronicle /></ProtectedRoute>} />
               <Route path="/about" element={<About />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/logout" element={<Logout />} />
               <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />

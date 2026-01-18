@@ -25,6 +25,7 @@ const rankConfig: Record<string, {
   glow: string;
   label: string;
   description: string;
+  memberTerm: { singular: string; plural: string };
 }> = {
   'Moogle Guardian': { 
     icon: Crown,
@@ -34,6 +35,7 @@ const rankConfig: Record<string, {
     glow: 'rgba(251, 191, 36, 0.4)',
     label: 'FC Leader',
     description: 'Our Moogle Guardian who leads Kupo Life',
+    memberTerm: { singular: 'leader', plural: 'leaders' },
   },
   'Moogle Knight': { 
     icon: Shield,
@@ -43,6 +45,7 @@ const rankConfig: Record<string, {
     glow: 'rgba(167, 139, 250, 0.3)',
     label: 'Moogle Knights',
     description: 'Our trusted officers who keep things running smoothly',
+    memberTerm: { singular: 'knight', plural: 'knights' },
   },
   'Paissa Trainer': { 
     icon: Star,
@@ -52,6 +55,7 @@ const rankConfig: Record<string, {
     glow: 'rgba(52, 211, 153, 0.3)',
     label: 'Paissa Trainers',
     description: 'Exemplary community members hoping to make your day a little brighter',
+    memberTerm: { singular: 'trainer', plural: 'trainers' },
   },
 };
 
@@ -63,6 +67,7 @@ const defaultRankConfig = {
   glow: 'rgba(199, 91, 122, 0.3)',
   label: 'Leadership',
   description: 'Helping guide our FC',
+  memberTerm: { singular: 'member', plural: 'members' },
 };
 
 interface StaffCardProps {
@@ -375,7 +380,7 @@ const RankSection = memo(function RankSection({ rank, members, startIndex }: Ran
           flex-shrink-0 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-soft font-semibold
           ${config.bg} ${config.color}
         `}>
-          {members.length} {members.length === 1 ? 'leader' : 'leaders'}
+          {members.length} {members.length === 1 ? config.memberTerm.singular : config.memberTerm.plural}
         </span>
       </motion.div>
 
@@ -505,11 +510,11 @@ export function About() {
                 id="leadership-heading"
                 className="text-sm font-soft font-semibold text-[var(--bento-primary)]"
               >
-                Our Leadership
+                Our Team
               </h2>
               {staff.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--bento-primary)]/10 text-[var(--bento-primary)]">
-                  {staff.length} leaders
+                  {staff.length} members
                 </span>
               )}
               <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />

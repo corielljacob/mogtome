@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown } from 'lucide-react';
+import { Home, Users, Heart, Sparkles, Wand2, Scroll, Clock, LogIn, LogOut, ChevronDown, Settings, Info, Crown, User, FileText } from 'lucide-react';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import pusheenMoogle from '../assets/moogles/ffxiv-pusheen.webp';
 import { useAuth } from '../contexts/AuthContext';
@@ -205,7 +205,18 @@ function UserMenu() {
                 </div>
 
                 {/* Menu items */}
-                <div className="p-2">
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/profile');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                    role="menuitem"
+                  >
+                    <FileText className="w-4 h-4" aria-hidden="true" />
+                    <span className="font-soft text-sm">My Profile</span>
+                  </button>
                   <button
                     onClick={() => {
                       setIsOpen(false);

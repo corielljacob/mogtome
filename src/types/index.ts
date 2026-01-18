@@ -99,6 +99,19 @@ export interface GetChronicleEventsParams {
   limit?: number;
 }
 
+// Biography submission from a Paissa awaiting approval
+export interface BiographySubmission {
+  id: {
+    timestamp: number;
+    creationTime: string;
+  };
+  submissionId: string;
+  submittedByDiscordId: string;
+  biography: string;
+  status: string;
+  submittedAt: string;
+}
+
 // User info extracted from JWT token
 export interface User {
   memberName: string;
