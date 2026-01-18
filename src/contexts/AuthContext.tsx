@@ -9,7 +9,7 @@ export interface User {
   memberPortraitUrl: string;
   hasKnighthood: boolean;
   hasTemporaryKnighthood: boolean;
-  /** Date of user's first MogTome login (ISO string), set by backend */
+  /** Date of user's first MogTome login (ISO string), set by backend on first-ever login */
   firstLoginDate?: string;
 }
 
@@ -19,13 +19,14 @@ interface JwtPayload {
   iss: string;
   exp: number;
   nbf: number;
+  discordId: string;
   memberName: string;
   memberRank: string;
   memberPortraitUrl: string;
   hasKnighthood: boolean;
   hasTemporaryKnighthood: boolean;
-  /** Date of user's first MogTome login (ISO string) */
-  firstLoginDate?: string;
+  /** Date of user's first MogTome login (ISO string) - set by backend on first-ever login */
+  firstMogTomeLoginDate?: string;
 }
 
 interface AuthState {
@@ -216,7 +217,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberPortraitUrl: payload.memberPortraitUrl,
         hasKnighthood: payload.hasKnighthood,
         hasTemporaryKnighthood: payload.hasTemporaryKnighthood,
-        firstLoginDate: payload.firstLoginDate,
+        firstLoginDate: payload.firstMogTomeLoginDate,
       },
       isLoading: false,
       isAuthenticated: true,
