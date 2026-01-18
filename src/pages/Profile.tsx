@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { 
   User, 
@@ -86,6 +86,7 @@ function BiographyEditor({
   onBioChange: (bio: string) => void;
   initialBio: string;
 }) {
+  const queryClient = useQueryClient();
   const [biography, setBiography] = useState(initialBio);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -105,6 +106,8 @@ function BiographyEditor({
     onSuccess: () => {
       setSuccessMessage('Biography updated successfully!');
       setTimeout(() => setSuccessMessage(null), 5000);
+      // Refetch staff data so the updated bio is reflected
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
     },
   });
 
