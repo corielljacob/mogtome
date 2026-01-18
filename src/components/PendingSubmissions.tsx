@@ -38,7 +38,7 @@ function SubmissionCard({ submission, submitter, onApprove, isApproving }: Submi
     minute: '2-digit',
   });
 
-  const bioPreview = submission.biography.length > 100 
+  const biographyPreview = submission.biography.length > 100 
     ? `${submission.biography.slice(0, 100)}...` 
     : submission.biography;
 
@@ -106,7 +106,7 @@ function SubmissionCard({ submission, submitter, onApprove, isApproving }: Submi
           className="w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
         >
           <p className="text-sm text-[var(--bento-text)] leading-relaxed whitespace-pre-wrap">
-            {isExpanded ? submission.biography : bioPreview}
+            {isExpanded ? submission.biography : biographyPreview}
           </p>
           {submission.biography.length > 100 && (
             <span className="text-xs text-[var(--bento-primary)] mt-1 inline-block hover:underline">
@@ -219,7 +219,7 @@ export function PendingSubmissions() {
           </div>
           <div>
             <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
-              Pending Bio Submissions
+              Pending Biography Submissions
             </h2>
             <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
               Review and approve member biographies

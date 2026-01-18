@@ -79,50 +79,50 @@ function ProfilePreviewCard({
  */
 function BiographyEditor({ 
   canSetDirectly, 
-  onBioChange,
-  initialBio,
+  onBiographyChange,
+  initialBiography,
 }: { 
   canSetDirectly: boolean;
-  onBioChange: (bio: string) => void;
-  initialBio: string;
+  onBiographyChange: (biography: string) => void;
+  initialBiography: string;
 }) {
   const queryClient = useQueryClient();
-  const [biography, setBiography] = useState(initialBio);
+  const [biography, setBiography] = useState(initialBiography);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Update biography when initialBio changes (e.g., after fetching from API)
+  // Update biography when initialBiography changes (e.g., after fetching from API)
   useEffect(() => {
-    if (initialBio && !hasInitialized) {
-      setBiography(initialBio);
-      onBioChange(initialBio);
+    if (initialBiography && !hasInitialized) {
+      setBiography(initialBiography);
+      onBiographyChange(initialBiography);
       setHasInitialized(true);
     }
-  }, [initialBio, hasInitialized, onBioChange]);
+  }, [initialBiography, hasInitialized, onBiographyChange]);
 
-  // Mutation for Knights setting bio directly
-  const setBioMutation = useMutation({
-    mutationFn: (bio: string) => biographyApi.setBiography(bio),
+  // Mutation for Knights setting biography directly
+  const setBiographyMutation = useMutation({
+    mutationFn: (biography: string) => biographyApi.setBiography(biography),
     onSuccess: () => {
       setSuccessMessage('Biography updated successfully!');
       setTimeout(() => setSuccessMessage(null), 5000);
-      // Refetch staff data so the updated bio is reflected
+      // Refetch staff data so the updated biography is reflected
       queryClient.invalidateQueries({ queryKey: ['staff'] });
     },
   });
 
-  // Mutation for Paissa submitting bio for approval
-  const submitBioMutation = useMutation({
-    mutationFn: (bio: string) => biographyApi.submitBiography(bio),
+  // Mutation for Paissa submitting biography for approval
+  const submitBiographyMutation = useMutation({
+    mutationFn: (biography: string) => biographyApi.submitBiography(biography),
     onSuccess: () => {
       setSuccessMessage('Biography submitted for approval! A Moogle Knight will review it soon.');
       setBiography('');
-      onBioChange('');
+      onBiographyChange('');
       setTimeout(() => setSuccessMessage(null), 5000);
     },
   });
 
-  const activeMutation = canSetDirectly ? setBioMutation : submitBioMutation;
+  const activeMutation = canSetDirectly ? setBiographyMutation : submitBiographyMutation;
   const isSubmitting = activeMutation.isPending;
   const error = activeMutation.error;
 
@@ -132,9 +132,9 @@ function BiographyEditor({
     activeMutation.mutate(biography.trim());
   };
 
-  const handleBioChange = (value: string) => {
+  const handleBiographyChange = (value: string) => {
     setBiography(value);
-    onBioChange(value);
+    onBiographyChange(value);
   };
 
   const charactersRemaining = MAX_BIO_LENGTH - biography.length;
@@ -153,7 +153,7 @@ function BiographyEditor({
         <textarea
           id="biography"
           value={biography}
-          onChange={(e) => handleBioChange(e.target.value)}
+          onChange={(e) => handleBiographyChange(e.target.value)}
           placeholder="Tell us about yourself, kupo~ What brings you to Kupo Life? What do you enjoy doing in Eorzea?"
           rows={5}
           maxLength={MAX_BIO_LENGTH + 50}
@@ -260,10 +260,10 @@ function BiographyEditor({
  */
 export function Profile() {
   const { user, isAuthenticated, isLoading, login } = useAuth();
-  const [previewBio, setPreviewBio] = useState('');
+  const [previewBiography, setPreviewBiography] = useState('');
 
-  // Only permanent knights can set bio directly - temp knights still submit for approval
-  const canSetBioDirectly = user?.hasKnighthood === true;
+  // Only permanent knights can set biography directly - temp knights still submit for approval
+  const canSetBiographyDirectly = user?.hasKnighthood === true;
 
   // Fetch staff list to find user's existing bio
   const { data: staffData } = useQuery({
@@ -273,8 +273,8 @@ export function Profile() {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Find the current user in the staff list to get their existing bio
-  const existingBio = staffData?.staff.find(
+  // Find the current user in the staff list to get their existing biography
+  const existingBiography = staffData?.staff.find(
     (member) => member.name === user?.memberName
   )?.biography || '';
 
@@ -381,7 +381,7 @@ export function Profile() {
                 name={user?.memberName || ''}
                 rank={user?.memberRank || ''}
                 avatarUrl={user?.memberPortraitUrl || ''}
-                biography={previewBio}
+                biography={previewBiography}
               />
 
               {/* Lodestone link */}
@@ -409,18 +409,18 @@ export function Profile() {
                     Write Your Story
                   </h2>
                   <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
-                    {canSetBioDirectly 
-                      ? "Your bio will appear on the About page immediately"
-                      : "Your bio will be reviewed before appearing on the About page"
+                    {canSetBiographyDirectly 
+                      ? "Your biography will appear on the About page immediately"
+                      : "Your biography will be reviewed before appearing on the About page"
                     }
                   </p>
                 </div>
               </div>
 
               <BiographyEditor 
-                canSetDirectly={canSetBioDirectly}
-                onBioChange={setPreviewBio}
-                initialBio={existingBio}
+                canSetDirectly={canSetBiographyDirectly}
+                onBiographyChange={setPreviewBiography}
+                initialBiography={existingBiography}
               />
             </ContentCard>
           </motion.div>

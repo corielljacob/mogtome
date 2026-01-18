@@ -82,7 +82,7 @@ const SCROLL_OFFSET = 200;
 
 /**
  * PaginatedMemberGrid - Non-virtualized grid with pagination.
- * Better for bio editing mode where form state needs to persist.
+ * Better for biography editing mode where form state needs to persist.
  * 
  * FEATURES:
  * - URL-synced pagination (bookmarkable, shareable, back-button works)

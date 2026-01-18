@@ -53,7 +53,7 @@ export function KnightDashboard() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            {/* Pending Bio Submissions */}
+            {/* Pending Biography Submissions */}
             <div className="lg:col-span-1">
               <PendingSubmissions />
             </div>
