@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { refreshAuthToken } from '../api/client';
 
 // User info extracted from JWT token
 export interface User {
@@ -100,6 +101,13 @@ function isTokenExpired(payload: JwtPayload): boolean {
   return payload.exp < now;
 }
 
+// Check if token will expire within the given threshold (in seconds)
+// Default threshold: 5 minutes before expiration
+function isTokenExpiringSoon(payload: JwtPayload, thresholdSeconds: number = 300): boolean {
+  const now = Math.floor(Date.now() / 1000);
+  return payload.exp - now < thresholdSeconds;
+}
+
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -110,11 +118,54 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading: true,
     isAuthenticated: false,
   });
+  
+  // Track the refresh timer so we can clean it up
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track if a refresh is in progress to prevent duplicate calls
+  const isRefreshingRef = useRef(false);
+
+  // Clear any existing refresh timer
+  const clearRefreshTimer = useCallback(() => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+  }, []);
+
+  // Schedule a proactive token refresh before it expires
+  const scheduleTokenRefresh = useCallback((payload: JwtPayload) => {
+    clearRefreshTimer();
+    
+    const now = Math.floor(Date.now() / 1000);
+    const expiresIn = payload.exp - now;
+    
+    // Schedule refresh 5 minutes before expiration, or immediately if less than 5 min left
+    // Minimum delay of 10 seconds to prevent tight loops
+    const refreshIn = Math.max(10, (expiresIn - 300)) * 1000;
+    
+    refreshTimerRef.current = setTimeout(async () => {
+      if (isRefreshingRef.current) return;
+      isRefreshingRef.current = true;
+      
+      try {
+        const newToken = await refreshAuthToken();
+        if (newToken) {
+          // Token refreshed successfully - refreshUser will be called by the event listener
+          window.dispatchEvent(new CustomEvent('auth-token-refreshed'));
+        }
+      } catch {
+        // Refresh failed silently - the user will be logged out when the token expires
+      } finally {
+        isRefreshingRef.current = false;
+      }
+    }, refreshIn);
+  }, [clearRefreshTimer]);
 
   // Load user from stored JWT token
   const refreshUser = useCallback(() => {
     const token = getAuthToken();
     if (!token) {
+      clearRefreshTimer();
       setState({
         user: null,
         isLoading: false,
@@ -126,14 +177,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const payload = decodeJwtPayload(token);
     
     if (!payload || isTokenExpired(payload)) {
-      // Token invalid or expired
+      // Token invalid or expired - try to refresh it
       clearAuthToken();
+      clearRefreshTimer();
       setState({
         user: null,
         isLoading: false,
         isAuthenticated: false,
       });
       return;
+    }
+
+    // If token is expiring soon, trigger a refresh in the background
+    if (isTokenExpiringSoon(payload)) {
+      // Don't block - refresh in background
+      if (!isRefreshingRef.current) {
+        isRefreshingRef.current = true;
+        refreshAuthToken()
+          .then((newToken) => {
+            if (newToken) {
+              window.dispatchEvent(new CustomEvent('auth-token-refreshed'));
+            }
+          })
+          .finally(() => {
+            isRefreshingRef.current = false;
+          });
+      }
+    } else {
+      // Schedule proactive refresh before token expires
+      scheduleTokenRefresh(payload);
     }
 
     // Extract user info from JWT payload
@@ -149,12 +221,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isLoading: false,
       isAuthenticated: true,
     });
-  }, []);
+  }, [clearRefreshTimer, scheduleTokenRefresh]);
 
   // Initial load - check if user is authenticated
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
+
+  // Listen for token refresh/expiry events from the API client
+  useEffect(() => {
+    const handleTokenRefreshed = () => {
+      refreshUser();
+    };
+
+    const handleTokenExpired = () => {
+      clearRefreshTimer();
+      clearAuthToken();
+      setState({
+        user: null,
+        isLoading: false,
+        isAuthenticated: false,
+      });
+    };
+
+    window.addEventListener('auth-token-refreshed', handleTokenRefreshed);
+    window.addEventListener('auth-token-expired', handleTokenExpired);
+
+    return () => {
+      window.removeEventListener('auth-token-refreshed', handleTokenRefreshed);
+      window.removeEventListener('auth-token-expired', handleTokenExpired);
+      clearRefreshTimer();
+    };
+  }, [refreshUser, clearRefreshTimer]);
 
   // Redirect to Discord OAuth login
   const login = useCallback(() => {
