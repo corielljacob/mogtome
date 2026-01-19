@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, Component } from 'react';
+import type { ReactNode, ErrorInfo } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
@@ -6,6 +7,32 @@ import { Navbar, Sidebar, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUse
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+
+// Error boundary to catch chunk loading failures after deployments
+class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
+  static getDerivedStateFromError(error: Error): null {
+    // Check if this is a chunk loading error (dynamic import failure)
+    if (
+      error.name === 'ChunkLoadError' ||
+      error.message?.includes('Failed to fetch dynamically imported module') ||
+      error.message?.includes('Loading chunk') ||
+      error.message?.includes('Loading CSS chunk')
+    ) {
+      // Auto-refresh the page to get the latest assets
+      window.location.reload();
+    }
+    return null;
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log the error for debugging
+    console.error('Chunk loading error:', error, errorInfo);
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
 
 // Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -69,20 +96,22 @@ function AppContent() {
           <Navbar />
           
           <main id="main-content" tabIndex={-1}>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/members" element={<Members />} />
-                <Route path="/chronicle" element={<ProtectedRoute><Chronicle /></ProtectedRoute>} />
-                <Route path="/about" element={<About />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/auth/logout" element={<Logout />} />
-                <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
-                <Route path="/debug" element={<Debug />} />
-              </Routes>
-            </Suspense>
+            <ChunkErrorBoundary>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/members" element={<Members />} />
+                  <Route path="/chronicle" element={<ProtectedRoute><Chronicle /></ProtectedRoute>} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/auth/logout" element={<Logout />} />
+                  <Route path="/dashboard" element={<KnightRoute><KnightDashboard /></KnightRoute>} />
+                  <Route path="/debug" element={<Debug />} />
+                </Routes>
+              </Suspense>
+            </ChunkErrorBoundary>
           </main>
         </div>
       </div>
