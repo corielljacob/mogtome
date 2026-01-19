@@ -4,83 +4,239 @@ import { motion } from 'motion/react';
 import { 
   User, 
   Sparkles, 
-  FileText, 
   Send, 
   Check, 
   AlertCircle, 
   Loader2,
-  ExternalLink,
-  Eye,
+  Calendar,
   Clock,
   Pencil,
   XCircle,
+  Shield,
+  Quote,
+  Globe,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
-import { ContentCard, MembershipCard } from '../components';
+import { ContentCard, MembershipCard, StoryDivider, FloatingSparkles } from '../components';
 
 const MAX_BIO_LENGTH = 300;
 
+import type { BiographySubmission } from '../types';
+
+// Rank color config for profile display
+const rankColors: Record<string, { bg: string; text: string; hex: string }> = {
+  'Moogle Guardian': { bg: 'bg-[#2FECE6]/10', text: 'text-[#2FECE6]', hex: '#2FECE6' },
+  'Moogle Knight': { bg: 'bg-[#8E42CC]/10', text: 'text-[#8E42CC]', hex: '#8E42CC' },
+  'Paissa Trainer': { bg: 'bg-[#068167]/10', text: 'text-[#068167]', hex: '#068167' },
+  'Coeurl Hunter': { bg: 'bg-[#056D04]/10', text: 'text-[#056D04]', hex: '#056D04' },
+  'Mandragora': { bg: 'bg-[#E67E22]/10', text: 'text-[#E67E22]', hex: '#E67E22' },
+  'Apkallu Seeker': { bg: 'bg-[#4D88BB]/10', text: 'text-[#4D88BB]', hex: '#4D88BB' },
+  'Kupo Shelf': { bg: 'bg-[#5ABE32]/10', text: 'text-[#5ABE32]', hex: '#5ABE32' },
+  'Bom Boko': { bg: 'bg-stone-400/10', text: 'text-stone-400', hex: '#a8a29e' },
+};
+
+const defaultRankColor = { bg: 'bg-[var(--bento-primary)]/10', text: 'text-[var(--bento-primary)]', hex: '#c75b7a' };
+
 /**
- * ProfilePreviewCard - Shows how the user will appear on the About page
+ * ProfileHeader - The main profile display section showing the user's identity
+ * Now includes inline biography editing for better UX
  */
-function ProfilePreviewCard({ 
-  name, 
-  rank, 
-  avatarUrl, 
-  biography 
-}: { 
-  name: string; 
-  rank: string; 
+function ProfileHeader({
+  name,
+  rank,
+  avatarUrl,
+  biography,
+  memberSince,
+  characterId,
+  isEditing,
+  onEditClick,
+  onBiographyChange,
+  canSetDirectly,
+  pendingSubmission,
+  onSubmissionUpdate,
+  isLoadingSubmission,
+  isLoadingBiography,
+}: {
+  name: string;
+  rank: string;
   avatarUrl: string;
   biography: string;
+  memberSince?: Date;
+  characterId?: string;
+  isEditing: boolean;
+  onEditClick: () => void;
+  onBiographyChange: (bio: string) => void;
+  canSetDirectly: boolean;
+  pendingSubmission?: BiographySubmission | null;
+  onSubmissionUpdate: () => void;
+  isLoadingSubmission: boolean;
+  isLoadingBiography: boolean;
 }) {
-  return (
-    <div className="relative p-4 sm:p-5 bg-[var(--bento-bg)]/50 rounded-xl border border-[var(--bento-border)]">
-      {/* Preview label */}
-      <div className="absolute -top-3 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] text-xs font-soft font-medium text-[var(--bento-text-muted)]">
-        <Eye className="w-3 h-3" />
-        Preview
-      </div>
+  const rankColor = rankColors[rank] || defaultRankColor;
+  const lodestoneUrl = characterId
+    ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
+    : null;
 
-      <div className="flex flex-col sm:flex-row gap-4 mt-2">
-        {/* Avatar */}
-        <div className="flex-shrink-0 self-center sm:self-start">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shadow-md ring-2 ring-[var(--bento-primary)]/10">
-            <img
-              src={avatarUrl}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+  const formattedDate = memberSince
+    ? memberSince.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative"
+    >
+      {/* Background gradient card */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)] to-[var(--bento-bg)] border border-[var(--bento-border)] shadow-xl">
+        {/* Decorative gradient overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, ${rankColor.hex} 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+          }}
+        />
+        
+        {/* Rank accent bar */}
+        <div 
+          className="h-1 sm:h-1.5"
+          style={{ backgroundColor: rankColor.hex }}
+        />
+
+        <div className="relative p-4 sm:p-6 md:p-8">
+          {/* Top section: Avatar and basic info */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+            {/* Avatar */}
+            <div className="relative group flex-shrink-0">
+              <motion.div
+                className="absolute -inset-2 rounded-2xl blur-xl opacity-40"
+                style={{ backgroundColor: rankColor.hex }}
+                animate={{ opacity: [0.3, 0.5, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {lodestoneUrl && (
+                <a
+                  href={lodestoneUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute -bottom-2 -right-2 flex items-center justify-center w-8 h-8 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-lg hover:scale-110 transition-transform"
+                  aria-label="View Lodestone profile"
+                >
+                  <Globe className="w-4 h-4 text-[var(--bento-text-muted)]" />
+                </a>
+              )}
+            </div>
+
+            {/* Name and details */}
+            <div className="flex-1 min-w-0 text-center sm:text-left">
+              <h1 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[var(--bento-text)] mb-2">
+                {name}
+              </h1>
+              
+              {/* Rank badge */}
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3">
+                <span className={`
+                  inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+                  text-xs sm:text-sm font-soft font-semibold
+                  ${rankColor.bg} ${rankColor.text}
+                `}>
+                  <Shield className="w-3.5 h-3.5" />
+                  {rank}
+                </span>
+                
+                {formattedDate && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-soft text-[var(--bento-text-muted)] bg-[var(--bento-bg)]">
+                    <Calendar className="w-3 h-3" />
+                    Member since {formattedDate}
+                  </span>
+                )}
+              </div>
+
+              {/* Biography section - shows loading, display, or editor */}
+              {!isEditing ? (
+                // Display mode
+                <div className="relative mt-4">
+                  {isLoadingBiography ? (
+                    // Loading state for biography
+                    <div className="flex items-center gap-2 py-2">
+                      <div className="w-4 h-4 rounded-full border-2 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+                      <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+                        Loading biography...
+                      </p>
+                    </div>
+                  ) : biography ? (
+                    <div className="relative">
+                      <Quote className="absolute -left-1 -top-1 w-6 h-6 text-[var(--bento-primary)]/20" />
+                      <p className="text-sm sm:text-base text-[var(--bento-text-muted)] leading-relaxed pl-5 italic">
+                        {biography}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[var(--bento-text-subtle)] italic">
+                      No biography yet. Tell the FC about yourself!
+                    </p>
+                  )}
+                  
+                  {/* Edit button - hide while loading */}
+                  {!isLoadingBiography && (
+                    <button
+                      onClick={onEditClick}
+                      className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)] hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)]"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      {biography ? 'Edit Biography' : 'Add Biography'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                // Edit mode - inline editor
+                <div className="mt-4">
+                  {isLoadingSubmission ? (
+                    <div className="flex items-center gap-2 py-4">
+                      <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
+                      <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+                        Loading...
+                      </p>
+                    </div>
+                  ) : (
+                    <BiographyEditor 
+                      canSetDirectly={canSetDirectly}
+                      onBiographyChange={onBiographyChange}
+                      initialBiography={biography}
+                      pendingSubmission={pendingSubmission}
+                      onSubmissionUpdate={onSubmissionUpdate}
+                      onCancel={onEditClick}
+                      compact
+                    />
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0 text-center sm:text-left">
-          <h3 className="font-display font-bold text-base sm:text-lg text-[var(--bento-text)] truncate">
-            {name}
-          </h3>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-soft font-semibold bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] mt-1">
-            {rank}
-          </span>
-          
-          {/* Biography preview */}
-          <p className="mt-3 text-sm text-[var(--bento-text-muted)] leading-relaxed">
-            {biography || (
-              <span className="italic opacity-75">Your biography will appear here...</span>
-            )}
-          </p>
-        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-import type { BiographySubmission } from '../types';
-
 /**
  * BiographyEditor - Form for editing/submitting biography
+ * Supports both standalone and compact inline modes
  */
 function BiographyEditor({ 
   canSetDirectly, 
@@ -88,70 +244,74 @@ function BiographyEditor({
   initialBiography,
   pendingSubmission,
   onSubmissionUpdate,
+  onCancel,
+  compact = false,
 }: { 
   canSetDirectly: boolean;
   onBiographyChange: (biography: string) => void;
   initialBiography: string;
   pendingSubmission?: BiographySubmission | null;
   onSubmissionUpdate?: () => void;
+  onCancel?: () => void;
+  compact?: boolean;
 }) {
   const queryClient = useQueryClient();
-  const [biography, setBiography] = useState(initialBiography);
+  const [biography, setBiography] = useState(initialBiography || '');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   const hasPendingSubmission = pendingSubmission?.status === 'Pending';
   const hasRejectedSubmission = pendingSubmission?.status === 'Rejected';
 
-  // Update biography when initialBiography changes (e.g., after fetching from API)
+  // Sync with initial biography or pending submission on mount
   useEffect(() => {
-    if (initialBiography && !hasInitialized) {
-      setBiography(initialBiography);
-      onBiographyChange(initialBiography);
-      setHasInitialized(true);
-    }
-  }, [initialBiography, hasInitialized, onBiographyChange]);
-
-  // If there's a pending or rejected submission, use that as the initial value
-  useEffect(() => {
-    if ((hasPendingSubmission || hasRejectedSubmission) && pendingSubmission?.biography && !hasInitialized) {
+    if (hasPendingSubmission && pendingSubmission?.biography) {
       setBiography(pendingSubmission.biography);
-      onBiographyChange(pendingSubmission.biography);
-      setHasInitialized(true);
+    } else if (initialBiography) {
+      setBiography(initialBiography);
     }
-  }, [hasPendingSubmission, hasRejectedSubmission, pendingSubmission, hasInitialized, onBiographyChange]);
+  }, [initialBiography, hasPendingSubmission, pendingSubmission?.biography]);
 
   // Mutation for Knights setting biography directly
   const setBiographyMutation = useMutation({
-    mutationFn: (biography: string) => biographyApi.setBiography(biography),
+    mutationFn: (bio: string) => biographyApi.setBiography(bio),
     onSuccess: () => {
-      setSuccessMessage('Biography updated successfully!');
-      setTimeout(() => setSuccessMessage(null), 5000);
-      // Refetch staff data so the updated biography is reflected
+      setSuccessMessage('Biography updated!');
       queryClient.invalidateQueries({ queryKey: ['staff'] });
+      // Auto-close after success in compact mode
+      if (compact && onCancel) {
+        setTimeout(() => onCancel(), 1500);
+      } else {
+        setTimeout(() => setSuccessMessage(null), 5000);
+      }
     },
   });
 
   // Mutation for Paissa submitting biography for approval
   const submitBiographyMutation = useMutation({
-    mutationFn: (biography: string) => biographyApi.submitBiography(biography),
+    mutationFn: (bio: string) => biographyApi.submitBiography(bio),
     onSuccess: () => {
-      setSuccessMessage('Biography submitted for approval! A Moogle Knight will review it soon.');
-      setTimeout(() => setSuccessMessage(null), 5000);
-      // Refetch submission data
+      setSuccessMessage('Submitted for review!');
       onSubmissionUpdate?.();
+      if (compact && onCancel) {
+        setTimeout(() => onCancel(), 1500);
+      } else {
+        setTimeout(() => setSuccessMessage(null), 5000);
+      }
     },
   });
 
   // Mutation for editing a pending submission
   const editSubmissionMutation = useMutation({
-    mutationFn: (biography: string) => 
-      biographyApi.editSubmission(pendingSubmission!.submissionId, biography),
+    mutationFn: (bio: string) => 
+      biographyApi.editSubmission(pendingSubmission!.submissionId, bio),
     onSuccess: () => {
-      setSuccessMessage('Your pending submission has been updated!');
-      setTimeout(() => setSuccessMessage(null), 5000);
-      // Refetch submission data
+      setSuccessMessage('Submission updated!');
       onSubmissionUpdate?.();
+      if (compact && onCancel) {
+        setTimeout(() => onCancel(), 1500);
+      } else {
+        setTimeout(() => setSuccessMessage(null), 5000);
+      }
     },
   });
 
@@ -182,127 +342,89 @@ function BiographyEditor({
 
   // Determine button text
   const getButtonText = () => {
-    if (canSetDirectly) return 'Update Biography';
-    if (hasPendingSubmission) return 'Update Pending Submission';
-    return 'Submit for Approval';
-  };
-
-  const getButtonLoadingText = () => {
-    if (canSetDirectly) return 'Updating...';
-    if (hasPendingSubmission) return 'Updating...';
-    return 'Submitting...';
+    if (canSetDirectly) return compact ? 'Save' : 'Update Biography';
+    if (hasPendingSubmission) return compact ? 'Update' : 'Update Pending Submission';
+    return compact ? 'Submit' : 'Submit for Approval';
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Pending submission status banner */}
+    <form onSubmit={handleSubmit} className={compact ? 'space-y-3' : 'space-y-4'}>
+      {/* Status banners - more compact in inline mode */}
       {hasPendingSubmission && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-start gap-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20"
-        >
-          <Clock className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <div>
-            <p className="text-xs sm:text-sm font-soft font-semibold text-amber-600 dark:text-amber-400">
-              Pending Review
-            </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
-              You have a biography awaiting approval. You can edit it below until it's reviewed.
-            </p>
-          </div>
-        </motion.div>
+        <div className={`flex items-center gap-2 ${compact ? 'p-2' : 'p-3'} rounded-lg bg-amber-500/10 border border-amber-500/20`}>
+          <Clock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" aria-hidden="true" />
+          <p className="text-xs font-soft text-amber-600 dark:text-amber-400">
+            {compact ? 'Pending review - you can still edit' : 'You have a biography awaiting approval. You can edit it below until it\'s reviewed.'}
+          </p>
+        </div>
       )}
 
-      {/* Rejected submission status banner */}
       {hasRejectedSubmission && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-start gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20"
-        >
-          <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <div>
-            <p className="text-xs sm:text-sm font-soft font-semibold text-red-600 dark:text-red-400">
-              Submission Not Approved
-            </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
-              Your previous biography submission was not approved. Please revise and resubmit below.
-            </p>
-          </div>
-        </motion.div>
+        <div className={`flex items-center gap-2 ${compact ? 'p-2' : 'p-3'} rounded-lg bg-red-500/10 border border-red-500/20`}>
+          <XCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" aria-hidden="true" />
+          <p className="text-xs font-soft text-red-600 dark:text-red-400">
+            {compact ? 'Not approved - please revise' : 'Your previous biography submission was not approved. Please revise and resubmit below.'}
+          </p>
+        </div>
       )}
 
       {/* Biography textarea */}
       <div>
-        <label 
-          htmlFor="biography" 
-          className="block text-sm font-soft font-semibold text-[var(--bento-text)] mb-2"
-        >
-          {canSetDirectly 
-            ? 'Your Biography' 
-            : hasPendingSubmission 
-              ? 'Edit Your Pending Submission'
-              : hasRejectedSubmission
-                ? 'Revise Your Biography'
-                : 'Submit Your Biography'
-          }
-        </label>
         <textarea
           id="biography"
           value={biography}
           onChange={(e) => handleBiographyChange(e.target.value)}
           placeholder="Tell us about yourself, kupo~ What brings you to Kupo Life? What do you enjoy doing in Eorzea?"
-          rows={5}
+          rows={compact ? 4 : 6}
           maxLength={MAX_BIO_LENGTH + 50}
           disabled={isSubmitting}
+          autoFocus={compact}
           className={`
-            w-full px-3 sm:px-4 py-2.5 sm:py-3
-            bg-[var(--bento-bg)] border rounded-xl
-            font-soft text-sm sm:text-base text-[var(--bento-text)]
-            placeholder:text-[var(--bento-text-muted)]
-            focus:outline-none focus:ring-2 focus:ring-[var(--bento-primary)] focus:border-transparent
+            w-full px-4 py-3
+            bg-[var(--bento-bg)] border-2 rounded-xl
+            font-soft text-base leading-relaxed text-[var(--bento-text)]
+            placeholder:text-[var(--bento-text-muted)]/60
+            focus:outline-none focus:border-[var(--bento-primary)]
             disabled:opacity-50 disabled:cursor-not-allowed
             resize-none
-            transition-colors
-            ${isOverLimit ? 'border-red-500' : 'border-[var(--bento-border)]'}
+            transition-all duration-200
+            ${isOverLimit 
+              ? 'border-red-500' 
+              : 'border-[var(--bento-border)] hover:border-[var(--bento-primary)]/50'
+            }
           `}
         />
         
-        {/* Character count */}
-        <div className="flex justify-end mt-1.5">
-          <span className={`text-xs font-soft ${
+        {/* Character count and info */}
+        <div className="flex justify-between items-center mt-2 px-1">
+          {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission ? (
+            <p className="text-xs text-[var(--bento-text-subtle)]">
+              Will be reviewed by a Knight
+            </p>
+          ) : (
+            <div />
+          )}
+          <span className={`text-xs font-soft font-medium ${
             isOverLimit 
               ? 'text-red-500' 
               : charactersRemaining < 50 
                 ? 'text-amber-500' 
                 : 'text-[var(--bento-text-muted)]'
           }`}>
-            {charactersRemaining} characters remaining
+            {charactersRemaining} / {MAX_BIO_LENGTH}
           </span>
         </div>
       </div>
 
-      {/* Info banner for Paissa (only show when no pending or rejected submission) */}
-      {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission && (
-        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--bento-secondary)]/10 border border-[var(--bento-secondary)]/20">
-          <AlertCircle className="w-4 h-4 text-[var(--bento-secondary)] flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">
-            Your biography will be reviewed by a Moogle Knight before appearing on the About page. 
-            This usually happens within a day or two!
-          </p>
-        </div>
-      )}
-
       {/* Success message */}
       {successMessage && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2.5 p-3 rounded-lg bg-green-500/10 border border-green-500/20"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20"
         >
-          <Check className="w-4 h-4 text-green-500 flex-shrink-0" aria-hidden="true" />
-          <p className="text-xs sm:text-sm text-green-600 dark:text-green-400">
+          <Check className="w-3.5 h-3.5 text-green-500 flex-shrink-0" aria-hidden="true" />
+          <p className="text-xs text-green-600 dark:text-green-400">
             {successMessage}
           </p>
         </motion.div>
@@ -311,65 +433,87 @@ function BiographyEditor({
       {/* Error message */}
       {error && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20"
         >
-          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" aria-hidden="true" />
-          <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">
-            {error instanceof Error ? error.message : 'Something went wrong. Please try again.'}
+          <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" aria-hidden="true" />
+          <p className="text-xs text-red-600 dark:text-red-400">
+            {error instanceof Error ? error.message : 'Something went wrong'}
           </p>
         </motion.div>
       )}
 
-      {/* Submit button */}
-      <button
-        type="submit"
-        disabled={!biography.trim() || isOverLimit || isSubmitting}
-        className={`
-          w-full flex items-center justify-center gap-2
-          px-4 py-2.5 sm:py-3 rounded-xl
-          font-soft font-semibold text-sm sm:text-base
-          transition-all cursor-pointer
-          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-          disabled:opacity-50 disabled:cursor-not-allowed
-          bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white 
-          shadow-lg shadow-[var(--bento-primary)]/25 hover:shadow-xl
-        `}
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            {getButtonLoadingText()}
-          </>
-        ) : (
-          <>
-            {hasPendingSubmission ? (
-              <Pencil className="w-4 h-4" aria-hidden="true" />
-            ) : (
-              <Send className="w-4 h-4" aria-hidden="true" />
-            )}
-            {getButtonText()}
-          </>
+      {/* Action buttons */}
+      <div className={`flex gap-2 ${compact ? '' : 'flex-col sm:flex-row'}`}>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className={`
+              ${compact ? 'flex-1' : 'w-full sm:w-auto order-2 sm:order-1'}
+              flex items-center justify-center gap-1.5
+              px-4 py-2 rounded-lg
+              font-soft font-medium text-sm
+              transition-colors cursor-pointer
+              bg-[var(--bento-bg)] hover:bg-[var(--bento-border)] text-[var(--bento-text-muted)]
+              disabled:opacity-50 disabled:cursor-not-allowed
+            `}
+          >
+            Cancel
+          </button>
         )}
-      </button>
+        <button
+          type="submit"
+          disabled={!biography.trim() || isOverLimit || isSubmitting}
+          className={`
+            ${compact ? 'flex-1' : 'w-full sm:flex-1 order-1 sm:order-2'}
+            flex items-center justify-center gap-1.5
+            px-4 py-2 ${compact ? '' : 'sm:py-2.5'} rounded-lg
+            font-soft font-semibold text-sm
+            transition-all cursor-pointer
+            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+            disabled:opacity-50 disabled:cursor-not-allowed
+            bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white 
+            shadow-md shadow-[var(--bento-primary)]/20 hover:shadow-lg
+          `}
+        >
+          {isSubmitting ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+          ) : (
+            <>
+              {hasPendingSubmission ? (
+                <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+              ) : (
+                <Send className="w-3.5 h-3.5" aria-hidden="true" />
+              )}
+              {getButtonText()}
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }
 
 /**
- * Profile Page - Dedicated page for managing your public profile
+ * Profile Page - Your personal FC profile and membership card
+ * 
+ * Currently focused on viewing your card and updating your bio.
+ * In the future, this will become a full public profile page that others can view.
  */
 export function Profile() {
   const { user, isAuthenticated, isLoading, login } = useAuth();
   const queryClient = useQueryClient();
   const [previewBiography, setPreviewBiography] = useState('');
+  const [isEditingBio, setIsEditingBio] = useState(false);
 
   // Only permanent knights can set biography directly - temp knights still submit for approval
   const canSetBiographyDirectly = user?.hasKnighthood === true;
 
   // Fetch staff list to find user's existing bio
-  const { data: staffData } = useQuery({
+  const { data: staffData, isLoading: isLoadingStaff } = useQuery({
     queryKey: ['staff'],
     queryFn: () => membersApi.getStaff(),
     enabled: isAuthenticated && !!user?.memberName,
@@ -394,36 +538,61 @@ export function Profile() {
     queryClient.invalidateQueries({ queryKey: ['user-submission'] });
   };
 
-  // Find the current user in the staff list to get their existing biography
-  const existingBiography = staffData?.staff.find(
+  // Find the current user in the staff list to get their existing biography and character ID
+  const currentUserStaff = staffData?.staff.find(
     (member) => member.name === user?.memberName
-  )?.biography || '';
+  );
+  const existingBiography = currentUserStaff?.biography || '';
+  const characterId = currentUserStaff?.characterId;
+
+  // Update preview biography when existing bio loads
+  useEffect(() => {
+    if (existingBiography && !previewBiography) {
+      setPreviewBiography(existingBiography);
+    }
+  }, [existingBiography, previewBiography]);
 
   // Show login prompt if not authenticated
   if (!isLoading && !isAuthenticated) {
     return (
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+        <FloatingSparkles minimal />
         
         <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <div className="max-w-lg mx-auto">
-            <ContentCard className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center mx-auto mb-4">
-                <User className="w-8 h-8 text-[var(--bento-primary)]" />
-              </div>
-              <h1 className="font-display font-bold text-xl sm:text-2xl text-[var(--bento-text)] mb-2">
-                Your Profile
-              </h1>
-              <p className="text-sm text-[var(--bento-text-muted)] mb-6">
-                Sign in with Discord to manage your profile and biography.
-              </p>
-              <button
-                onClick={login}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#5865F2] text-white font-soft font-semibold cursor-pointer shadow-lg shadow-[#5865F2]/25 hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                Login with Discord
-              </button>
-            </ContentCard>
+          <div className="max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ContentCard className="text-center py-10 sm:py-12">
+                <motion.div 
+                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center mx-auto mb-5 shadow-xl shadow-[var(--bento-primary)]/25"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <User className="w-10 h-10 text-white" />
+                </motion.div>
+                <h1 className="font-display font-bold text-2xl sm:text-3xl text-[var(--bento-text)] mb-3">
+                  Your Profile
+                </h1>
+                <p className="text-sm sm:text-base text-[var(--bento-text-muted)] mb-6 max-w-xs mx-auto">
+                  Sign in with Discord to view your membership card and manage your biography.
+                </p>
+                <motion.button
+                  onClick={login}
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#5865F2] text-white font-soft font-semibold cursor-pointer shadow-lg shadow-[#5865F2]/25 hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                  </svg>
+                  Sign in with Discord
+                </motion.button>
+              </ContentCard>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -434,146 +603,115 @@ export function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+        <motion.div 
+          className="flex flex-col items-center gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="w-12 h-12 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+          <p className="font-accent text-lg text-[var(--bento-text-muted)]">Loading your profile, kupo~</p>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background gradient */}
+      {/* Background decorations */}
       <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+      <FloatingSparkles minimal />
       
-      <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-2xl mx-auto">
+      <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
+        <div className="max-w-3xl mx-auto">
           {/* Page Header */}
-          <motion.div
-            className="mb-6 sm:mb-8"
+          <motion.header
+            className="text-center mb-6 sm:mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center shadow-lg shadow-[var(--bento-primary)]/25">
-                <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)]">
-                  Your Profile
-                </h1>
-                <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">
-                  Share your story with the FC
-                </p>
-              </div>
-            </div>
+            <motion.p
+              className="font-accent text-base sm:text-lg text-[var(--bento-secondary)] mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              ~ Your adventure awaits ~
+            </motion.p>
             
-            {/* Decorative divider */}
-            <div className="flex items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
-            </div>
-          </motion.div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-2">
+              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
+                My Profile
+              </span>
+            </h1>
+            
+            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft">
+              View your membership card and share your story
+            </p>
 
-          {/* Profile Content */}
-          <motion.div
-            className="space-y-4 sm:space-y-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            {/* Membership Card */}
-            <MembershipCard
+            <StoryDivider className="mx-auto mt-4" size="sm" />
+          </motion.header>
+
+          {/* Main Content */}
+          <div className="space-y-6 sm:space-y-8">
+            {/* Profile Header - Main identity section with inline bio editing */}
+            <ProfileHeader
               name={user?.memberName || ''}
               rank={user?.memberRank || ''}
               avatarUrl={user?.memberPortraitUrl || ''}
+              biography={previewBiography || existingBiography}
               memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
+              characterId={characterId}
+              isEditing={isEditingBio}
+              onEditClick={() => setIsEditingBio(!isEditingBio)}
+              onBiographyChange={setPreviewBiography}
+              canSetDirectly={canSetBiographyDirectly}
+              pendingSubmission={userSubmission}
+              onSubmissionUpdate={handleSubmissionUpdate}
+              isLoadingSubmission={isLoadingSubmission}
+              isLoadingBiography={isLoadingStaff}
             />
 
-            {/* Preview Card */}
-            <ContentCard>
-              <div className="flex items-start gap-2.5 sm:gap-3 mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center flex-shrink-0">
-                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)]" aria-hidden="true" />
-                </div>
-                <div>
-                  <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
-                    About Page Preview
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
-                    How you'll appear to other members
-                  </p>
-                </div>
+            {/* Membership Card Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
+                <h2 className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
+                  Membership Card
+                </h2>
+                <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" />
               </div>
-
-              <ProfilePreviewCard
+              
+              <MembershipCard
                 name={user?.memberName || ''}
                 rank={user?.memberRank || ''}
                 avatarUrl={user?.memberPortraitUrl || ''}
-                biography={previewBiography}
+                characterId={characterId}
+                memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
               />
+              
+              <p className="text-center text-xs text-[var(--bento-text-subtle)] mt-2 font-soft">
+                Hover or tilt your device to see the holographic effect
+              </p>
+            </motion.section>
 
-              {/* Lodestone link */}
-              <div className="mt-4 text-center">
-                <a
-                  href="https://na.finalfantasyxiv.com/lodestone/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  Avatar from Lodestone
-                </a>
-              </div>
-            </ContentCard>
-
-            {/* Biography Editor */}
-            <ContentCard>
-              <div className="flex items-start gap-2.5 sm:gap-3 mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)]" aria-hidden="true" />
-                </div>
-                <div>
-                  <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
-                    Write Your Story
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
-                    {canSetBiographyDirectly 
-                      ? "Your biography will appear on the About page immediately"
-                      : "Your biography will be reviewed before appearing on the About page"
-                    }
-                  </p>
-                </div>
-              </div>
-
-              {isLoadingSubmission ? (
-                <div className="flex flex-col items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 text-[var(--bento-primary)] animate-spin mb-2" />
-                  <p className="text-sm text-[var(--bento-text-muted)] font-soft">
-                    Checking for existing submissions...
-                  </p>
-                </div>
-              ) : (
-                <BiographyEditor 
-                  canSetDirectly={canSetBiographyDirectly}
-                  onBiographyChange={setPreviewBiography}
-                  initialBiography={existingBiography}
-                  pendingSubmission={userSubmission}
-                  onSubmissionUpdate={handleSubmissionUpdate}
-                />
-              )}
-            </ContentCard>
-          </motion.div>
-
-          {/* Footer note */}
-          <motion.p
-            className="text-center text-[10px] sm:text-xs text-[var(--bento-text-subtle)] mt-6 sm:mt-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Your biography appears on the About page alongside other FC members
-          </motion.p>
+            {/* Future Features Teaser */}
+            <motion.div
+              className="text-center py-6 sm:py-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <StoryDivider className="mx-auto mb-4" size="sm" />
+              <p className="font-accent text-sm sm:text-base text-[var(--bento-text-subtle)]">
+                More profile features coming soon, kupo~
+              </p>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
