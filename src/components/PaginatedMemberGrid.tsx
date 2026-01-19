@@ -195,6 +195,15 @@ export function PaginatedMemberGrid({
       window.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
     }
   }, []);
+  
+  // Track previous page to detect page changes (including from browser navigation)
+  const prevPage = useRef(currentPage);
+  useEffect(() => {
+    if (prevPage.current !== currentPage) {
+      scrollToGrid();
+      prevPage.current = currentPage;
+    }
+  }, [currentPage, scrollToGrid]);
 
   // Navigate to a specific page (0-indexed internally, 1-indexed in URL)
   const navigateToPage = useCallback((page: number) => {
