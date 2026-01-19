@@ -101,9 +101,9 @@ const TimelineEventCard = memo(function TimelineEventCard({
   
   return (
     <motion.div
-      initial={isRealtime ? { opacity: 0, y: -20, scale: 0.95 } : { opacity: 0, y: 10 }}
+      initial={isRealtime ? { opacity: 0, y: -20, scale: 0.95 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      transition={isRealtime ? { type: "spring", stiffness: 300, damping: 25 } : { duration: 0 }}
       className={`
         relative flex gap-2.5 sm:gap-4 p-3 sm:p-4 md:p-5
         bg-[var(--bento-card)]/80 backdrop-blur-sm
@@ -329,89 +329,123 @@ export function Chronicle() {
           </motion.div>
 
           {/* Events timeline */}
-          {isLoading && historicalEvents.length === 0 ? (
-            <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-              <motion.img 
-                src={flyingMoogles} 
-                alt="" 
-                className="w-40 md:w-52 mx-auto mb-4"
-                animate={{ 
-                  y: [0, -10, 0],
-                  rotate: [0, 2, -2, 0],
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                aria-hidden="true"
-              />
-              <motion.p 
-                className="font-accent text-2xl text-[var(--bento-text-muted)]"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                role="status"
+          <AnimatePresence mode="wait">
+            {isLoading && historicalEvents.length === 0 ? (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                Gathering the chronicles, kupo...
-              </motion.p>
-            </ContentCard>
-          ) : isError ? (
-            <ContentCard className="text-center py-12 md:py-16" role="alert">
-              <img 
-                src={deadMoogle} 
-                alt="" 
-                className="w-40 h-40 mx-auto mb-5 object-contain"
-                aria-hidden="true"
-              />
-              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                Something went wrong
-              </p>
-              <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
-                The chronicle tome got lost, kupo...
-              </p>
-              <motion.button
-                onClick={() => refetch()}
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="
-                  inline-flex items-center justify-center gap-2
-                  px-6 py-3 rounded-xl
-                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
-                  text-white font-soft font-semibold
-                  shadow-lg shadow-[var(--bento-primary)]/25
-                  hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                  transition-all cursor-pointer
-                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
-                "
+                <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
+                  <motion.img 
+                    src={flyingMoogles} 
+                    alt="" 
+                    className="w-40 md:w-52 mx-auto mb-4"
+                    animate={{ 
+                      y: [0, -10, 0],
+                      rotate: [0, 2, -2, 0],
+                    }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    aria-hidden="true"
+                  />
+                  <motion.p 
+                    className="font-accent text-2xl text-[var(--bento-text-muted)]"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    role="status"
+                  >
+                    Gathering the chronicles, kupo...
+                  </motion.p>
+                </ContentCard>
+              </motion.div>
+            ) : isError ? (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                Try Again
-              </motion.button>
-            </ContentCard>
-          ) : totalCount === 0 ? (
-            <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
-              <img 
-                src={moogleMail} 
-                alt="" 
-                className="w-40 h-40 mx-auto mb-5 object-contain"
-                aria-hidden="true"
-              />
-              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                No events yet
-              </p>
-              <p className="font-accent text-2xl text-[var(--bento-text-muted)]">
-                The chronicle awaits its first entry, kupo~
-              </p>
-            </ContentCard>
-          ) : (
-            <div className="space-y-4" role="feed" aria-label="Chronicle events timeline">
-              {/* Realtime events section */}
-              <AnimatePresence>
+                <ContentCard className="text-center py-12 md:py-16" role="alert">
+                  <img 
+                    src={deadMoogle} 
+                    alt="" 
+                    className="w-40 h-40 mx-auto mb-5 object-contain"
+                    aria-hidden="true"
+                  />
+                  <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
+                    Something went wrong
+                  </p>
+                  <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
+                    The chronicle tome got lost, kupo...
+                  </p>
+                  <motion.button
+                    onClick={() => refetch()}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="
+                      inline-flex items-center justify-center gap-2
+                      px-6 py-3 rounded-xl
+                      bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                      text-white font-soft font-semibold
+                      shadow-lg shadow-[var(--bento-primary)]/25
+                      hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
+                      transition-all cursor-pointer
+                      focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+                    "
+                  >
+                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                    Try Again
+                  </motion.button>
+                </ContentCard>
+              </motion.div>
+            ) : totalCount === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
+                  <img 
+                    src={moogleMail} 
+                    alt="" 
+                    className="w-40 h-40 mx-auto mb-5 object-contain"
+                    aria-hidden="true"
+                  />
+                  <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
+                    No events yet
+                  </p>
+                  <p className="font-accent text-2xl text-[var(--bento-text-muted)]">
+                    The chronicle awaits its first entry, kupo~
+                  </p>
+                </ContentCard>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="content"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
+                role="feed"
+                aria-label="Chronicle events timeline"
+              >
+                {/* Realtime events section */}
+                <AnimatePresence mode="wait">
                 {showRealtimeEvents && realtimeEvents.length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-4"
                     aria-live="polite"
                     aria-label={`${unseenCount} new live updates`}
@@ -494,8 +528,9 @@ export function Chronicle() {
                   </motion.button>
                 </motion.div>
               )}
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Footer */}
           {!isLoading && !isError && totalCount > 0 && (

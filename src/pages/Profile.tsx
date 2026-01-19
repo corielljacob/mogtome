@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { 
@@ -42,8 +42,10 @@ const defaultRankColor = { bg: 'bg-[var(--bento-primary)]/10', text: 'text-[var(
 /**
  * ProfileHeader - The main profile display section showing the user's identity
  * Now includes inline biography editing for better UX
+ * 
+ * PERFORMANCE: Memoized to prevent re-renders when parent state changes
  */
-function ProfileHeader({
+const ProfileHeader = memo(function ProfileHeader({
   name,
   rank,
   avatarUrl,
@@ -232,13 +234,15 @@ function ProfileHeader({
       </div>
     </motion.div>
   );
-}
+});
 
 /**
  * BiographyEditor - Form for editing/submitting biography
  * Supports both standalone and compact inline modes
+ * 
+ * PERFORMANCE: Memoized to prevent re-renders
  */
-function BiographyEditor({ 
+const BiographyEditor = memo(function BiographyEditor({ 
   canSetDirectly, 
   onBiographyChange,
   initialBiography,
@@ -495,7 +499,7 @@ function BiographyEditor({
       </div>
     </form>
   );
-}
+});
 
 /**
  * Profile Page - Your personal FC profile and membership card
@@ -511,6 +515,10 @@ export function Profile() {
 
   // Only permanent knights can set biography directly - temp knights still submit for approval
   const canSetBiographyDirectly = user?.hasKnighthood === true;
+  
+  // Memoize callbacks to prevent unnecessary re-renders
+  const toggleEditingBio = useCallback(() => setIsEditingBio(prev => !prev), []);
+  const handleBiographyChange = useCallback((bio: string) => setPreviewBiography(bio), []);
 
   // Fetch staff list to find user's existing bio
   const { data: staffData, isLoading: isLoadingStaff } = useQuery({
@@ -533,10 +541,10 @@ export function Profile() {
   });
 
   // Callback to refetch submission after updates
-  const handleSubmissionUpdate = () => {
+  const handleSubmissionUpdate = useCallback(() => {
     refetchSubmission();
     queryClient.invalidateQueries({ queryKey: ['user-submission'] });
-  };
+  }, [refetchSubmission, queryClient]);
 
   // Find the current user in the staff list to get their existing biography and character ID
   const currentUserStaff = staffData?.staff.find(
@@ -663,8 +671,8 @@ export function Profile() {
               memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
               characterId={characterId}
               isEditing={isEditingBio}
-              onEditClick={() => setIsEditingBio(!isEditingBio)}
-              onBiographyChange={setPreviewBiography}
+              onEditClick={toggleEditingBio}
+              onBiographyChange={handleBiographyChange}
               canSetDirectly={canSetBiographyDirectly}
               pendingSubmission={userSubmission}
               onSubmissionUpdate={handleSubmissionUpdate}

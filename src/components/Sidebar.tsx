@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -14,7 +14,8 @@ const SIDEBAR_WIDTH_EXPANDED = 232;
 const SIDEBAR_WIDTH_COLLAPSED = 84;
 
 // Floating pom-pom with Framer Motion
-function FloatingPom({ isHovered }: { isHovered: boolean }) {
+// PERFORMANCE: Memoized to prevent re-renders
+const FloatingPom = memo(function FloatingPom({ isHovered }: { isHovered: boolean }) {
   return (
     <motion.div 
       className="absolute -top-2 -right-2 z-10"
@@ -48,10 +49,11 @@ function FloatingPom({ isHovered }: { isHovered: boolean }) {
       </div>
     </motion.div>
   );
-}
+});
 
 // Logo icon with hover effects
-function LogoIcon({ hovered = false }: { hovered?: boolean }) {
+// PERFORMANCE: Memoized to prevent re-renders
+const LogoIcon = memo(function LogoIcon({ hovered = false }: { hovered?: boolean }) {
   return (
     <div className="relative flex-shrink-0">
       {/* Soft glow behind on hover */}
@@ -89,7 +91,7 @@ function LogoIcon({ hovered = false }: { hovered?: boolean }) {
       <FloatingPom isHovered={hovered} />
     </div>
   );
-}
+});
 
 // Nav items configuration
 const navItems = [
@@ -108,7 +110,8 @@ interface NavItemProps {
   accentColor?: string;
 }
 
-function NavItem({ path, label, icon: Icon, isActive, isCollapsed, accentColor }: NavItemProps) {
+// PERFORMANCE: Memoized to prevent re-renders when sidebar state changes
+const NavItem = memo(function NavItem({ path, label, icon: Icon, isActive, isCollapsed, accentColor }: NavItemProps) {
   return (
     <Link
       to={path}
@@ -162,9 +165,10 @@ function NavItem({ path, label, icon: Icon, isActive, isCollapsed, accentColor }
       )}
     </Link>
   );
-}
+});
 
-function ProfileItem({ isCollapsed }: { isCollapsed: boolean }) {
+// PERFORMANCE: Memoized to prevent re-renders
+const ProfileItem = memo(function ProfileItem({ isCollapsed }: { isCollapsed: boolean }) {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   
@@ -182,9 +186,10 @@ function ProfileItem({ isCollapsed }: { isCollapsed: boolean }) {
       accentColor="text-[var(--bento-secondary)]"
     />
   );
-}
+});
 
-function KnightDashboardItem({ isCollapsed }: { isCollapsed: boolean }) {
+// PERFORMANCE: Memoized to prevent re-renders
+const KnightDashboardItem = memo(function KnightDashboardItem({ isCollapsed }: { isCollapsed: boolean }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
   
@@ -204,10 +209,11 @@ function KnightDashboardItem({ isCollapsed }: { isCollapsed: boolean }) {
       accentColor="text-amber-500"
     />
   );
-}
+});
 
 // Theme toggle component with animated sun/moon
-function ThemeToggle({ isCollapsed }: { isCollapsed: boolean }) {
+// PERFORMANCE: Memoized to prevent re-renders
+const ThemeToggle = memo(function ThemeToggle({ isCollapsed }: { isCollapsed: boolean }) {
   const { isDarkMode, setColorMode } = useTheme();
   
   const toggleTheme = () => {
@@ -294,7 +300,7 @@ function ThemeToggle({ isCollapsed }: { isCollapsed: boolean }) {
       )}
     </motion.button>
   );
-}
+});
 
 export function Sidebar() {
   const location = useLocation();
@@ -309,7 +315,12 @@ export function Sidebar() {
     localStorage.setItem('sidebar-collapsed', JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  const isActive = (path: string) => location.pathname === path;
+  // Memoize callbacks to prevent unnecessary re-renders
+  const isActive = useCallback((path: string) => location.pathname === path, [location.pathname]);
+  const toggleCollapsed = useCallback(() => setIsCollapsed((prev: boolean) => !prev), []);
+  const handleLogoMouseEnter = useCallback(() => setLogoHovered(true), []);
+  const handleLogoMouseLeave = useCallback(() => setLogoHovered(false), []);
+  
   const sidebarWidth = isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED;
 
   return (
@@ -331,8 +342,8 @@ export function Sidebar() {
             to="/" 
             className="flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl p-1.5"
             aria-label="MogTome - Go to home page"
-            onMouseEnter={() => setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}
+            onMouseEnter={handleLogoMouseEnter}
+            onMouseLeave={handleLogoMouseLeave}
           >
             <LogoIcon hovered={logoHovered} />
             
@@ -416,7 +427,7 @@ export function Sidebar() {
 
           {/* Collapse toggle button */}
           <motion.button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={toggleCollapsed}
             className={`
               w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
               text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Righteous&display=swap');
+/* PERFORMANCE: Font import removed from CSS - loaded via <link> in HTML for better control */
 @import "tailwindcss";
 
 /* Enable class-based dark mode */
@@ -96,6 +96,41 @@
     -webkit-user-select: none;
     user-select: none;
   }
+
+  /* MOBILE PERFORMANCE: Optimize touch interactions */
+  /* touch-action prevents browser delays on touch gestures */
+  button, a, [role="button"], [role="tab"], [role="menuitem"] {
+    touch-action: manipulation; /* Disables double-tap zoom for faster response */
+  }
+
+  /* MOBILE PERFORMANCE: Hardware acceleration for animated elements */
+  /* will-change hints help browser optimize these elements */
+  [class*="animate-"],
+  [data-motion] {
+    will-change: transform;
+  }
+
+  /* Remove will-change after animation completes to free resources */
+  [class*="animate-"]:not(:hover):not(:active):not(:focus) {
+    will-change: auto;
+  }
+
+  /* MOBILE PERFORMANCE: Optimize scrolling */
+  /* Use momentum scrolling on iOS for smooth native-like feel */
+  .overflow-scroll,
+  .overflow-y-scroll,
+  .overflow-x-scroll,
+  [class*="overflow-"] {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* MOBILE PERFORMANCE: Reduce paint areas during scroll */
+  /* 
+   * NOTE: CSS containment (contain: layout style paint) was removed from cards
+   * because it breaks hover effects like translate-y, scale, and shadow animations.
+   * The containment creates a new stacking context that clips visual overflow.
+   * For performance, we rely on will-change hints on animated elements instead.
+   */
 }
 
 /* Design System Variables - Pom-Pom Classic Palette (Punchy) */

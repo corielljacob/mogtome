@@ -16,12 +16,15 @@ import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
-// PERFORMANCE: Preload critical hero image
+// PERFORMANCE: Preload critical hero image with high priority
+// This ensures the main moogle loads immediately for better LCP
 if (typeof window !== 'undefined') {
   const preloadLink = document.createElement('link');
   preloadLink.rel = 'preload';
   preloadLink.as = 'image';
   preloadLink.href = welcomingMoogle;
+  // Note: For link elements, use lowercase 'fetchpriority' attribute
+  preloadLink.setAttribute('fetchpriority', 'high');
   document.head.appendChild(preloadLink);
 }
 
@@ -229,6 +232,9 @@ export function Home() {
                 src={welcomingMoogle} 
                 alt="A friendly moogle mascot welcoming you to MogTome" 
                 className="relative w-36 sm:w-44 md:w-56 lg:w-64 drop-shadow-2xl"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 animate={{ 
                   y: [0, -8, 0],
                 }}

@@ -127,18 +127,6 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
       } : undefined}
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      {/* Hover glow effect - CSS transition for performance, hidden on touch */}
-      <div 
-        className="
-          absolute -inset-2 rounded-3xl blur-xl pointer-events-none
-          opacity-0 group-hover:opacity-80
-          transition-opacity duration-300
-          hidden sm:block
-        "
-        style={{ backgroundColor: theme.glow }}
-        aria-hidden="true"
-      />
-      
       <div 
         className="
           relative w-full
