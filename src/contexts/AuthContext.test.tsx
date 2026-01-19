@@ -13,6 +13,11 @@ import {
 } from './AuthContext';
 import type { ReactNode } from 'react';
 
+// Mock the refreshAuthToken function from api/client
+vi.mock('../api/client', () => ({
+  refreshAuthToken: vi.fn().mockResolvedValue(null),
+}));
+
 // Helper to create a valid JWT token for testing
 function createMockJwt(payload: Record<string, unknown>, expiresIn = 3600): string {
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
@@ -121,15 +126,21 @@ describe('AuthProvider', () => {
     <AuthProvider>{children}</AuthProvider>
   );
 
-  it('starts with loading state', () => {
+  it('starts with loading state', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
     
-    // After initial render, loading should complete
-    expect(result.current.isLoading).toBe(false);
+    // After initial render and async refresh attempt, loading should complete
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
-  it('returns unauthenticated state when no token', () => {
+  it('returns unauthenticated state when no token', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
+    
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
     
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
@@ -205,6 +216,11 @@ describe('AuthProvider', () => {
   it('refreshUser reloads user from token', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
     
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+    
     // Initially not authenticated
     expect(result.current.isAuthenticated).toBe(false);
     
@@ -212,9 +228,9 @@ describe('AuthProvider', () => {
     const token = createMockJwt(mockUserPayload);
     localStorage.setItem('mogtome_auth_token', token);
     
-    // Call refreshUser
-    act(() => {
-      result.current.refreshUser();
+    // Call refreshUser (now async)
+    await act(async () => {
+      await result.current.refreshUser();
     });
     
     expect(result.current.isAuthenticated).toBe(true);

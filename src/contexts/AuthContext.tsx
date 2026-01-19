@@ -40,7 +40,7 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   login: () => void;
   logout: () => void;
-  refreshUser: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -165,9 +165,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [clearRefreshTimer]);
 
   // Load user from stored JWT token
-  const refreshUser = useCallback(() => {
+  const refreshUser = useCallback(async () => {
     const token = getAuthToken();
     if (!token) {
+      // No token in localStorage - try to get a new one using refresh token cookie
+      if (!isRefreshingRef.current) {
+        isRefreshingRef.current = true;
+        try {
+          const newToken = await refreshAuthToken();
+          if (newToken) {
+            // Successfully got a new token from refresh endpoint
+            // Recursively call refreshUser to process the new token
+            isRefreshingRef.current = false;
+            return refreshUser();
+          }
+        } catch {
+          // Refresh failed silently
+        } finally {
+          isRefreshingRef.current = false;
+        }
+      }
+      
       clearRefreshTimer();
       setState({
         user: null,
@@ -180,8 +198,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const payload = decodeJwtPayload(token);
     
     if (!payload || isTokenExpired(payload)) {
-      // Token invalid or expired - try to refresh it
+      // Token invalid or expired - try to refresh it using the refresh token cookie
       clearAuthToken();
+      
+      if (!isRefreshingRef.current) {
+        isRefreshingRef.current = true;
+        try {
+          const newToken = await refreshAuthToken();
+          if (newToken) {
+            // Successfully got a new token from refresh endpoint
+            // Recursively call refreshUser to process the new token
+            isRefreshingRef.current = false;
+            return refreshUser();
+          }
+        } catch {
+          // Refresh failed silently
+        } finally {
+          isRefreshingRef.current = false;
+        }
+      }
+      
       clearRefreshTimer();
       setState({
         user: null,
