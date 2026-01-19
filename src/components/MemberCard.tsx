@@ -8,86 +8,86 @@ interface MemberCardProps {
   index?: number; // For staggered animations
 }
 
-// Rank theming - cozy palette that matches the storybook coral/lavender theme
+// Rank theming - using official FC role colors (solid colors, no gradients)
 const rankThemes: Record<string, { 
-  gradient: string; 
   glow: string; 
   bg: string;
   icon: typeof Crown;
   accent: string;
+  color: string; // hex color for custom styling
 }> = {
   'Moogle Guardian': { 
-    // Golden/warm - special leader rank
-    gradient: 'from-amber-400 to-orange-400',
-    glow: 'rgba(251, 191, 36, 0.4)',
-    bg: 'bg-amber-500/10',
+    // Leader - Cyan #2FECE6
+    glow: 'rgba(47, 236, 230, 0.4)',
+    bg: 'bg-[#2FECE6]/10',
     icon: Crown,
-    accent: 'text-amber-500',
+    accent: 'text-[#2FECE6]',
+    color: '#2FECE6',
   },
   'Moogle Knight': { 
-    // Rich purple - royal/noble feel
-    gradient: 'from-violet-400 to-purple-500',
-    glow: 'rgba(167, 139, 250, 0.4)',
-    bg: 'bg-violet-500/10',
+    // Knight - Purple #8E42CC
+    glow: 'rgba(142, 66, 204, 0.4)',
+    bg: 'bg-[#8E42CC]/10',
     icon: Shield,
-    accent: 'text-violet-500',
+    accent: 'text-[#8E42CC]',
+    color: '#8E42CC',
   },
   'Paissa Trainer': { 
-    // Warm coral/rose - matches primary
-    gradient: 'from-rose-400 to-pink-500',
-    glow: 'rgba(251, 113, 133, 0.4)',
-    bg: 'bg-rose-500/10',
+    // Paissa - Teal #068167
+    glow: 'rgba(6, 129, 103, 0.4)',
+    bg: 'bg-[#068167]/10',
     icon: Heart,
-    accent: 'text-rose-500',
+    accent: 'text-[#068167]',
+    color: '#068167',
   },
   'Coeurl Hunter': { 
-    // Dusty lavender - matches secondary
-    gradient: 'from-purple-300 to-violet-400',
-    glow: 'rgba(196, 181, 253, 0.4)',
-    bg: 'bg-purple-400/10',
+    // Coeurl - Green #056D04
+    glow: 'rgba(5, 109, 4, 0.4)',
+    bg: 'bg-[#056D04]/10',
     icon: Cat,
-    accent: 'text-purple-400',
+    accent: 'text-[#056D04]',
+    color: '#056D04',
   },
   'Mandragora': { 
-    // Warm peach/coral
-    gradient: 'from-orange-300 to-rose-400',
-    glow: 'rgba(253, 186, 116, 0.4)',
-    bg: 'bg-orange-400/10',
+    // Mandragora - Orange #E67E22
+    glow: 'rgba(230, 126, 34, 0.4)',
+    bg: 'bg-[#E67E22]/10',
     icon: Leaf,
-    accent: 'text-orange-400',
+    accent: 'text-[#E67E22]',
+    color: '#E67E22',
   },
   'Apkallu Seeker': { 
-    // Soft mauve/pink
-    gradient: 'from-pink-300 to-rose-400',
-    glow: 'rgba(249, 168, 212, 0.4)',
-    bg: 'bg-pink-400/10',
+    // Apkallu - Blue #4D88BB
+    glow: 'rgba(77, 136, 187, 0.4)',
+    bg: 'bg-[#4D88BB]/10',
     icon: Bird,
-    accent: 'text-pink-400',
+    accent: 'text-[#4D88BB]',
+    color: '#4D88BB',
   },
   'Kupo Shelf': { 
-    // Soft lilac
-    gradient: 'from-violet-300 to-purple-400',
-    glow: 'rgba(196, 181, 253, 0.35)',
-    bg: 'bg-violet-400/10',
+    // Shelf - Lime Green #5ABE32
+    glow: 'rgba(90, 190, 50, 0.4)',
+    bg: 'bg-[#5ABE32]/10',
     icon: Star,
-    accent: 'text-violet-400',
+    accent: 'text-[#5ABE32]',
+    color: '#5ABE32',
   },
   'Bom Boko': { 
-    // Warm taupe/neutral
-    gradient: 'from-stone-300 to-stone-400',
+    // Default/neutral for non-ranked
     glow: 'rgba(168, 162, 158, 0.3)',
     bg: 'bg-stone-400/10',
     icon: Sparkles,
     accent: 'text-stone-400',
+    color: '#a8a29e',
   },
 };
 
 const defaultTheme = {
-  gradient: 'from-[var(--bento-primary)] to-[var(--bento-secondary)]',
   glow: 'rgba(199, 91, 122, 0.3)',
   bg: 'bg-[var(--bento-primary)]/10',
   icon: Sword,
   accent: 'text-[var(--bento-primary)]',
+  color: '#c75b7a',
 };
 
 /**
@@ -150,8 +150,8 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           active:scale-[0.97] sm:active:scale-[0.98]
         "
       >
-        {/* Gradient rank banner */}
-        <div className={`h-1 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
+        {/* Solid rank banner */}
+        <div className="h-1" style={{ backgroundColor: theme.color }} aria-hidden="true" />
         
         {/* Avatar with Lodestone link */}
         <a 
@@ -320,7 +320,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
           className="w-10 h-10 object-cover"
           loading="lazy"
         />
-        <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${theme.gradient}`} aria-hidden="true" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: theme.color }} aria-hidden="true" />
       </div>
       
       {/* Info */}

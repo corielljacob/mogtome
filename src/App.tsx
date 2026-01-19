@@ -5,6 +5,7 @@ import { MotionConfig } from 'motion/react';
 import { Navbar, Sidebar, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUserDataDialog } from './components';
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -94,9 +95,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <AccessibilityProvider>
-            <AppContent />
-          </AccessibilityProvider>
+          <ThemeProvider>
+            <AccessibilityProvider>
+              <AppContent />
+            </AccessibilityProvider>
+          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

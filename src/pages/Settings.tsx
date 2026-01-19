@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   Settings as SettingsIcon,
@@ -17,56 +17,13 @@ import {
   ChevronRight,
   Check,
   Sparkles,
+  Paintbrush,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
+import { useTheme, THEME_DEFINITIONS, type ColorMode } from '../contexts/ThemeContext';
 import { ContentCard } from '../components';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Theme Management
-// ─────────────────────────────────────────────────────────────────────────────
-
-type ThemeOption = 'light' | 'dark' | 'system';
-
-function useTheme() {
-  const getInitialTheme = (): ThemeOption => {
-    if (typeof window === 'undefined') return 'system';
-    const stored = localStorage.getItem('theme');
-    if (stored === 'light' || stored === 'dark') return stored;
-    return 'system';
-  };
-
-  const [theme, setThemeState] = useState<ThemeOption>(getInitialTheme);
-
-  const applyTheme = (newTheme: ThemeOption) => {
-    let isDark: boolean;
-    if (newTheme === 'system') {
-      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      localStorage.removeItem('theme');
-    } else {
-      isDark = newTheme === 'dark';
-      localStorage.setItem('theme', newTheme);
-    }
-    document.documentElement.classList.toggle('dark', isDark);
-  };
-
-  const setTheme = (newTheme: ThemeOption) => {
-    setThemeState(newTheme);
-    applyTheme(newTheme);
-  };
-
-  // Listen for system theme changes when in system mode
-  useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => applyTheme('system');
-      mediaQuery.addEventListener('change', handler);
-      return () => mediaQuery.removeEventListener('change', handler);
-    }
-  }, [theme]);
-
-  return { theme, setTheme };
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Section Components
@@ -158,13 +115,16 @@ function SettingRow({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ThemeSection() {
-  const { theme, setTheme } = useTheme();
+  const { settings, setColorMode, setColorTheme } = useTheme();
+  const [themesExpanded, setThemesExpanded] = useState(false);
 
-  const themeOptions: { value: ThemeOption; label: string; icon: typeof Sun }[] = [
+  const modeOptions: { value: ColorMode; label: string; icon: typeof Sun }[] = [
     { value: 'light', label: 'Light', icon: Sun },
     { value: 'dark', label: 'Dark', icon: Moon },
     { value: 'system', label: 'System', icon: Monitor },
   ];
+
+  const currentTheme = THEME_DEFINITIONS.find(t => t.id === settings.colorTheme);
 
   return (
     <ContentCard>
@@ -174,13 +134,14 @@ function ThemeSection() {
         description="Choose how MogTome looks to you"
       />
       
-      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-        {themeOptions.map(({ value, label, icon: Icon }) => {
-          const isSelected = theme === value;
+      {/* Light/Dark/System Mode */}
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-4">
+        {modeOptions.map(({ value, label, icon: Icon }) => {
+          const isSelected = settings.colorMode === value;
           return (
             <button
               key={value}
-              onClick={() => setTheme(value)}
+              onClick={() => setColorMode(value)}
               className={`
                 relative flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 rounded-xl border-2 transition-all cursor-pointer
                 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
@@ -216,6 +177,124 @@ function ThemeSection() {
             </button>
           );
         })}
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent my-4" />
+
+      {/* Color Theme Selector */}
+      <div>
+        <button
+          onClick={() => setThemesExpanded(!themesExpanded)}
+          className="w-full flex items-center justify-between gap-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
+          aria-expanded={themesExpanded}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center flex-shrink-0">
+              <Paintbrush className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)]" aria-hidden="true" />
+            </div>
+            <div className="text-left">
+              <p className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+                Color Theme
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                {/* Theme color preview dots */}
+                {currentTheme && (
+                  <div className="flex items-center gap-1">
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: currentTheme.preview.primary }}
+                    />
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: currentTheme.preview.secondary }}
+                    />
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: currentTheme.preview.accent }}
+                    />
+                  </div>
+                )}
+                <span className="text-xs text-[var(--bento-primary)] font-medium">
+                  {currentTheme?.name || 'Pom-Pom Classic'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <ChevronRight 
+            className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform ${themesExpanded ? 'rotate-90' : ''}`}
+            aria-hidden="true"
+          />
+        </button>
+
+        {themesExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            className="mt-4 grid grid-cols-2 gap-2"
+            role="radiogroup"
+            aria-label="Color theme options"
+          >
+            {THEME_DEFINITIONS.map((theme) => {
+              const isSelected = settings.colorTheme === theme.id;
+              return (
+                <button
+                  key={theme.id}
+                  onClick={() => setColorTheme(theme.id)}
+                  className={`
+                    relative flex flex-col gap-2 p-3 rounded-xl text-left cursor-pointer
+                    transition-all border-2
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    ${isSelected 
+                      ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
+                      : 'border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-bg)]'
+                    }
+                  `}
+                  role="radio"
+                  aria-checked={isSelected}
+                >
+                  {/* Color preview */}
+                  <div className="flex items-center gap-1.5">
+                    <div 
+                      className="w-5 h-5 rounded-full border-2 border-white shadow-sm" 
+                      style={{ backgroundColor: theme.preview.primary }}
+                    />
+                    <div 
+                      className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+                      style={{ backgroundColor: theme.preview.secondary }}
+                    />
+                    <div 
+                      className="w-3 h-3 rounded-full border-2 border-white shadow-sm" 
+                      style={{ backgroundColor: theme.preview.accent }}
+                    />
+                  </div>
+                  
+                  {/* Theme info */}
+                  <div>
+                    <p className={`font-soft font-semibold text-xs sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+                      {theme.name}
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] leading-snug">
+                      {theme.description}
+                    </p>
+                  </div>
+
+                  {/* Selected indicator */}
+                  {isSelected && (
+                    <motion.div
+                      className="absolute top-2 right-2"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    >
+                      <Check className="w-4 h-4 text-[var(--bento-primary)]" />
+                    </motion.div>
+                  )}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </ContentCard>
   );
@@ -275,24 +354,8 @@ const ACCESSIBILITY_OPTIONS: AccessibilityOption[] = [
 
 function AccessibilitySection() {
   const { settings, toggleSetting, updateSetting } = useAccessibility();
+  const { isDarkMode } = useTheme();
   const [colorblindExpanded, setColorblindExpanded] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => 
-    document.documentElement.classList.contains('dark')
-  );
-
-  // Watch for dark mode class changes on the document element
-  useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.attributeName === 'class') {
-          setIsDarkMode(document.documentElement.classList.contains('dark'));
-        }
-      }
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <ContentCard>

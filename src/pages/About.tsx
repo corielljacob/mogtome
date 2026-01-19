@@ -18,46 +18,49 @@ import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import deadMoogle from '../assets/moogles/dead moogle.webp';
 
-// Simple rank config - matches MemberCard patterns
+// Simple rank config - uses official FC role colors (solid colors, no gradients)
 const rankConfig: Record<string, { 
   icon: typeof Crown;
   color: string;
   bg: string;
-  gradient: string;
   glow: string;
   label: string;
   description: string;
   memberTerm: { singular: string; plural: string };
+  hexColor: string;
 }> = {
   'Moogle Guardian': { 
+    // Leader - Cyan #2FECE6
     icon: Crown,
-    color: 'text-amber-500',
-    bg: 'bg-amber-500/10',
-    gradient: 'from-amber-400 to-orange-400',
-    glow: 'rgba(251, 191, 36, 0.4)',
+    color: 'text-[#2FECE6]',
+    bg: 'bg-[#2FECE6]/10',
+    glow: 'rgba(47, 236, 230, 0.4)',
     label: 'FC Leader',
     description: 'Our Moogle Guardian who leads Kupo Life',
     memberTerm: { singular: 'leader', plural: 'leaders' },
+    hexColor: '#2FECE6',
   },
   'Moogle Knight': { 
+    // Knight - Purple #8E42CC
     icon: Shield,
-    color: 'text-violet-500',
-    bg: 'bg-violet-500/10',
-    gradient: 'from-violet-400 to-purple-500',
-    glow: 'rgba(167, 139, 250, 0.3)',
+    color: 'text-[#8E42CC]',
+    bg: 'bg-[#8E42CC]/10',
+    glow: 'rgba(142, 66, 204, 0.4)',
     label: 'Moogle Knights',
     description: 'Our trusted officers who keep things running smoothly',
     memberTerm: { singular: 'knight', plural: 'knights' },
+    hexColor: '#8E42CC',
   },
   'Paissa Trainer': { 
+    // Paissa - Teal #068167
     icon: Star,
-    color: 'text-emerald-500',
-    bg: 'bg-emerald-500/10',
-    gradient: 'from-emerald-400 to-teal-500',
-    glow: 'rgba(52, 211, 153, 0.3)',
+    color: 'text-[#068167]',
+    bg: 'bg-[#068167]/10',
+    glow: 'rgba(6, 129, 103, 0.4)',
     label: 'Paissa Trainers',
     description: 'Exemplary community members hoping to make your day a little brighter',
     memberTerm: { singular: 'trainer', plural: 'trainers' },
+    hexColor: '#068167',
   },
 };
 
@@ -65,11 +68,11 @@ const defaultRankConfig = {
   icon: Star,
   color: 'text-[var(--bento-primary)]',
   bg: 'bg-[var(--bento-primary)]/10',
-  gradient: 'from-[var(--bento-primary)] to-[var(--bento-secondary)]',
   glow: 'rgba(199, 91, 122, 0.3)',
   label: 'Leadership',
   description: 'Helping guide our FC',
   memberTerm: { singular: 'member', plural: 'members' },
+  hexColor: '#c75b7a',
 };
 
 interface StaffCardProps {
@@ -121,12 +124,10 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
       >
         {/* Decorative crown accent */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
-          <div className={`
-            px-3 sm:px-4 py-1 sm:py-1.5 rounded-full
-            bg-gradient-to-r ${config.gradient}
-            shadow-lg shadow-amber-500/30
-            flex items-center gap-1.5 sm:gap-2
-          `}>
+          <div 
+            className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full shadow-lg flex items-center gap-1.5 sm:gap-2"
+            style={{ backgroundColor: config.hexColor, boxShadow: `0 10px 15px -3px ${config.glow}` }}
+          >
             <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
             <span className="text-[10px] sm:text-xs font-soft font-bold text-white uppercase tracking-wide">
               FC Leader
@@ -398,11 +399,10 @@ const RankSection = memo(function RankSection({ rank, members, startIndex, curre
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3, delay: startIndex * 0.02 }}
       >
-        <div className={`
-          w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center
-          bg-gradient-to-br ${config.gradient}
-          shadow-lg shadow-black/10
-        `}>
+        <div 
+          className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-lg shadow-black/10"
+          style={{ backgroundColor: config.hexColor }}
+        >
           <RankIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">

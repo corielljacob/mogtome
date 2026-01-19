@@ -142,6 +142,176 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+ * COLOR THEMES
+ * These palettes provide different color schemes while maintaining the same
+ * semantic meaning (primary, secondary, accent, etc.)
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Pom-Pom Classic (default - no additional class needed, uses :root values) */
+
+/* Crystal Tower - Cool blues and cyans */
+.theme-crystal {
+  --bento-primary: #3B82F6;
+  --bento-secondary: #06B6D4;
+  --bento-accent: #60A5FA;
+  --bento-shadow: rgba(59, 130, 246, 0.18);
+  --gradient-1: rgba(6, 182, 212, 0.15);
+  --gradient-2: rgba(59, 130, 246, 0.18);
+  --gradient-3: rgba(96, 165, 250, 0.1);
+  --gradient-4: rgba(6, 182, 212, 0.12);
+}
+
+.dark.theme-crystal {
+  --bento-primary: #60A5FA;
+  --bento-secondary: #22D3EE;
+  --bento-accent: #93C5FD;
+  --bento-shadow: rgba(96, 165, 250, 0.22);
+  --gradient-1: rgba(34, 211, 238, 0.12);
+  --gradient-2: rgba(96, 165, 250, 0.14);
+  --gradient-3: rgba(34, 211, 238, 0.1);
+  --gradient-4: rgba(96, 165, 250, 0.08);
+}
+
+/* Chocobo Gold - Warm yellows and golds */
+.theme-chocobo {
+  --bento-primary: #CA8A04;
+  --bento-secondary: #EA580C;
+  --bento-accent: #FACC15;
+  --bento-shadow: rgba(202, 138, 4, 0.18);
+  --gradient-1: rgba(234, 88, 12, 0.15);
+  --gradient-2: rgba(202, 138, 4, 0.18);
+  --gradient-3: rgba(250, 204, 21, 0.1);
+  --gradient-4: rgba(234, 88, 12, 0.12);
+}
+
+.dark.theme-chocobo {
+  --bento-primary: #FACC15;
+  --bento-secondary: #FB923C;
+  --bento-accent: #FDE047;
+  --bento-shadow: rgba(250, 204, 21, 0.22);
+  --gradient-1: rgba(251, 146, 60, 0.12);
+  --gradient-2: rgba(250, 204, 21, 0.14);
+  --gradient-3: rgba(251, 146, 60, 0.1);
+  --gradient-4: rgba(250, 204, 21, 0.08);
+}
+
+/* Tonberry Lantern - Deep teals and greens */
+.theme-tonberry {
+  --bento-primary: #0D9488;
+  --bento-secondary: #059669;
+  --bento-accent: #2DD4BF;
+  --bento-shadow: rgba(13, 148, 136, 0.18);
+  --gradient-1: rgba(5, 150, 105, 0.15);
+  --gradient-2: rgba(13, 148, 136, 0.18);
+  --gradient-3: rgba(45, 212, 191, 0.1);
+  --gradient-4: rgba(5, 150, 105, 0.12);
+}
+
+.dark.theme-tonberry {
+  --bento-primary: #2DD4BF;
+  --bento-secondary: #34D399;
+  --bento-accent: #5EEAD4;
+  --bento-shadow: rgba(45, 212, 191, 0.22);
+  --gradient-1: rgba(52, 211, 153, 0.12);
+  --gradient-2: rgba(45, 212, 191, 0.14);
+  --gradient-3: rgba(52, 211, 153, 0.1);
+  --gradient-4: rgba(45, 212, 191, 0.08);
+}
+
+/* Cactuar Fresh - Bright greens and limes */
+.theme-cactuar {
+  --bento-primary: #16A34A;
+  --bento-secondary: #65A30D;
+  --bento-accent: #4ADE80;
+  --bento-shadow: rgba(22, 163, 74, 0.18);
+  --gradient-1: rgba(101, 163, 13, 0.15);
+  --gradient-2: rgba(22, 163, 74, 0.18);
+  --gradient-3: rgba(74, 222, 128, 0.1);
+  --gradient-4: rgba(101, 163, 13, 0.12);
+}
+
+.dark.theme-cactuar {
+  --bento-primary: #4ADE80;
+  --bento-secondary: #A3E635;
+  --bento-accent: #86EFAC;
+  --bento-shadow: rgba(74, 222, 128, 0.22);
+  --gradient-1: rgba(163, 230, 53, 0.12);
+  --gradient-2: rgba(74, 222, 128, 0.14);
+  --gradient-3: rgba(163, 230, 53, 0.1);
+  --gradient-4: rgba(74, 222, 128, 0.08);
+}
+
+/* Moogle Cloud - Soft pinks and lavenders */
+.theme-moogle-cloud {
+  --bento-primary: #DB2777;
+  --bento-secondary: #9333EA;
+  --bento-accent: #F472B6;
+  --bento-shadow: rgba(219, 39, 119, 0.18);
+  --gradient-1: rgba(147, 51, 234, 0.15);
+  --gradient-2: rgba(219, 39, 119, 0.18);
+  --gradient-3: rgba(244, 114, 182, 0.1);
+  --gradient-4: rgba(147, 51, 234, 0.12);
+}
+
+.dark.theme-moogle-cloud {
+  --bento-primary: #F472B6;
+  --bento-secondary: #C084FC;
+  --bento-accent: #F9A8D4;
+  --bento-shadow: rgba(244, 114, 182, 0.22);
+  --gradient-1: rgba(192, 132, 252, 0.12);
+  --gradient-2: rgba(244, 114, 182, 0.14);
+  --gradient-3: rgba(192, 132, 252, 0.1);
+  --gradient-4: rgba(244, 114, 182, 0.08);
+}
+
+/* Midnight Realm - Deep indigos and purples */
+.theme-midnight {
+  --bento-primary: #4F46E5;
+  --bento-secondary: #7C3AED;
+  --bento-accent: #818CF8;
+  --bento-shadow: rgba(79, 70, 229, 0.18);
+  --gradient-1: rgba(124, 58, 237, 0.15);
+  --gradient-2: rgba(79, 70, 229, 0.18);
+  --gradient-3: rgba(129, 140, 248, 0.1);
+  --gradient-4: rgba(124, 58, 237, 0.12);
+}
+
+.dark.theme-midnight {
+  --bento-primary: #818CF8;
+  --bento-secondary: #A78BFA;
+  --bento-accent: #A5B4FC;
+  --bento-shadow: rgba(129, 140, 248, 0.22);
+  --gradient-1: rgba(167, 139, 250, 0.12);
+  --gradient-2: rgba(129, 140, 248, 0.14);
+  --gradient-3: rgba(167, 139, 250, 0.1);
+  --gradient-4: rgba(129, 140, 248, 0.08);
+}
+
+/* Costa del Sol - Warm oranges and corals */
+.theme-sunset {
+  --bento-primary: #EA580C;
+  --bento-secondary: #DC2626;
+  --bento-accent: #FB923C;
+  --bento-shadow: rgba(234, 88, 12, 0.18);
+  --gradient-1: rgba(220, 38, 38, 0.15);
+  --gradient-2: rgba(234, 88, 12, 0.18);
+  --gradient-3: rgba(251, 146, 60, 0.1);
+  --gradient-4: rgba(220, 38, 38, 0.12);
+}
+
+.dark.theme-sunset {
+  --bento-primary: #FB923C;
+  --bento-secondary: #F87171;
+  --bento-accent: #FDBA74;
+  --bento-shadow: rgba(251, 146, 60, 0.22);
+  --gradient-1: rgba(248, 113, 113, 0.12);
+  --gradient-2: rgba(251, 146, 60, 0.14);
+  --gradient-3: rgba(248, 113, 113, 0.1);
+  --gradient-4: rgba(251, 146, 60, 0.08);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
  * ACCESSIBILITY MODES
  * These classes are applied to the root element by AccessibilityContext
  * ───────────────────────────────────────────────────────────────────────────── */

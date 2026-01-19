@@ -32,14 +32,41 @@
     <script>
       // Apply theme before React loads to prevent flash
       (function() {
-        var stored = localStorage.getItem('theme');
+        // Read theme settings from localStorage
+        var themeSettings = null;
+        try {
+          var stored = localStorage.getItem('mogtome-theme');
+          if (stored) {
+            themeSettings = JSON.parse(stored);
+          }
+        } catch (e) {}
+        
+        // Fallback to old theme key for migration
+        if (!themeSettings) {
+          var oldTheme = localStorage.getItem('theme');
+          if (oldTheme === 'light' || oldTheme === 'dark') {
+            themeSettings = { colorMode: oldTheme, colorTheme: 'pom-pom' };
+          }
+        }
+        
+        // Determine dark mode
+        var colorMode = themeSettings?.colorMode || 'system';
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
-        // Set background color that will be enhanced by CSS gradients
-        var bgColor = isDark ? '#1A1722' : '#FFF9F5';
+        var isDark = colorMode === 'dark' || (colorMode === 'system' && prefersDark);
+        
+        // Apply dark class
         if (isDark) {
           document.documentElement.classList.add('dark');
         }
+        
+        // Apply color theme class
+        var colorTheme = themeSettings?.colorTheme || 'pom-pom';
+        if (colorTheme && colorTheme !== 'pom-pom') {
+          document.documentElement.classList.add('theme-' + colorTheme);
+        }
+        
+        // Set background color that will be enhanced by CSS gradients
+        var bgColor = isDark ? '#1A1722' : '#FFF9F5';
         document.documentElement.style.backgroundColor = bgColor;
         document.body.style.backgroundColor = bgColor;
       })();
