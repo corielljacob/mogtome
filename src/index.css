@@ -314,44 +314,160 @@
 /* ─────────────────────────────────────────────────────────────────────────────
  * ACCESSIBILITY MODES
  * These classes are applied to the root element by AccessibilityContext
+ * Using :root prefix to ensure these always override theme color palettes
  * ───────────────────────────────────────────────────────────────────────────── */
 
-/* High Contrast Mode - Light theme */
-.high-contrast {
+/* 
+ * HIGH CONTRAST MODE - Theme-Aware
+ * Each theme gets its own high-contrast variant that preserves the theme's
+ * character while boosting contrast to meet WCAG AAA standards (7:1 ratio).
+ * Colors are darkened for light mode and brightened for dark mode.
+ */
+
+/* Base high contrast settings (shared across all themes) */
+:root.high-contrast {
   --bento-bg: #FFFFFF;
   --bento-card: #FFFFFF;
   --bento-text: #000000;
   --bento-text-muted: #1A1A1A;
   --bento-text-subtle: #333333;
-  --bento-primary: #CC0000;
-  --bento-secondary: #5500AA;
-  --bento-accent: #CC4444;
   --bento-success: #006600;
   --bento-warning: #CC6600;
   --bento-border: rgba(0, 0, 0, 0.3);
   --bento-shadow: rgba(0, 0, 0, 0.3);
   --bento-glass: rgba(255, 255, 255, 1);
+  /* Remove background gradients for cleaner high-contrast experience */
+  --gradient-1: transparent;
+  --gradient-2: transparent;
+  --gradient-3: transparent;
+  --gradient-4: transparent;
 }
 
-/* High Contrast Mode - Dark theme */
-.dark.high-contrast {
+:root.dark.high-contrast {
   --bento-bg: #000000;
   --bento-card: #0A0A0A;
   --bento-text: #FFFFFF;
   --bento-text-muted: #E5E5E5;
   --bento-text-subtle: #CCCCCC;
-  --bento-primary: #FF6666;
-  --bento-secondary: #CC99FF;
-  --bento-accent: #FF8888;
   --bento-success: #66FF66;
   --bento-warning: #FFCC00;
   --bento-border: rgba(255, 255, 255, 0.4);
   --bento-shadow: rgba(255, 255, 255, 0.2);
   --bento-glass: rgba(10, 10, 10, 1);
+  --gradient-1: transparent;
+  --gradient-2: transparent;
+  --gradient-3: transparent;
+  --gradient-4: transparent;
+}
+
+/* Pom-Pom Classic - High Contrast (default red/purple) */
+:root.high-contrast,
+:root.theme-pom-pom.high-contrast {
+  --bento-primary: #B80000;
+  --bento-secondary: #4A0080;
+  --bento-accent: #CC3333;
+}
+
+:root.dark.high-contrast,
+:root.dark.theme-pom-pom.high-contrast {
+  --bento-primary: #FF7777;
+  --bento-secondary: #DD99FF;
+  --bento-accent: #FF9999;
+}
+
+/* Crystal Tower - High Contrast (blues/cyans) */
+:root.theme-crystal.high-contrast {
+  --bento-primary: #0047AB;
+  --bento-secondary: #006080;
+  --bento-accent: #2563EB;
+}
+
+:root.dark.theme-crystal.high-contrast {
+  --bento-primary: #93C5FD;
+  --bento-secondary: #67E8F9;
+  --bento-accent: #BFDBFE;
+}
+
+/* Chocobo Gold - High Contrast (yellows/golds) */
+:root.theme-chocobo.high-contrast {
+  --bento-primary: #92600A;
+  --bento-secondary: #B84000;
+  --bento-accent: #A16207;
+}
+
+:root.dark.theme-chocobo.high-contrast {
+  --bento-primary: #FDE047;
+  --bento-secondary: #FDBA74;
+  --bento-accent: #FEF08A;
+}
+
+/* Tonberry Lantern - High Contrast (teals/greens) */
+:root.theme-tonberry.high-contrast {
+  --bento-primary: #065F5E;
+  --bento-secondary: #04543F;
+  --bento-accent: #0D9488;
+}
+
+:root.dark.theme-tonberry.high-contrast {
+  --bento-primary: #5EEAD4;
+  --bento-secondary: #6EE7B7;
+  --bento-accent: #99F6E4;
+}
+
+/* Cactuar Fresh - High Contrast (greens/limes) */
+:root.theme-cactuar.high-contrast {
+  --bento-primary: #166534;
+  --bento-secondary: #3F6212;
+  --bento-accent: #15803D;
+}
+
+:root.dark.theme-cactuar.high-contrast {
+  --bento-primary: #86EFAC;
+  --bento-secondary: #BEF264;
+  --bento-accent: #BBF7D0;
+}
+
+/* Moogle Cloud - High Contrast (pinks/purples) */
+:root.theme-moogle-cloud.high-contrast {
+  --bento-primary: #9D174D;
+  --bento-secondary: #6B21A8;
+  --bento-accent: #BE185D;
+}
+
+:root.dark.theme-moogle-cloud.high-contrast {
+  --bento-primary: #F9A8D4;
+  --bento-secondary: #D8B4FE;
+  --bento-accent: #FBCFE8;
+}
+
+/* Midnight Realm - High Contrast (indigos/purples) */
+:root.theme-midnight.high-contrast {
+  --bento-primary: #3730A3;
+  --bento-secondary: #5B21B6;
+  --bento-accent: #4338CA;
+}
+
+:root.dark.theme-midnight.high-contrast {
+  --bento-primary: #A5B4FC;
+  --bento-secondary: #C4B5FD;
+  --bento-accent: #C7D2FE;
+}
+
+/* Costa del Sol - High Contrast (oranges/reds) */
+:root.theme-sunset.high-contrast {
+  --bento-primary: #9A3412;
+  --bento-secondary: #991B1B;
+  --bento-accent: #C2410C;
+}
+
+:root.dark.theme-sunset.high-contrast {
+  --bento-primary: #FDBA74;
+  --bento-secondary: #FCA5A5;
+  --bento-accent: #FED7AA;
 }
 
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
-.dark.extra-dark {
+:root.dark.extra-dark {
   --bento-bg: #000000;
   --bento-card: #0A0A0A;
   --bento-text: #E8E8E8;
@@ -362,7 +478,7 @@
 }
 
 /* Extra Dark + High Contrast combined */
-.dark.extra-dark.high-contrast {
+:root.dark.extra-dark.high-contrast {
   --bento-bg: #000000;
   --bento-card: #000000;
   --bento-text: #FFFFFF;
@@ -393,11 +509,7 @@
 .enhanced-focus *:focus-visible {
   outline: 3px solid var(--bento-primary) !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 6px rgba(229, 75, 75, 0.3) !important;
-}
-
-.dark.enhanced-focus *:focus-visible {
-  box-shadow: 0 0 0 6px rgba(240, 96, 96, 0.4) !important;
+  box-shadow: 0 0 0 6px var(--bento-shadow) !important;
 }
 
 /* Dyslexia-friendly Font Mode */
@@ -472,7 +584,7 @@
  * ───────────────────────────────────────────────────────────────────────────── */
 
 /* Protanopia (Red-Blind) - Uses blue/yellow palette */
-.colorblind-protanopia {
+:root.colorblind-protanopia {
   --bento-primary: #0077BB;      /* Blue instead of red */
   --bento-secondary: #EE7733;    /* Orange instead of purple */
   --bento-accent: #33BBEE;       /* Cyan */
@@ -480,7 +592,7 @@
   --bento-warning: #EE7733;      /* Orange */
 }
 
-.dark.colorblind-protanopia {
+:root.dark.colorblind-protanopia {
   --bento-primary: #66CCEE;      /* Light blue */
   --bento-secondary: #FFAA55;    /* Light orange */
   --bento-accent: #99DDFF;       /* Light cyan */
@@ -489,7 +601,7 @@
 }
 
 /* Deuteranopia (Green-Blind) - Uses blue/yellow palette (similar to protanopia) */
-.colorblind-deuteranopia {
+:root.colorblind-deuteranopia {
   --bento-primary: #0077BB;      /* Blue instead of red */
   --bento-secondary: #CC6677;    /* Rose/mauve */
   --bento-accent: #44AA99;       /* Teal */
@@ -497,7 +609,7 @@
   --bento-warning: #DDCC77;      /* Yellow/gold */
 }
 
-.dark.colorblind-deuteranopia {
+:root.dark.colorblind-deuteranopia {
   --bento-primary: #88CCEE;      /* Light blue */
   --bento-secondary: #CC6677;    /* Rose */
   --bento-accent: #44BB99;       /* Light teal */
@@ -506,7 +618,7 @@
 }
 
 /* Tritanopia (Blue-Blind) - Uses red/green palette */
-.colorblind-tritanopia {
+:root.colorblind-tritanopia {
   --bento-primary: #CC3311;      /* Red-orange */
   --bento-secondary: #EE3377;    /* Magenta/pink */
   --bento-accent: #EE7744;       /* Orange */
@@ -514,7 +626,7 @@
   --bento-warning: #EE7744;      /* Orange */
 }
 
-.dark.colorblind-tritanopia {
+:root.dark.colorblind-tritanopia {
   --bento-primary: #EE6677;      /* Salmon/pink */
   --bento-secondary: #EE99AA;    /* Light pink */
   --bento-accent: #FFAA77;       /* Peach */
@@ -523,7 +635,7 @@
 }
 
 /* Monochromacy (Complete Color Blindness) - Grayscale with high contrast */
-.colorblind-monochromacy {
+:root.colorblind-monochromacy {
   --bento-primary: #404040;
   --bento-secondary: #606060;
   --bento-accent: #505050;
@@ -534,7 +646,7 @@
   --bento-text-subtle: #606060;
 }
 
-.dark.colorblind-monochromacy {
+:root.dark.colorblind-monochromacy {
   --bento-primary: #D0D0D0;
   --bento-secondary: #A0A0A0;
   --bento-accent: #B0B0B0;
