@@ -3,9 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Users, Scroll, Info, Crown, Settings,
-  ChevronLeft, ChevronRight, UserCircle
+  ChevronLeft, ChevronRight, UserCircle, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
 // Sidebar width constants - adjusted for floating design with margin
@@ -205,6 +206,96 @@ function KnightDashboardItem({ isCollapsed }: { isCollapsed: boolean }) {
   );
 }
 
+// Theme toggle component with animated sun/moon
+function ThemeToggle({ isCollapsed }: { isCollapsed: boolean }) {
+  const { isDarkMode, setColorMode } = useTheme();
+  
+  const toggleTheme = () => {
+    setColorMode(isDarkMode ? 'light' : 'dark');
+  };
+
+  return (
+    <motion.button
+      onClick={toggleTheme}
+      className={`
+        group relative flex items-center gap-3 px-3 py-2.5 rounded-xl
+        text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60
+        font-soft text-sm font-medium
+        transition-all duration-200 cursor-pointer
+        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        ${isCollapsed ? 'justify-center w-full' : 'w-full'}
+      `}
+      aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      whileTap={{ scale: 0.97 }}
+    >
+      {/* Icon */}
+      <motion.div
+        className="w-5 h-5 flex-shrink-0 relative"
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      >
+        {/* Sun icon */}
+        <motion.div
+          initial={false}
+          animate={{ 
+            rotate: isDarkMode ? 90 : 0,
+            scale: isDarkMode ? 0 : 1,
+            opacity: isDarkMode ? 0 : 1
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <Sun className="w-5 h-5" strokeWidth={1.75} />
+        </motion.div>
+        
+        {/* Moon icon */}
+        <motion.div
+          initial={false}
+          animate={{ 
+            rotate: isDarkMode ? 0 : -90,
+            scale: isDarkMode ? 1 : 0,
+            opacity: isDarkMode ? 1 : 0
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <Moon className="w-5 h-5" strokeWidth={1.75} />
+        </motion.div>
+      </motion.div>
+
+      {/* Label */}
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.15 }}
+            className="whitespace-nowrap overflow-hidden"
+          >
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Tooltip when collapsed */}
+      {isCollapsed && (
+        <div className="
+          absolute left-full ml-3 px-3 py-1.5 
+          bg-[var(--bento-card)]/95 backdrop-blur-sm 
+          border border-[var(--bento-primary)]/10
+          rounded-xl shadow-lg shadow-[var(--bento-primary)]/5
+          text-sm text-[var(--bento-text)] whitespace-nowrap
+          opacity-0 group-hover:opacity-100 pointer-events-none
+          transition-opacity z-50
+        ">
+          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+        </div>
+      )}
+    </motion.button>
+  );
+}
+
 export function Sidebar() {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -306,10 +397,13 @@ export function Sidebar() {
           </div>
         </nav>
 
-        {/* Bottom section - Settings + Collapse toggle */}
+        {/* Bottom section - Theme Toggle + Settings + Collapse toggle */}
         <div className="px-3 py-3 space-y-1.5 overflow-hidden">
           {/* Decorative divider */}
           <div className="mx-0 mb-2 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
+          
+          {/* Theme Toggle */}
+          <ThemeToggle isCollapsed={isCollapsed} />
           
           {/* Settings */}
           <NavItem
