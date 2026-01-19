@@ -54,13 +54,9 @@ apiClient.interceptors.request.use((config) => {
  */
 async function refreshAuthToken(): Promise<string | null> {
   try {
-    const response = await axios.post(
+    const response = await axios.get(
       `${AUTH_API_URL}/auth/discord/refresh`,
-      {},
       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
         withCredentials: true, // Important: sends the HttpOnly refresh token cookie
       }
     );
