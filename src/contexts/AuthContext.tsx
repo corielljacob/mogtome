@@ -136,6 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // Schedule a proactive token refresh before it expires
+  // Also stores the expected refresh time so we can detect missed timers
   const scheduleTokenRefresh = useCallback((payload: JwtPayload) => {
     clearRefreshTimer();
     
@@ -144,7 +145,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     // Schedule refresh 5 minutes before expiration, or immediately if less than 5 min left
     // Minimum delay of 10 seconds to prevent tight loops
-    const refreshIn = Math.max(10, (expiresIn - 300)) * 1000;
+    const refreshInSeconds = Math.max(10, expiresIn - 300);
+    const refreshIn = refreshInSeconds * 1000;
+    
+    // Store when we expect the next refresh, so visibility change handler can detect missed timers
+    const expectedRefreshTime = Date.now() + refreshIn;
+    sessionStorage.setItem('mogtome_expected_refresh', expectedRefreshTime.toString());
     
     refreshTimerRef.current = setTimeout(async () => {
       if (isRefreshingRef.current) return;
@@ -293,6 +299,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
       clearRefreshTimer();
     };
   }, [refreshUser, clearRefreshTimer]);
+
+  // Re-check auth when the page becomes visible again (user returns to tab)
+  // This handles cases where the browser was sleeping, tab was in background,
+  // or the user closed and reopened the browser. The scheduled timer might not
+  // fire reliably in these cases, so we proactively check on visibility change.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // User returned to the tab - verify auth is still valid
+        refreshUser();
+      }
+    };
+
+    // Also refresh when the browser comes back online
+    const handleOnline = () => {
+      refreshUser();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [refreshUser]);
 
   // Redirect to Discord OAuth login
   const login = useCallback(() => {

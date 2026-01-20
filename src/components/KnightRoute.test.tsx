@@ -3,6 +3,11 @@ import { render, screen, waitFor } from '../test/test-utils';
 import { KnightRoute } from './KnightRoute';
 import { AuthProvider } from '../contexts/AuthContext';
 
+// Mock the refreshAuthToken function from api/client to prevent network calls
+vi.mock('../api/client', () => ({
+  refreshAuthToken: vi.fn().mockResolvedValue(null),
+}));
+
 // Helper to create a valid JWT token
 function createMockJwt(payload: Record<string, unknown>, expiresIn = 3600): string {
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
