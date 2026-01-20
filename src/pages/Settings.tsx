@@ -136,7 +136,7 @@ function ThemeSection() {
       />
       
       {/* Light/Dark/System Mode */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-2 mb-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-2 mb-4">
         {modeOptions.map(({ value, label, icon: Icon }) => {
           const isSelected = settings.colorMode === value;
           return (
@@ -144,36 +144,36 @@ function ThemeSection() {
               key={value}
               onClick={() => setColorMode(value)}
               className={`
-                relative flex flex-col items-center gap-2 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all cursor-pointer
+                relative flex flex-col items-center gap-2.5 sm:gap-2 p-4 sm:p-4 rounded-2xl sm:rounded-xl border-2 transition-all cursor-pointer
                 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-                touch-manipulation active:scale-95
+                touch-manipulation active:scale-[0.97]
                 ${isSelected 
                   ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
-                  : 'border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
+                  : 'border-[var(--bento-border)] active:border-[var(--bento-primary)]/30 active:bg-[var(--bento-bg)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
                 }
               `}
               aria-pressed={isSelected}
             >
               <div className={`
-                w-12 h-12 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
+                w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
                 ${isSelected 
                   ? 'bg-[var(--bento-primary)] text-white' 
                   : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
                 }
               `}>
-                <Icon className="w-6 h-6 sm:w-6 sm:h-6" />
+                <Icon className="w-7 h-7 sm:w-6 sm:h-6" />
               </div>
-              <span className={`font-soft font-semibold text-sm sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+              <span className={`font-soft font-semibold text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
                 {label}
               </span>
               {isSelected && (
                 <motion.div
-                  className="absolute top-2 right-2 sm:top-2 sm:right-2"
+                  className="absolute top-2.5 right-2.5 sm:top-2 sm:right-2"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                 >
-                  <Check className="w-4 h-4 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
+                  <Check className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
                 </motion.div>
               )}
             </button>
@@ -233,7 +233,7 @@ function ThemeSection() {
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
-            className="mt-4 grid grid-cols-2 gap-2"
+            className="mt-4 grid grid-cols-2 gap-3"
             role="radiogroup"
             aria-label="Color theme options"
           >
@@ -244,39 +244,40 @@ function ThemeSection() {
                   key={theme.id}
                   onClick={() => setColorTheme(theme.id)}
                   className={`
-                    relative flex flex-col gap-2 p-3 rounded-xl text-left cursor-pointer
-                    transition-all border-2
+                    relative flex flex-col gap-2.5 p-4 sm:p-3 rounded-2xl sm:rounded-xl text-left cursor-pointer
+                    transition-all border-2 touch-manipulation
+                    active:scale-[0.97]
                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                     ${isSelected 
                       ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
-                      : 'border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-bg)]'
+                      : 'border-[var(--bento-border)] active:border-[var(--bento-primary)]/30 active:bg-[var(--bento-bg)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
                     }
                   `}
                   role="radio"
                   aria-checked={isSelected}
                 >
-                  {/* Color preview */}
-                  <div className="flex items-center gap-1.5">
+                  {/* Color preview - larger dots on mobile */}
+                  <div className="flex items-center gap-2">
                     <div 
-                      className="w-5 h-5 rounded-full border-2 border-white shadow-sm" 
+                      className="w-6 h-6 sm:w-5 sm:h-5 rounded-full border-2 border-white shadow-sm" 
                       style={{ backgroundColor: theme.preview.primary }}
                     />
                     <div 
-                      className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+                      className="w-5 h-5 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm" 
                       style={{ backgroundColor: theme.preview.secondary }}
                     />
                     <div 
-                      className="w-3 h-3 rounded-full border-2 border-white shadow-sm" 
+                      className="w-4 h-4 sm:w-3 sm:h-3 rounded-full border-2 border-white shadow-sm" 
                       style={{ backgroundColor: theme.preview.accent }}
                     />
                   </div>
                   
                   {/* Theme info */}
                   <div>
-                    <p className={`font-soft font-semibold text-xs sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+                    <p className={`font-soft font-semibold text-sm sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
                       {theme.name}
                     </p>
-                    <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] leading-snug">
+                    <p className="text-xs sm:text-xs text-[var(--bento-text-muted)] leading-snug mt-0.5">
                       {theme.description}
                     </p>
                   </div>
@@ -284,12 +285,12 @@ function ThemeSection() {
                   {/* Selected indicator */}
                   {isSelected && (
                     <motion.div
-                      className="absolute top-2 right-2"
+                      className="absolute top-3 right-3 sm:top-2 sm:right-2"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                     >
-                      <Check className="w-4 h-4 text-[var(--bento-primary)]" />
+                      <Check className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
                     </motion.div>
                   )}
                 </button>

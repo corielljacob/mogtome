@@ -94,18 +94,18 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
 
   return (
     <motion.article 
-      className="group relative"
+      className="group relative touch-manipulation"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       aria-label={`${member.name}, FC Leader`}
     >
-      {/* Ambient glow */}
+      {/* Ambient glow - hidden on mobile for performance */}
       <div 
         className="
           absolute -inset-4 rounded-3xl blur-2xl pointer-events-none
           opacity-40 group-hover:opacity-60
-          transition-opacity duration-500
+          transition-opacity duration-500 hidden sm:block
         "
         style={{ backgroundColor: config.glow }}
         aria-hidden="true"
@@ -114,39 +114,40 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
       <div 
         className="
           relative flex flex-col items-center text-center
-          p-4 sm:p-6 md:p-8
+          p-5 sm:p-6 md:p-8
           bg-[var(--bento-card)]/95 backdrop-blur-md
           border-2 border-amber-400/30 rounded-3xl
           shadow-xl shadow-amber-500/10
-          hover:shadow-2xl hover:border-amber-400/50
+          sm:hover:shadow-2xl sm:hover:border-amber-400/50
+          active:scale-[0.99] sm:active:scale-100
           transition-all duration-300
         "
       >
         {/* Decorative crown accent */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
           <div 
-            className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full shadow-lg flex items-center gap-1.5 sm:gap-2"
+            className="px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2"
             style={{ backgroundColor: config.hexColor, boxShadow: `0 10px 15px -3px ${config.glow}` }}
           >
-            <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-            <span className="text-[10px] sm:text-xs font-soft font-bold text-white uppercase tracking-wide">
+            <Crown className="w-4 h-4 text-white" />
+            <span className="text-xs font-soft font-bold text-white uppercase tracking-wide">
               FC Leader
             </span>
           </div>
         </div>
         
-        {/* Avatar */}
+        {/* Avatar - larger on mobile */}
         <a 
           href={lodestoneUrl} 
           target="_blank" 
           rel="noopener noreferrer"
           className="
-            relative mt-4 mb-3 sm:mb-4
+            relative mt-5 mb-4 sm:mt-4 sm:mb-4
             focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none rounded-2xl
           "
           aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
         >
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-amber-400/20">
+          <div className="relative w-28 h-28 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-amber-400/20">
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
             )}
@@ -165,12 +166,25 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
               `}
             />
             
-            {/* Hover overlay */}
+            {/* Mobile tap indicator */}
             <div 
               className="
-                absolute inset-0 
+                absolute bottom-2 right-2 sm:hidden
+                flex items-center justify-center
+                w-7 h-7 rounded-full
+                bg-black/40 backdrop-blur-sm
+              "
+              aria-hidden="true"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-white" />
+            </div>
+            
+            {/* Desktop hover overlay */}
+            <div 
+              className="
+                absolute inset-0 hidden sm:flex
                 bg-gradient-to-t from-black/70 to-transparent 
-                flex items-end justify-center pb-2
+                items-end justify-center pb-2
                 opacity-0 group-hover:opacity-100
                 transition-opacity duration-200
               "
@@ -185,31 +199,31 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
         </a>
         
         {/* Name */}
-        <h3 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--bento-text)] mb-2 sm:mb-3">
+        <h3 className="font-display font-bold text-xl sm:text-xl md:text-2xl text-[var(--bento-text)] mb-3">
           {member.name}
         </h3>
         
-        {/* Biography */}
-        <p className="text-[var(--bento-text-muted)] font-soft text-sm sm:text-base leading-relaxed max-w-md px-1 sm:px-0">
+        {/* Biography - better line height on mobile */}
+        <p className="text-[var(--bento-text-muted)] font-soft text-sm sm:text-base leading-relaxed max-w-md px-2 sm:px-0">
           {member.biography || (
             <span className="italic opacity-75">Leading Kupo Life with heart and dedication, kupo~</span>
           )}
         </p>
         
-        {/* Edit Bio button for current user */}
+        {/* Edit Bio button for current user - larger touch target on mobile */}
         {isCurrentUser && (
           <Link
             to="/profile"
             className="
-              inline-flex items-center gap-1.5 mt-3 sm:mt-4
-              px-3 py-2 rounded-xl
-              bg-amber-500/10 hover:bg-amber-500/20
+              inline-flex items-center gap-2 mt-4 sm:mt-4
+              px-4 py-3 sm:px-3 sm:py-2 rounded-xl
+              bg-amber-500/10 active:bg-amber-500/20 sm:hover:bg-amber-500/20
               text-amber-600 dark:text-amber-400 font-soft font-semibold text-sm
-              transition-colors
+              transition-colors touch-manipulation
               focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none
             "
           >
-            <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+            <Pencil className="w-4 h-4 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
             Edit Your Bio
           </Link>
         )}
@@ -251,7 +265,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
       
       <div 
         className="
-          relative flex flex-col sm:flex-row gap-3 sm:gap-4
+          relative flex flex-row gap-4 sm:gap-4
           p-4 sm:p-4 md:p-5
           bg-[var(--bento-card)]/90 backdrop-blur-sm
           border border-[var(--bento-border)] rounded-2xl
@@ -266,7 +280,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
           target="_blank" 
           rel="noopener noreferrer"
           className="
-            relative flex-shrink-0 self-center sm:self-start
+            relative flex-shrink-0 self-start
             focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl
           "
           aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
@@ -290,12 +304,25 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
               `}
             />
             
-            {/* Hover overlay */}
+            {/* Mobile tap indicator */}
             <div 
               className="
-                absolute inset-0 
+                absolute bottom-1 right-1 sm:hidden
+                flex items-center justify-center
+                w-5 h-5 rounded-full
+                bg-black/40 backdrop-blur-sm
+              "
+              aria-hidden="true"
+            >
+              <ExternalLink className="w-2.5 h-2.5 text-white" />
+            </div>
+            
+            {/* Desktop hover overlay */}
+            <div 
+              className="
+                absolute inset-0 hidden sm:flex
                 bg-gradient-to-t from-black/70 to-transparent 
-                flex items-end justify-center pb-1.5
+                items-end justify-center pb-1.5
                 opacity-0 group-hover:opacity-100
                 transition-opacity duration-200
               "
@@ -310,44 +337,44 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
         </a>
         
         {/* Right side: Info & Bio */}
-        <div className="flex-1 min-w-0 text-center sm:text-left">
+        <div className="flex-1 min-w-0 text-left">
           {/* Header row: Name + badges */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-            <h3 className="font-display font-bold text-sm sm:text-base md:text-lg text-[var(--bento-text)] truncate">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-2 sm:mb-2">
+            <h3 className="font-display font-bold text-base sm:text-base md:text-lg text-[var(--bento-text)] truncate">
               {member.name}
             </h3>
             
-            <div className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-              {/* Rank badge */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Rank badge - larger on mobile */}
               <span className={`
-                inline-flex items-center gap-1 sm:gap-1.5
-                px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-soft font-semibold
+                inline-flex items-center gap-1.5
+                px-2 py-1 sm:px-2 sm:py-0.5 rounded-full text-[11px] sm:text-xs font-soft font-semibold
                 ${config.bg} ${config.color}
               `}>
                 {member.freeCompanyRankIcon ? (
                   <img 
                     src={member.freeCompanyRankIcon} 
                     alt="" 
-                    className="w-2.5 h-2.5 sm:w-3 sm:h-3"
+                    className="w-3 h-3 sm:w-3 sm:h-3"
                     aria-hidden="true"
                   />
                 ) : (
-                  <config.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" aria-hidden="true" />
+                  <config.icon className="w-3 h-3 sm:w-3 sm:h-3" aria-hidden="true" />
                 )}
                 {member.freeCompanyRank.replace('Moogle ', '')}
               </span>
               
               {/* New badge */}
               {member.recentlyPromoted && (
-                <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-soft font-semibold bg-[var(--bento-secondary)]/15 text-[var(--bento-secondary)]">
+                <span className="px-2 py-1 sm:px-2 sm:py-0.5 rounded-full text-[11px] sm:text-xs font-soft font-semibold bg-[var(--bento-secondary)]/15 text-[var(--bento-secondary)]">
                   New!
                 </span>
               )}
             </div>
           </div>
           
-          {/* Biography - the star of the show */}
-          <p className="text-[var(--bento-text-muted)] font-soft text-xs sm:text-sm leading-relaxed">
+          {/* Biography - the star of the show - larger on mobile */}
+          <p className="text-[var(--bento-text-muted)] font-soft text-sm sm:text-sm leading-relaxed">
             {member.biography || (
               <span className="italic opacity-75">Helping keep the FC magical, kupo~</span>
             )}
@@ -358,15 +385,15 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
             <Link
               to="/profile"
               className="
-                inline-flex items-center gap-1.5 mt-2.5 sm:mt-3
-                px-2.5 py-1.5 rounded-lg
-                bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20
-                text-[var(--bento-primary)] font-soft font-semibold text-xs
-                transition-colors
+                inline-flex items-center gap-2 mt-3 sm:mt-3
+                px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-xl sm:rounded-lg
+                bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/20
+                text-[var(--bento-primary)] font-soft font-semibold text-sm sm:text-xs
+                transition-colors touch-manipulation
                 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
               "
             >
-              <Pencil className="w-3 h-3" aria-hidden="true" />
+              <Pencil className="w-3.5 h-3.5 sm:w-3 sm:h-3" aria-hidden="true" />
               Edit Your Bio
             </Link>
           )}

@@ -329,163 +329,237 @@ export function PaginatedMemberGrid({
 
       {/* Pagination controls */}
       {totalPages > 1 && (
-        <div className="mt-6 sm:mt-10 pt-5 sm:pt-8 border-t border-[var(--bento-border)]">
-          {/* Page info header with loading indicator */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent hidden sm:block" aria-hidden="true" />
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm" role="status" aria-live="polite">
-              {isPending ? (
-                <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" aria-hidden="true" />
-              ) : (
-                <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
-              )}
-              <span className="font-soft font-medium text-sm text-[var(--bento-text)]">
-                Page <span className="text-[var(--bento-primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
-              </span>
+        <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-[var(--bento-border)]">
+          {/* Mobile-first pagination - simpler, larger touch targets */}
+          <div className="sm:hidden">
+            {/* Page indicator */}
+            <div className="flex items-center justify-center mb-4">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm" role="status" aria-live="polite">
+                {isPending ? (
+                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" aria-hidden="true" />
+                ) : (
+                  <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
+                )}
+                <span className="font-soft font-medium text-sm text-[var(--bento-text)]">
+                  Page <span className="text-[var(--bento-primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
+                </span>
+              </div>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent hidden sm:block" aria-hidden="true" />
-          </div>
 
-          {/* Main pagination controls */}
-          <nav 
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
-            aria-label="Pagination"
-            role="navigation"
-          >
-            {/* Navigation buttons group */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* First page button */}
-              <button
-                onClick={handleFirstPage}
-                disabled={currentPage === 0 || isPending}
-                aria-label="Go to first page"
-                className="
-                  flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-xl
-                  bg-[var(--bento-card)] border border-[var(--bento-border)]
-                  text-[var(--bento-text-muted)]
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5 sm:hover:text-[var(--bento-primary)]
-                  active:scale-95 active:bg-[var(--bento-primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                  transition-all cursor-pointer
-                "
-              >
-                <ChevronsLeft className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
-              </button>
-
-              {/* Previous button */}
+            {/* Mobile navigation - full-width buttons for easy thumb access */}
+            <nav className="flex items-center gap-3" aria-label="Pagination" role="navigation">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPage === 0 || isPending}
                 aria-label="Go to previous page"
                 className="
-                  flex items-center justify-center gap-1.5 px-4 py-2.5 h-11 sm:h-10 rounded-xl
+                  flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl
                   bg-[var(--bento-card)] border border-[var(--bento-border)]
-                  text-[var(--bento-text)] font-soft font-medium text-sm
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5
-                  active:scale-95 active:bg-[var(--bento-primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
+                  text-[var(--bento-text)] font-soft font-semibold text-base
+                  active:scale-[0.97] active:bg-[var(--bento-primary)]/10
+                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:bg-[var(--bento-card)]
                   focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                  transition-all cursor-pointer
+                  transition-all cursor-pointer touch-manipulation
                 "
               >
-                <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Previous</span>
+                <ChevronLeft className="w-5 h-5" aria-hidden="true" />
+                Previous
               </button>
 
-              {/* Page numbers - hidden on mobile, show on sm+ */}
-              <div className="hidden sm:flex items-center gap-1 mx-1">
-                {getPageNumbers().map((page, idx) => (
-                  page === 'ellipsis' ? (
-                    <span 
-                      key={`ellipsis-${idx}`} 
-                      className="w-8 text-center text-[var(--bento-text-muted)] font-soft select-none text-sm"
-                      aria-hidden="true"
-                    >
-                      ···
-                    </span>
-                  ) : (
-                    <button
-                      key={page}
-                      onClick={() => handlePageClick(page)}
-                      disabled={isPending}
-                      aria-label={`Go to page ${page + 1}`}
-                      aria-current={currentPage === page ? 'page' : undefined}
-                      className={`
-                        w-10 h-10 rounded-xl font-soft font-semibold text-sm
-                        transition-all cursor-pointer
-                        active:scale-95
-                        disabled:cursor-wait
-                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none focus-visible:ring-offset-2
-                        ${currentPage === page
-                          ? 'bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/30'
-                          : 'bg-[var(--bento-card)] border border-[var(--bento-border)] text-[var(--bento-text)] hover:border-[var(--bento-primary)]/40 hover:bg-[var(--bento-primary)]/10 hover:text-[var(--bento-primary)]'
-                        }
-                      `}
-                    >
-                      {page + 1}
-                    </button>
-                  )
-                ))}
-              </div>
-
-              {/* Mobile page indicator with pill style */}
-              <div className="sm:hidden flex items-center gap-1 mx-2">
-                <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-soft font-bold text-sm shadow-md">
-                  {currentPage + 1}
-                </div>
-                <span className="text-[var(--bento-text-muted)] font-soft">/</span>
-                <span className="font-soft font-medium text-sm text-[var(--bento-text)]">{totalPages}</span>
-              </div>
-
-              {/* Next button */}
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages - 1 || isPending}
                 aria-label="Go to next page"
                 className="
-                  flex items-center justify-center gap-1.5 px-4 py-2.5 h-11 sm:h-10 rounded-xl
-                  bg-[var(--bento-card)] border border-[var(--bento-border)]
-                  text-[var(--bento-text)] font-soft font-medium text-sm
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5
-                  active:scale-95 active:bg-[var(--bento-primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                  transition-all cursor-pointer
+                  flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl
+                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                  text-white font-soft font-semibold text-base
+                  shadow-lg shadow-[var(--bento-primary)]/25
+                  active:scale-[0.97] active:shadow-sm
+                  disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
+                  transition-all cursor-pointer touch-manipulation
                 "
               >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
+                Next
+                <ChevronRight className="w-5 h-5" aria-hidden="true" />
               </button>
+            </nav>
 
-              {/* Last page button */}
-              <button
-                onClick={handleLastPage}
-                disabled={currentPage === totalPages - 1 || isPending}
-                aria-label="Go to last page"
-                className="
-                  flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-xl
-                  bg-[var(--bento-card)] border border-[var(--bento-border)]
-                  text-[var(--bento-text-muted)]
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5 sm:hover:text-[var(--bento-primary)]
-                  active:scale-95 active:bg-[var(--bento-primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                  transition-all cursor-pointer
-                "
-              >
-                <ChevronsRight className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
-              </button>
+            {/* Quick jump for mobile - first/last */}
+            {totalPages > 3 && (
+              <div className="flex items-center justify-center gap-3 mt-3">
+                <button
+                  onClick={handleFirstPage}
+                  disabled={currentPage === 0 || isPending}
+                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronsLeft className="w-4 h-4 inline-block mr-1" aria-hidden="true" />
+                  First
+                </button>
+                <span className="text-[var(--bento-text-subtle)]">·</span>
+                <button
+                  onClick={handleLastPage}
+                  disabled={currentPage === totalPages - 1 || isPending}
+                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  Last
+                  <ChevronsRight className="w-4 h-4 inline-block ml-1" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop pagination - more compact with page numbers */}
+          <div className="hidden sm:block">
+            {/* Page info header with loading indicator */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" aria-hidden="true" />
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm" role="status" aria-live="polite">
+                {isPending ? (
+                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" aria-hidden="true" />
+                ) : (
+                  <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
+                )}
+                <span className="font-soft font-medium text-sm text-[var(--bento-text)]">
+                  Page <span className="text-[var(--bento-primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
+                </span>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" aria-hidden="true" />
             </div>
-          </nav>
 
-          {/* Keyboard hint - hidden on mobile */}
-          <p className="hidden sm:block text-center mt-4 text-xs text-[var(--bento-text-subtle)] font-soft">
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">←</kbd>
-            {' '}
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">→</kbd>
-            {' '}to navigate pages
-          </p>
+            {/* Main pagination controls */}
+            <nav 
+              className="flex items-center justify-center gap-4"
+              aria-label="Pagination"
+              role="navigation"
+            >
+              {/* Navigation buttons group */}
+              <div className="flex items-center gap-2">
+                {/* First page button */}
+                <button
+                  onClick={handleFirstPage}
+                  disabled={currentPage === 0 || isPending}
+                  aria-label="Go to first page"
+                  className="
+                    flex items-center justify-center w-10 h-10 rounded-xl
+                    bg-[var(--bento-card)] border border-[var(--bento-border)]
+                    text-[var(--bento-text-muted)]
+                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 hover:text-[var(--bento-primary)]
+                    active:scale-95 active:bg-[var(--bento-primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    transition-all cursor-pointer
+                  "
+                >
+                  <ChevronsLeft className="w-4 h-4" aria-hidden="true" />
+                </button>
+
+                {/* Previous button */}
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 0 || isPending}
+                  aria-label="Go to previous page"
+                  className="
+                    flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
+                    bg-[var(--bento-card)] border border-[var(--bento-border)]
+                    text-[var(--bento-text)] font-soft font-medium text-sm
+                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
+                    active:scale-95 active:bg-[var(--bento-primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    transition-all cursor-pointer
+                  "
+                >
+                  <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+                  Previous
+                </button>
+
+                {/* Page numbers */}
+                <div className="flex items-center gap-1 mx-1">
+                  {getPageNumbers().map((page, idx) => (
+                    page === 'ellipsis' ? (
+                      <span 
+                        key={`ellipsis-${idx}`} 
+                        className="w-8 text-center text-[var(--bento-text-muted)] font-soft select-none text-sm"
+                        aria-hidden="true"
+                      >
+                        ···
+                      </span>
+                    ) : (
+                      <button
+                        key={page}
+                        onClick={() => handlePageClick(page)}
+                        disabled={isPending}
+                        aria-label={`Go to page ${page + 1}`}
+                        aria-current={currentPage === page ? 'page' : undefined}
+                        className={`
+                          w-10 h-10 rounded-xl font-soft font-semibold text-sm
+                          transition-all cursor-pointer
+                          active:scale-95
+                          disabled:cursor-wait
+                          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none focus-visible:ring-offset-2
+                          ${currentPage === page
+                            ? 'bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/30'
+                            : 'bg-[var(--bento-card)] border border-[var(--bento-border)] text-[var(--bento-text)] hover:border-[var(--bento-primary)]/40 hover:bg-[var(--bento-primary)]/10 hover:text-[var(--bento-primary)]'
+                          }
+                        `}
+                      >
+                        {page + 1}
+                      </button>
+                    )
+                  ))}
+                </div>
+
+                {/* Next button */}
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages - 1 || isPending}
+                  aria-label="Go to next page"
+                  className="
+                    flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
+                    bg-[var(--bento-card)] border border-[var(--bento-border)]
+                    text-[var(--bento-text)] font-soft font-medium text-sm
+                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
+                    active:scale-95 active:bg-[var(--bento-primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    transition-all cursor-pointer
+                  "
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                </button>
+
+                {/* Last page button */}
+                <button
+                  onClick={handleLastPage}
+                  disabled={currentPage === totalPages - 1 || isPending}
+                  aria-label="Go to last page"
+                  className="
+                    flex items-center justify-center w-10 h-10 rounded-xl
+                    bg-[var(--bento-card)] border border-[var(--bento-border)]
+                    text-[var(--bento-text-muted)]
+                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 hover:text-[var(--bento-primary)]
+                    active:scale-95 active:bg-[var(--bento-primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    transition-all cursor-pointer
+                  "
+                >
+                  <ChevronsRight className="w-4 h-4" aria-hidden="true" />
+                </button>
+              </div>
+            </nav>
+
+            {/* Keyboard hint */}
+            <p className="text-center mt-4 text-xs text-[var(--bento-text-subtle)] font-soft">
+              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">←</kbd>
+              {' '}
+              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">→</kbd>
+              {' '}to navigate pages
+            </p>
+          </div>
         </div>
       )}
     </div>

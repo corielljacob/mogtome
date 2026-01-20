@@ -241,11 +241,12 @@ function LoginButton() {
   return (
     <motion.button
       onClick={login}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5865F2] text-white font-soft text-sm font-medium cursor-pointer hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none"
+      className="flex items-center gap-2 px-3.5 py-2.5 md:px-3 md:py-1.5 rounded-xl md:rounded-lg bg-[#5865F2] text-white font-soft text-sm font-medium cursor-pointer active:bg-[#4752C4] md:hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
       whileTap={{ scale: 0.97 }}
       aria-label="Login with Discord"
     >
-      <DiscordIcon className="w-4 h-4" aria-hidden="true" />
+      <DiscordIcon className="w-5 h-5 md:w-4 md:h-4" aria-hidden="true" />
+      <span className="md:hidden">Login</span>
       <span className="hidden lg:inline">Login</span>
     </motion.button>
   );
@@ -409,46 +410,6 @@ function KupoBadge() {
   );
 }
 
-// Mobile Profile button for bottom nav (shows for authenticated users)
-function MobileProfileButton() {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
-  
-  if (!isAuthenticated) return null;
-  
-  const isActive = location.pathname === '/profile';
-  
-  return (
-    <BottomNavItem
-      path="/profile"
-      label="Profile"
-      icon={UserCircle}
-      isActive={isActive}
-    />
-  );
-}
-
-// Mobile Knight Dashboard button for bottom nav
-function MobileKnightDashboardButton() {
-  const { user, isAuthenticated } = useAuth();
-  const location = useLocation();
-  
-  const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
-  
-  if (!isAuthenticated || !hasKnighthood) return null;
-  
-  const isActive = location.pathname === '/dashboard';
-  
-  return (
-    <BottomNavItem
-      path="/dashboard"
-      label="Dashboard"
-      icon={Crown}
-      isActive={isActive}
-    />
-  );
-}
-
 // Bottom navigation item for mobile - enhanced with native-feeling feedback
 function BottomNavItem({ 
   path, 
@@ -466,7 +427,7 @@ function BottomNavItem({
       to={path}
       aria-current={isActive ? 'page' : undefined}
       className={`
-        relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 px-2 sm:px-3 min-w-[52px] sm:min-w-[64px]
+        relative flex flex-col items-center justify-center gap-1.5 py-3 px-3 min-w-[56px] min-h-[52px]
         transition-all duration-150
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset rounded-xl
         touch-manipulation
@@ -479,7 +440,7 @@ function BottomNavItem({
       {/* Active indicator dot */}
       {isActive && (
         <motion.div
-          className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--bento-primary)]"
+          className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--bento-primary)]"
           layoutId="bottomNavIndicator"
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
@@ -492,11 +453,11 @@ function BottomNavItem({
         }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
-        <Icon className="w-5 h-5 sm:w-5 sm:h-5" strokeWidth={isActive ? 2.5 : 2} />
+        <Icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
       </motion.div>
       
       <motion.span 
-        className={`text-[10px] sm:text-[10px] font-soft font-semibold leading-none`}
+        className={`text-[10px] font-soft font-semibold leading-none`}
         animate={{ 
           opacity: isActive ? 1 : 0.7,
           y: isActive ? 0 : 1,
@@ -509,45 +470,138 @@ function BottomNavItem({
   );
 }
 
-// Bottom navigation bar for mobile - floating pill style
+// Bottom navigation bar for mobile - floating pill style with horizontal scroll
 function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: string; icon: React.ElementType }> }) {
   const location = useLocation();
+  const { isAuthenticated, user } = useAuth();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
   const isActive = (path: string) => location.pathname === path;
+  
+  const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
+
+  // Check scroll position to show/hide fade indicators
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const checkScroll = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const hasOverflow = scrollWidth > clientWidth;
+      setShowLeftFade(hasOverflow && scrollLeft > 5);
+      setShowRightFade(hasOverflow && scrollLeft < scrollWidth - clientWidth - 5);
+    };
+
+    // Initial check
+    checkScroll();
+    
+    // Check on scroll
+    container.addEventListener('scroll', checkScroll, { passive: true });
+    
+    // Check on resize
+    window.addEventListener('resize', checkScroll);
+    
+    return () => {
+      container.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [isAuthenticated, hasKnighthood]); // Re-check when auth state changes
 
   return (
     <nav 
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] sm:pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-2 sm:px-3 pointer-events-none"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-3 pointer-events-none"
       aria-label="Mobile navigation"
     >
-      <div className="relative max-w-md mx-auto pointer-events-auto">
-        {/* Pill background */}
-        <div className="absolute inset-0 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-[var(--bento-primary)]/10" />
+      <div className="relative max-w-lg mx-auto pointer-events-auto">
+        {/* Pill background - thicker for better touch area */}
+        <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-[var(--bento-primary)]/10" />
         
-        {/* Nav items container */}
-        <div className="relative flex items-center justify-around px-1 sm:px-2 py-0.5 sm:py-1">
-          {navItems.map(({ path, label, icon }) => (
-            <BottomNavItem
-              key={path}
-              path={path}
-              label={label}
-              icon={icon}
-              isActive={isActive(path)}
-            />
-          ))}
-          
-          {/* Profile in bottom nav (conditional - authenticated users) */}
-          <MobileProfileButton />
-          
-          {/* Knight Dashboard in bottom nav (conditional - knights only) */}
-          <MobileKnightDashboardButton />
-          
-          {/* Settings in bottom nav */}
-          <BottomNavItem
-            path="/settings"
-            label="Settings"
-            icon={Settings}
-            isActive={isActive('/settings')}
-          />
+        {/* Left fade indicator */}
+        <div 
+          className={`
+            absolute left-0 top-0 bottom-0 w-6 z-10 rounded-l-2xl
+            bg-gradient-to-r from-[var(--bento-card)] to-transparent
+            pointer-events-none transition-opacity duration-200
+            ${showLeftFade ? 'opacity-80' : 'opacity-0'}
+          `}
+          aria-hidden="true"
+        />
+        
+        {/* Right fade indicator */}
+        <div 
+          className={`
+            absolute right-0 top-0 bottom-0 w-6 z-10 rounded-r-2xl
+            bg-gradient-to-l from-[var(--bento-card)] to-transparent
+            pointer-events-none transition-opacity duration-200
+            ${showRightFade ? 'opacity-80' : 'opacity-0'}
+          `}
+          aria-hidden="true"
+        />
+        
+        {/* Nav items container - horizontally scrollable when items overflow */}
+        <div 
+          ref={scrollContainerRef}
+          className="
+            relative flex items-center px-1 py-1
+            overflow-x-auto overflow-y-hidden
+            scrollbar-none
+            snap-x snap-mandatory
+            overscroll-x-contain
+          "
+          style={{ 
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
+          {/* Flex container with gap instead of justify-around for scroll behavior */}
+          <div className="flex items-center gap-1 mx-auto">
+            {navItems.map(({ path, label, icon }) => (
+              <div key={path} className="snap-center flex-shrink-0">
+                <BottomNavItem
+                  path={path}
+                  label={label}
+                  icon={icon}
+                  isActive={isActive(path)}
+                />
+              </div>
+            ))}
+            
+            {/* Profile in bottom nav (conditional - authenticated users) */}
+            {isAuthenticated && (
+              <div className="snap-center flex-shrink-0">
+                <BottomNavItem
+                  path="/profile"
+                  label="Profile"
+                  icon={UserCircle}
+                  isActive={isActive('/profile')}
+                />
+              </div>
+            )}
+            
+            {/* Knight Dashboard in bottom nav (conditional - knights only) */}
+            {isAuthenticated && hasKnighthood && (
+              <div className="snap-center flex-shrink-0">
+                <BottomNavItem
+                  path="/dashboard"
+                  label="Dashboard"
+                  icon={Crown}
+                  isActive={isActive('/dashboard')}
+                />
+              </div>
+            )}
+            
+            {/* Settings in bottom nav */}
+            <div className="snap-center flex-shrink-0">
+              <BottomNavItem
+                path="/settings"
+                label="Settings"
+                icon={Settings}
+                isActive={isActive('/settings')}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </nav>
@@ -566,21 +620,21 @@ export function Navbar() {
     <>
       {/* Mobile floating header - logo left, user controls right */}
       <nav 
-        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.375rem)] sm:pt-[calc(env(safe-area-inset-top)+0.5rem)] px-2 sm:px-3 pointer-events-none"
+        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-3 pointer-events-none"
         aria-label="Mobile header"
       >
         <div className="flex items-center justify-between">
-          {/* Logo - floating pill */}
+          {/* Logo - floating pill with larger touch target */}
           <Link 
             to="/" 
-            className="pointer-events-auto flex items-center gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+            className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none active:scale-95 transition-transform touch-manipulation"
             aria-label="MogTome - Go to home page"
           >
             <LogoIcon hovered={false} />
           </Link>
 
-          {/* Right side controls - floating pill */}
-          <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-[var(--bento-card)]/85 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
+          {/* Right side controls - floating pill with better spacing */}
+          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
             <LoginButton />
             <UserMenu />
           </div>

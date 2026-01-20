@@ -101,15 +101,15 @@ function DiscordIcon({ className }: { className?: string }) {
 /** Discord login CTA for unauthenticated users */
 function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
   return (
-    <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
-      {/* Discord login button */}
+    <div className="w-full max-w-sm mx-auto px-3 sm:px-0">
+      {/* Discord login button - larger touch target on mobile */}
       <motion.button
         onClick={onLogin}
         className="
-          group w-full flex items-center justify-center gap-2.5 sm:gap-3
-          px-6 sm:px-8 py-4 sm:py-4 rounded-2xl
+          group w-full flex items-center justify-center gap-3
+          px-6 py-5 sm:py-4 rounded-2xl
           bg-[#5865F2] text-white
-          font-soft font-semibold text-base sm:text-lg
+          font-soft font-semibold text-lg sm:text-lg
           shadow-xl shadow-[#5865F2]/30
           sm:hover:bg-[#4752C4] sm:hover:shadow-2xl sm:hover:shadow-[#5865F2]/40
           active:bg-[#4752C4] active:scale-[0.97]
@@ -118,13 +118,13 @@ function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
         "
         whileTap={{ scale: 0.97 }}
       >
-        <DiscordIcon className="w-6 h-6 sm:w-6 sm:h-6" />
+        <DiscordIcon className="w-6 h-6" />
         <span>Login with Discord</span>
-        <LogIn className="w-5 h-5 sm:w-5 sm:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+        <LogIn className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
       </motion.button>
 
       {/* Feature preview */}
-      <p className="mt-4 sm:mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft">
+      <p className="mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft px-2">
         Sign in to unlock the full experience
       </p>
     </div>
@@ -248,15 +248,15 @@ export function Home() {
 
               {/* Kupo speech bubble */}
               <motion.div
-                className="mb-5 relative -mt-4"
+                className="mb-5 relative -mt-2 sm:-mt-4"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 role="region"
                 aria-label="Moogle greeting"
               >
-                {/* Speech bubble */}
-                <div className="relative bg-[var(--bento-card)] rounded-2xl px-3 sm:px-6 py-3 sm:py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-3rem)] max-w-[280px] sm:max-w-[360px] min-h-[60px] sm:min-h-[80px] flex items-center justify-center mx-auto">
+                {/* Speech bubble - wider on mobile for better readability */}
+                <div className="relative bg-[var(--bento-card)] rounded-2xl px-4 sm:px-6 py-4 sm:py-4 shadow-lg border border-[var(--bento-primary)]/15 w-[calc(100vw-2.5rem)] max-w-[320px] sm:max-w-[360px] min-h-[68px] sm:min-h-[80px] flex items-center justify-center mx-auto">
                   {/* Bubble tail pointing up */}
                   <div className="absolute -top-5 left-1/2 -translate-x-1/2" aria-hidden="true">
                     <div className="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-b-[22px] border-b-[var(--bento-card)]" />
@@ -265,7 +265,7 @@ export function Home() {
                   <AnimatePresence mode="wait">
                     <motion.p
                       key={quoteIndex}
-                      className="font-accent text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)] text-center leading-tight"
+                      className="font-accent text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)] text-center leading-tight px-1"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -313,7 +313,7 @@ export function Home() {
 
               {/* CTA button - Discord login for unauthenticated, Meet the Family for authenticated */}
               <motion.div 
-                className="mt-8"
+                className="mt-6 sm:mt-8 px-2 sm:px-0"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
@@ -321,14 +321,14 @@ export function Home() {
                 {!isLoading && !isAuthenticated ? (
                   <DiscordLoginCTA onLogin={login} />
                 ) : (
-                  <Link to="/members">
+                  <Link to="/members" className="block w-full sm:w-auto sm:inline-block">
                     <Button 
                       size="lg" 
-                      className="gap-2 sm:gap-2.5 px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg group shadow-xl shadow-[var(--bento-primary)]/30 hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40 transition-all duration-300"
+                      className="w-full sm:w-auto gap-3 px-6 sm:px-10 py-5 sm:py-4 text-lg sm:text-lg group shadow-xl shadow-[var(--bento-primary)]/30 hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40 transition-all duration-300"
                     >
-                      <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <Users className="w-5 h-5" />
                       <span className="font-soft font-semibold">Meet the Family</span>
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" />
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
                     </Button>
                   </Link>
                 )}

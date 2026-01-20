@@ -121,7 +121,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
 
   return (
     <article 
-      className="group relative w-full max-w-[10rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation"
+      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation"
       style={shouldAnimateEntrance ? {
         animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
       } : undefined}
@@ -132,14 +132,14 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           relative w-full
           bg-[var(--bento-card)]
           border border-[var(--bento-primary)]/10
-          rounded-xl sm:rounded-2xl overflow-hidden shadow-sm
+          rounded-2xl overflow-hidden shadow-sm
           transition-all duration-150 ease-out
           sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
-          active:scale-[0.96] active:shadow-none sm:active:scale-[0.98]
+          active:scale-[0.97] active:shadow-none sm:active:scale-[0.98]
         "
       >
-        {/* Solid rank banner */}
-        <div className="h-1" style={{ backgroundColor: theme.color }} aria-hidden="true" />
+        {/* Solid rank banner - slightly thicker on mobile for better visibility */}
+        <div className="h-1.5 sm:h-1" style={{ backgroundColor: theme.color }} aria-hidden="true" />
         
         {/* Avatar with Lodestone link */}
         <a 
@@ -168,12 +168,26 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             `}
           />
           
-          {/* Hover overlay with Lodestone chip - CSS only */}
+          {/* Mobile tap indicator - always visible subtle hint */}
           <div 
             className="
-              absolute inset-0 
+              absolute bottom-2 right-2 sm:hidden
+              flex items-center justify-center
+              w-7 h-7 rounded-full
+              bg-black/40 backdrop-blur-sm
+              opacity-60
+            "
+            aria-hidden="true"
+          >
+            <ExternalLink className="w-3.5 h-3.5 text-white" />
+          </div>
+          
+          {/* Hover overlay with Lodestone chip - desktop only */}
+          <div 
+            className="
+              absolute inset-0 hidden sm:flex
               bg-gradient-to-t from-black/70 via-black/30 to-transparent 
-              flex items-end justify-center pb-3
+              items-end justify-center pb-3
               opacity-0 group-hover:opacity-100
               transition-opacity duration-200
             "
@@ -194,10 +208,10 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             </span>
           </div>
           
-          {/* Decorative corner moogle on hover - CSS only */}
+          {/* Decorative corner moogle on hover - desktop only */}
           <div
             className="
-              absolute top-1 right-1 pointer-events-none
+              absolute top-1 right-1 pointer-events-none hidden sm:block
               opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100
               transition-all duration-200 ease-out
             "
@@ -211,18 +225,18 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           </div>
         </a>
 
-        {/* Member info */}
-        <div className="p-2.5 sm:p-3 text-center space-y-1.5 sm:space-y-2">
-          {/* Name */}
-          <h3 className="font-soft font-bold text-[11px] sm:text-sm text-[var(--bento-text)] truncate leading-tight">
+        {/* Member info - larger touch target and better mobile sizing */}
+        <div className="p-3 sm:p-3 text-center space-y-2 sm:space-y-2">
+          {/* Name - larger on mobile for readability */}
+          <h3 className="font-soft font-bold text-xs sm:text-sm text-[var(--bento-text)] truncate leading-tight">
             {member.name}
           </h3>
           
-          {/* Rank badge - simplified, no animation */}
+          {/* Rank badge - larger touch target on mobile */}
           <div 
             className={`
               inline-flex items-center justify-center gap-1.5 
-              px-2.5 py-1 rounded-full 
+              px-3 py-1.5 sm:px-2.5 sm:py-1 rounded-full 
               ${theme.bg}
               transition-transform duration-200
               sm:group-hover:scale-105
@@ -232,13 +246,13 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               <img 
                 src={member.freeCompanyRankIcon} 
                 alt="" 
-                className="w-3.5 h-3.5"
+                className="w-4 h-4 sm:w-3.5 sm:h-3.5"
                 aria-hidden="true"
               />
             ) : (
-              <RankIcon className={`w-3 h-3 ${theme.accent}`} aria-hidden="true" />
+              <RankIcon className={`w-3.5 h-3.5 sm:w-3 sm:h-3 ${theme.accent}`} aria-hidden="true" />
             )}
-            <span className={`text-[10px] sm:text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[70px] sm:max-w-[80px]`}>
+            <span className={`text-[11px] sm:text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[80px] sm:max-w-[80px]`}>
               {member.freeCompanyRank}
             </span>
           </div>

@@ -113,16 +113,16 @@ export const MobileSheet = memo(function MobileSheet({
               flex flex-col
               ${sizeClasses[size]}
             `}>
-              {/* Drag handle */}
-              <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
-                <div className="w-10 h-1 rounded-full bg-[var(--bento-text-subtle)]/30" />
+              {/* Drag handle - larger touch area */}
+              <div className="flex justify-center pt-4 pb-3 flex-shrink-0">
+                <div className="w-12 h-1.5 rounded-full bg-[var(--bento-text-subtle)]/30" />
               </div>
               
               {/* Header - only if title or close button */}
               {(title || showCloseButton) && (
-                <div className="flex items-center justify-between px-5 pb-3 border-b border-[var(--bento-border)] flex-shrink-0">
+                <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--bento-border)] flex-shrink-0">
                   {title ? (
-                    <h2 className="font-display font-bold text-lg text-[var(--bento-text)]">
+                    <h2 className="font-display font-bold text-xl text-[var(--bento-text)]">
                       {title}
                     </h2>
                   ) : (
@@ -131,11 +131,11 @@ export const MobileSheet = memo(function MobileSheet({
                   {showCloseButton && (
                     <motion.button
                       onClick={onClose}
-                      className="p-2 -mr-2 rounded-full text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)] cursor-pointer"
+                      className="p-2.5 -mr-2 rounded-xl text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)] active:text-[var(--bento-text)] cursor-pointer touch-manipulation"
                       whileTap={{ scale: 0.9 }}
                       aria-label="Close"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-6 h-6" />
                     </motion.button>
                   )}
                 </div>

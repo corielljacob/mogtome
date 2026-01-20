@@ -54,23 +54,23 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
       className="
         bg-[var(--bento-bg)]/50 
         border border-[var(--bento-border)] 
-        rounded-xl p-3 sm:p-4
-        hover:border-[var(--bento-primary)]/20
-        transition-colors
+        rounded-2xl sm:rounded-xl p-4 sm:p-4
+        sm:hover:border-[var(--bento-primary)]/20
+        transition-colors touch-manipulation
       "
     >
       {/* Header row */}
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2.5 min-w-0">
+      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
+        <div className="flex items-center gap-3 sm:gap-2.5 min-w-0">
           {submitter ? (
             <img 
               src={submitter.avatarLink} 
               alt="" 
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0"
+              className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-secondary)]/10 flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
+            <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg bg-[var(--bento-secondary)]/10 flex items-center justify-center flex-shrink-0">
+              <User className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
             </div>
           )}
           <div className="min-w-0">
@@ -92,7 +92,7 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
 
         {/* Status badge */}
         <span className={`
-          flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-soft font-medium
+          flex-shrink-0 px-2.5 py-1 sm:px-2 sm:py-0.5 rounded-full text-xs font-soft font-medium
           ${submission.status === 'Pending' 
             ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' 
             : 'bg-[var(--bento-text-muted)]/10 text-[var(--bento-text-muted)]'
@@ -106,42 +106,43 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
       <div className="mb-4">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
+          className="w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
         >
           <p className="text-sm text-[var(--bento-text)] leading-relaxed whitespace-pre-wrap">
             {isExpanded ? submission.biography : biographyPreview}
           </p>
           {submission.biography.length > 100 && (
-            <span className="text-xs text-[var(--bento-primary)] mt-1 inline-block hover:underline">
+            <span className="text-sm sm:text-xs text-[var(--bento-primary)] mt-2 inline-block font-medium">
               {isExpanded ? 'Show less' : 'Show more'}
             </span>
           )}
         </button>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-2">
+      {/* Action buttons - larger touch targets on mobile */}
+      <div className="flex items-center gap-3 sm:gap-2">
         <button
           onClick={() => onApprove(submission.submissionId)}
           disabled={isApproving || isRejecting}
           className="
             flex-1 flex items-center justify-center gap-2
-            px-3 py-2 rounded-lg
-            bg-green-500 hover:bg-green-600 
+            px-4 py-3.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-lg
+            bg-green-500 active:bg-green-600 sm:hover:bg-green-600 
             text-white font-soft font-semibold text-sm
-            transition-colors cursor-pointer
+            transition-colors cursor-pointer touch-manipulation
+            active:scale-[0.97] sm:active:scale-100
             disabled:opacity-50 disabled:cursor-not-allowed
             focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:outline-none
           "
         >
           {isApproving ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-              Approving...
+              <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin" aria-hidden="true" />
+              <span className="sm:inline">Approving...</span>
             </>
           ) : (
             <>
-              <Check className="w-4 h-4" aria-hidden="true" />
+              <Check className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
               Approve
             </>
           )}
@@ -151,22 +152,23 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
           disabled={isApproving || isRejecting}
           className="
             flex-1 flex items-center justify-center gap-2
-            px-3 py-2 rounded-lg
-            bg-red-500 hover:bg-red-600 
+            px-4 py-3.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-lg
+            bg-red-500 active:bg-red-600 sm:hover:bg-red-600 
             text-white font-soft font-semibold text-sm
-            transition-colors cursor-pointer
+            transition-colors cursor-pointer touch-manipulation
+            active:scale-[0.97] sm:active:scale-100
             disabled:opacity-50 disabled:cursor-not-allowed
             focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none
           "
         >
           {isRejecting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-              Rejecting...
+              <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin" aria-hidden="true" />
+              <span className="sm:inline">Rejecting...</span>
             </>
           ) : (
             <>
-              <X className="w-4 h-4" aria-hidden="true" />
+              <X className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
               Reject
             </>
           )}
@@ -275,21 +277,21 @@ export function PendingSubmissions() {
           </div>
         </div>
 
-        {/* Refresh button */}
+        {/* Refresh button - larger on mobile */}
         <button
           onClick={() => refetch()}
           disabled={isLoading}
           className="
-            p-2 rounded-lg
-            bg-[var(--bento-bg)] hover:bg-[var(--bento-primary)]/10
-            text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)]
-            transition-colors cursor-pointer
+            p-3 sm:p-2 rounded-xl sm:rounded-lg
+            bg-[var(--bento-bg)] active:bg-[var(--bento-primary)]/10 sm:hover:bg-[var(--bento-primary)]/10
+            text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)]
+            transition-colors cursor-pointer touch-manipulation
             disabled:opacity-50
             focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
           "
           aria-label="Refresh submissions"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 

@@ -352,14 +352,14 @@ export function Members() {
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="px-3 sm:px-4 pb-4 pt-1 border-t border-[var(--bento-border)]">
+                    <div className="px-4 pb-5 pt-2 border-t border-[var(--bento-border)]">
                       
-                      {/* Sort & Filter controls */}
-                      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-4 lg:gap-6 pt-4">
+                      {/* Sort & Filter controls - stacked on mobile */}
+                      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-5 lg:gap-6 pt-4">
                         
                         {/* Sort dropdown */}
                         <div>
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-3">
                             <ArrowUpDown className="w-4 h-4 text-[var(--bento-secondary)]" />
                             <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">Sort by</span>
                           </div>
@@ -375,7 +375,7 @@ export function Members() {
 
                         {/* Rank filter chips */}
                         <div>
-                          <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <Filter className="w-4 h-4 text-[var(--bento-secondary)]" />
                               <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">Filter by rank</span>
@@ -388,15 +388,16 @@ export function Members() {
                             {selectedRanks.length > 0 && (
                               <button
                                 onClick={() => setSelectedRanks([])}
-                                className="text-xs font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] transition-colors cursor-pointer flex items-center gap-1"
+                                className="text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] transition-colors cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-lg active:bg-[var(--bento-primary)]/10 touch-manipulation"
                               >
-                                <X className="w-3 h-3" />
+                                <X className="w-4 h-4" />
                                 Clear
                               </button>
                             )}
                           </div>
                           
-                          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
+                          {/* Mobile: scrollable horizontal chips */}
+                          <div className="flex flex-wrap gap-2.5" role="group" aria-label="Filter by rank">
                             {FC_RANKS.map((rank) => {
                               const count = rankCounts[rank.name] || 0;
                               const isSelected = selectedRanks.includes(rank.name);
@@ -406,11 +407,11 @@ export function Members() {
                                   onClick={() => toggleRank(rank.name)}
                                   aria-pressed={isSelected}
                                   className={`
-                                    inline-flex items-center gap-1.5
-                                    px-3 sm:px-3 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-sm font-soft font-medium
+                                    inline-flex items-center gap-2
+                                    px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm font-soft font-medium
                                     cursor-pointer transition-all duration-150 touch-manipulation
                                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                                    active:scale-95
+                                    active:scale-[0.97]
                                     ${isSelected 
                                       ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-md' 
                                       : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
@@ -419,7 +420,7 @@ export function Members() {
                                 >
                                   <span>{rank.name}</span>
                                   <span className={`
-                                    text-xs px-1.5 py-0.5 rounded-full
+                                    text-xs px-2 py-0.5 rounded-full
                                     ${isSelected 
                                       ? 'bg-white/20' 
                                       : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)]'
