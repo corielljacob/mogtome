@@ -121,7 +121,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
 
   return (
     <article 
-      className="group relative w-full max-w-[10rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]"
+      className="group relative w-full max-w-[10rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation"
       style={shouldAnimateEntrance ? {
         animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
       } : undefined}
@@ -133,9 +133,9 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           bg-[var(--bento-card)]
           border border-[var(--bento-primary)]/10
           rounded-xl sm:rounded-2xl overflow-hidden shadow-sm
-          transition-all duration-200 ease-out
+          transition-all duration-150 ease-out
           sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
-          active:scale-[0.97] sm:active:scale-[0.98]
+          active:scale-[0.96] active:shadow-none sm:active:scale-[0.98]
         "
       >
         {/* Solid rank banner */}

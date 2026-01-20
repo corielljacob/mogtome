@@ -106,25 +106,25 @@ function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
       <motion.button
         onClick={onLogin}
         className="
-          group w-full flex items-center justify-center gap-2 sm:gap-3
-          px-6 sm:px-8 py-3 sm:py-4 rounded-2xl
+          group w-full flex items-center justify-center gap-2.5 sm:gap-3
+          px-6 sm:px-8 py-4 sm:py-4 rounded-2xl
           bg-[#5865F2] text-white
           font-soft font-semibold text-base sm:text-lg
           shadow-xl shadow-[#5865F2]/30
-          hover:bg-[#4752C4] hover:shadow-2xl hover:shadow-[#5865F2]/40
+          sm:hover:bg-[#4752C4] sm:hover:shadow-2xl sm:hover:shadow-[#5865F2]/40
+          active:bg-[#4752C4] active:scale-[0.97]
           focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-          transition-all duration-200 cursor-pointer
+          transition-all duration-150 cursor-pointer touch-manipulation
         "
-        whileHover={{ scale: 1.02, y: -2 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.97 }}
       >
-        <DiscordIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+        <DiscordIcon className="w-6 h-6 sm:w-6 sm:h-6" />
         <span>Login with Discord</span>
-        <LogIn className="w-4 h-4 sm:w-5 sm:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+        <LogIn className="w-5 h-5 sm:w-5 sm:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
       </motion.button>
 
       {/* Feature preview */}
-      <p className="mt-3 sm:mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft">
+      <p className="mt-4 sm:mt-4 text-center text-sm text-[var(--bento-text-muted)] font-soft">
         Sign in to unlock the full experience
       </p>
     </div>

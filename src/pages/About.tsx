@@ -232,18 +232,18 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
 
   return (
     <article 
-      className="group relative"
+      className="group relative touch-manipulation"
       style={{
         animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.5)}s both`,
       }}
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      {/* Hover glow */}
+      {/* Hover glow - desktop only */}
       <div 
         className="
           absolute -inset-2 rounded-2xl blur-xl pointer-events-none
-          opacity-0 group-hover:opacity-60
-          transition-opacity duration-300
+          opacity-0 sm:group-hover:opacity-60
+          transition-opacity duration-300 hidden sm:block
         "
         style={{ backgroundColor: config.glow }}
         aria-hidden="true"
@@ -252,11 +252,12 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
       <div 
         className="
           relative flex flex-col sm:flex-row gap-3 sm:gap-4
-          p-3 sm:p-4 md:p-5
+          p-4 sm:p-4 md:p-5
           bg-[var(--bento-card)]/90 backdrop-blur-sm
           border border-[var(--bento-border)] rounded-2xl
-          shadow-sm hover:shadow-lg hover:border-[var(--bento-primary)]/20
-          transition-all duration-200
+          shadow-sm sm:hover:shadow-lg sm:hover:border-[var(--bento-primary)]/20
+          active:scale-[0.98] sm:active:scale-100
+          transition-all duration-150
         "
       >
         {/* Left side: Avatar with Lodestone link */}

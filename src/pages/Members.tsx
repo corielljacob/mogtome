@@ -272,34 +272,38 @@ export function Members() {
             <div className="bg-[var(--bento-card)] border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
               
               {/* Search input row */}
-              <div className="p-3 sm:p-4 flex items-center gap-3">
+              <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
                 <div className="relative flex-1">
                   <label htmlFor="member-search" className="sr-only">Search members by name or rank</label>
                   <Search 
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--bento-text-subtle)] pointer-events-none" 
+                    className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--bento-text-subtle)] pointer-events-none" 
                     aria-hidden="true" 
                   />
                   <input
                     ref={searchInputRef}
                     id="member-search"
                     type="search"
-                    placeholder="Search by name or rank..."
+                    inputMode="search"
+                    enterKeyHint="search"
+                    placeholder="Search members..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     aria-describedby="search-results-count"
                     className="
-                      w-full pl-11 pr-10 py-3 
+                      w-full pl-10 sm:pl-11 pr-10 py-3 sm:py-3
                       bg-[var(--bento-bg)] rounded-xl
                       border border-[var(--bento-border)] 
                       focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
-                      font-soft text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
+                      font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
                       focus:outline-none transition-all
+                      touch-manipulation
                     "
+                    style={{ fontSize: '16px' }}
                   />
                   {inputValue && (
                     <button
                       onClick={() => { setInputValue(''); setSearchQuery(''); }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg bg-[var(--bento-primary)]/10 hover:bg-[var(--bento-primary)]/20 transition-colors cursor-pointer"
+                      className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-1 rounded-lg bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/20 transition-colors cursor-pointer touch-manipulation"
                       aria-label="Clear search"
                     >
                       <X className="w-4 h-4 text-[var(--bento-primary)]" />
@@ -307,23 +311,24 @@ export function Members() {
                   )}
                 </div>
 
-                {/* Filter toggle button */}
+                {/* Filter toggle button - larger touch target on mobile */}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   aria-expanded={showFilters}
                   aria-controls="filter-panel"
                   className={`
-                    flex items-center gap-2 px-4 py-3 rounded-xl
+                    flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-xl
                     font-soft font-medium text-sm
-                    transition-all cursor-pointer
+                    transition-all cursor-pointer touch-manipulation
                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    active:scale-95
                     ${showFilters 
                       ? 'bg-[var(--bento-primary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
-                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5'
+                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5'
                     }
                   `}
                 >
-                  <SlidersHorizontal className="w-4 h-4" />
+                  <SlidersHorizontal className="w-5 h-5 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Filters</span>
                   {selectedRanks.length > 0 && (
                     <span className={`
@@ -402,12 +407,13 @@ export function Members() {
                                   aria-pressed={isSelected}
                                   className={`
                                     inline-flex items-center gap-1.5
-                                    px-3 py-2 rounded-lg text-sm font-soft font-medium
-                                    cursor-pointer transition-all duration-150
+                                    px-3 sm:px-3 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-sm font-soft font-medium
+                                    cursor-pointer transition-all duration-150 touch-manipulation
                                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                    active:scale-95
                                     ${isSelected 
                                       ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-md' 
-                                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
+                                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
                                     }
                                   `}
                                 >

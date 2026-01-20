@@ -61,8 +61,9 @@ function ToggleSwitch({ enabled, onChange, disabled = false }: {
       role="switch"
       aria-checked={enabled}
       className={`
-        relative w-[44px] h-[26px] sm:w-[52px] sm:h-[31px] rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0
+        relative w-[52px] h-[32px] sm:w-[52px] sm:h-[31px] rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+        touch-manipulation active:scale-95
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${enabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-text-subtle)]/40'}
       `}
@@ -70,9 +71,9 @@ function ToggleSwitch({ enabled, onChange, disabled = false }: {
       {/* Using CSS transform instead of motion to avoid reduced-motion conflicts */}
       <div 
         className={`
-          absolute top-[2px] left-[2px] w-[22px] h-[22px] sm:w-[27px] sm:h-[27px] rounded-full bg-white shadow-md
+          absolute top-[2px] left-[2px] w-[28px] h-[28px] sm:w-[27px] sm:h-[27px] rounded-full bg-white shadow-md
           transition-transform duration-200 ease-out
-          ${enabled ? 'translate-x-[18px] sm:translate-x-[21px]' : 'translate-x-0'}
+          ${enabled ? 'translate-x-[20px] sm:translate-x-[21px]' : 'translate-x-0'}
         `}
       />
     </button>
@@ -135,7 +136,7 @@ function ThemeSection() {
       />
       
       {/* Light/Dark/System Mode */}
-      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-2 mb-4">
         {modeOptions.map(({ value, label, icon: Icon }) => {
           const isSelected = settings.colorMode === value;
           return (
@@ -143,35 +144,36 @@ function ThemeSection() {
               key={value}
               onClick={() => setColorMode(value)}
               className={`
-                relative flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 rounded-xl border-2 transition-all cursor-pointer
+                relative flex flex-col items-center gap-2 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all cursor-pointer
                 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+                touch-manipulation active:scale-95
                 ${isSelected 
                   ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
-                  : 'border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-bg)]'
+                  : 'border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
                 }
               `}
               aria-pressed={isSelected}
             >
               <div className={`
-                w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
+                w-12 h-12 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
                 ${isSelected 
                   ? 'bg-[var(--bento-primary)] text-white' 
                   : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
                 }
               `}>
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                <Icon className="w-6 h-6 sm:w-6 sm:h-6" />
               </div>
-              <span className={`font-soft font-semibold text-xs sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+              <span className={`font-soft font-semibold text-sm sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
                 {label}
               </span>
               {isSelected && (
                 <motion.div
-                  className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2"
+                  className="absolute top-2 right-2 sm:top-2 sm:right-2"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                 >
-                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
+                  <Check className="w-4 h-4 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
                 </motion.div>
               )}
             </button>
@@ -523,10 +525,10 @@ function AccountSection() {
       <div className="mt-4 pt-4 border-t border-[var(--bento-border)]">
         <button
           onClick={logout}
-          className="flex items-center justify-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none w-full"
+          className="flex items-center justify-center gap-3 sm:gap-3 px-4 sm:px-4 py-3.5 sm:py-3 rounded-xl text-red-500 sm:hover:bg-red-500/10 active:bg-red-500/15 active:scale-[0.98] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none w-full touch-manipulation"
         >
-          <LogOut className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-          <span className="font-soft font-semibold text-sm sm:text-base">Sign Out</span>
+          <LogOut className="w-5 h-5 sm:w-5 sm:h-5" aria-hidden="true" />
+          <span className="font-soft font-semibold text-base sm:text-base">Sign Out</span>
         </button>
       </div>
     </ContentCard>

@@ -449,7 +449,7 @@ function MobileKnightDashboardButton() {
   );
 }
 
-// Bottom navigation item for mobile
+// Bottom navigation item for mobile - enhanced with native-feeling feedback
 function BottomNavItem({ 
   path, 
   label, 
@@ -467,26 +467,44 @@ function BottomNavItem({
       aria-current={isActive ? 'page' : undefined}
       className={`
         relative flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 px-2 sm:px-3 min-w-[52px] sm:min-w-[64px]
-        transition-colors duration-200
+        transition-all duration-150
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset rounded-xl
+        touch-manipulation
         ${isActive 
           ? 'text-[var(--bento-primary)]' 
-          : 'text-[var(--bento-text-muted)] active:text-[var(--bento-text)]'
+          : 'text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] active:scale-90'
         }
       `}
     >
+      {/* Active indicator dot */}
+      {isActive && (
+        <motion.div
+          className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--bento-primary)]"
+          layoutId="bottomNavIndicator"
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        />
+      )}
+      
       <motion.div
         animate={{ 
-          scale: isActive ? 1.1 : 1,
+          scale: isActive ? 1.15 : 1,
+          y: isActive ? -1 : 0,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
-        <Icon className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
+        <Icon className="w-5 h-5 sm:w-5 sm:h-5" strokeWidth={isActive ? 2.5 : 2} />
       </motion.div>
       
-      <span className={`text-[9px] sm:text-[10px] font-soft font-semibold leading-none ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+      <motion.span 
+        className={`text-[10px] sm:text-[10px] font-soft font-semibold leading-none`}
+        animate={{ 
+          opacity: isActive ? 1 : 0.7,
+          y: isActive ? 0 : 1,
+        }}
+        transition={{ duration: 0.15 }}
+      >
         {label}
-      </span>
+      </motion.span>
     </Link>
   );
 }

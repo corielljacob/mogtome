@@ -131,6 +131,69 @@
    * The containment creates a new stacking context that clips visual overflow.
    * For performance, we rely on will-change hints on animated elements instead.
    */
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * NATIVE MOBILE APP FEEL
+   * These styles make the web app feel more like a native iOS/Android app
+   * ───────────────────────────────────────────────────────────────────────────── */
+
+  /* Prevent overscroll bounce on the whole page (iOS) */
+  html {
+    overscroll-behavior: none;
+  }
+
+  /* Allow overscroll bounce only within scrollable containers */
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* Native-like active states for interactive elements */
+  @media (hover: none) and (pointer: coarse) {
+    /* Slightly scale down on tap for buttons */
+    button:not([disabled]):active,
+    [role="button"]:not([disabled]):active {
+      transform: scale(0.97);
+    }
+    
+    /* Cards and links get a subtle opacity change */
+    a:active,
+    article:active {
+      opacity: 0.9;
+    }
+  }
+
+  /* Smooth momentum scrolling for all scroll containers */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbars on mobile for cleaner look (content is still scrollable) */
+  @media (max-width: 768px) {
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
+
+  /* Pull-to-refresh prevention (we handle our own refresh) */
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent text selection on UI elements for app-like feel */
+  nav, header, footer, button, [role="button"], [role="tab"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection in content areas */
+  article, main, p, h1, h2, h3, h4, h5, h6 {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 /* Design System Variables - Pom-Pom Classic Palette (Punchy) */

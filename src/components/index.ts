@@ -30,3 +30,6 @@ export { MissingUserDataDialog } from './MissingUserDataDialog';
 
 // Biography
 export { PendingSubmissions } from './PendingSubmissions';
+
+// Mobile
+export { MobileSheet } from './MobileSheet';

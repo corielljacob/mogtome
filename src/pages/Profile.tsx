@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from 'react';
+import { useState, useEffect, memo, useCallback, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { 
@@ -15,11 +15,13 @@ import {
   Shield,
   Quote,
   Globe,
+  ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
-import { ContentCard, MembershipCard, StoryDivider, FloatingSparkles } from '../components';
+import { ContentCard, MembershipCard, StoryDivider, FloatingSparkles, MobileSheet } from '../components';
+import { useIsMobile } from '../hooks';
 
 const MAX_BIO_LENGTH = 300;
 
@@ -42,6 +44,7 @@ const defaultRankColor = { bg: 'bg-[var(--bento-primary)]/10', text: 'text-[var(
 /**
  * ProfileHeader - The main profile display section showing the user's identity
  * Now includes inline biography editing for better UX
+ * Mobile: Uses bottom sheet for editing, larger touch targets
  * 
  * PERFORMANCE: Memoized to prevent re-renders when parent state changes
  */
@@ -76,6 +79,7 @@ const ProfileHeader = memo(function ProfileHeader({
   isLoadingSubmission: boolean;
   isLoadingBiography: boolean;
 }) {
+  const isMobile = useIsMobile();
   const rankColor = rankColors[rank] || defaultRankColor;
   const lodestoneUrl = characterId
     ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
@@ -88,103 +92,115 @@ const ProfileHeader = memo(function ProfileHeader({
         year: 'numeric',
       })
     : null;
+  
+  // Shorter date format for mobile
+  const formattedDateShort = memberSince
+    ? memberSince.toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative"
-    >
-      {/* Background gradient card */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)] to-[var(--bento-bg)] border border-[var(--bento-border)] shadow-xl">
-        {/* Decorative gradient overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, ${rankColor.hex} 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
-        />
-        
-        {/* Rank accent bar */}
-        <div 
-          className="h-1 sm:h-1.5"
-          style={{ backgroundColor: rankColor.hex }}
-        />
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative"
+      >
+        {/* Background gradient card */}
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)] to-[var(--bento-bg)] border border-[var(--bento-border)] shadow-xl">
+          {/* Decorative gradient overlay - simplified on mobile for performance */}
+          <div 
+            className="absolute inset-0 opacity-[0.03] hidden sm:block"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, ${rankColor.hex} 1px, transparent 1px)`,
+              backgroundSize: '20px 20px',
+            }}
+          />
+          
+          {/* Rank accent bar - thicker on mobile for better visual impact */}
+          <div 
+            className="h-1.5 sm:h-1.5"
+            style={{ backgroundColor: rankColor.hex }}
+          />
 
-        <div className="relative p-4 sm:p-6 md:p-8">
-          {/* Top section: Avatar and basic info */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
-            {/* Avatar */}
-            <div className="relative group flex-shrink-0">
-              <motion.div
-                className="absolute -inset-2 rounded-2xl blur-xl opacity-40"
-                style={{ backgroundColor: rankColor.hex }}
-                animate={{ opacity: [0.3, 0.5, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
-                <img
-                  src={avatarUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
+          <div className="relative p-5 sm:p-6 md:p-8">
+            {/* Top section: Avatar and basic info */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
+              {/* Avatar - larger on mobile for better visual hierarchy */}
+              <motion.div 
+                className="relative group flex-shrink-0"
+                whileTap={{ scale: 0.98 }}
+              >
+                <motion.div
+                  className="absolute -inset-2 rounded-2xl blur-xl opacity-40 hidden sm:block"
+                  style={{ backgroundColor: rankColor.hex }}
+                  animate={{ opacity: [0.3, 0.5, 0.3] }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 />
-              </div>
-              {lodestoneUrl && (
-                <a
-                  href={lodestoneUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute -bottom-2 -right-2 flex items-center justify-center w-8 h-8 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-lg hover:scale-110 transition-transform"
-                  aria-label="View Lodestone profile"
-                >
-                  <Globe className="w-4 h-4 text-[var(--bento-text-muted)]" />
-                </a>
-              )}
-            </div>
-
-            {/* Name and details */}
-            <div className="flex-1 min-w-0 text-center sm:text-left">
-              <h1 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[var(--bento-text)] mb-2">
-                {name}
-              </h1>
-              
-              {/* Rank badge */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3">
-                <span className={`
-                  inline-flex items-center gap-1.5 px-3 py-1 rounded-full
-                  text-xs sm:text-sm font-soft font-semibold
-                  ${rankColor.bg} ${rankColor.text}
-                `}>
-                  <Shield className="w-3.5 h-3.5" />
-                  {rank}
-                </span>
-                
-                {formattedDate && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-soft text-[var(--bento-text-muted)] bg-[var(--bento-bg)]">
-                    <Calendar className="w-3 h-3" />
-                    Member since {formattedDate}
-                  </span>
+                <div className="relative w-28 h-28 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {lodestoneUrl && (
+                  <motion.a
+                    href={lodestoneUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute -bottom-2 -right-2 flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-lg active:scale-95 sm:hover:scale-110 transition-transform"
+                    aria-label="View Lodestone profile"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Globe className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-text-muted)]" />
+                  </motion.a>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Biography section - shows loading, display, or editor */}
-              {!isEditing ? (
-                // Display mode
+              {/* Name and details */}
+              <div className="flex-1 min-w-0 text-center sm:text-left w-full">
+                <h1 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[var(--bento-text)] mb-3 sm:mb-2">
+                  {name}
+                </h1>
+                
+                {/* Rank badge - stacked on mobile for better layout */}
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-start gap-2 mb-4 sm:mb-3">
+                  <span className={`
+                    inline-flex items-center gap-1.5 px-4 py-1.5 sm:px-3 sm:py-1 rounded-full
+                    text-sm sm:text-sm font-soft font-semibold
+                    ${rankColor.bg} ${rankColor.text}
+                  `}>
+                    <Shield className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    {rank}
+                  </span>
+                  
+                  {formattedDate && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 rounded-full text-xs font-soft text-[var(--bento-text-muted)] bg-[var(--bento-bg)]">
+                      <Calendar className="w-3 h-3" />
+                      <span className="sm:hidden">Since {formattedDateShort}</span>
+                      <span className="hidden sm:inline">Member since {formattedDate}</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Biography section - shows loading, display, or editor (desktop only) */}
                 <div className="relative mt-4">
                   {isLoadingBiography ? (
                     // Loading state for biography
-                    <div className="flex items-center gap-2 py-2">
-                      <div className="w-4 h-4 rounded-full border-2 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+                    <div className="flex items-center justify-center sm:justify-start gap-2 py-3 sm:py-2">
+                      <div className="w-5 h-5 sm:w-4 sm:h-4 rounded-full border-2 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
                       <p className="text-sm text-[var(--bento-text-muted)] font-soft">
                         Loading biography...
                       </p>
                     </div>
                   ) : biography ? (
                     <div className="relative">
-                      <Quote className="absolute -left-1 -top-1 w-6 h-6 text-[var(--bento-primary)]/20" />
-                      <p className="text-sm sm:text-base text-[var(--bento-text-muted)] leading-relaxed pl-5 italic">
+                      <Quote className="absolute -left-1 -top-1 w-6 h-6 text-[var(--bento-primary)]/20 hidden sm:block" />
+                      <p className="text-base sm:text-base text-[var(--bento-text-muted)] leading-relaxed sm:pl-5 italic">
                         {biography}
                       </p>
                     </div>
@@ -194,51 +210,82 @@ const ProfileHeader = memo(function ProfileHeader({
                     </p>
                   )}
                   
-                  {/* Edit button - hide while loading */}
+                  {/* Edit button - larger touch target on mobile */}
                   {!isLoadingBiography && (
-                    <button
+                    <motion.button
                       onClick={onEditClick}
-                      className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)] hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)]"
+                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto"
+                      whileTap={{ scale: 0.97 }}
                     >
-                      <Pencil className="w-3 h-3" />
+                      <Pencil className="w-4 h-4 sm:w-3 sm:h-3" />
                       {biography ? 'Edit Biography' : 'Add Biography'}
-                    </button>
+                    </motion.button>
                   )}
                 </div>
-              ) : (
-                // Edit mode - inline editor
-                <div className="mt-4">
-                  {isLoadingSubmission ? (
-                    <div className="flex items-center gap-2 py-4">
-                      <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
-                      <p className="text-sm text-[var(--bento-text-muted)] font-soft">
-                        Loading...
-                      </p>
-                    </div>
-                  ) : (
-                    <BiographyEditor 
-                      canSetDirectly={canSetDirectly}
-                      onBiographyChange={onBiographyChange}
-                      initialBiography={biography}
-                      pendingSubmission={pendingSubmission}
-                      onSubmissionUpdate={onSubmissionUpdate}
-                      onCancel={onEditClick}
-                      compact
-                    />
-                  )}
-                </div>
-              )}
+
+                {/* Desktop inline editor - only show on desktop when editing */}
+                {isEditing && !isMobile && (
+                  <div className="mt-4">
+                    {isLoadingSubmission ? (
+                      <div className="flex items-center gap-2 py-4">
+                        <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
+                        <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+                          Loading...
+                        </p>
+                      </div>
+                    ) : (
+                      <BiographyEditor 
+                        canSetDirectly={canSetDirectly}
+                        onBiographyChange={onBiographyChange}
+                        initialBiography={biography}
+                        pendingSubmission={pendingSubmission}
+                        onSubmissionUpdate={onSubmissionUpdate}
+                        onCancel={onEditClick}
+                        compact
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      {/* Mobile bottom sheet for bio editing */}
+      <MobileSheet
+        isOpen={isEditing && isMobile}
+        onClose={onEditClick}
+        title={biography ? 'Edit Biography' : 'Add Biography'}
+      >
+        {isLoadingSubmission ? (
+          <div className="flex items-center justify-center gap-3 py-8">
+            <Loader2 className="w-6 h-6 text-[var(--bento-primary)] animate-spin" />
+            <p className="text-base text-[var(--bento-text-muted)] font-soft">
+              Loading...
+            </p>
+          </div>
+        ) : (
+          <BiographyEditor 
+            canSetDirectly={canSetDirectly}
+            onBiographyChange={onBiographyChange}
+            initialBiography={biography}
+            pendingSubmission={pendingSubmission}
+            onSubmissionUpdate={onSubmissionUpdate}
+            onCancel={onEditClick}
+            compact={false}
+            isMobile
+          />
+        )}
+      </MobileSheet>
+    </>
   );
 });
 
 /**
  * BiographyEditor - Form for editing/submitting biography
  * Supports both standalone and compact inline modes
+ * Mobile mode: Larger inputs, better touch targets, optimized for keyboard
  * 
  * PERFORMANCE: Memoized to prevent re-renders
  */
@@ -250,6 +297,7 @@ const BiographyEditor = memo(function BiographyEditor({
   onSubmissionUpdate,
   onCancel,
   compact = false,
+  isMobile = false,
 }: { 
   canSetDirectly: boolean;
   onBiographyChange: (biography: string) => void;
@@ -258,7 +306,20 @@ const BiographyEditor = memo(function BiographyEditor({
   onSubmissionUpdate?: () => void;
   onCancel?: () => void;
   compact?: boolean;
+  isMobile?: boolean;
 }) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Auto-focus textarea on mobile when sheet opens
+  useEffect(() => {
+    if (isMobile && textareaRef.current) {
+      // Small delay to ensure the sheet animation has started
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
   const queryClient = useQueryClient();
   const [biography, setBiography] = useState(initialBiography || '');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -378,17 +439,18 @@ const BiographyEditor = memo(function BiographyEditor({
       {/* Biography textarea */}
       <div>
         <textarea
+          ref={textareaRef}
           id="biography"
           value={biography}
           onChange={(e) => handleBiographyChange(e.target.value)}
           placeholder="Tell us about yourself, kupo~ What brings you to Kupo Life? What do you enjoy doing in Eorzea?"
-          rows={compact ? 4 : 6}
+          rows={isMobile ? 6 : compact ? 4 : 6}
           maxLength={MAX_BIO_LENGTH + 50}
           disabled={isSubmitting}
-          autoFocus={compact}
+          autoFocus={compact && !isMobile}
           className={`
-            w-full px-4 py-3
-            bg-[var(--bento-bg)] border-2 rounded-xl
+            w-full px-4 py-4 sm:py-3
+            bg-[var(--bento-bg)] border-2 rounded-2xl sm:rounded-xl
             font-soft text-base leading-relaxed text-[var(--bento-text)]
             placeholder:text-[var(--bento-text-muted)]/60
             focus:outline-none focus:border-[var(--bento-primary)]
@@ -397,13 +459,14 @@ const BiographyEditor = memo(function BiographyEditor({
             transition-all duration-200
             ${isOverLimit 
               ? 'border-red-500' 
-              : 'border-[var(--bento-border)] hover:border-[var(--bento-primary)]/50'
+              : 'border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/50'
             }
           `}
+          style={{ fontSize: '16px' }} // Prevents iOS zoom on focus
         />
         
         {/* Character count and info */}
-        <div className="flex justify-between items-center mt-2 px-1">
+        <div className="flex justify-between items-center mt-3 sm:mt-2 px-1">
           {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission ? (
             <p className="text-xs text-[var(--bento-text-subtle)]">
               Will be reviewed by a Knight
@@ -411,7 +474,7 @@ const BiographyEditor = memo(function BiographyEditor({
           ) : (
             <div />
           )}
-          <span className={`text-xs font-soft font-medium ${
+          <span className={`text-sm sm:text-xs font-soft font-medium ${
             isOverLimit 
               ? 'text-red-500' 
               : charactersRemaining < 50 
@@ -451,10 +514,10 @@ const BiographyEditor = memo(function BiographyEditor({
         </motion.div>
       )}
 
-      {/* Action buttons */}
-      <div className={`flex gap-2 ${compact ? '' : 'flex-col sm:flex-row'}`}>
-        {onCancel && (
-          <button
+      {/* Action buttons - larger touch targets on mobile */}
+      <div className={`flex gap-3 sm:gap-2 ${compact && !isMobile ? '' : 'flex-col sm:flex-row'}`}>
+        {onCancel && !isMobile && (
+          <motion.button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
@@ -467,38 +530,40 @@ const BiographyEditor = memo(function BiographyEditor({
               bg-[var(--bento-bg)] hover:bg-[var(--bento-border)] text-[var(--bento-text-muted)]
               disabled:opacity-50 disabled:cursor-not-allowed
             `}
+            whileTap={{ scale: 0.97 }}
           >
             Cancel
-          </button>
+          </motion.button>
         )}
-        <button
+        <motion.button
           type="submit"
           disabled={!biography.trim() || isOverLimit || isSubmitting}
           className={`
-            ${compact ? 'flex-1' : 'w-full sm:flex-1 order-1 sm:order-2'}
-            flex items-center justify-center gap-1.5
-            px-4 py-2 ${compact ? '' : 'sm:py-2.5'} rounded-lg
-            font-soft font-semibold text-sm
+            ${compact && !isMobile ? 'flex-1' : 'w-full sm:flex-1 order-1 sm:order-2'}
+            flex items-center justify-center gap-2 sm:gap-1.5
+            px-5 py-4 sm:px-4 sm:py-2 ${compact && !isMobile ? '' : 'sm:py-2.5'} rounded-2xl sm:rounded-lg
+            font-soft font-semibold text-base sm:text-sm
             transition-all cursor-pointer
             focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
             disabled:opacity-50 disabled:cursor-not-allowed
             bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white 
-            shadow-md shadow-[var(--bento-primary)]/20 hover:shadow-lg
+            shadow-md shadow-[var(--bento-primary)]/20 active:shadow-sm sm:hover:shadow-lg
           `}
+          whileTap={{ scale: 0.97 }}
         >
           {isSubmitting ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+            <Loader2 className="w-5 h-5 sm:w-3.5 sm:h-3.5 animate-spin" aria-hidden="true" />
           ) : (
             <>
               {hasPendingSubmission ? (
-                <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                <Pencil className="w-5 h-5 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
               ) : (
-                <Send className="w-3.5 h-3.5" aria-hidden="true" />
+                <Send className="w-5 h-5 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
               )}
               {getButtonText()}
             </>
           )}
-        </button>
+        </motion.button>
       </div>
     </form>
   );
@@ -642,17 +707,32 @@ export function Profile() {
       <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
       <FloatingSparkles minimal />
       
-      <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
+      <div className="relative z-10 container mx-auto px-4 sm:px-4 py-5 sm:py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          {/* Page Header */}
+          {/* Mobile scroll indicator - subtle hint that there's more content */}
+          <motion.div 
+            className="flex justify-center mb-3 md:hidden"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <motion.div
+              animate={{ y: [0, 4, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronDown className="w-5 h-5 text-[var(--bento-text-subtle)]/50" />
+            </motion.div>
+          </motion.div>
+
+          {/* Page Header - more compact on mobile */}
           <motion.header
-            className="text-center mb-6 sm:mb-8"
+            className="text-center mb-5 sm:mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             <motion.p
-              className="font-accent text-base sm:text-lg text-[var(--bento-secondary)] mb-2"
+              className="font-accent text-lg sm:text-lg text-[var(--bento-secondary)] mb-1 sm:mb-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -660,17 +740,17 @@ export function Profile() {
               ~ Your adventure awaits ~
             </motion.p>
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-2">
+            <h1 className="text-3xl sm:text-3xl md:text-4xl font-display font-bold mb-1 sm:mb-2">
               <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
                 My Profile
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft">
+            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft hidden sm:block">
               View your membership card and share your story
             </p>
 
-            <StoryDivider className="mx-auto mt-4" size="sm" />
+            <StoryDivider className="mx-auto mt-3 sm:mt-4" size="sm" />
           </motion.header>
 
           {/* Main Content */}
@@ -699,7 +779,7 @@ export function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-4 sm:mb-4">
                 <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
                 <h2 className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
                   Membership Card
@@ -707,22 +787,30 @@ export function Profile() {
                 <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" />
               </div>
               
-              <MembershipCard
-                name={user?.memberName || ''}
-                rank={user?.memberRank || ''}
-                avatarUrl={user?.memberPortraitUrl || ''}
-                characterId={characterId}
-                memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
-              />
+              {/* Card wrapper with tap feedback on mobile */}
+              <motion.div
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.1 }}
+                className="touch-manipulation"
+              >
+                <MembershipCard
+                  name={user?.memberName || ''}
+                  rank={user?.memberRank || ''}
+                  avatarUrl={user?.memberPortraitUrl || ''}
+                  characterId={characterId}
+                  memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
+                />
+              </motion.div>
               
-              <p className="text-center text-xs text-[var(--bento-text-subtle)] mt-2 font-soft">
-                Hover or tilt your device to see the holographic effect
+              <p className="text-center text-xs text-[var(--bento-text-subtle)] mt-3 sm:mt-2 font-soft">
+                <span className="hidden sm:inline">Hover or tilt your device to see the holographic effect</span>
+                <span className="sm:hidden">Tilt your device to see the holographic effect</span>
               </p>
             </motion.section>
 
-            {/* Future Features Teaser */}
+            {/* Future Features Teaser - hidden on mobile to reduce clutter */}
             <motion.div
-              className="text-center py-6 sm:py-8"
+              className="text-center py-4 sm:py-8 hidden sm:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -732,6 +820,9 @@ export function Profile() {
                 More profile features coming soon, kupo~
               </p>
             </motion.div>
+            
+            {/* Mobile bottom spacer for comfortable scrolling */}
+            <div className="h-4 sm:hidden" />
           </div>
         </div>
       </div>

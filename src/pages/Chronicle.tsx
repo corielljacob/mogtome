@@ -289,17 +289,17 @@ export function Chronicle() {
                 <button
                   onClick={() => setShowRealtimeEvents(!showRealtimeEvents)}
                   className={`
-                    flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium
-                    transition-all cursor-pointer
+                    flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3 py-2 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium
+                    transition-all cursor-pointer touch-manipulation active:scale-95
                     ${showRealtimeEvents 
                       ? 'bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] border border-[var(--bento-primary)]/20' 
                       : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)] border border-[var(--bento-border)]'
                     }
                   `}
                 >
-                  <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
                   {unseenCount > 0 ? `${unseenCount} new` : `${realtimeEvents.length} live`}
-                  <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
                 </button>
               )}
 
@@ -307,7 +307,7 @@ export function Chronicle() {
               {unseenCount > 0 && (
                 <button
                   onClick={markAllAsSeen}
-                  className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer hidden xs:block"
+                  className="px-3 sm:px-3 py-2 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium text-[var(--bento-text-muted)] sm:hover:text-[var(--bento-primary)] active:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer hidden xs:block touch-manipulation active:scale-95"
                 >
                   Mark as read
                 </button>
@@ -317,11 +317,10 @@ export function Chronicle() {
               {(status === 'disconnected' || status === 'error') && (
                 <motion.button
                   onClick={reconnect}
-                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-soft font-medium bg-[var(--bento-primary)] text-white hover:bg-[var(--bento-primary)]/90 transition-all cursor-pointer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 sm:gap-2 px-3 sm:px-3 py-2 sm:py-1.5 rounded-full text-sm sm:text-sm font-soft font-medium bg-[var(--bento-primary)] text-white sm:hover:bg-[var(--bento-primary)]/90 active:bg-[var(--bento-primary)]/80 transition-all cursor-pointer touch-manipulation"
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Wifi className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <Wifi className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   Reconnect
                 </motion.button>
               )}
