@@ -266,14 +266,17 @@ const BiographyEditor = memo(function BiographyEditor({
   const hasPendingSubmission = pendingSubmission?.status === 'Pending';
   const hasRejectedSubmission = pendingSubmission?.status === 'Rejected';
 
-  // Sync with initial biography or pending submission on mount
+  // Sync with initial biography or pending submission ONLY on mount or when pending submission changes
+  // We use a ref to track if this is the initial mount to avoid overwriting user edits
   useEffect(() => {
     if (hasPendingSubmission && pendingSubmission?.biography) {
       setBiography(pendingSubmission.biography);
-    } else if (initialBiography) {
+    } else {
       setBiography(initialBiography);
     }
-  }, [initialBiography, hasPendingSubmission, pendingSubmission?.biography]);
+    // Only run when the editor opens (initialBiography changes from parent) or pending submission changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasPendingSubmission, pendingSubmission?.biography]);
 
   // Mutation for Knights setting biography directly
   const setBiographyMutation = useMutation({
@@ -516,8 +519,7 @@ export function Profile() {
   // Only permanent knights can set biography directly - temp knights still submit for approval
   const canSetBiographyDirectly = user?.hasKnighthood === true;
   
-  // Memoize callbacks to prevent unnecessary re-renders
-  const toggleEditingBio = useCallback(() => setIsEditingBio(prev => !prev), []);
+  // Memoize callback for biography change
   const handleBiographyChange = useCallback((bio: string) => setPreviewBiography(bio), []);
 
   // Fetch staff list to find user's existing bio
@@ -552,6 +554,17 @@ export function Profile() {
   );
   const existingBiography = currentUserStaff?.biography || '';
   const characterId = currentUserStaff?.characterId;
+
+  // Memoize callback for edit button - resets preview when cancelling
+  const handleEditClick = useCallback(() => {
+    setIsEditingBio(prev => {
+      if (prev) {
+        // Closing editor (cancel) - reset preview to existing biography
+        setPreviewBiography(existingBiography);
+      }
+      return !prev;
+    });
+  }, [existingBiography]);
 
   // Update preview biography when existing bio loads
   useEffect(() => {
@@ -671,7 +684,7 @@ export function Profile() {
               memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
               characterId={characterId}
               isEditing={isEditingBio}
-              onEditClick={toggleEditingBio}
+              onEditClick={handleEditClick}
               onBiographyChange={handleBiographyChange}
               canSetDirectly={canSetBiographyDirectly}
               pendingSubmission={userSubmission}
