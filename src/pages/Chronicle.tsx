@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredValue } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -9,18 +9,20 @@ import {
   ChevronDown,
   Sparkles,
   Loader2,
+  Search,
+  X,
 } from 'lucide-react';
 
 // Shared components
 import { StoryDivider, FloatingSparkles, ContentCard, SimpleFloatingMoogles } from '../components';
+import { useEventsHub, type ConnectionStatus } from '../hooks';
 
 // Utils & Constants
 import { formatRelativeTime, formatFullDate } from '../utils';
 import { getEventTypeConfig } from '../constants';
 
-// API & Hooks
+// API
 import { eventsApi } from '../api/events';
-import { useEventsHub, type ConnectionStatus } from '../hooks';
 import type { ChronicleEvent } from '../types';
 
 // Assets
@@ -183,12 +185,17 @@ const TimelineEventCard = memo(function TimelineEventCard({
 
 export function Chronicle() {
   const [showRealtimeEvents, setShowRealtimeEvents] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchInput);
+  const isSearching = deferredSearchQuery.trim().length > 0;
+  const isFiltering = searchInput !== deferredSearchQuery;
   const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen, clearEvents } = useEventsHub();
 
   // Track if we've done the initial load (to avoid clearing on mount)
   const hasInitialLoadRef = useRef(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch historical events with infinite scroll
+  // Fetch historical events with infinite scroll and optional search
   const {
     data,
     dataUpdatedAt,
@@ -199,12 +206,54 @@ export function Chronicle() {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['chronicle-events'],
-    queryFn: ({ pageParam }) => eventsApi.getEvents({ cursor: pageParam, limit: 20 }),
+    queryKey: ['chronicle-events', deferredSearchQuery.trim()],
+    queryFn: ({ pageParam }) =>
+      eventsApi.getEvents({
+        cursor: pageParam,
+        limit: 20,
+        query: deferredSearchQuery.trim() || undefined,
+      }),
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor : undefined,
     initialPageParam: undefined as string | undefined,
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
+
+  // ── Infinity scroll via callback ref ──────────────────────────────────
+  // A callback ref fires every time the sentinel element mounts/unmounts,
+  // which solves the problem of the element being conditionally rendered
+  // inside AnimatePresence (a regular ref + useIntersectionObserver would
+  // miss the mount because the ref object itself never changes).
+  const [sentinelVisible, setSentinelVisible] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
+    // Tear down previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+    if (!node) {
+      setSentinelVisible(false);
+      return;
+    }
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => setSentinelVisible(entry.isIntersecting),
+      { rootMargin: '300px', threshold: 0 },
+    );
+    observerRef.current.observe(node);
+  }, []);
+
+  // Clean up observer on unmount
+  useEffect(() => () => { observerRef.current?.disconnect(); }, []);
+
+  // Fetch next page whenever sentinel is visible and we can fetch more.
+  // Re-runs when isFetchingNextPage flips false→true→false, so it keeps
+  // loading while the sentinel stays in the viewport.
+  useEffect(() => {
+    if (sentinelVisible && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [sentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Clear realtime events when API data is refetched (prevents duplicates)
   useEffect(() => {
@@ -233,14 +282,14 @@ export function Chronicle() {
     return historicalEvents.filter((event) => !realtimeEventSignatures.has(getEventSignature(event)));
   }, [historicalEvents, realtimeEventSignatures]);
 
-  // Total event count
-  const totalCount = realtimeEvents.length + filteredHistoricalEvents.length;
+  // Total event count (realtime only counted when not searching)
+  const visibleRealtimeEvents = isSearching ? [] : realtimeEvents;
+  const totalCount = visibleRealtimeEvents.length + filteredHistoricalEvents.length;
 
-  const handleLoadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const handleClearSearch = useCallback(() => {
+    setSearchInput('');
+    searchInputRef.current?.focus();
+  }, []);
 
   return (
     <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
@@ -282,6 +331,69 @@ export function Chronicle() {
             <StoryDivider className="mx-auto" size="sm" />
           </motion.header>
 
+          {/* Search bar */}
+          <motion.section
+            className="mb-4 sm:mb-6"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <div className="bg-[var(--bento-card)] border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 p-3 sm:p-4">
+              <div className="relative">
+                <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--bento-text-subtle)] pointer-events-none"
+                  aria-hidden="true"
+                />
+                <input
+                  ref={searchInputRef}
+                  id="chronicle-search"
+                  type="search"
+                  inputMode="search"
+                  enterKeyHint="search"
+                  placeholder="Search the chronicles..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="
+                    w-full pl-11 pr-10 py-3
+                    bg-[var(--bento-bg)] rounded-xl
+                    border border-[var(--bento-border)]
+                    focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
+                    font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
+                    focus:outline-none transition-all
+                    touch-manipulation
+                  "
+                  style={{ fontSize: '16px' }}
+                />
+                {searchInput && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-1.5 rounded-lg bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/20 transition-colors cursor-pointer touch-manipulation"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-4 h-4 text-[var(--bento-primary)]" />
+                  </button>
+                )}
+              </div>
+
+              {/* Search results count - shown when searching */}
+              {isSearching && !isLoading && (
+                <p className="mt-2.5 px-1 font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite">
+                  {isFiltering ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                      Searching...
+                    </span>
+                  ) : (
+                    <>
+                      Found <span className="font-bold text-[var(--bento-primary)]">{filteredHistoricalEvents.length}</span> event{filteredHistoricalEvents.length !== 1 ? 's' : ''}
+                    </>
+                  )}
+                </p>
+              )}
+            </div>
+          </motion.section>
+
           {/* Controls bar - mobile-optimized layout */}
           <motion.div
             className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
@@ -306,8 +418,8 @@ export function Chronicle() {
               )}
             </div>
 
-            {/* Bottom row on mobile: live events controls */}
-            {(realtimeEvents.length > 0 || unseenCount > 0) && (
+            {/* Bottom row on mobile: live events controls (hidden when searching) */}
+            {!isSearching && (realtimeEvents.length > 0 || unseenCount > 0) && (
               <div className="flex items-center gap-2 sm:gap-3">
                 {/* Toggle realtime events visibility */}
                 {realtimeEvents.length > 0 && (
@@ -432,12 +544,42 @@ export function Chronicle() {
                     className="w-40 h-40 mx-auto mb-5 object-contain"
                     aria-hidden="true"
                   />
-                  <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                    No events yet
-                  </p>
-                  <p className="font-accent text-2xl text-[var(--bento-text-muted)]">
-                    The chronicle awaits its first entry, kupo~
-                  </p>
+                  {isSearching ? (
+                    <>
+                      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
+                        No events found
+                      </p>
+                      <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
+                        Kupo? Nothing matches that search...
+                      </p>
+                      <motion.button
+                        onClick={handleClearSearch}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="
+                          inline-flex items-center justify-center gap-2
+                          px-5 py-2.5 rounded-xl
+                          bg-transparent border border-[var(--bento-primary)]/30
+                          text-[var(--bento-primary)] font-soft font-semibold
+                          hover:bg-[var(--bento-primary)]/10
+                          transition-all cursor-pointer
+                          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        "
+                      >
+                        <X className="w-4 h-4" aria-hidden="true" />
+                        Clear search
+                      </motion.button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
+                        No events yet
+                      </p>
+                      <p className="font-accent text-2xl text-[var(--bento-text-muted)]">
+                        The chronicle awaits its first entry, kupo~
+                      </p>
+                    </>
+                  )}
                 </ContentCard>
               </motion.div>
             ) : (
@@ -447,13 +589,13 @@ export function Chronicle() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
+                className={`space-y-4 transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}
                 role="feed"
                 aria-label="Chronicle events timeline"
               >
-                {/* Realtime events section */}
+                {/* Realtime events section (hidden when searching) */}
                 <AnimatePresence mode="wait">
-                {showRealtimeEvents && realtimeEvents.length > 0 && (
+                {showRealtimeEvents && visibleRealtimeEvents.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -476,7 +618,7 @@ export function Chronicle() {
                       <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
                     </div>
                     
-                    {realtimeEvents.map((event, index) => (
+                    {visibleRealtimeEvents.map((event, index) => (
                       <TimelineEventCard
                         key={`rt-${getEventKey(event, index)}`}
                         event={event}
@@ -503,50 +645,34 @@ export function Chronicle() {
                 />
               ))}
 
-              {/* Load more button */}
+              {/* Infinity scroll sentinel + loading indicator */}
               {hasNextPage && (
-                <motion.div 
-                  className="text-center pt-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <div
+                  ref={sentinelRef}
+                  className="flex items-center justify-center py-8"
+                  aria-hidden={!isFetchingNextPage}
                 >
-                  <motion.button
-                    onClick={handleLoadMore}
-                    disabled={isFetchingNextPage}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    aria-busy={isFetchingNextPage}
-                    className="
-                      inline-flex items-center justify-center gap-2
-                      px-6 py-3 rounded-xl
-                      bg-[var(--bento-card)] border border-[var(--bento-primary)]/20
-                      text-[var(--bento-primary)] font-soft font-semibold
-                      hover:bg-[var(--bento-primary)]/5 hover:border-[var(--bento-primary)]/30
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                      transition-all cursor-pointer
-                    "
-                  >
-                    {isFetchingNextPage ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                        Loading more...
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-4 h-4" aria-hidden="true" />
-                        Load more events
-                      </>
-                    )}
-                  </motion.button>
-                </motion.div>
+                  {isFetchingNextPage ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center gap-2.5 text-[var(--bento-text-muted)]"
+                      role="status"
+                    >
+                      <Loader2 className="w-5 h-5 animate-spin text-[var(--bento-primary)]" aria-hidden="true" />
+                      <span className="font-soft text-sm font-medium">Loading more events...</span>
+                    </motion.div>
+                  ) : (
+                    <span className="text-xs text-[var(--bento-text-muted)]/50">&#8203;</span>
+                  )}
+                </div>
               )}
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Footer */}
-          {!isLoading && !isError && totalCount > 0 && (
+          {/* Footer - shown only when all events have been loaded */}
+          {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
             <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
               <StoryDivider className="mx-auto mb-6" size="sm" />
               <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">

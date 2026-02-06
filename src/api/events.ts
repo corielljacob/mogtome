@@ -13,6 +13,9 @@ async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEv
   if (params?.limit) {
     searchParams.set('limit', String(params.limit));
   }
+  if (params?.query?.trim()) {
+    searchParams.set('query', params.query.trim());
+  }
 
   const queryString = searchParams.toString();
   const url = queryString ? `/events?${queryString}` : '/events';

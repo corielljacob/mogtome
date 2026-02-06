@@ -97,6 +97,8 @@ export interface ChronicleEventsResponse {
 export interface GetChronicleEventsParams {
   cursor?: string;
   limit?: number;
+  /** Search/filter events by text (GET /events query param) */
+  query?: string;
 }
 
 // Biography submission from a Paissa awaiting approval
