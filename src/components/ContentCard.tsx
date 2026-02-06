@@ -26,10 +26,10 @@ export function ContentCard({
   return (
     <div 
       className={`
-        bg-[var(--bento-card)]/80 backdrop-blur-sm 
+        bg-[var(--bento-card)]/80 backdrop-blur-md 
         border border-[var(--bento-primary)]/10
         rounded-2xl p-4 sm:p-6 md:p-8 
-        shadow-lg shadow-[var(--bento-primary)]/5 
+        shadow-lg shadow-[var(--bento-primary)]/10 
         ${className}
       `}
       role={role}

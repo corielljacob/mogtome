@@ -328,9 +328,9 @@ export function Sidebar() {
       {/* Sidebar - floating pill design matching site aesthetic */}
       <motion.aside
         className="hidden md:flex fixed left-3 top-3 bottom-3 z-40 flex-col 
-          bg-[var(--bento-card)]/85 backdrop-blur-xl 
+          bg-[var(--bento-card)]/80 backdrop-blur-xl 
           border border-[var(--bento-primary)]/10 
-          rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5"
+          rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10"
         initial={false}
         animate={{ width: sidebarWidth - 24 }} // Account for margins
         transition={{ duration: 0.2, ease: 'easeInOut' }}

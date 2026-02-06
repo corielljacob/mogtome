@@ -515,7 +515,7 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
     >
       <div className="relative max-w-lg mx-auto pointer-events-auto">
         {/* Pill background - thicker for better touch area */}
-        <div className="absolute inset-0 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-[var(--bento-primary)]/10" />
+        <div className="absolute inset-0 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10" />
         
         {/* Left fade indicator */}
         <div 
@@ -627,14 +627,14 @@ export function Navbar() {
           {/* Logo - floating pill with larger touch target */}
           <Link 
             to="/" 
-            className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none active:scale-95 transition-transform touch-manipulation"
+            className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none active:scale-95 transition-transform touch-manipulation"
             aria-label="MogTome - Go to home page"
           >
             <LogoIcon hovered={false} />
           </Link>
 
           {/* Right side controls - floating pill with better spacing */}
-          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/5 border border-[var(--bento-primary)]/10">
+          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10">
             <LoginButton />
             <UserMenu />
           </div>
