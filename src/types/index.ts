@@ -93,12 +93,22 @@ export interface ChronicleEventsResponse {
   hasMore: boolean;
 }
 
+/** Available event type filters matching the API's filter enum */
+export type ChronicleEventFilter =
+  | 'MemberJoined'
+  | 'MemberRejoined'
+  | 'Announcement'
+  | 'RankPromoted'
+  | 'NameChanged';
+
 // Params for fetching chronicle events
 export interface GetChronicleEventsParams {
   cursor?: string;
   limit?: number;
   /** Search/filter events by text (GET /events query param) */
   query?: string;
+  /** Filter events by type (GET /events filter param) */
+  filter?: ChronicleEventFilter;
 }
 
 // Biography submission from a Paissa awaiting approval

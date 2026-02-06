@@ -16,16 +16,31 @@ async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEv
   if (params?.query?.trim()) {
     searchParams.set('query', params.query.trim());
   }
+  if (params?.filter) {
+    searchParams.set('filter', params.filter);
+  }
 
   const queryString = searchParams.toString();
   const url = queryString ? `/events?${queryString}` : '/events';
   
-  const response = await apiClient.get<ChronicleEventsResponse>(url);
-  
+  const response = await apiClient.get(url);
+  const body = response.data;
+
+  // The API may return either:
+  //   - A wrapped object: { events: [...], nextCursor, hasMore }
+  //   - A flat array of events: [...]
+  if (Array.isArray(body)) {
+    return {
+      events: body,
+      nextCursor: undefined,
+      hasMore: false,
+    };
+  }
+
   return {
-    events: Array.isArray(response.data?.events) ? response.data.events : [],
-    nextCursor: response.data?.nextCursor,
-    hasMore: response.data?.hasMore ?? false,
+    events: Array.isArray(body?.events) ? body.events : [],
+    nextCursor: body?.nextCursor,
+    hasMore: body?.hasMore ?? false,
   };
 }
 

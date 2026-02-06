@@ -19,11 +19,22 @@ import { useEventsHub, type ConnectionStatus } from '../hooks';
 
 // Utils & Constants
 import { formatRelativeTime, formatFullDate } from '../utils';
-import { getEventTypeConfig } from '../constants';
+import { getEventTypeConfig, EVENT_TYPE_CONFIG } from '../constants';
 
 // API
 import { eventsApi } from '../api/events';
-import type { ChronicleEvent } from '../types';
+import type { ChronicleEvent, ChronicleEventFilter } from '../types';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Filter options derived from the event type config
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
+  Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]
+).map((key) => ({
+  value: key,
+  label: EVENT_TYPE_CONFIG[key].label,
+}));
 
 // Assets
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
@@ -186,19 +197,21 @@ const TimelineEventCard = memo(function TimelineEventCard({
 export function Chronicle() {
   const [showRealtimeEvents, setShowRealtimeEvents] = useState(true);
   const [searchInput, setSearchInput] = useState('');
+  const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(null);
   const deferredSearchQuery = useDeferredValue(searchInput);
-  const isSearching = deferredSearchQuery.trim().length > 0;
-  const isFiltering = searchInput !== deferredSearchQuery;
-  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen, clearEvents } = useEventsHub();
-
-  // Track if we've done the initial load (to avoid clearing on mount)
-  const hasInitialLoadRef = useRef(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch historical events with infinite scroll and optional search
+  // Derived booleans
+  const isSearching = deferredSearchQuery.trim().length > 0;
+  const hasActiveFilter = activeFilter !== null;
+  const hasActiveQuery = isSearching || hasActiveFilter;
+
+  // Realtime events (SignalR)
+  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen } = useEventsHub();
+
+  // ── API query ─────────────────────────────────────────────────────────
   const {
     data,
-    dataUpdatedAt,
     isLoading,
     isError,
     isFetchingNextPage,
@@ -206,28 +219,24 @@ export function Chronicle() {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['chronicle-events', deferredSearchQuery.trim()],
+    queryKey: ['chronicle-events', deferredSearchQuery.trim(), activeFilter],
     queryFn: ({ pageParam }) =>
       eventsApi.getEvents({
         cursor: pageParam,
         limit: 20,
         query: deferredSearchQuery.trim() || undefined,
+        filter: activeFilter ?? undefined,
       }),
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor : undefined,
     initialPageParam: undefined as string | undefined,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2,
   });
 
   // ── Infinity scroll via callback ref ──────────────────────────────────
-  // A callback ref fires every time the sentinel element mounts/unmounts,
-  // which solves the problem of the element being conditionally rendered
-  // inside AnimatePresence (a regular ref + useIntersectionObserver would
-  // miss the mount because the ref object itself never changes).
   const [sentinelVisible, setSentinelVisible] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
-    // Tear down previous observer
     if (observerRef.current) {
       observerRef.current.disconnect();
       observerRef.current = null;
@@ -243,52 +252,51 @@ export function Chronicle() {
     observerRef.current.observe(node);
   }, []);
 
-  // Clean up observer on unmount
   useEffect(() => () => { observerRef.current?.disconnect(); }, []);
 
-  // Fetch next page whenever sentinel is visible and we can fetch more.
-  // Re-runs when isFetchingNextPage flips false→true→false, so it keeps
-  // loading while the sentinel stays in the viewport.
   useEffect(() => {
     if (sentinelVisible && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [sentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Clear realtime events when API data is refetched (prevents duplicates)
-  useEffect(() => {
-    if (!hasInitialLoadRef.current && data) {
-      // First load - just mark as loaded
-      hasInitialLoadRef.current = true;
-    } else if (hasInitialLoadRef.current && dataUpdatedAt) {
-      // Subsequent refetch - clear realtime events since API has them now
-      clearEvents();
-    }
-  }, [dataUpdatedAt, clearEvents]);
-
-  // Flatten all pages of historical events
-  const historicalEvents = useMemo(() => {
+  // ── Derived event lists ───────────────────────────────────────────────
+  // Flatten all pages from the API into a single array.
+  const apiEvents = useMemo(() => {
     if (!data?.pages) return [];
     return data.pages.flatMap((page) => page.events);
   }, [data]);
 
-  // Create a Set of realtime event signatures to filter duplicates from historical
-  const realtimeEventSignatures = useMemo(() => {
-    return new Set(realtimeEvents.map(getEventSignature));
-  }, [realtimeEvents]);
+  // When searching or filtering, display ONLY the API results.
+  // When on the default view (no search, no filter), deduplicate against
+  // realtime events so items don't appear twice.
+  const displayedEvents = useMemo(() => {
+    if (hasActiveQuery) return apiEvents;
+    const rtSignatures = new Set(realtimeEvents.map(getEventSignature));
+    return apiEvents.filter((e) => !rtSignatures.has(getEventSignature(e)));
+  }, [apiEvents, hasActiveQuery, realtimeEvents]);
 
-  // Filter historical events to exclude any that are also in realtime
-  const filteredHistoricalEvents = useMemo(() => {
-    return historicalEvents.filter((event) => !realtimeEventSignatures.has(getEventSignature(event)));
-  }, [historicalEvents, realtimeEventSignatures]);
+  // Realtime events are only shown on the default (unfiltered) view.
+  const visibleRealtimeEvents = hasActiveQuery ? [] : realtimeEvents;
+  const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
 
-  // Total event count (realtime only counted when not searching)
-  const visibleRealtimeEvents = isSearching ? [] : realtimeEvents;
-  const totalCount = visibleRealtimeEvents.length + filteredHistoricalEvents.length;
+  // True while the search input is ahead of the deferred value
+  const isTransitioning = searchInput !== deferredSearchQuery;
 
+  // ── Handlers ──────────────────────────────────────────────────────────
   const handleClearSearch = useCallback(() => {
     setSearchInput('');
     searchInputRef.current?.focus();
+  }, []);
+
+  const handleClearAll = useCallback(() => {
+    setSearchInput('');
+    setActiveFilter(null);
+    searchInputRef.current?.focus();
+  }, []);
+
+  const handleToggleFilter = useCallback((filter: ChronicleEventFilter) => {
+    setActiveFilter((prev) => prev === filter ? null : filter);
   }, []);
 
   return (
@@ -376,17 +384,63 @@ export function Chronicle() {
                 )}
               </div>
 
-              {/* Search results count - shown when searching */}
-              {isSearching && !isLoading && (
+              {/* Filter chips */}
+              <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Filter by event type">
+                {EVENT_FILTERS.map(({ value, label }) => {
+                  const config = EVENT_TYPE_CONFIG[value];
+                  const isActive = activeFilter === value;
+                  return (
+                    <button
+                      key={value}
+                      onClick={() => handleToggleFilter(value)}
+                      aria-pressed={isActive}
+                      className={`
+                        inline-flex items-center gap-1.5
+                        px-3 py-2 sm:px-3 sm:py-1.5 rounded-xl text-sm font-soft font-medium
+                        cursor-pointer transition-all duration-150 touch-manipulation
+                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        active:scale-[0.97]
+                        ${isActive
+                          ? `${config.bgColor} ${config.color} border border-current/20 shadow-sm`
+                          : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5'
+                        }
+                      `}
+                    >
+                      <config.Icon className="w-3.5 h-3.5" aria-hidden="true" />
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+                {/* Clear filter button */}
+                {hasActiveFilter && (
+                  <button
+                    onClick={() => setActiveFilter(null)}
+                    className="
+                      inline-flex items-center gap-1.5
+                      px-3 py-2 sm:px-3 sm:py-1.5 rounded-xl text-sm font-soft font-medium
+                      text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)]
+                      bg-[var(--bento-bg)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/20
+                      cursor-pointer transition-all touch-manipulation active:scale-[0.97]
+                    "
+                    aria-label="Clear filter"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* Search/filter results count */}
+              {(isSearching || hasActiveFilter) && !isLoading && (
                 <p className="mt-2.5 px-1 font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite">
-                  {isFiltering ? (
+                  {isTransitioning ? (
                     <span className="inline-flex items-center gap-1.5">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
-                      Searching...
+                      Loading...
                     </span>
                   ) : (
                     <>
-                      Found <span className="font-bold text-[var(--bento-primary)]">{filteredHistoricalEvents.length}</span> event{filteredHistoricalEvents.length !== 1 ? 's' : ''}
+                      Found <span className="font-bold text-[var(--bento-primary)]">{displayedEvents.length}</span> event{displayedEvents.length !== 1 ? 's' : ''}
                     </>
                   )}
                 </p>
@@ -418,8 +472,8 @@ export function Chronicle() {
               )}
             </div>
 
-            {/* Bottom row on mobile: live events controls (hidden when searching) */}
-            {!isSearching && (realtimeEvents.length > 0 || unseenCount > 0) && (
+            {/* Bottom row on mobile: live events controls (hidden when searching/filtering) */}
+            {!isSearching && !hasActiveFilter && (realtimeEvents.length > 0 || unseenCount > 0) && (
               <div className="flex items-center gap-2 sm:gap-3">
                 {/* Toggle realtime events visibility */}
                 {realtimeEvents.length > 0 && (
@@ -455,7 +509,7 @@ export function Chronicle() {
 
           {/* Events timeline */}
           <AnimatePresence mode="wait">
-            {isLoading && historicalEvents.length === 0 ? (
+            {isLoading && apiEvents.length === 0 ? (
               <motion.div
                 key="loading"
                 initial={{ opacity: 1 }}
@@ -544,16 +598,18 @@ export function Chronicle() {
                     className="w-40 h-40 mx-auto mb-5 object-contain"
                     aria-hidden="true"
                   />
-                  {isSearching ? (
+                  {(isSearching || hasActiveFilter) ? (
                     <>
                       <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
                         No events found
                       </p>
                       <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
-                        Kupo? Nothing matches that search...
+                        {isSearching
+                          ? 'Kupo? Nothing matches that search...'
+                          : 'No events of that type yet, kupo...'}
                       </p>
                       <motion.button
-                        onClick={handleClearSearch}
+                        onClick={handleClearAll}
                         whileHover={{ scale: 1.03, y: -2 }}
                         whileTap={{ scale: 0.97 }}
                         className="
@@ -567,7 +623,7 @@ export function Chronicle() {
                         "
                       >
                         <X className="w-4 h-4" aria-hidden="true" />
-                        Clear search
+                        {isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
                       </motion.button>
                     </>
                   ) : (
@@ -584,12 +640,12 @@ export function Chronicle() {
               </motion.div>
             ) : (
               <motion.div
-                key="content"
+                key={`content-${activeFilter ?? 'all'}-${deferredSearchQuery.trim()}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`space-y-4 transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}
+                transition={{ duration: 0.2 }}
+                className={`space-y-4 transition-opacity duration-200 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}
                 role="feed"
                 aria-label="Chronicle events timeline"
               >
@@ -638,7 +694,7 @@ export function Chronicle() {
               </AnimatePresence>
 
               {/* Historical events */}
-              {filteredHistoricalEvents.map((event, index) => (
+              {displayedEvents.map((event, index) => (
                 <TimelineEventCard 
                   key={`hist-${getEventKey(event, index)}`} 
                   event={event} 
