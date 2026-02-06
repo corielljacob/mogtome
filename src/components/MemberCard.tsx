@@ -130,13 +130,14 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
       <div 
         className="
           relative w-full
-          bg-[var(--bento-card)]
+          bg-[var(--bento-card)]/80 backdrop-blur-md
           border border-[var(--bento-primary)]/10
           rounded-2xl overflow-hidden shadow-sm
-          transition-all duration-150 ease-out
+          transition-all duration-300 ease-out
           sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
           active:scale-[0.97] active:shadow-none sm:active:scale-[0.98]
         "
+        style={{ '--tw-shadow-color': theme.glow } as React.CSSProperties}
       >
         {/* Solid rank banner - slightly thicker on mobile for better visibility */}
         <div className="h-1.5 sm:h-1" style={{ backgroundColor: theme.color }} aria-hidden="true" />

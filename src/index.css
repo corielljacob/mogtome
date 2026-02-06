@@ -97,6 +97,12 @@
     user-select: none;
   }
 
+  /* Custom Selection Color */
+  ::selection {
+    background-color: var(--bento-primary);
+    color: white;
+  }
+
   /* MOBILE PERFORMANCE: Optimize touch interactions */
   /* touch-action prevents browser delays on touch gestures */
   button, a, [role="button"], [role="tab"], [role="menuitem"] {
@@ -175,6 +181,29 @@
     .hide-scrollbar {
       -ms-overflow-style: none;
       scrollbar-width: none;
+    }
+  }
+
+  /* Custom Scrollbar for Desktop */
+  @media (min-width: 769px) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--bento-border);
+      border-radius: 4px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--bento-text-subtle);
     }
   }
 

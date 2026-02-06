@@ -117,7 +117,7 @@ const NavItem = memo(function NavItem({ path, label, icon: Icon, isActive, isCol
       to={path}
       aria-current={isActive ? 'page' : undefined}
       className={`
-        group relative flex items-center gap-3 px-3 py-2.5 rounded-xl
+        group relative flex items-center py-2.5 rounded-xl
         font-soft text-sm font-medium
         transition-all duration-200
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
@@ -125,7 +125,7 @@ const NavItem = memo(function NavItem({ path, label, icon: Icon, isActive, isCol
           ? `bg-gradient-to-r from-[var(--bento-primary)]/20 to-[var(--bento-primary)]/10 ${accentColor || 'text-[var(--bento-primary)]'} shadow-sm`
           : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60'
         }
-        ${isCollapsed ? 'justify-center' : ''}
+        ${isCollapsed ? 'justify-center px-1 gap-0' : 'px-3 gap-3'}
       `}
     >
       <motion.div
@@ -224,12 +224,12 @@ const ThemeToggle = memo(function ThemeToggle({ isCollapsed }: { isCollapsed: bo
     <motion.button
       onClick={toggleTheme}
       className={`
-        group relative flex items-center gap-3 px-3 py-2.5 rounded-xl
+        group relative flex items-center py-2.5 rounded-xl
         text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60
         font-soft text-sm font-medium
         transition-all duration-200 cursor-pointer
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-        ${isCollapsed ? 'justify-center w-full' : 'w-full'}
+        ${isCollapsed ? 'justify-center w-full px-1 gap-0' : 'w-full px-3 gap-3'}
       `}
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       whileTap={{ scale: 0.97 }}
@@ -336,15 +336,15 @@ export function Sidebar() {
         transition={{ duration: 0.2, ease: 'easeInOut' }}
         aria-label="Main navigation"
       >
-        {/* Logo section */}
-        <div className="h-[72px] flex items-center justify-center px-3 overflow-hidden">
-          <Link 
-            to="/" 
-            className="flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl p-1.5"
-            aria-label="MogTome - Go to home page"
-            onMouseEnter={handleLogoMouseEnter}
-            onMouseLeave={handleLogoMouseLeave}
-          >
+          {/* Logo section */}
+          <div className={`h-[72px] flex items-center justify-center ${isCollapsed ? 'px-0' : 'px-3'} overflow-hidden transition-all duration-200`}>
+            <Link 
+              to="/" 
+              className={`flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl p-1.5 ${isCollapsed ? 'w-full justify-center' : ''}`}
+              aria-label="MogTome - Go to home page"
+              onMouseEnter={handleLogoMouseEnter}
+              onMouseLeave={handleLogoMouseLeave}
+            >
             <LogoIcon hovered={logoHovered} />
             
             <AnimatePresence>
@@ -385,7 +385,7 @@ export function Sidebar() {
         <div className="mx-3 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
 
         {/* Navigation section */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
+        <nav className={`flex-1 py-4 space-y-1 overflow-y-auto overflow-x-hidden transition-[padding] duration-200 ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {/* Main nav items */}
           <div className="space-y-1">
             {navItems.map(({ path, label, icon }) => (
@@ -409,7 +409,7 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom section - Theme Toggle + Settings + Collapse toggle */}
-        <div className="px-3 py-3 space-y-1.5 overflow-hidden">
+        <div className={`py-3 space-y-1.5 overflow-hidden transition-[padding] duration-200 ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {/* Decorative divider */}
           <div className="mx-0 mb-2 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
           
@@ -429,12 +429,12 @@ export function Sidebar() {
           <motion.button
             onClick={toggleCollapsed}
             className={`
-              w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+              w-full flex items-center py-2.5 rounded-xl
               text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60
               font-soft text-sm font-medium
               transition-all duration-200 cursor-pointer
               focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-              ${isCollapsed ? 'justify-center' : ''}
+              ${isCollapsed ? 'justify-center px-1 gap-0' : 'px-3 gap-3'}
             `}
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-expanded={!isCollapsed}

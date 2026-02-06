@@ -87,8 +87,9 @@ export function Button({
         primary: `
           bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-primary)]/90
           text-white
-          shadow-md shadow-[var(--bento-primary)]/20
-          hover:shadow-lg hover:shadow-[var(--bento-primary)]/30
+          shadow-lg shadow-[var(--bento-primary)]/20
+          hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
+          border border-white/10
           focus-visible:ring-[var(--bento-primary)]
         `,
         secondary: `

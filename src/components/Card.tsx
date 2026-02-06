@@ -20,9 +20,9 @@ export function Card({
   hover = true,
 }: CardProps) {
   const variantClasses = {
-    default: 'bg-white dark:bg-slate-800/90 border border-[var(--bento-border)] shadow-sm',
-    glass: 'bento-glass',
-    flat: 'bg-[var(--bento-bg)] border border-[var(--bento-border)]',
+    default: 'bg-[var(--bento-card)]/80 backdrop-blur-md border border-[var(--bento-border)] shadow-sm',
+    glass: 'bento-glass backdrop-blur-md',
+    flat: 'bg-[var(--bento-bg)]/50 backdrop-blur-sm border border-[var(--bento-border)]',
   };
 
   const paddingClasses = {
