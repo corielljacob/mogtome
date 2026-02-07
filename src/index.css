@@ -1179,13 +1179,8 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
   
-  /* Only enable backdrop blur on desktop - it's expensive on mobile */
-  @media (pointer: fine) {
-    .bento-glass {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  }
+  /* bento-glass: styled via border/shadow only — backdrop-blur removed for performance
+     since glass cards don't overlap scrollable content */
 
   .dark .bento-glass {
     border: 1px solid rgba(255, 255, 255, 0.05);

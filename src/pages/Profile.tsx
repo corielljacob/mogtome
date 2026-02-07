@@ -95,7 +95,7 @@ const ProfileHeader = memo(function ProfileHeader({
         className="relative"
       >
         {/* Background gradient card */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)]/90 to-[var(--bento-bg)]/80 backdrop-blur-xl border border-[var(--bento-border)] shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)]/90 to-[var(--bento-bg)]/80 border border-[var(--bento-border)] shadow-xl">
           {/* Decorative gradient overlay - simplified on mobile for performance */}
           <div 
             className="absolute inset-0 opacity-[0.03] hidden sm:block"
@@ -199,7 +199,7 @@ const ProfileHeader = memo(function ProfileHeader({
                   {!isLoadingBiography && (
                     <motion.button
                       onClick={onEditClick}
-                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)]/50 backdrop-blur-sm border border-[var(--bento-border)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto shadow-sm hover:shadow-md"
+                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)]/50 border border-[var(--bento-border)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto shadow-sm hover:shadow-md"
                       whileTap={{ scale: 0.97 }}
                     >
                       <Pencil className="w-4 h-4 sm:w-3 sm:h-3" />

@@ -229,7 +229,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
       className="
         group flex items-center gap-3 p-2 pr-4
-        bg-[var(--bento-card)]/90 backdrop-blur-md
+        bg-[var(--bento-card)]/90
         border border-[var(--bento-border)]
         rounded-xl shadow-sm
         hover:shadow-lg hover:border-transparent

@@ -49,7 +49,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
             transition={{ duration: 0.5 }}
           >
             {/* Card container */}
-            <div className="bg-[var(--bento-card)]/80 backdrop-blur-sm rounded-3xl p-8 md:p-10 border border-[var(--bento-primary)]/15 shadow-xl shadow-[var(--bento-primary)]/5 text-center">
+            <div className="bg-[var(--bento-card)]/80 rounded-3xl p-8 md:p-10 border border-[var(--bento-primary)]/15 shadow-xl shadow-[var(--bento-primary)]/5 text-center">
               {/* Moogle mascot */}
               <motion.div
                 className="relative mb-6"

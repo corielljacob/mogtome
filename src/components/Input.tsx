@@ -47,7 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               font-soft text-sm
               text-[var(--bento-text)]
               placeholder:text-[var(--bento-text-subtle)]
-              bg-[var(--bento-bg)]/50 backdrop-blur-sm
+              bg-[var(--bento-bg)]/50
               border border-[var(--bento-border)]
               rounded-xl
               transition-all duration-200
@@ -123,7 +123,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             font-soft text-sm
             text-[var(--bento-text)]
             placeholder:text-[var(--bento-text-subtle)]
-            bg-[var(--bento-bg)]/50 backdrop-blur-sm
+            bg-[var(--bento-bg)]/50
             border border-[var(--bento-border)]
             rounded-xl
             transition-all duration-200
@@ -186,7 +186,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             px-4 py-2.5
             font-soft text-sm
             text-[var(--bento-text)]
-            bg-[var(--bento-bg)]/50 backdrop-blur-sm
+            bg-[var(--bento-bg)]/50
             border border-[var(--bento-border)]
             rounded-xl
             transition-all duration-200

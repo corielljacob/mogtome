@@ -218,7 +218,7 @@ export function Dropdown<T extends string = string>({
         aria-labelledby={ariaLabelledBy}
         className={`
           w-full flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl
-          bg-[var(--bento-bg)]/50 backdrop-blur-sm
+          bg-[var(--bento-bg)]/50
           border border-[var(--bento-border)]
           hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-bg)]
           focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20 focus:outline-none

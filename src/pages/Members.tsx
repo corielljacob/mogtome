@@ -247,7 +247,7 @@ export function Members() {
         transition={{ duration: 0.3, delay: 0.1 }}
       >
         {/* Main search bar - always visible */}
-        <div className="bg-[var(--bento-card)]/80 backdrop-blur-md border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
+        <div className="bg-[var(--bento-card)]/80 border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
           
           {/* Search input row */}
           <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">

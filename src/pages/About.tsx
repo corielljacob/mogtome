@@ -118,7 +118,7 @@ const ValueCard = memo(function ValueCard({
         className="
           relative h-full
           p-5 sm:p-6
-          bg-[var(--bento-card)]/60 backdrop-blur-md
+          bg-[var(--bento-card)]/60
           border border-[var(--bento-border)]
           rounded-2xl
           transition-colors duration-300
@@ -199,7 +199,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
           className="
             relative flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8
             p-6 sm:p-8 md:p-10
-            bg-[var(--bento-card)]/80 backdrop-blur-xl
+            bg-[var(--bento-card)]/80
             border-2 rounded-3xl
             shadow-xl
             sm:hover:shadow-2xl
@@ -410,7 +410,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
           className="
             relative flex flex-col items-center text-center h-full
             p-5 sm:p-6
-            bg-[var(--bento-card)]/80 backdrop-blur-md
+            bg-[var(--bento-card)]/80
             border rounded-2xl
             shadow-sm
             sm:hover:shadow-xl

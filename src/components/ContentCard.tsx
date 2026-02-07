@@ -2,11 +2,11 @@ import type { ReactNode } from 'react';
 import { IS_MOBILE } from '../utils';
 
 /**
- * Styled content wrapper card with glassmorphism effect.
+ * Styled content wrapper card.
  * Used for main content sections with consistent styling.
  *
- * PERFORMANCE: On mobile, backdrop-blur and colored shadows are removed
- * to avoid expensive GPU compositing that causes jank on lower-powered devices.
+ * PERFORMANCE: Colored shadows are only shown on desktop to avoid
+ * expensive GPU compositing that causes jank on lower-powered devices.
  */
 
 export interface ContentCardProps {
@@ -31,7 +31,7 @@ export function ContentCard({
     <div 
       className={`
         bg-[var(--bento-card)]/80
-        ${IS_MOBILE ? '' : 'backdrop-blur-md shadow-lg shadow-[var(--bento-primary)]/10'}
+        ${IS_MOBILE ? '' : 'shadow-lg shadow-[var(--bento-primary)]/10'}
         border border-[var(--bento-primary)]/10
         rounded-2xl p-4 sm:p-6 md:p-8 
         ${IS_MOBILE ? 'shadow-sm' : ''}

@@ -1243,7 +1243,6 @@ export function Home() {
           className="
             relative max-w-lg w-full
             bg-gradient-to-b from-[var(--bento-card)]/40 via-[var(--bento-card)]/55 to-[var(--bento-card)]/65
-            backdrop-blur-xl
             rounded-[2rem] sm:rounded-[2.5rem]
             px-5 sm:px-7 md:px-9
             pt-3 sm:pt-5 md:pt-6
@@ -1353,7 +1352,7 @@ export function Home() {
           >
             <div
               className="
-                relative bg-[var(--bento-card)]/90 backdrop-blur-md
+                relative bg-[var(--bento-card)]/90
                 rounded-3xl px-5 sm:px-6 py-3 sm:py-3.5
                 border border-[var(--bento-primary)]/10
                 max-w-[280px] sm:max-w-[320px] mx-auto
@@ -1483,7 +1482,7 @@ export function Home() {
                 to={link.to}
                 className="
                   group inline-flex items-center gap-1.5 px-3 py-1.5
-                  bg-[var(--bento-card)]/50 backdrop-blur-sm
+                  bg-[var(--bento-card)]/50
                   border border-[var(--bento-border)]/40
                   rounded-full
                   sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-card)]/80

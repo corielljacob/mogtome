@@ -119,7 +119,7 @@ const TimelineEventCard = memo(function TimelineEventCard({
       whileHover={{ y: -2, scale: 1.005 }}
       className={`
         relative flex gap-3 sm:gap-4 p-4 sm:p-5 md:p-6
-        bg-[var(--bento-card)]/90 backdrop-blur-md
+        bg-[var(--bento-card)]/90
         border border-[var(--bento-border)] rounded-2xl
         shadow-sm hover:shadow-lg hover:shadow-[var(--bento-primary)]/5 hover:border-[var(--bento-primary)]/30
         transition-all duration-300 touch-manipulation group
@@ -323,7 +323,7 @@ export function Chronicle() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
           >
-            <div className="bg-[var(--bento-card)]/80 backdrop-blur-md border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 p-3 sm:p-5">
+            <div className="bg-[var(--bento-card)]/80 border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 p-3 sm:p-5">
               <div className="relative group">
                 <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
                 <Search
