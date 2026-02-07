@@ -6,6 +6,20 @@ export {
   type EventTypeConfig,
 } from './eventTypes';
 
+// Seasonal events
+export {
+  SEASONAL_EVENTS,
+  getActiveEvent,
+  getNextEvent,
+  isDateInEventRange,
+  type SeasonalEvent,
+  type SeasonalEventId,
+  type EventDateRange,
+  type EventThemePreview,
+  type EventParticle,
+  type EventAtmosphere,
+} from './seasonalEvents';
+
 // Rank colors
 export {
   RANK_COLORS,

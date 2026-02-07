@@ -18,10 +18,16 @@ import {
   Check,
   Sparkles,
   Paintbrush,
+  CalendarDays,
+  PartyPopper,
+  Ban,
+  Wrench,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
-import { useTheme, THEME_DEFINITIONS, type ColorMode } from '../contexts/ThemeContext';
+import { useTheme, THEME_DEFINITIONS, type ColorMode, type EventOverride } from '../contexts/ThemeContext';
+import { SEASONAL_EVENTS } from '../constants/seasonalEvents';
 import { ContentCard } from '../components';
 
 
@@ -294,6 +300,213 @@ function ThemeSection() {
                     </motion.div>
                   )}
                 </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </div>
+    </ContentCard>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Seasonal Events Section
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Dev-only event override options for the switcher */
+const EVENT_OVERRIDE_OPTIONS: { value: EventOverride; label: string; Icon: LucideIcon }[] = [
+  { value: 'auto', label: 'Auto (Real Date)', Icon: CalendarDays },
+  { value: 'none', label: 'No Event', Icon: Ban },
+  ...SEASONAL_EVENTS.map(e => ({ value: e.id as EventOverride, label: e.name, Icon: e.icon })),
+];
+
+function SeasonalEventSection() {
+  const {
+    activeEvent, nextEvent, isEventThemeActive, settings,
+    setEventThemingDisabled, eventOverride, setEventOverride,
+  } = useTheme();
+  const [eventsExpanded, setEventsExpanded] = useState(false);
+
+  /** Format a date range for display */
+  const formatDateRange = (startMonth: number, startDay: number, endMonth: number, endDay: number): string => {
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if (startMonth === endMonth) {
+      return `${months[startMonth]} ${startDay}–${endDay}`;
+    }
+    return `${months[startMonth]} ${startDay} – ${months[endMonth]} ${endDay}`;
+  };
+
+  return (
+    <ContentCard>
+      <SectionHeader 
+        icon={PartyPopper} 
+        title="Seasonal Events" 
+        description="FFXIV-inspired event themes throughout the year"
+      />
+
+      {/* ── Dev-only: Event Override Switcher ───────────────────────── */}
+      {import.meta.env.DEV && (
+        <div className="mb-4 p-3 sm:p-4 rounded-2xl border-2 border-dashed border-amber-500/40 bg-amber-500/5">
+          <div className="flex items-center gap-2 mb-2.5">
+            <Wrench className="w-4 h-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+            <p className="font-soft font-bold text-xs sm:text-sm text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+              Dev: Event Override
+            </p>
+            {eventOverride !== 'auto' && (
+              <span className="ml-auto px-1.5 py-0.5 rounded-full bg-amber-500/20 text-[10px] font-soft font-semibold text-amber-600 dark:text-amber-400">
+                Override Active
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {EVENT_OVERRIDE_OPTIONS.map(({ value, label, Icon }) => {
+              const isSelected = eventOverride === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => setEventOverride(value)}
+                  className={`
+                    flex items-center gap-2 px-2.5 py-2 rounded-xl text-left cursor-pointer
+                    transition-all text-xs font-soft touch-manipulation
+                    focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none
+                    ${isSelected
+                      ? 'bg-amber-500/20 border border-amber-500/40 font-semibold text-amber-700 dark:text-amber-300'
+                      : 'border border-transparent hover:bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+                    }
+                  `}
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                  <span className="truncate">{label}</span>
+                  {isSelected && (
+                    <Check className="w-3.5 h-3.5 ml-auto flex-shrink-0 text-amber-600 dark:text-amber-400" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Active event banner */}
+      {activeEvent ? (
+        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15 mb-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--bento-primary)]/15 flex items-center justify-center flex-shrink-0">
+            <activeEvent.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--bento-primary)]" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-primary)]">
+              {activeEvent.name}
+              <span className="ml-2 px-1.5 py-0.5 rounded-full bg-[var(--bento-primary)]/15 text-[10px] font-soft uppercase tracking-wide">
+                Active
+              </span>
+            </p>
+            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">{activeEvent.description}</p>
+          </div>
+        </div>
+      ) : nextEvent ? (
+        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-[var(--bento-bg)] border border-[var(--bento-border)] mb-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--bento-text-muted)]/10 flex items-center justify-center flex-shrink-0 opacity-60">
+            <nextEvent.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--bento-text-muted)]" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-text)]">
+              Next: {nextEvent.name}
+            </p>
+            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
+              {formatDateRange(nextEvent.dateRange.startMonth, nextEvent.dateRange.startDay, nextEvent.dateRange.endMonth, nextEvent.dateRange.endDay)}
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Event theme toggle */}
+      <SettingRow
+        icon={CalendarDays}
+        label="Event Themes"
+        description={isEventThemeActive ? 'Seasonal theme is active' : 'Enable automatic seasonal theming'}
+      >
+        <ToggleSwitch
+          enabled={!settings.eventThemingDisabled}
+          onChange={() => setEventThemingDisabled(!settings.eventThemingDisabled)}
+        />
+      </SettingRow>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent my-2" />
+
+      {/* Event calendar expandable */}
+      <div className="pt-1">
+        <button
+          onClick={() => setEventsExpanded(!eventsExpanded)}
+          className="w-full flex items-center justify-between gap-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
+          aria-expanded={eventsExpanded}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-bg)] flex items-center justify-center flex-shrink-0">
+              <CalendarDays className="w-4 h-4 text-[var(--bento-text-muted)]" aria-hidden="true" />
+            </div>
+            <div className="text-left">
+              <p className="font-soft font-semibold text-xs sm:text-sm text-[var(--bento-text)]">
+                Event Calendar
+              </p>
+              <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] mt-0.5">
+                View all seasonal events and their dates
+              </p>
+            </div>
+          </div>
+          <ChevronRight 
+            className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform ${eventsExpanded ? 'rotate-90' : ''}`}
+            aria-hidden="true"
+          />
+        </button>
+
+        {eventsExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            className="mt-3 space-y-1.5"
+          >
+            {SEASONAL_EVENTS.map((event) => {
+              const isActive = activeEvent?.id === event.id;
+              const EventIcon = event.icon;
+              return (
+                <div
+                  key={event.id}
+                  className={`
+                    flex items-center gap-3 p-2.5 sm:p-3 rounded-xl
+                    ${isActive ? 'bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15' : 'bg-[var(--bento-bg)]/50'}
+                  `}
+                >
+                  <EventIcon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'}`} aria-hidden="true" />
+                  <div className="min-w-0 flex-1">
+                    <p className={`font-soft font-semibold text-xs sm:text-sm ${isActive ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+                      {event.name}
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)]">
+                      {formatDateRange(event.dateRange.startMonth, event.dateRange.startDay, event.dateRange.endMonth, event.dateRange.endDay)}
+                    </p>
+                  </div>
+                  {/* Theme preview dots */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: event.preview.primary }}
+                    />
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: event.preview.secondary }}
+                    />
+                    <div 
+                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
+                      style={{ backgroundColor: event.preview.accent }}
+                    />
+                  </div>
+                  {isActive && (
+                    <div className="flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-[var(--bento-primary)] animate-pulse" />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </motion.div>
@@ -581,6 +794,7 @@ export function Settings() {
           transition={{ duration: 0.4, delay: 0.1 }}
         >
           <ThemeSection />
+          <SeasonalEventSection />
           <AccessibilitySection />
           <AccountSection />
         </motion.div>

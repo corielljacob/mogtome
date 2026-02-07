@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { getActiveEvent, getNextEvent, SEASONAL_EVENTS, type SeasonalEvent, type SeasonalEventId } from '../constants/seasonalEvents';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -23,7 +24,17 @@ export interface ThemeSettings {
   colorTheme: ColorTheme;
   /** Light/Dark/System mode */
   colorMode: ColorMode;
+  /** Whether the user has opted out of seasonal event themes */
+  eventThemingDisabled: boolean;
 }
+
+/**
+ * Dev-only override for forcing a specific event.
+ * - 'auto': use real date-based detection (default)
+ * - 'none': force no active event
+ * - SeasonalEventId: force a specific event
+ */
+export type EventOverride = 'auto' | 'none' | SeasonalEventId;
 
 interface ThemeContextType {
   settings: ThemeSettings;
@@ -31,6 +42,17 @@ interface ThemeContextType {
   isDarkMode: boolean;
   setColorTheme: (theme: ColorTheme) => void;
   setColorMode: (mode: ColorMode) => void;
+  /** Seasonal event state */
+  activeEvent: SeasonalEvent | null;
+  nextEvent: SeasonalEvent | null;
+  /** Whether the event theme is currently being applied */
+  isEventThemeActive: boolean;
+  /** Toggle event theming on/off */
+  setEventThemingDisabled: (disabled: boolean) => void;
+  /** Dev-only: override which event is active for testing */
+  eventOverride: EventOverride;
+  /** Dev-only: set the event override */
+  setEventOverride: (override: EventOverride) => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -105,10 +127,15 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'mogtome-theme';
+const DEV_EVENT_OVERRIDE_KEY = 'mogtome-dev-event-override';
+
+/** How often to re-check the active event (every 5 minutes) */
+const EVENT_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 const defaultSettings: ThemeSettings = {
   colorTheme: 'pom-pom',
   colorMode: 'system',
+  eventThemingDisabled: false,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -162,6 +189,64 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const [isDarkMode, setIsDarkMode] = useState(() => resolveIsDarkMode(settings.colorMode));
 
+  // ── Dev-only Event Override ────────────────────────────────────────────────
+  const [eventOverride, setEventOverrideState] = useState<EventOverride>(() => {
+    if (!import.meta.env.DEV || typeof window === 'undefined') return 'auto';
+    try {
+      const stored = localStorage.getItem(DEV_EVENT_OVERRIDE_KEY);
+      if (stored && (stored === 'auto' || stored === 'none' || SEASONAL_EVENTS.some(e => e.id === stored))) {
+        return stored as EventOverride;
+      }
+    } catch {
+      // Ignore
+    }
+    return 'auto';
+  });
+
+  const setEventOverride = useCallback((override: EventOverride) => {
+    setEventOverrideState(override);
+    if (import.meta.env.DEV) {
+      try {
+        localStorage.setItem(DEV_EVENT_OVERRIDE_KEY, override);
+      } catch {
+        // Ignore
+      }
+    }
+  }, []);
+
+  // ── Seasonal Event State ──────────────────────────────────────────────────
+  // Resolve the real date-based event
+  const [realActiveEvent, setRealActiveEvent] = useState<SeasonalEvent | null>(() => getActiveEvent());
+
+  // Periodically check for event changes (handles midnight rollovers)
+  useEffect(() => {
+    const check = () => {
+      setRealActiveEvent(getActiveEvent());
+    };
+
+    const interval = setInterval(check, EVENT_CHECK_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Resolve the effective active event (override takes precedence in dev)
+  const activeEvent = useMemo(() => {
+    if (import.meta.env.DEV && eventOverride !== 'auto') {
+      if (eventOverride === 'none') return null;
+      return SEASONAL_EVENTS.find(e => e.id === eventOverride) ?? null;
+    }
+    return realActiveEvent;
+  }, [eventOverride, realActiveEvent]);
+
+  const nextEvent = useMemo(() => {
+    if (activeEvent) return null;
+    return getNextEvent();
+  }, [activeEvent]);
+
+  const isEventThemeActive = useMemo(
+    () => activeEvent !== null && !settings.eventThemingDisabled,
+    [activeEvent, settings.eventThemingDisabled]
+  );
+
   // Apply theme classes to document
   useEffect(() => {
     const root = document.documentElement;
@@ -178,10 +263,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.remove(`theme-${t.id}`);
     });
     root.classList.add(`theme-${settings.colorTheme}`);
+
+    // Remove all event classes, then add active event if enabled
+    SEASONAL_EVENTS.forEach(e => {
+      root.classList.remove(e.cssClass);
+    });
+    if (activeEvent && !settings.eventThemingDisabled) {
+      root.classList.add(activeEvent.cssClass);
+    }
     
     // Update background color for flash prevention
-    const bgColor = dark ? getComputedStyle(root).getPropertyValue('--bento-bg').trim() || '#1A1722' : '#FFF9F5';
-    root.style.backgroundColor = bgColor;
+    // Small delay to let CSS variables update first
+    requestAnimationFrame(() => {
+      const bgColor = getComputedStyle(root).getPropertyValue('--bento-bg').trim() || (dark ? '#1A1722' : '#FFF9F5');
+      root.style.backgroundColor = bgColor;
+    });
     
     // Persist to localStorage
     try {
@@ -191,7 +287,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {
       // Storage might be full or disabled
     }
-  }, [settings]);
+  }, [settings, activeEvent]);
 
   // Listen for system theme changes when in system mode
   useEffect(() => {
@@ -216,8 +312,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setSettings(prev => ({ ...prev, colorMode: mode }));
   }, []);
 
+  const setEventThemingDisabled = useCallback((disabled: boolean) => {
+    setSettings(prev => ({ ...prev, eventThemingDisabled: disabled }));
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ settings, isDarkMode, setColorTheme, setColorMode }}>
+    <ThemeContext.Provider value={{
+      settings,
+      isDarkMode,
+      setColorTheme,
+      setColorMode,
+      activeEvent,
+      nextEvent,
+      isEventThemeActive,
+      setEventThemingDisabled,
+      eventOverride,
+      setEventOverride,
+    }}>
       {children}
     </ThemeContext.Provider>
   );

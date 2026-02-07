@@ -442,6 +442,261 @@
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
+ * SEASONAL EVENT THEMES
+ * These palettes activate automatically during FFXIV seasonal events and
+ * override the user's chosen color theme. Each event has light and dark
+ * variants. The event class is applied alongside the theme class.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Heavensturn (January) — Red & Gold New Year ───────────────────────────── */
+.event-heavensturn {
+  --bento-primary: #DC2626;
+  --bento-secondary: #D97706;
+  --bento-accent: #FBBF24;
+  --bento-shadow: rgba(220, 38, 38, 0.18);
+  --gradient-1: rgba(220, 38, 38, 0.15);
+  --gradient-2: rgba(217, 119, 6, 0.18);
+  --gradient-3: rgba(251, 191, 36, 0.10);
+  --gradient-4: rgba(220, 38, 38, 0.12);
+}
+
+.dark.event-heavensturn {
+  --bento-primary: #F87171;
+  --bento-secondary: #FBBF24;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(248, 113, 113, 0.22);
+  --gradient-1: rgba(248, 113, 113, 0.12);
+  --gradient-2: rgba(251, 191, 36, 0.14);
+  --gradient-3: rgba(253, 230, 138, 0.10);
+  --gradient-4: rgba(248, 113, 113, 0.08);
+}
+
+/* ── Valentione's Day (February) — Rose & Crimson Romance ──────────────────── */
+.event-valentiones {
+  --bento-bg: #FFF5F7;
+  --bento-primary: #E11D48;
+  --bento-secondary: #DB2777;
+  --bento-accent: #FB7185;
+  --bento-shadow: rgba(225, 29, 72, 0.18);
+  --gradient-1: rgba(219, 39, 119, 0.15);
+  --gradient-2: rgba(225, 29, 72, 0.18);
+  --gradient-3: rgba(251, 113, 133, 0.12);
+  --gradient-4: rgba(219, 39, 119, 0.10);
+}
+
+.dark.event-valentiones {
+  --bento-bg: #1C1520;
+  --bento-primary: #FB7185;
+  --bento-secondary: #F472B6;
+  --bento-accent: #FDA4AF;
+  --bento-shadow: rgba(251, 113, 133, 0.22);
+  --gradient-1: rgba(244, 114, 182, 0.12);
+  --gradient-2: rgba(251, 113, 133, 0.14);
+  --gradient-3: rgba(253, 164, 175, 0.10);
+  --gradient-4: rgba(244, 114, 182, 0.08);
+}
+
+/* ── Little Ladies' Day (March) — Cherry Blossom Pink ──────────────────────── */
+.event-little-ladies {
+  --bento-bg: #FDF2F8;
+  --bento-primary: #EC4899;
+  --bento-secondary: #F9A8D4;
+  --bento-accent: #FBCFE8;
+  --bento-shadow: rgba(236, 72, 153, 0.18);
+  --gradient-1: rgba(249, 168, 212, 0.18);
+  --gradient-2: rgba(236, 72, 153, 0.14);
+  --gradient-3: rgba(251, 207, 232, 0.12);
+  --gradient-4: rgba(249, 168, 212, 0.10);
+}
+
+.dark.event-little-ladies {
+  --bento-bg: #1A1520;
+  --bento-primary: #F472B6;
+  --bento-secondary: #F9A8D4;
+  --bento-accent: #FBCFE8;
+  --bento-shadow: rgba(244, 114, 182, 0.22);
+  --gradient-1: rgba(249, 168, 212, 0.14);
+  --gradient-2: rgba(244, 114, 182, 0.12);
+  --gradient-3: rgba(251, 207, 232, 0.08);
+  --gradient-4: rgba(249, 168, 212, 0.06);
+}
+
+/* ── Hatching-tide (April) — Pastel Easter Carnival ────────────────────────── */
+.event-hatching-tide {
+  --bento-bg: #FEFDF5;
+  --bento-primary: #8B5CF6;
+  --bento-secondary: #34D399;
+  --bento-accent: #FBBF24;
+  --bento-shadow: rgba(139, 92, 246, 0.16);
+  --gradient-1: rgba(139, 92, 246, 0.12);
+  --gradient-2: rgba(52, 211, 153, 0.14);
+  --gradient-3: rgba(251, 191, 36, 0.10);
+  --gradient-4: rgba(139, 92, 246, 0.08);
+}
+
+.dark.event-hatching-tide {
+  --bento-bg: #181820;
+  --bento-primary: #A78BFA;
+  --bento-secondary: #6EE7B7;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(167, 139, 250, 0.22);
+  --gradient-1: rgba(167, 139, 250, 0.12);
+  --gradient-2: rgba(110, 231, 183, 0.10);
+  --gradient-3: rgba(253, 230, 138, 0.08);
+  --gradient-4: rgba(167, 139, 250, 0.06);
+}
+
+/* ── Make It Rain Campaign (June) — Gold Saucer Glamour ────────────────────── */
+.event-make-it-rain {
+  --bento-bg: #FFFBEB;
+  --bento-primary: #CA8A04;
+  --bento-secondary: #7C3AED;
+  --bento-accent: #FDE047;
+  --bento-shadow: rgba(202, 138, 4, 0.20);
+  --gradient-1: rgba(202, 138, 4, 0.16);
+  --gradient-2: rgba(124, 58, 237, 0.12);
+  --gradient-3: rgba(253, 224, 71, 0.14);
+  --gradient-4: rgba(202, 138, 4, 0.10);
+}
+
+.dark.event-make-it-rain {
+  --bento-bg: #1A1810;
+  --bento-primary: #FACC15;
+  --bento-secondary: #A78BFA;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(250, 204, 21, 0.22);
+  --gradient-1: rgba(250, 204, 21, 0.12);
+  --gradient-2: rgba(167, 139, 250, 0.10);
+  --gradient-3: rgba(253, 230, 138, 0.08);
+  --gradient-4: rgba(250, 204, 21, 0.06);
+}
+
+/* ── Moonfire Faire (August) — Summer Blaze & Ocean ────────────────────────── */
+.event-moonfire-faire {
+  --bento-bg: #FFFAF5;
+  --bento-primary: #EA580C;
+  --bento-secondary: #0EA5E9;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(234, 88, 12, 0.18);
+  --gradient-1: rgba(234, 88, 12, 0.14);
+  --gradient-2: rgba(14, 165, 233, 0.12);
+  --gradient-3: rgba(253, 230, 138, 0.10);
+  --gradient-4: rgba(234, 88, 12, 0.08);
+}
+
+.dark.event-moonfire-faire {
+  --bento-bg: #1A1614;
+  --bento-primary: #FB923C;
+  --bento-secondary: #38BDF8;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(251, 146, 60, 0.22);
+  --gradient-1: rgba(251, 146, 60, 0.12);
+  --gradient-2: rgba(56, 189, 248, 0.10);
+  --gradient-3: rgba(253, 230, 138, 0.08);
+  --gradient-4: rgba(251, 146, 60, 0.06);
+}
+
+/* ── The Rising (August) — Meteor Red & Crystal Blue ───────────────────────── */
+.event-the-rising {
+  --bento-primary: #DC2626;
+  --bento-secondary: #2563EB;
+  --bento-accent: #F59E0B;
+  --bento-shadow: rgba(220, 38, 38, 0.18);
+  --gradient-1: rgba(220, 38, 38, 0.14);
+  --gradient-2: rgba(37, 99, 235, 0.12);
+  --gradient-3: rgba(245, 158, 11, 0.10);
+  --gradient-4: rgba(220, 38, 38, 0.08);
+}
+
+.dark.event-the-rising {
+  --bento-primary: #F87171;
+  --bento-secondary: #60A5FA;
+  --bento-accent: #FBBF24;
+  --bento-shadow: rgba(248, 113, 113, 0.22);
+  --gradient-1: rgba(248, 113, 113, 0.12);
+  --gradient-2: rgba(96, 165, 250, 0.10);
+  --gradient-3: rgba(251, 191, 36, 0.08);
+  --gradient-4: rgba(248, 113, 113, 0.06);
+}
+
+/* ── All Saints' Wake (October) — Haunted Purple, Pumpkin & Eerie Green ────── */
+/* This is a flagship event — the theme is intentionally dramatic */
+.event-all-saints-wake {
+  --bento-bg: #F8F3F0;
+  --bento-card: rgba(255, 255, 255, 0.88);
+  --bento-text: #2D1B3D;
+  --bento-text-muted: #4A3660;
+  --bento-text-subtle: #6B5580;
+  --bento-primary: #D94F0F;
+  --bento-secondary: #6D28D9;
+  --bento-accent: #16A34A;
+  --bento-shadow: rgba(109, 40, 217, 0.22);
+  --bento-border: rgba(109, 40, 217, 0.12);
+  --bento-glass: rgba(255, 255, 255, 0.85);
+  --gradient-1: rgba(109, 40, 217, 0.18);
+  --gradient-2: rgba(217, 79, 15, 0.16);
+  --gradient-3: rgba(22, 163, 74, 0.08);
+  --gradient-4: rgba(109, 40, 217, 0.14);
+}
+
+.dark.event-all-saints-wake {
+  --bento-bg: #0C0814;
+  --bento-card: rgba(16, 10, 26, 0.96);
+  --bento-text: #EDE6F5;
+  --bento-text-muted: #C4B4D8;
+  --bento-text-subtle: #8A7AA0;
+  --bento-primary: #FB923C;
+  --bento-secondary: #A78BFA;
+  --bento-accent: #4ADE80;
+  --bento-shadow: rgba(167, 139, 250, 0.30);
+  --bento-border: rgba(167, 139, 250, 0.12);
+  --bento-glass: rgba(16, 10, 26, 0.94);
+  --gradient-1: rgba(167, 139, 250, 0.18);
+  --gradient-2: rgba(251, 146, 60, 0.14);
+  --gradient-3: rgba(74, 222, 128, 0.06);
+  --gradient-4: rgba(167, 139, 250, 0.12);
+}
+
+/* ── Starlight Celebration (December) — Festive Red, Evergreen & Gold ──────── */
+/* This is a flagship event — the theme is intentionally dramatic */
+.event-starlight {
+  --bento-bg: #FFFBF5;
+  --bento-card: rgba(255, 255, 255, 0.90);
+  --bento-text: #3D2020;
+  --bento-text-muted: #5C3838;
+  --bento-text-subtle: #846060;
+  --bento-primary: #BE1A1A;
+  --bento-secondary: #15803D;
+  --bento-accent: #D97706;
+  --bento-shadow: rgba(190, 26, 26, 0.20);
+  --bento-border: rgba(190, 26, 26, 0.10);
+  --bento-glass: rgba(255, 255, 255, 0.88);
+  --gradient-1: rgba(190, 26, 26, 0.16);
+  --gradient-2: rgba(21, 128, 61, 0.14);
+  --gradient-3: rgba(217, 119, 6, 0.12);
+  --gradient-4: rgba(190, 26, 26, 0.10);
+}
+
+.dark.event-starlight {
+  --bento-bg: #0F0A14;
+  --bento-card: rgba(18, 12, 24, 0.96);
+  --bento-text: #F5EDE8;
+  --bento-text-muted: #D4C4BC;
+  --bento-text-subtle: #A09088;
+  --bento-primary: #F87171;
+  --bento-secondary: #4ADE80;
+  --bento-accent: #FDE68A;
+  --bento-shadow: rgba(248, 113, 113, 0.25);
+  --bento-border: rgba(248, 113, 113, 0.10);
+  --bento-glass: rgba(18, 12, 24, 0.94);
+  --gradient-1: rgba(248, 113, 113, 0.16);
+  --gradient-2: rgba(74, 222, 128, 0.12);
+  --gradient-3: rgba(253, 230, 138, 0.10);
+  --gradient-4: rgba(248, 113, 113, 0.08);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
  * ACCESSIBILITY MODES
  * These classes are applied to the root element by AccessibilityContext
  * Using :root prefix to ensure these always override theme color palettes
