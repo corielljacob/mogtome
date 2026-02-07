@@ -730,11 +730,6 @@ export function Profile() {
                   memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
                 />
               </motion.div>
-              
-              <p className="text-center text-xs text-[var(--bento-text-subtle)] mt-3 sm:mt-2 font-soft">
-                <span className="hidden sm:inline">Hover or tilt your device to see the holographic effect</span>
-                <span className="sm:hidden">Tilt your device to see the holographic effect</span>
-              </p>
             </motion.section>
 
             {/* Future Features Teaser - hidden on mobile to reduce clutter */}
