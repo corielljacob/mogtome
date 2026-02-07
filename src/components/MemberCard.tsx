@@ -3,81 +3,83 @@ import { motion } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
 import { ExternalLink } from 'lucide-react';
 import { getRankColor } from '../constants';
-import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.webp';
 
 interface MemberCardProps {
   member: FreeCompanyMember;
-  index?: number; // For staggered animations
+  index?: number;
 }
 
 /**
- * MemberCard - Refined member card with delightful hover effects.
- * Matches the Soft Bento design system.
- * 
- * ACCESSIBILITY:
- * - Links have descriptive accessible names
- * - Images have meaningful alt text
- * - Decorative elements are hidden from screen readers
- * 
- * PERFORMANCE OPTIMIZATIONS:
- * - Memoized to prevent re-renders when parent updates
- * - Uses CSS transitions instead of Framer Motion for hover states
- * - Entrance animations only on first 12 cards (above fold)
- * - No AnimatePresence (removes mount/unmount overhead)
- * - Image hover overlays use CSS transforms/opacity only
+ * MemberCard — Modern glassmorphic member profile card.
+ *
+ * HOVER ARCHITECTURE:
+ * - Outer `motion.article` handles lift + glow shadow via Framer Motion.
+ *   No overflow-hidden here, so transforms never clip children.
+ * - A gradient ring div sits behind the card (absolute, -inset-[1px])
+ *   and fades in on hover for a rank-colored border glow.
+ * - The inner card div has overflow-hidden + rounded corners for visual
+ *   clipping. Its border goes transparent on hover to reveal the ring.
+ * - The avatar scales inside its own overflow container.
+ * - Overlay elements use opacity / scale CSS transitions.
  */
 export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
-  
+
   const rankColor = getRankColor(member.freeCompanyRank);
   const RankIcon = rankColor.icon;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
-  
-  // Memoize callback
+
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <motion.article 
-      layout
-      initial={{ opacity: 0, y: 20, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ 
-        layout: { duration: 0.3 },
-        opacity: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) },
-        y: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) },
-        scale: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) }
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{
+        y: -5,
+        boxShadow: `0 0 0 1.5px ${rankColor.hex}50, 0 0 14px 0 ${rankColor.glow}, 0 20px 40px -12px ${rankColor.glow}`,
+        transition: { type: 'spring', stiffness: 400, damping: 25 },
       }}
-      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation"
+      whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
+      transition={{
+        opacity: { duration: 0.4, delay: Math.min(index * 0.04, 0.4) },
+        y: { duration: 0.4, delay: Math.min(index * 0.04, 0.4) },
+      }}
+      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] rounded-2xl touch-manipulation cursor-pointer"
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      <div 
+      {/* Card surface */}
+      <div
         className="
           relative w-full
-          bg-[var(--bento-card)]/80 backdrop-blur-md
-          border border-[var(--bento-primary)]/10
-          rounded-2xl overflow-hidden shadow-sm
-          transition-all duration-300 ease-out
-          sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
-          active:scale-[0.98] active:shadow-none sm:active:scale-100
+          bg-[var(--bento-card)]/90 backdrop-blur-md
+          border border-[var(--bento-border)]
+          rounded-2xl overflow-hidden
+          shadow-sm
         "
-        style={{ '--tw-shadow-color': rankColor.glow } as React.CSSProperties}
       >
-        {/* Solid rank banner - slightly thicker on mobile for better visibility */}
-        <div className="h-1.5 sm:h-1" style={{ backgroundColor: rankColor.hex }} aria-hidden="true" />
-        
-        {/* Avatar with Lodestone link */}
-        <a 
-          href={lodestoneUrl} 
-          target="_blank" 
+        {/* ── Avatar ──────────────────────────────────────────────── */}
+        <a
+          href={lodestoneUrl}
+          target="_blank"
           rel="noopener noreferrer"
-          className="block relative overflow-hidden focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset focus:outline-none"
+          className="
+            block relative overflow-hidden aspect-square
+            bg-[var(--bento-bg)]
+            focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--bento-primary)]
+            focus:outline-none
+          "
           aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
         >
           {/* Loading shimmer */}
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer"
+              aria-hidden="true"
+            />
           )}
-          
+
+          {/* Avatar image */}
           <img
             src={member.avatarLink}
             alt=""
@@ -85,137 +87,141 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             decoding="async"
             onLoad={handleImageLoad}
             className={`
-              w-full aspect-square object-cover 
-              transition-all duration-300 ease-out
-              group-hover:scale-105
+              block w-full h-full object-cover
+              transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+              group-hover:scale-[1.08]
               ${imageLoaded ? 'opacity-100' : 'opacity-0'}
             `}
           />
-          
-          {/* Mobile tap indicator - always visible subtle hint */}
-          <div 
+
+          {/* Rank icon badge — floating top-left */}
+          <div className="absolute top-1.5 left-1.5 pointer-events-none z-10">
+            <div
+              className="flex items-center justify-center size-6 sm:size-5 rounded-lg shadow-sm backdrop-blur-md"
+              style={{
+                backgroundColor: `color-mix(in srgb, ${rankColor.hex} 18%, var(--bento-card))`,
+                border: `1px solid color-mix(in srgb, ${rankColor.hex} 25%, transparent)`,
+              }}
+            >
+              {member.freeCompanyRankIcon ? (
+                <img
+                  src={member.freeCompanyRankIcon}
+                  alt=""
+                  className="w-3.5 h-3.5 sm:w-3 sm:h-3"
+                  aria-hidden="true"
+                />
+              ) : (
+                <RankIcon
+                  className="w-3.5 h-3.5 sm:w-3 sm:h-3"
+                  style={{ color: rankColor.hex }}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Mobile tap indicator */}
+          <div
             className="
               absolute bottom-2 right-2 sm:hidden
               flex items-center justify-center
-              w-7 h-7 rounded-full
-              bg-black/40 backdrop-blur-sm
-              opacity-60
+              size-6 rounded-full
+              bg-black/30 backdrop-blur-sm
             "
             aria-hidden="true"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-white" />
+            <ExternalLink className="w-3 h-3 text-white/80" />
           </div>
-          
-          {/* Hover overlay with Lodestone chip - desktop only */}
-          <div 
-            className="
-              absolute inset-0 hidden sm:flex
-              bg-gradient-to-t from-black/70 via-black/30 to-transparent 
-              items-end justify-center pb-3
-              opacity-0 group-hover:opacity-100
-              transition-opacity duration-200
-            "
-            aria-hidden="true"
-          >
-            <span 
-              className="
-                flex items-center gap-1.5 px-3 py-1.5 
-                bg-[var(--bento-card)]/95 backdrop-blur-md rounded-full 
-                text-xs font-soft font-semibold text-[var(--bento-text)] 
-                shadow-lg border border-[var(--bento-primary)]/20
-                translate-y-2 group-hover:translate-y-0
-                transition-transform duration-200 ease-out
-              "
-            >
-              <ExternalLink className="w-3 h-3 text-[var(--bento-primary)]" />
-              <span>Lodestone</span>
-            </span>
-          </div>
-          
-          {/* Decorative corner moogle on hover - desktop only */}
+
+          {/* Desktop hover overlay + Lodestone chip.
+              -inset-px oversizes by 1px so sub-pixel rounding during
+              the card's y-translate never leaves a hairline gap. */}
           <div
             className="
-              absolute top-1 right-1 pointer-events-none hidden sm:block
-              opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100
-              transition-all duration-200 ease-out
+              absolute -inset-px hidden sm:flex
+              items-center justify-center
+              bg-black/35 backdrop-blur-[2px]
+              opacity-0 group-hover:opacity-100
+              transition-opacity duration-300
+              pointer-events-none
             "
             aria-hidden="true"
           >
-            <img 
-              src={pixelMoogle} 
-              alt="" 
-              className="w-7 h-7 drop-shadow-lg animate-float-gentle"
-            />
+            <span
+              className="
+                flex items-center gap-1.5 px-3 py-1.5
+                bg-[var(--bento-card)]/95 backdrop-blur-md rounded-full
+                text-xs font-soft font-bold text-[var(--bento-text)]
+                shadow-lg border border-[var(--bento-border)]
+                scale-90 group-hover:scale-100
+                transition-transform duration-300 ease-out
+              "
+            >
+              <ExternalLink className="w-3 h-3" style={{ color: rankColor.hex }} />
+              Lodestone
+            </span>
           </div>
         </a>
 
-        {/* Member info - larger touch target and better mobile sizing */}
-        <div className="p-3 sm:p-3 text-center space-y-2 sm:space-y-2">
-          {/* Name - larger on mobile for readability */}
-          <h3 className="font-soft font-bold text-xs sm:text-sm text-[var(--bento-text)] truncate leading-tight">
+        {/* ── Member info ─────────────────────────────────────────── */}
+        <div className="px-3 py-2.5 text-center space-y-1">
+          <h3 className="font-display font-bold text-xs sm:text-sm text-[var(--bento-text)] truncate leading-snug">
             {member.name}
           </h3>
-          
-          {/* Rank badge - larger touch target on mobile */}
-          <div 
-            className={`
-              inline-flex items-center justify-center gap-1.5 
-              px-3 py-1.5 sm:px-2.5 sm:py-1 rounded-full 
-              ${rankColor.bg}
-              transition-transform duration-200
-              sm:group-hover:scale-105
-            `}
+          <p
+            className="text-[10px] sm:text-[11px] font-soft font-semibold truncate"
+            style={{ color: rankColor.hex }}
           >
-            {member.freeCompanyRankIcon ? (
-              <img 
-                src={member.freeCompanyRankIcon} 
-                alt="" 
-                className="w-4 h-4 sm:w-3.5 sm:h-3.5"
-                aria-hidden="true"
-              />
-            ) : (
-              <RankIcon className={`w-3.5 h-3.5 sm:w-3 sm:h-3 ${rankColor.text}`} aria-hidden="true" />
-            )}
-            <span className={`text-[11px] sm:text-[10px] font-soft font-semibold ${rankColor.text} truncate max-w-[80px] sm:max-w-[80px]`}>
-              {member.freeCompanyRank}
-            </span>
-          </div>
+            {member.freeCompanyRank}
+          </p>
         </div>
+
+        {/* Bottom accent gradient */}
+        <div
+          className="h-0.5 opacity-50 group-hover:opacity-90 transition-opacity duration-300"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${rankColor.hex}, transparent)`,
+          }}
+          aria-hidden="true"
+        />
       </div>
     </motion.article>
   );
 });
 
 /**
- * MemberCardSkeleton - Loading placeholder that matches MemberCard.
+ * MemberCardSkeleton — Loading placeholder matching MemberCard dimensions.
  */
 export function MemberCardSkeleton() {
   return (
-    <div className="w-36 sm:w-40 md:w-44 lg:w-48 bg-[var(--bento-card)] border border-[var(--bento-primary)]/10 rounded-2xl overflow-hidden shadow-sm">
-      {/* Rank banner skeleton */}
-      <div className="h-1 bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/30 to-[var(--bento-primary)]/20 animate-shimmer" />
-      
-      {/* Avatar skeleton */}
-      <div className="w-full aspect-square bg-gradient-to-br from-[var(--bento-bg)] to-[var(--bento-card)] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--bento-primary)]/10 to-transparent animate-shimmer" />
-      </div>
-      
-      {/* Info skeleton */}
-      <div className="p-3 space-y-2.5">
-        <div className="h-4 bg-[var(--bento-bg)] rounded-full animate-pulse mx-auto w-4/5" />
-        <div className="h-5 bg-[var(--bento-primary)]/10 rounded-full animate-pulse mx-auto w-3/5" />
+    <div className="w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]">
+      <div className="bg-[var(--bento-card)] border border-[var(--bento-border)] rounded-2xl overflow-hidden shadow-sm">
+        {/* Avatar placeholder */}
+        <div className="relative aspect-square bg-gradient-to-br from-[var(--bento-bg)] to-[var(--bento-card)] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--bento-primary)]/8 to-transparent animate-shimmer" />
+          {/* Rank badge placeholder */}
+          <div className="absolute top-1.5 left-1.5">
+            <div className="size-5 rounded-lg bg-[var(--bento-bg)] animate-pulse" />
+          </div>
+        </div>
+        {/* Info placeholder */}
+        <div className="px-3 py-2.5 space-y-2">
+          <div className="h-3.5 bg-[var(--bento-bg)] rounded-full animate-pulse mx-auto w-4/5" />
+          <div className="h-2.5 bg-[var(--bento-primary)]/8 rounded-full animate-pulse mx-auto w-3/5" />
+        </div>
+        {/* Bottom accent placeholder */}
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-[var(--bento-primary)]/15 to-transparent" />
       </div>
     </div>
   );
 }
 
 /**
- * MemberCardCompact - A more compact variant for dense layouts.
- * Uses CSS-only animations for performance.
- * Accessibility: Links have descriptive accessible names.
+ * MemberCardCompact — Horizontal compact variant for dense layouts.
  */
 export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
   const rankColor = getRankColor(member.freeCompanyRank);
+  const RankIcon = rankColor.icon;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
 
   return (
@@ -225,42 +231,77 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       rel="noopener noreferrer"
       aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
       className="
-        flex items-center gap-3 p-2 pr-4
-        bg-[var(--bento-card)]
-        border border-[var(--bento-primary)]/10
-        rounded-xl
-        shadow-sm
-        hover:shadow-md hover:shadow-[var(--bento-primary)]/10
-        hover:-translate-y-0.5 hover:translate-x-0.5
+        group flex items-center gap-3 p-2 pr-4
+        bg-[var(--bento-card)]/90 backdrop-blur-md
+        border border-[var(--bento-border)]
+        rounded-xl shadow-sm
+        hover:shadow-lg hover:border-transparent
         active:scale-[0.98]
         transition-all duration-200
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-        group
       "
+      style={{
+        '--compact-glow': rankColor.glow,
+      } as React.CSSProperties}
     >
       {/* Avatar */}
-      <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': rankColor.glow } as React.CSSProperties}>
-        <img 
-          src={member.avatarLink} 
-          alt=""
-          className="w-10 h-10 object-cover"
-          loading="lazy"
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: rankColor.hex }} aria-hidden="true" />
+      <div className="relative shrink-0">
+        <div
+          className="
+            size-10 rounded-lg overflow-hidden
+            ring-1.5 ring-offset-2 ring-offset-[var(--bento-card)]
+            transition-[ring-color] duration-200
+          "
+          style={{
+            '--tw-ring-color': `color-mix(in srgb, ${rankColor.hex} 40%, transparent)`,
+          } as React.CSSProperties}
+        >
+          <img
+            src={member.avatarLink}
+            alt=""
+            className="block size-full object-cover transition-transform duration-300 group-hover:scale-110"
+            loading="lazy"
+          />
+        </div>
+        {/* Rank icon overlay */}
+        <div
+          className="
+            absolute -bottom-0.5 -right-0.5
+            flex items-center justify-center
+            size-4 rounded-md shadow-sm
+          "
+          style={{
+            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 20%, var(--bento-card))`,
+            border: `1px solid color-mix(in srgb, ${rankColor.hex} 30%, transparent)`,
+          }}
+          aria-hidden="true"
+        >
+          {member.freeCompanyRankIcon ? (
+            <img src={member.freeCompanyRankIcon} alt="" className="w-2.5 h-2.5" />
+          ) : (
+            <RankIcon className="w-2.5 h-2.5" style={{ color: rankColor.hex }} />
+          )}
+        </div>
       </div>
-      
-      {/* Info */}
+
+      {/* Text */}
       <div className="flex-1 min-w-0">
-        <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+        <p className="font-display font-bold text-sm text-[var(--bento-text)] truncate">
           {member.name}
         </p>
-        <p className={`text-[10px] font-soft font-medium ${rankColor.text} truncate`}>
+        <p
+          className="text-[10px] font-soft font-semibold truncate"
+          style={{ color: rankColor.hex }}
+        >
           {member.freeCompanyRank}
         </p>
       </div>
-      
-      {/* Arrow on hover */}
-      <div className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" aria-hidden="true">
+
+      {/* External link indicator */}
+      <div
+        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        aria-hidden="true"
+      >
         <ExternalLink className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
       </div>
     </a>

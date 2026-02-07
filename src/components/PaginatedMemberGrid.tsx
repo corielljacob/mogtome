@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Star, ChevronsLeft, ChevronsRight, Loader2 } from 'lucide-react';
 import type { FreeCompanyMember } from '../types';
 import { MemberCard } from './MemberCard';
+import { getRankColor } from '../constants';
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];
@@ -56,23 +57,45 @@ function useResponsiveColumns(containerRef: React.RefObject<HTMLDivElement | nul
 }
 
 function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: number }) {
+  const rankColor = getRankColor(rankName);
+  const RankIcon = rankColor.icon;
+
   return (
-    <div className="flex items-center gap-2.5 sm:gap-4 py-3 sm:py-4">
-      <div className="flex items-center gap-1.5 sm:gap-2.5">
-        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
+    <div className="flex items-center gap-2.5 sm:gap-3 py-3 sm:py-4">
+      <div 
+        className="
+          w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center 
+          shadow-md shadow-black/5
+        "
+        style={{ backgroundColor: rankColor.hex }}
+      >
+        <RankIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" aria-hidden="true" />
+      </div>
+      <div className="flex items-center gap-2 sm:gap-2.5">
         <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--bento-text)]">
-          {rankName}
+          {rankColor.label}
         </h2>
-        <span className="
-          px-2 sm:px-3 py-0.5 sm:py-1 rounded-full 
-          bg-gradient-to-r from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15
-          text-[var(--bento-primary)] text-xs sm:text-sm font-soft font-bold
-          border border-[var(--bento-primary)]/15
-        " aria-label={`${memberCount} members`}>
+        <span 
+          className="
+            px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full 
+            text-xs sm:text-sm font-soft font-bold
+          "
+          style={{
+            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 12%, transparent)`,
+            color: rankColor.hex,
+          }}
+          aria-label={`${memberCount} members`}
+        >
           {memberCount}
         </span>
       </div>
-      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/20 via-[var(--bento-secondary)]/10 to-transparent" aria-hidden="true" />
+      <div 
+        className="flex-1 h-px" 
+        style={{ 
+          background: `linear-gradient(to right, ${rankColor.hex}33, transparent)`,
+        }}
+        aria-hidden="true" 
+      />
     </div>
   );
 }
