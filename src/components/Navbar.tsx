@@ -325,6 +325,9 @@ function KupoBadge() {
 }
 
 // Bottom navigation item for mobile - enhanced with native-feeling feedback
+// PERFORMANCE: Uses CSS transitions instead of Framer Motion — each nav item
+// had 3 motion elements (layoutId dot, icon div, span), all running on every
+// route change. CSS transitions are compositor-friendly and far cheaper.
 function BottomNavItem({ 
   path, 
   label, 
@@ -351,35 +354,26 @@ function BottomNavItem({
         }
       `}
     >
-      {/* Active indicator dot */}
+      {/* Active indicator dot — CSS only */}
       {isActive && (
-        <motion.div
-          className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--bento-primary)]"
-          layoutId="bottomNavIndicator"
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
+        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--bento-primary)]" />
       )}
       
-      <motion.div
-        animate={{ 
-          scale: isActive ? 1.15 : 1,
-          y: isActive ? -1 : 0,
+      <div
+        className="transition-transform duration-150"
+        style={{
+          transform: isActive ? 'scale(1.15) translateY(-1px)' : 'scale(1)',
         }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         <Icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
-      </motion.div>
+      </div>
       
-      <motion.span 
-        className={`text-[10px] font-soft font-semibold leading-none`}
-        animate={{ 
-          opacity: isActive ? 1 : 0.7,
-          y: isActive ? 0 : 1,
-        }}
-        transition={{ duration: 0.15 }}
+      <span 
+        className="text-[10px] font-soft font-semibold leading-none transition-opacity duration-150"
+        style={{ opacity: isActive ? 1 : 0.7 }}
       >
         {label}
-      </motion.span>
+      </span>
     </Link>
   );
 }

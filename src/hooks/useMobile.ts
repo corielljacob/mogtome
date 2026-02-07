@@ -1,23 +1,30 @@
 import { useState, useEffect, useCallback } from 'react';
 
+// PERFORMANCE: Module-level touch detection (never changes during session)
+const HAS_TOUCH = typeof window !== 'undefined' && (
+  'ontouchstart' in window || navigator.maxTouchPoints > 0
+);
+
 /**
  * useIsMobile - Hook to detect mobile devices based on viewport width
  * Uses the md breakpoint (768px) to match Tailwind's responsive design
+ * 
+ * PERFORMANCE: Initializes with correct value from matchMedia to prevent
+ * a flash/re-render on mobile (previously initialized as false, causing
+ * desktop layout to render first, then switch to mobile).
  */
 export function useIsMobile(breakpoint: number = 768): boolean {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
+  });
   
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia(`(max-width: ${breakpoint}px)`).matches);
-    };
-    
-    checkMobile();
-    
     const mediaQuery = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    mediaQuery.addEventListener('change', checkMobile);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     
-    return () => mediaQuery.removeEventListener('change', checkMobile);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, [breakpoint]);
   
   return isMobile;
@@ -26,18 +33,11 @@ export function useIsMobile(breakpoint: number = 768): boolean {
 /**
  * useHasTouch - Hook to detect if device has touch capability
  * Useful for enabling/disabling touch-specific features
+ * 
+ * PERFORMANCE: Uses module-level constant (touch capability never changes during session)
  */
 export function useHasTouch(): boolean {
-  const [hasTouch, setHasTouch] = useState(false);
-  
-  useEffect(() => {
-    setHasTouch(
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0
-    );
-  }, []);
-  
-  return hasTouch;
+  return HAS_TOUCH;
 }
 
 /**
@@ -112,6 +112,10 @@ export function useLockBodyScroll(lock: boolean): void {
 
 /**
  * useSafeAreaInsets - Hook to get safe area inset values
+ *
+ * PERFORMANCE: Only reads insets once on mount + on orientation change,
+ * not on every resize event. Safe area insets only change on device
+ * rotation, not window resize.
  */
 export function useSafeAreaInsets() {
   const [insets, setInsets] = useState({
@@ -133,9 +137,12 @@ export function useSafeAreaInsets() {
     };
     
     updateInsets();
-    window.addEventListener('resize', updateInsets);
     
-    return () => window.removeEventListener('resize', updateInsets);
+    // Only listen for orientation changes, not all resizes
+    const orientationQuery = window.matchMedia('(orientation: portrait)');
+    orientationQuery.addEventListener('change', updateInsets);
+    
+    return () => orientationQuery.removeEventListener('change', updateInsets);
   }, []);
   
   return insets;

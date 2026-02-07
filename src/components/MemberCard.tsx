@@ -1,5 +1,4 @@
-import { useState, memo, useCallback } from 'react';
-import { motion } from 'motion/react';
+import { useState, memo, useCallback, type CSSProperties } from 'react';
 import type { FreeCompanyMember } from '../types';
 import { ExternalLink } from 'lucide-react';
 import { getRankColor } from '../constants';
@@ -12,13 +11,14 @@ interface MemberCardProps {
 /**
  * MemberCard — Modern glassmorphic member profile card.
  *
+ * PERFORMANCE: Uses CSS animations instead of Framer Motion for entry animations.
+ * On 24+ cards per page, Framer Motion's per-element overhead is significant,
+ * especially on mobile where each motion.article creates its own animation loop.
+ * CSS `fadeSlideIn` runs on the compositor thread.
+ *
  * HOVER ARCHITECTURE:
- * - Outer `motion.article` handles lift + glow shadow via Framer Motion.
- *   No overflow-hidden here, so transforms never clip children.
- * - A gradient ring div sits behind the card (absolute, -inset-[1px])
- *   and fades in on hover for a rank-colored border glow.
- * - The inner card div has overflow-hidden + rounded corners for visual
- *   clipping. Its border goes transparent on hover to reveal the ring.
+ * - Outer article handles lift + glow shadow via CSS hover transitions.
+ * - The inner card div has overflow-hidden + rounded corners for visual clipping.
  * - The avatar scales inside its own overflow container.
  * - Overlay elements use opacity / scale CSS transitions.
  */
@@ -32,27 +32,24 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{
-        y: -5,
-        boxShadow: `0 0 0 1.5px ${rankColor.hex}50, 0 0 14px 0 ${rankColor.glow}, 0 20px 40px -12px ${rankColor.glow}`,
-        transition: { type: 'spring', stiffness: 400, damping: 25 },
-      }}
-      whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
-      transition={{
-        opacity: { duration: 0.4, delay: Math.min(index * 0.04, 0.4) },
-        y: { duration: 0.4, delay: Math.min(index * 0.04, 0.4) },
-      }}
-      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] rounded-2xl touch-manipulation cursor-pointer"
+    <article
+      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] rounded-2xl touch-manipulation cursor-pointer
+        transition-[transform,box-shadow] duration-300 ease-out
+        sm:hover:-translate-y-1.5 sm:hover:shadow-xl
+        active:scale-[0.97] active:duration-100"
+      style={{
+        animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.4)}s both`,
+        // Apply rank glow on hover via CSS custom properties
+        '--card-glow': rankColor.glow,
+        '--card-hex': rankColor.hex,
+      } as CSSProperties}
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
-      {/* Card surface */}
+      {/* Card surface — no backdrop-blur (expensive on mobile with 24+ cards) */}
       <div
         className="
           relative w-full
-          bg-[var(--bento-card)]/90 backdrop-blur-md
+          bg-[var(--bento-card)]
           border border-[var(--bento-border)]
           rounded-2xl overflow-hidden
           shadow-sm
@@ -97,7 +94,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           {/* Rank icon badge — floating top-left */}
           <div className="absolute top-1.5 left-1.5 pointer-events-none z-10">
             <div
-              className="flex items-center justify-center size-6 sm:size-5 rounded-lg shadow-sm backdrop-blur-md"
+              className="flex items-center justify-center size-6 sm:size-5 rounded-lg shadow-sm"
               style={{
                 backgroundColor: `color-mix(in srgb, ${rankColor.hex} 18%, var(--bento-card))`,
                 border: `1px solid color-mix(in srgb, ${rankColor.hex} 25%, transparent)`,
@@ -185,7 +182,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           aria-hidden="true"
         />
       </div>
-    </motion.article>
+    </article>
   );
 });
 
@@ -242,7 +239,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       "
       style={{
         '--compact-glow': rankColor.glow,
-      } as React.CSSProperties}
+      } as CSSProperties}
     >
       {/* Avatar */}
       <div className="relative shrink-0">
@@ -254,7 +251,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
           "
           style={{
             '--tw-ring-color': `color-mix(in srgb, ${rankColor.hex} 40%, transparent)`,
-          } as React.CSSProperties}
+          } as CSSProperties}
         >
           <img
             src={member.avatarLink}

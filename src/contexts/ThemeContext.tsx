@@ -316,19 +316,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setSettings(prev => ({ ...prev, eventThemingDisabled: disabled }));
   }, []);
 
+  // PERFORMANCE: Memoize the context value to prevent all consumers from re-rendering
+  // when unrelated parent state changes. Without this, every component using useTheme()
+  // re-renders on any ThemeProvider parent re-render.
+  const contextValue = useMemo<ThemeContextType>(() => ({
+    settings,
+    isDarkMode,
+    setColorTheme,
+    setColorMode,
+    activeEvent,
+    nextEvent,
+    isEventThemeActive,
+    setEventThemingDisabled,
+    eventOverride,
+    setEventOverride,
+  }), [settings, isDarkMode, setColorTheme, setColorMode, activeEvent, nextEvent, isEventThemeActive, setEventThemingDisabled, eventOverride, setEventOverride]);
+
   return (
-    <ThemeContext.Provider value={{
-      settings,
-      isDarkMode,
-      setColorTheme,
-      setColorMode,
-      activeEvent,
-      nextEvent,
-      isEventThemeActive,
-      setEventThemingDisabled,
-      eventOverride,
-      setEventOverride,
-    }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

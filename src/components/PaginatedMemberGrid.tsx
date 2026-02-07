@@ -304,8 +304,8 @@ export function PaginatedMemberGrid({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentPage, totalPages, navigateToPage]);
 
-  // Generate page numbers to display
-  const getPageNumbers = () => {
+  // PERFORMANCE: Memoize page number generation (was recalculated on every render)
+  const pageNumbers = useMemo(() => {
     const pages: (number | 'ellipsis')[] = [];
     const maxVisible = 5;
     
@@ -330,7 +330,7 @@ export function PaginatedMemberGrid({
     }
     
     return pages;
-  };
+  }, [totalPages, currentPage]);
 
   return (
     <div ref={containerRef} className="w-full">
@@ -519,7 +519,7 @@ export function PaginatedMemberGrid({
 
                 {/* Page numbers */}
                 <div className="flex items-center gap-1 mx-1">
-                  {getPageNumbers().map((page, idx) => (
+                  {pageNumbers.map((page, idx) => (
                     page === 'ellipsis' ? (
                       <span 
                         key={`ellipsis-${idx}`} 

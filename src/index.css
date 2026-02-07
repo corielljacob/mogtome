@@ -28,8 +28,6 @@
     -webkit-font-smoothing: antialiased;
     /* Prevent horizontal overflow on mobile */
     overflow-x: hidden;
-    /* Enable smooth scrolling on iOS */
-    -webkit-overflow-scrolling: touch;
     /* Transparent to let html background show through */
     background: transparent;
   }
@@ -109,6 +107,21 @@
     touch-action: manipulation; /* Disables double-tap zoom for faster response */
   }
 
+  /* MOBILE PERFORMANCE: Disable backdrop-blur on touch devices — extremely expensive on mobile GPUs */
+  /* backdrop-blur causes compositing issues and frame drops on Android/iOS */
+  @media (pointer: coarse) {
+    .backdrop-blur-sm,
+    .backdrop-blur-md,
+    .backdrop-blur-lg,
+    .backdrop-blur-xl,
+    .backdrop-blur-2xl,
+    .backdrop-blur-3xl,
+    [class*="backdrop-blur"] {
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
+  }
+
   /* MOBILE PERFORMANCE: Hardware acceleration for animated elements */
   /* will-change hints help browser optimize these elements */
   [class*="animate-"],
@@ -121,14 +134,11 @@
     will-change: auto;
   }
 
-  /* MOBILE PERFORMANCE: Optimize scrolling */
-  /* Use momentum scrolling on iOS for smooth native-like feel */
-  .overflow-scroll,
-  .overflow-y-scroll,
-  .overflow-x-scroll,
-  [class*="overflow-"] {
-    -webkit-overflow-scrolling: touch;
-  }
+  /* 
+   * NOTE: -webkit-overflow-scrolling: touch removed from overflow elements.
+   * Momentum scrolling is the default on iOS 13+. The old property created
+   * unnecessary compositing layers that hurt mobile performance.
+   */
 
   /* MOBILE PERFORMANCE: Reduce paint areas during scroll */
   /* 
@@ -168,10 +178,12 @@
     }
   }
 
-  /* Smooth momentum scrolling for all scroll containers */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
+  /* 
+   * NOTE: Removed `* { -webkit-overflow-scrolling: touch }` — this property
+   * is deprecated and no longer needed on iOS 13+. On older iOS, it was
+   * applied to every element in the DOM, forcing unnecessary layer creation.
+   * Momentum scrolling is now the default behavior.
+   */
 
   /* Hide scrollbars on mobile for cleaner look (content is still scrollable) */
   @media (max-width: 768px) {
@@ -1068,7 +1080,7 @@
 }
 
 /* Typography */
-.font-inter { font-family: 'Inter', system-ui, sans-serif; }
+.font-inter { font-family: 'Nunito', system-ui, sans-serif; }
 .font-display { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; }
 .font-number { font-family: 'Righteous', 'Fredoka', system-ui, sans-serif; }
 .font-accent { font-family: 'Caveat', cursive; }

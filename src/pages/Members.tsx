@@ -213,11 +213,12 @@ export function Members() {
 
   const hasActiveFilters = searchQuery || selectedRanks.length > 0;
 
+  // PERFORMANCE: Single-pass O(n) instead of O(n * ranks)
   const rankCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    FC_RANKS.forEach(rank => {
-      counts[rank.name] = allMembers.filter(m => m.freeCompanyRank === rank.name).length;
-    });
+    for (const member of allMembers) {
+      counts[member.freeCompanyRank] = (counts[member.freeCompanyRank] || 0) + 1;
+    }
     return counts;
   }, [allMembers]);
 

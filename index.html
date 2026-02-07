@@ -25,9 +25,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- Google Fonts - subset to only needed weights with font-display: swap to prevent FOUT -->
-    <!-- PERFORMANCE: Using display=swap for instant text rendering with fallback fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Righteous&display=swap" rel="stylesheet" />
+    <!-- Google Fonts - trimmed to actually-used weights for smaller payload -->
+    <!-- PERFORMANCE: Reduced from 5 families x 4 weights to minimal set -->
+    <!-- Fredoka: headings (600, 700), Nunito: body (400, 500, 600, 700), Caveat: accents (400, 600), Righteous: numbers (400 only) -->
+    <!-- Inter removed entirely - Nunito serves as the primary font, system-ui as fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@400;600&family=Righteous&display=swap" rel="stylesheet" />
   </head>
   <body>
     <script>

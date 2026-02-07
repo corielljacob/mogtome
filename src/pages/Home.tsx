@@ -16,6 +16,11 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
+// PERFORMANCE: Detect mobile once at module level to avoid repeated checks
+const IS_MOBILE_DEVICE = typeof window !== 'undefined' && (
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768
+);
+
 // Assets
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
@@ -162,27 +167,47 @@ function generateEventMotes(colors: string[]) {
 
 /** Twinkling warm fairy lights — like a string of cozy golden fireflies */
 function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
+  // PERFORMANCE: On mobile, show only 4 lights with CSS animations instead of 12 Framer Motion instances
+  const displayLights = IS_MOBILE_DEVICE ? lights.slice(0, 4) : lights;
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {lights.map((light, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            left: light.left,
-            top: light.top,
-            width: light.size,
-            height: light.size,
-            backgroundColor: light.color,
-          }}
-          animate={{ opacity: [0.1, 0.85, 0.1], scale: [0.8, 1.3, 0.8] }}
-          transition={{
-            duration: light.dur,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: light.delay,
-          }}
-        />
+      {displayLights.map((light, i) => (
+        IS_MOBILE_DEVICE ? (
+          // Mobile: Use CSS animation (compositor thread) instead of Framer Motion (main thread)
+          <div
+            key={i}
+            className="absolute rounded-full animate-pulse"
+            style={{
+              left: light.left,
+              top: light.top,
+              width: light.size,
+              height: light.size,
+              backgroundColor: light.color,
+              animationDuration: `${light.dur}s`,
+              animationDelay: `${light.delay}s`,
+            }}
+          />
+        ) : (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: light.left,
+              top: light.top,
+              width: light.size,
+              height: light.size,
+              backgroundColor: light.color,
+            }}
+            animate={{ opacity: [0.1, 0.85, 0.1], scale: [0.8, 1.3, 0.8] }}
+            transition={{
+              duration: light.dur,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: light.delay,
+            }}
+          />
+        )
       ))}
     </div>
   );
@@ -190,12 +215,15 @@ function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
 
 /** Warm floating embers — like sitting by a cozy fireplace */
 function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
+  // PERFORMANCE: On mobile, show only 2 motes instead of 6
+  const displayMotes = IS_MOBILE_DEVICE ? motes.slice(0, 2) : motes;
+
   return (
     <div
       className="absolute inset-0 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] pointer-events-none"
       aria-hidden="true"
     >
-      {motes.map((mote, i) => (
+      {displayMotes.map((mote, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
@@ -225,6 +253,22 @@ function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
 
 /** Warm golden glow aura behind the moogle — adapts to flagship events */
 function WarmMoogleAura({ eventId }: { eventId: string | null }) {
+  // PERFORMANCE: On mobile, use a single static glow instead of animated blur layers
+  if (IS_MOBILE_DEVICE) {
+    return (
+      <div
+        className="absolute inset-0 scale-[1.8] rounded-full blur-3xl opacity-30"
+        style={{
+          background: eventId === 'all-saints-wake'
+            ? 'radial-gradient(circle, rgba(109,40,217,0.3), rgba(249,115,22,0.15), transparent)'
+            : eventId === 'starlight'
+              ? 'radial-gradient(circle, rgba(220,38,38,0.25), rgba(251,191,36,0.2), transparent)'
+              : 'radial-gradient(circle, var(--bento-primary), rgba(251,191,36,0.2), transparent)',
+        }}
+        aria-hidden="true"
+      />
+    );
+  }
   // All Saints' Wake — eerie purple/green flickering glow
   if (eventId === 'all-saints-wake') {
     return (
@@ -328,6 +372,8 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
 
 /** Charms that float around the moogle — adapts to flagship events */
 function MoogleCharms({ eventId }: { eventId: string | null }) {
+  // PERFORMANCE: Skip charms entirely on mobile — they're tiny and not worth the cost
+  if (IS_MOBILE_DEVICE) return null;
   // All Saints' Wake — skulls, ghosts, and moons orbit the moogle
   if (eventId === 'all-saints-wake') {
     return (
@@ -524,8 +570,38 @@ function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
 /**
  * All Saints' Wake — Creeping fog that drifts across the bottom of the screen,
  * eerie flickering jack-o-lantern glow, and wandering ghost silhouettes.
+ * 
+ * PERFORMANCE: On mobile, shows only static fog + 1 ghost (instead of ~12 animated elements)
  */
 function HalloweenOverlay() {
+  // PERFORMANCE: Minimal version for mobile
+  if (IS_MOBILE_DEVICE) {
+    return (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {/* Static fog */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-[40%] opacity-80"
+          style={{
+            background: 'linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)',
+          }}
+        />
+        {/* Single ghost with CSS animation */}
+        <div
+          className="absolute animate-float-moogle-subtle"
+          style={{ left: '15%', top: '55%', animationDuration: '8s', opacity: 0.07 }}
+        >
+          <Ghost style={{ width: 28, height: 28 }} className="text-purple-400/60" strokeWidth={1} />
+        </div>
+        {/* Vignette */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)',
+          }}
+        />
+      </div>
+    );
+  }
   // Ghost silhouettes that drift slowly across the screen
   const ghosts = useMemo(() => [
     { left: '5%', delay: 0, duration: 22, yStart: '60%', yEnd: '20%', drift: 80, size: 32, opacity: 0.08 },
@@ -640,8 +716,47 @@ function HalloweenOverlay() {
 /**
  * Starlight Celebration — Gentle snowfall, twinkling christmas lights,
  * warm golden fireplace glow, and festive sparkles.
+ *
+ * PERFORMANCE: On mobile, shows 6 CSS snowflakes + static glow (instead of 60+ animated elements)
  */
 function StarlightOverlay() {
+  // PERFORMANCE: Minimal version for mobile — CSS-only, no Framer Motion
+  if (IS_MOBILE_DEVICE) {
+    return (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {/* 6 simple CSS snowflakes instead of 35 Framer Motion snowflakes */}
+        {[12, 28, 45, 62, 78, 90].map((left, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white/60 animate-float-moogle-subtle"
+            style={{
+              left: `${left}%`,
+              top: `${5 + i * 12}%`,
+              width: 4 + (i % 3),
+              height: 4 + (i % 3),
+              animationDuration: `${4 + i}s`,
+              animationDelay: `${i * 0.5}s`,
+              opacity: 0.2,
+            }}
+          />
+        ))}
+        {/* Static warm glow from below */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-[30%] opacity-80"
+          style={{
+            background: 'linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)',
+          }}
+        />
+        {/* Snow accumulation */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-[3%]"
+          style={{
+            background: 'linear-gradient(to top, rgba(255,255,255,0.06), transparent)',
+          }}
+        />
+      </div>
+    );
+  }
   // Generate snowflake particles with deterministic positions
   const snowflakes = useMemo(() => {
     const flakes: Array<{
@@ -915,6 +1030,8 @@ function StarlightOverlay() {
 
 /** Floating icon particles scattered across the viewport for events */
 function EventParticles({ particles }: { particles: EventParticle[] }) {
+  // PERFORMANCE: Skip event particles on mobile — too many animated elements
+  if (IS_MOBILE_DEVICE) return null;
   // Generate stable positions for each particle
   const items = useMemo(() => {
     const result: Array<{
@@ -1231,7 +1348,7 @@ export function Home() {
             <motion.img
               src={welcomingMoogle}
               alt="A friendly moogle mascot welcoming you to MogTome"
-              className="relative w-32 sm:w-40 md:w-48 lg:w-56 drop-shadow-2xl"
+              className="relative w-32 sm:w-40 md:w-48 lg:w-56 sm:drop-shadow-2xl"
               loading="eager"
               decoding="async"
               fetchPriority="high"
