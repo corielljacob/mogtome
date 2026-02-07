@@ -167,47 +167,31 @@ function generateEventMotes(colors: string[]) {
 
 /** Twinkling warm fairy lights — like a string of cozy golden fireflies */
 function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
-  // PERFORMANCE: On mobile, show only 4 lights with CSS animations instead of 12 Framer Motion instances
-  const displayLights = IS_MOBILE_DEVICE ? lights.slice(0, 4) : lights;
+  // PERFORMANCE: Skip fairy lights entirely on mobile — removes animated glow overhead
+  if (IS_MOBILE_DEVICE) return null;
+  const displayLights = lights;
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
       {displayLights.map((light, i) => (
-        IS_MOBILE_DEVICE ? (
-          // Mobile: Use CSS animation (compositor thread) instead of Framer Motion (main thread)
-          <div
-            key={i}
-            className="absolute rounded-full animate-pulse"
-            style={{
-              left: light.left,
-              top: light.top,
-              width: light.size,
-              height: light.size,
-              backgroundColor: light.color,
-              animationDuration: `${light.dur}s`,
-              animationDelay: `${light.delay}s`,
-            }}
-          />
-        ) : (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: light.left,
-              top: light.top,
-              width: light.size,
-              height: light.size,
-              backgroundColor: light.color,
-            }}
-            animate={{ opacity: [0.1, 0.85, 0.1], scale: [0.8, 1.3, 0.8] }}
-            transition={{
-              duration: light.dur,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: light.delay,
-            }}
-          />
-        )
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            left: light.left,
+            top: light.top,
+            width: light.size,
+            height: light.size,
+            backgroundColor: light.color,
+          }}
+          animate={{ opacity: [0.1, 0.85, 0.1], scale: [0.8, 1.3, 0.8] }}
+          transition={{
+            duration: light.dur,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: light.delay,
+          }}
+        />
       ))}
     </div>
   );
@@ -215,15 +199,15 @@ function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
 
 /** Warm floating embers — like sitting by a cozy fireplace */
 function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
-  // PERFORMANCE: On mobile, show only 2 motes instead of 6
-  const displayMotes = IS_MOBILE_DEVICE ? motes.slice(0, 2) : motes;
+  // PERFORMANCE: Skip motes entirely on mobile — removes animated glow overhead
+  if (IS_MOBILE_DEVICE) return null;
 
   return (
     <div
       className="absolute inset-0 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] pointer-events-none"
       aria-hidden="true"
     >
-      {displayMotes.map((mote, i) => (
+      {motes.map((mote, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
@@ -253,22 +237,8 @@ function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
 
 /** Warm golden glow aura behind the moogle — adapts to flagship events */
 function WarmMoogleAura({ eventId }: { eventId: string | null }) {
-  // PERFORMANCE: On mobile, use a single static glow instead of animated blur layers
-  if (IS_MOBILE_DEVICE) {
-    return (
-      <div
-        className="absolute inset-0 scale-[1.8] rounded-full blur-3xl opacity-30"
-        style={{
-          background: eventId === 'all-saints-wake'
-            ? 'radial-gradient(circle, rgba(109,40,217,0.3), rgba(249,115,22,0.15), transparent)'
-            : eventId === 'starlight'
-              ? 'radial-gradient(circle, rgba(220,38,38,0.25), rgba(251,191,36,0.2), transparent)'
-              : 'radial-gradient(circle, var(--bento-primary), rgba(251,191,36,0.2), transparent)',
-        }}
-        aria-hidden="true"
-      />
-    );
-  }
+  // PERFORMANCE: Skip moogle aura entirely on mobile — removes large blurred element
+  if (IS_MOBILE_DEVICE) return null;
   // All Saints' Wake — eerie purple/green flickering glow
   if (eventId === 'all-saints-wake') {
     return (
@@ -1208,22 +1178,24 @@ export function Home() {
         />
       )}
 
-      {/* Center glow — adapts to event */}
-      <div
-        className="
-          fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
-          w-[min(700px,100vw)] h-[min(700px,100vw)]
-          rounded-full blur-3xl pointer-events-none
-        "
-        style={{
-          background: (isEventThemeActive && activeEvent)
-            ? `radial-gradient(circle, ${activeEvent.atmosphere.centerGlowFrom}, ${activeEvent.atmosphere.centerGlowVia}, transparent)`
-            : undefined,
-        }}
-        aria-hidden="true"
-      />
+      {/* Center glow — adapts to event (hidden on mobile to reduce glow overhead) */}
+      {!IS_MOBILE_DEVICE && (
+        <div
+          className="
+            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
+            w-[min(700px,100vw)] h-[min(700px,100vw)]
+            rounded-full blur-3xl pointer-events-none
+          "
+          style={{
+            background: (isEventThemeActive && activeEvent)
+              ? `radial-gradient(circle, ${activeEvent.atmosphere.centerGlowFrom}, ${activeEvent.atmosphere.centerGlowVia}, transparent)`
+              : undefined,
+          }}
+          aria-hidden="true"
+        />
+      )}
       {/* Fallback default center glow */}
-      {!isEventThemeActive && (
+      {!IS_MOBILE_DEVICE && !isEventThemeActive && (
         <div
           className="
             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
@@ -1236,14 +1208,16 @@ export function Home() {
         />
       )}
 
-      {/* Soft vignette — draws eye to the warm center */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.08) 100%)',
-        }}
-        aria-hidden="true"
-      />
+      {/* Soft vignette — draws eye to the warm center (hidden on mobile) */}
+      {!IS_MOBILE_DEVICE && (
+        <div
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.08) 100%)',
+          }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Fairy lights — warm twinkling dots (event-aware colors) */}
       <FairyLights lights={fairyLights} />
@@ -1276,27 +1250,31 @@ export function Home() {
             border border-[var(--bento-primary)]/[0.12]
           "
           style={{
-            boxShadow: isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-              ? '0 8px 60px -12px rgba(109,40,217,0.20), 0 0 100px -20px rgba(249,115,22,0.12), 0 0 40px -8px rgba(74,222,128,0.08), 0 2px 20px -4px rgba(0,0,0,0.10)'
-              : isEventThemeActive && activeEvent?.id === 'starlight'
-                ? '0 8px 60px -12px rgba(220,38,38,0.15), 0 0 100px -20px rgba(251,191,36,0.12), 0 0 40px -8px rgba(22,163,74,0.08), 0 2px 20px -4px rgba(0,0,0,0.06)'
-                : '0 8px 50px -12px rgba(251,191,36,0.10), 0 0 80px -20px rgba(251,113,133,0.05), 0 2px 20px -4px rgba(0,0,0,0.06)',
+            boxShadow: IS_MOBILE_DEVICE
+              ? '0 2px 16px -4px rgba(0,0,0,0.10)'
+              : isEventThemeActive && activeEvent?.id === 'all-saints-wake'
+                ? '0 8px 60px -12px rgba(109,40,217,0.20), 0 0 100px -20px rgba(249,115,22,0.12), 0 0 40px -8px rgba(74,222,128,0.08), 0 2px 20px -4px rgba(0,0,0,0.10)'
+                : isEventThemeActive && activeEvent?.id === 'starlight'
+                  ? '0 8px 60px -12px rgba(220,38,38,0.15), 0 0 100px -20px rgba(251,191,36,0.12), 0 0 40px -8px rgba(22,163,74,0.08), 0 2px 20px -4px rgba(0,0,0,0.06)'
+                  : '0 8px 50px -12px rgba(251,191,36,0.10), 0 0 80px -20px rgba(251,113,133,0.05), 0 2px 20px -4px rgba(0,0,0,0.06)',
           }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Inner glow at top — adapts to flagship events */}
-          <div
-            className={`absolute top-0 inset-x-0 h-44 rounded-t-[2rem] sm:rounded-t-[2.5rem] bg-gradient-to-b pointer-events-none ${
-              isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                ? 'from-purple-500/[0.10] via-orange-400/[0.04] to-transparent'
-                : isEventThemeActive && activeEvent?.id === 'starlight'
-                  ? 'from-amber-400/[0.10] via-red-400/[0.04] to-transparent'
-                  : 'from-amber-400/[0.07] via-amber-400/[0.03] to-transparent'
-            }`}
-            aria-hidden="true"
-          />
+          {/* Inner glow at top — adapts to flagship events (hidden on mobile) */}
+          {!IS_MOBILE_DEVICE && (
+            <div
+              className={`absolute top-0 inset-x-0 h-44 rounded-t-[2rem] sm:rounded-t-[2.5rem] bg-gradient-to-b pointer-events-none ${
+                isEventThemeActive && activeEvent?.id === 'all-saints-wake'
+                  ? 'from-purple-500/[0.10] via-orange-400/[0.04] to-transparent'
+                  : isEventThemeActive && activeEvent?.id === 'starlight'
+                    ? 'from-amber-400/[0.10] via-red-400/[0.04] to-transparent'
+                    : 'from-amber-400/[0.07] via-amber-400/[0.03] to-transparent'
+              }`}
+              aria-hidden="true"
+            />
+          )}
 
           {/* Corner decorations — event-aware */}
           {isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? (
@@ -1436,11 +1414,13 @@ export function Home() {
               Welcome to
             </p>
 
-            {/* Main title with warm glow */}
+            {/* Main title with warm glow (glow hidden on mobile) */}
             <h1
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-1.5"
               style={{
-                textShadow: '0 0 50px color-mix(in srgb, var(--bento-primary), transparent 65%), 0 0 100px rgba(251,191,36,0.08)',
+                textShadow: IS_MOBILE_DEVICE
+                  ? 'none'
+                  : '0 0 50px color-mix(in srgb, var(--bento-primary), transparent 65%), 0 0 100px rgba(251,191,36,0.08)',
               }}
             >
               <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
