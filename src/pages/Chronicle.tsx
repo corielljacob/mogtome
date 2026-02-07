@@ -261,10 +261,19 @@ export function Chronicle() {
   }, [sentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // ── Derived event lists ───────────────────────────────────────────────
-  // Flatten all pages from the API into a single array.
+  // Flatten all pages from the API into a single array, deduplicating
+  // events that may appear on multiple pages due to cursor shifts.
   const apiEvents = useMemo(() => {
     if (!data?.pages) return [];
-    return data.pages.flatMap((page) => page.events);
+    const seen = new Set<string>();
+    return data.pages.flatMap((page) => page.events).filter((event) => {
+      const key = hasValidId(event)
+        ? `${event.id.timestamp}-${event.id.creationTime}`
+        : getEventSignature(event);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }, [data]);
 
   // When searching or filtering, display ONLY the API results.
