@@ -5,3 +5,11 @@ export {
   getEventTypeConfig,
   type EventTypeConfig,
 } from './eventTypes';
+
+// Rank colors
+export {
+  RANK_COLORS,
+  DEFAULT_RANK_COLOR,
+  getRankColor,
+  type RankColor,
+} from './rankColors';

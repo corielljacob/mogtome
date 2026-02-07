@@ -245,6 +245,9 @@
   --gradient-2: rgba(242, 139, 139, 0.18);
   --gradient-3: rgba(229, 75, 75, 0.1);
   --gradient-4: rgba(150, 131, 184, 0.12);
+  
+  /* Noise Texture - base64 SVG */
+  --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 .dark {
@@ -870,14 +873,34 @@
 /* Background - Pom-Pom Classic (Richer) */
 /* Uses CSS variables so it updates when theme changes */
 .bento-bg-mesh {
+  position: relative;
+  background-color: var(--bento-bg);
+}
+
+/* Mesh gradients */
+.bento-bg-mesh::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
   background: 
     radial-gradient(ellipse at 0% 0%, var(--gradient-1) 0%, transparent 50%),
     radial-gradient(ellipse at 100% 0%, var(--gradient-2) 0%, transparent 50%),
     radial-gradient(ellipse at 100% 100%, var(--gradient-3) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, var(--gradient-4) 0%, transparent 50%),
-    var(--bento-bg);
+    radial-gradient(ellipse at 0% 100%, var(--gradient-4) 0%, transparent 50%);
   background-attachment: fixed;
-  transition: background 0.3s ease;
+  transition: opacity 0.3s ease;
+}
+
+/* Noise overlay */
+.bento-bg-mesh::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--bg-noise);
+  opacity: 0.4; /* Subtle texture */
+  pointer-events: none;
 }
 
 /* Glass Card */

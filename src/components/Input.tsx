@@ -25,7 +25,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className="w-full">
         {label && (
           <label htmlFor={inputId} className="block mb-1.5">
-            <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
+            <span className="font-soft text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
           </label>
@@ -44,10 +44,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={`
               w-full
               px-4 py-2.5
-              font-inter text-sm
+              font-soft text-sm
               text-[var(--bento-text)]
               placeholder:text-[var(--bento-text-subtle)]
-              bg-white dark:bg-slate-900
+              bg-[var(--bento-bg)]/50 backdrop-blur-sm
               border border-[var(--bento-border)]
               rounded-xl
               transition-all duration-200
@@ -73,10 +73,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
+          <p id={errorId} className="mt-1.5 font-soft text-xs text-red-500" role="alert">{error}</p>
         )}
         {hint && !error && (
-          <p id={hintId} className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
+          <p id={hintId} className="mt-1.5 font-soft text-xs text-[var(--bento-text-subtle)]">{hint}</p>
         )}
       </div>
     );
@@ -107,7 +107,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className="w-full">
         {label && (
           <label htmlFor={textareaId} className="block mb-1.5">
-            <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
+            <span className="font-soft text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
           </label>
@@ -120,10 +120,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={`
             w-full
             px-4 py-3
-            font-inter text-sm
+            font-soft text-sm
             text-[var(--bento-text)]
             placeholder:text-[var(--bento-text-subtle)]
-            bg-white dark:bg-slate-900
+            bg-[var(--bento-bg)]/50 backdrop-blur-sm
             border border-[var(--bento-border)]
             rounded-xl
             transition-all duration-200
@@ -139,10 +139,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
+          <p id={errorId} className="mt-1.5 font-soft text-xs text-red-500" role="alert">{error}</p>
         )}
         {hint && !error && (
-          <p id={hintId} className="mt-1.5 font-inter text-xs text-[var(--bento-text-subtle)]">{hint}</p>
+          <p id={hintId} className="mt-1.5 font-soft text-xs text-[var(--bento-text-subtle)]">{hint}</p>
         )}
       </div>
     );
@@ -171,7 +171,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <div className="w-full">
         {label && (
           <label htmlFor={selectId} className="block mb-1.5">
-            <span className="font-inter text-sm font-medium text-[var(--bento-text)]">
+            <span className="font-soft text-sm font-medium text-[var(--bento-text)]">
               {label}
             </span>
           </label>
@@ -184,9 +184,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           className={`
             w-full
             px-4 py-2.5
-            font-inter text-sm
+            font-soft text-sm
             text-[var(--bento-text)]
-            bg-white dark:bg-slate-900
+            bg-[var(--bento-bg)]/50 backdrop-blur-sm
             border border-[var(--bento-border)]
             rounded-xl
             transition-all duration-200
@@ -208,7 +208,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <p id={errorId} className="mt-1.5 font-inter text-xs text-red-500" role="alert">{error}</p>
+          <p id={errorId} className="mt-1.5 font-soft text-xs text-red-500" role="alert">{error}</p>
         )}
       </div>
     );

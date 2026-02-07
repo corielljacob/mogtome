@@ -160,9 +160,9 @@ export function Dropdown<T extends string = string>({
       }}
       className="
         z-[9999]
-        bg-[var(--bento-card)] 
+        bg-[var(--bento-card)]/90 backdrop-blur-xl
         border border-[var(--bento-border)]
-        rounded-xl shadow-xl shadow-black/10
+        rounded-xl shadow-xl shadow-[var(--bento-primary)]/10
         py-1 sm:py-1.5 max-h-60 overflow-auto
         focus:outline-none
       "
@@ -218,13 +218,13 @@ export function Dropdown<T extends string = string>({
         aria-labelledby={ariaLabelledBy}
         className={`
           w-full flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl
-          bg-[var(--bento-bg)]
+          bg-[var(--bento-bg)]/50 backdrop-blur-sm
           border border-[var(--bento-border)]
-          hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-primary)]/5
+          hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-bg)]
           focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20 focus:outline-none
           font-soft font-medium text-xs sm:text-sm text-[var(--bento-text)]
-          cursor-pointer transition-colors
-          ${isOpen ? 'border-[var(--bento-primary)] ring-2 ring-[var(--bento-primary)]/20' : ''}
+          cursor-pointer transition-all duration-200
+          ${isOpen ? 'border-[var(--bento-primary)] ring-2 ring-[var(--bento-primary)]/20 bg-[var(--bento-bg)]' : ''}
         `}
       >
         {icon && (

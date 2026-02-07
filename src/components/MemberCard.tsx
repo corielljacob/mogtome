@@ -1,94 +1,14 @@
 import { useState, memo, useCallback } from 'react';
+import { motion } from 'motion/react';
 import type { FreeCompanyMember } from '../types';
-import { ExternalLink, Crown, Shield, Sword, Leaf, Cat, Bird, Star, Heart, Sparkles } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
+import { getRankColor } from '../constants';
 import pixelMoogle from '../assets/moogles/moogle-pixel-art-maker-first-aid-pac-man-text-graphics-transparent-png-2112085.webp';
 
 interface MemberCardProps {
   member: FreeCompanyMember;
   index?: number; // For staggered animations
 }
-
-// Rank theming - using official FC role colors (solid colors, no gradients)
-const rankThemes: Record<string, { 
-  glow: string; 
-  bg: string;
-  icon: typeof Crown;
-  accent: string;
-  color: string; // hex color for custom styling
-}> = {
-  'Moogle Guardian': { 
-    // Leader - Cyan #2FECE6
-    glow: 'rgba(47, 236, 230, 0.4)',
-    bg: 'bg-[#2FECE6]/10',
-    icon: Crown,
-    accent: 'text-[#2FECE6]',
-    color: '#2FECE6',
-  },
-  'Moogle Knight': { 
-    // Knight - Purple #8E42CC
-    glow: 'rgba(142, 66, 204, 0.4)',
-    bg: 'bg-[#8E42CC]/10',
-    icon: Shield,
-    accent: 'text-[#8E42CC]',
-    color: '#8E42CC',
-  },
-  'Paissa Trainer': { 
-    // Paissa - Teal #068167
-    glow: 'rgba(6, 129, 103, 0.4)',
-    bg: 'bg-[#068167]/10',
-    icon: Heart,
-    accent: 'text-[#068167]',
-    color: '#068167',
-  },
-  'Coeurl Hunter': { 
-    // Coeurl - Green #056D04
-    glow: 'rgba(5, 109, 4, 0.4)',
-    bg: 'bg-[#056D04]/10',
-    icon: Cat,
-    accent: 'text-[#056D04]',
-    color: '#056D04',
-  },
-  'Mandragora': { 
-    // Mandragora - Orange #E67E22
-    glow: 'rgba(230, 126, 34, 0.4)',
-    bg: 'bg-[#E67E22]/10',
-    icon: Leaf,
-    accent: 'text-[#E67E22]',
-    color: '#E67E22',
-  },
-  'Apkallu Seeker': { 
-    // Apkallu - Blue #4D88BB
-    glow: 'rgba(77, 136, 187, 0.4)',
-    bg: 'bg-[#4D88BB]/10',
-    icon: Bird,
-    accent: 'text-[#4D88BB]',
-    color: '#4D88BB',
-  },
-  'Kupo Shelf': { 
-    // Shelf - Lime Green #5ABE32
-    glow: 'rgba(90, 190, 50, 0.4)',
-    bg: 'bg-[#5ABE32]/10',
-    icon: Star,
-    accent: 'text-[#5ABE32]',
-    color: '#5ABE32',
-  },
-  'Bom Boko': { 
-    // Default/neutral for non-ranked
-    glow: 'rgba(168, 162, 158, 0.3)',
-    bg: 'bg-stone-400/10',
-    icon: Sparkles,
-    accent: 'text-stone-400',
-    color: '#a8a29e',
-  },
-};
-
-const defaultTheme = {
-  glow: 'rgba(199, 91, 122, 0.3)',
-  bg: 'bg-[var(--bento-primary)]/10',
-  icon: Sword,
-  accent: 'text-[var(--bento-primary)]',
-  color: '#c75b7a',
-};
 
 /**
  * MemberCard - Refined member card with delightful hover effects.
@@ -109,22 +29,25 @@ const defaultTheme = {
 export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
-  const RankIcon = theme.icon;
+  const rankColor = getRankColor(member.freeCompanyRank);
+  const RankIcon = rankColor.icon;
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
-  
-  // Animate all cards with staggered entrance
-  const shouldAnimateEntrance = true;
   
   // Memoize callback
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <article 
+    <motion.article 
+      layout
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        layout: { duration: 0.3 },
+        opacity: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) },
+        y: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) },
+        scale: { duration: 0.3, delay: Math.min(index * 0.05, 0.5) }
+      }}
       className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation"
-      style={shouldAnimateEntrance ? {
-        animation: `fadeSlideIn 0.35s ease-out ${Math.min(index * 0.025, 0.5)}s both`,
-      } : undefined}
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
       <div 
@@ -135,12 +58,12 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           rounded-2xl overflow-hidden shadow-sm
           transition-all duration-300 ease-out
           sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-xl
-          active:scale-[0.97] active:shadow-none sm:active:scale-[0.98]
+          active:scale-[0.98] active:shadow-none sm:active:scale-100
         "
-        style={{ '--tw-shadow-color': theme.glow } as React.CSSProperties}
+        style={{ '--tw-shadow-color': rankColor.glow } as React.CSSProperties}
       >
         {/* Solid rank banner - slightly thicker on mobile for better visibility */}
-        <div className="h-1.5 sm:h-1" style={{ backgroundColor: theme.color }} aria-hidden="true" />
+        <div className="h-1.5 sm:h-1" style={{ backgroundColor: rankColor.hex }} aria-hidden="true" />
         
         {/* Avatar with Lodestone link */}
         <a 
@@ -238,7 +161,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             className={`
               inline-flex items-center justify-center gap-1.5 
               px-3 py-1.5 sm:px-2.5 sm:py-1 rounded-full 
-              ${theme.bg}
+              ${rankColor.bg}
               transition-transform duration-200
               sm:group-hover:scale-105
             `}
@@ -251,15 +174,15 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
                 aria-hidden="true"
               />
             ) : (
-              <RankIcon className={`w-3.5 h-3.5 sm:w-3 sm:h-3 ${theme.accent}`} aria-hidden="true" />
+              <RankIcon className={`w-3.5 h-3.5 sm:w-3 sm:h-3 ${rankColor.text}`} aria-hidden="true" />
             )}
-            <span className={`text-[11px] sm:text-[10px] font-soft font-semibold ${theme.accent} truncate max-w-[80px] sm:max-w-[80px]`}>
+            <span className={`text-[11px] sm:text-[10px] font-soft font-semibold ${rankColor.text} truncate max-w-[80px] sm:max-w-[80px]`}>
               {member.freeCompanyRank}
             </span>
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 });
 
@@ -292,7 +215,7 @@ export function MemberCardSkeleton() {
  * Accessibility: Links have descriptive accessible names.
  */
 export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
-  const theme = rankThemes[member.freeCompanyRank] || defaultTheme;
+  const rankColor = getRankColor(member.freeCompanyRank);
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
 
   return (
@@ -316,14 +239,14 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       "
     >
       {/* Avatar */}
-      <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': theme.glow } as React.CSSProperties}>
+      <div className={`relative rounded-lg overflow-hidden ring-2 ring-offset-2 ring-offset-[var(--bento-card)]`} style={{ '--tw-ring-color': rankColor.glow } as React.CSSProperties}>
         <img 
           src={member.avatarLink} 
           alt=""
           className="w-10 h-10 object-cover"
           loading="lazy"
         />
-        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: theme.color }} aria-hidden="true" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: rankColor.hex }} aria-hidden="true" />
       </div>
       
       {/* Info */}
@@ -331,7 +254,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
           {member.name}
         </p>
-        <p className={`text-[10px] font-soft font-medium ${theme.accent} truncate`}>
+        <p className={`text-[10px] font-soft font-medium ${rankColor.text} truncate`}>
           {member.freeCompanyRank}
         </p>
       </div>

@@ -2,10 +2,8 @@ import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredVal
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  RefreshCw, 
   Wifi, 
   WifiOff, 
-  Heart,
   ChevronDown,
   Sparkles,
   Loader2,
@@ -14,7 +12,7 @@ import {
 } from 'lucide-react';
 
 // Shared components
-import { StoryDivider, FloatingSparkles, ContentCard, SimpleFloatingMoogles } from '../components';
+import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState } from '../components';
 import { useEventsHub, type ConnectionStatus } from '../hooks';
 
 // Utils & Constants
@@ -39,7 +37,7 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
 // Assets
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import moogleMail from '../assets/moogles/moogle mail.webp';
-import deadMoogle from '../assets/moogles/dead moogle.webp';
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions
@@ -114,9 +112,10 @@ const TimelineEventCard = memo(function TimelineEventCard({
   
   return (
     <motion.div
+      layout
       initial={isRealtime ? { opacity: 0, y: -20, scale: 0.95 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={isRealtime ? { type: "spring", stiffness: 300, damping: 25 } : { duration: 0 }}
+      transition={isRealtime ? { type: "spring", stiffness: 300, damping: 25 } : { duration: 0.3 }}
       whileHover={{ y: -2, scale: 1.005 }}
       className={`
         relative flex gap-3 sm:gap-4 p-4 sm:p-5 md:p-6
@@ -301,44 +300,12 @@ export function Chronicle() {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background decorations - extends full viewport behind header/nav */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <SimpleFloatingMoogles primarySrc={flyingMoogles} secondarySrc={moogleMail} />
-      <FloatingSparkles minimal />
-
-      <div className="relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10">
-        <div className="max-w-4xl mx-auto">
-          {/* Page header */}
-          <motion.header 
-            className="text-center mb-6 sm:mb-10"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {/* Decorative opener */}
-            <motion.p
-              className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-secondary)] mb-3 sm:mb-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              ~ The story of our adventures ~
-            </motion.p>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-3 sm:mb-4 tracking-tight">
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent drop-shadow-sm">
-                The Chronicle
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg md:text-xl text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-3 sm:mb-4 px-2 sm:px-0">
-              Every tale from our FC, unfolding in real-time
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)] animate-pulse" />
-            </p>
-
-            <StoryDivider className="mx-auto" size="sm" />
-          </motion.header>
+    <PageLayout moogles={{ primary: flyingMoogles, secondary: moogleMail }} maxWidth="max-w-4xl">
+          <PageHeader
+            opener="~ The story of our adventures ~"
+            title="The Chronicle"
+            subtitle="Every tale from our FC, unfolding in real-time"
+          />
 
           {/* Search bar */}
           <motion.section
@@ -368,7 +335,7 @@ export function Chronicle() {
                     bg-[var(--bento-bg)]/50 hover:bg-[var(--bento-bg)]
                     rounded-xl
                     border border-[var(--bento-border)]
-                    focus:border-[var(--bento-primary)] focus:ring-4 focus:ring-[var(--bento-primary)]/10
+                    focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
                     font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
                     focus:outline-none transition-all duration-300
                     touch-manipulation
@@ -487,7 +454,7 @@ export function Chronicle() {
                     onClick={() => setShowRealtimeEvents(!showRealtimeEvents)}
                     className={`
                       flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-medium
-                      transition-all cursor-pointer touch-manipulation active:scale-[0.97]
+                      transition-all cursor-pointer touch-manipulation active:scale-[0.98]
                       ${showRealtimeEvents 
                         ? 'bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] border border-[var(--bento-primary)]/20' 
                         : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)] border border-[var(--bento-border)]'
@@ -504,7 +471,7 @@ export function Chronicle() {
                 {unseenCount > 0 && (
                   <button
                     onClick={markAllAsSeen}
-                    className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer touch-manipulation active:scale-[0.97]"
+                    className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
                   >
                     Mark as read
                   </button>
@@ -516,133 +483,30 @@ export function Chronicle() {
           {/* Events timeline */}
           <AnimatePresence mode="wait">
             {isLoading && apiEvents.length === 0 ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-                  <motion.img 
-                    src={flyingMoogles} 
-                    alt="" 
-                    className="w-40 md:w-52 mx-auto mb-4"
-                    animate={{ 
-                      y: [0, -10, 0],
-                      rotate: [0, 2, -2, 0],
-                    }}
-                    transition={{ 
-                      duration: 2, 
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    aria-hidden="true"
-                  />
-                  <motion.p 
-                    className="font-accent text-2xl text-[var(--bento-text-muted)]"
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    role="status"
-                  >
-                    Gathering the chronicles, kupo...
-                  </motion.p>
-                </ContentCard>
+              <motion.div key="loading" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <LoadingState message="Gathering the chronicles, kupo..." imageSrc={flyingMoogles} />
               </motion.div>
             ) : isError ? (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ContentCard className="text-center py-12 md:py-16" role="alert">
-                  <img 
-                    src={deadMoogle} 
-                    alt="" 
-                    className="w-40 h-40 mx-auto mb-5 object-contain"
-                    aria-hidden="true"
-                  />
-                  <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                    Something went wrong
-                  </p>
-                  <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
-                    The chronicle tome got lost, kupo...
-                  </p>
-                  <motion.button
-                    onClick={() => refetch()}
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="
-                      inline-flex items-center justify-center gap-2
-                      px-6 py-3 rounded-xl
-                      bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
-                      text-white font-soft font-semibold
-                      shadow-lg shadow-[var(--bento-primary)]/25
-                      hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                      transition-all cursor-pointer
-                      focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
-                    "
-                  >
-                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                    Try Again
-                  </motion.button>
-                </ContentCard>
+              <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <ErrorState message="The chronicle tome got lost, kupo..." onRetry={() => refetch()} />
               </motion.div>
             ) : totalCount === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
-                  <img 
-                    src={moogleMail} 
-                    alt="" 
-                    className="w-40 h-40 mx-auto mb-5 object-contain"
-                    aria-hidden="true"
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                {(isSearching || hasActiveFilter) ? (
+                  <EmptyState
+                    title="No events found"
+                    message={isSearching ? 'Kupo? Nothing matches that search...' : 'No events of that type yet, kupo...'}
+                    imageSrc={moogleMail}
+                    onClear={handleClearAll}
+                    clearLabel={isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
                   />
-                  {(isSearching || hasActiveFilter) ? (
-                    <>
-                      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                        No events found
-                      </p>
-                      <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
-                        {isSearching
-                          ? 'Kupo? Nothing matches that search...'
-                          : 'No events of that type yet, kupo...'}
-                      </p>
-                      <motion.button
-                        onClick={handleClearAll}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="
-                          inline-flex items-center justify-center gap-2
-                          px-5 py-2.5 rounded-xl
-                          bg-transparent border border-[var(--bento-primary)]/30
-                          text-[var(--bento-primary)] font-soft font-semibold
-                          hover:bg-[var(--bento-primary)]/10
-                          transition-all cursor-pointer
-                          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                        "
-                      >
-                        <X className="w-4 h-4" aria-hidden="true" />
-                        {isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
-                      </motion.button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                        No events yet
-                      </p>
-                      <p className="font-accent text-2xl text-[var(--bento-text-muted)]">
-                        The chronicle awaits its first entry, kupo~
-                      </p>
-                    </>
-                  )}
-                </ContentCard>
+                ) : (
+                  <EmptyState
+                    title="No events yet"
+                    message="The chronicle awaits its first entry, kupo~"
+                    imageSrc={moogleMail}
+                  />
+                )}
               </motion.div>
             ) : (
               <motion.div
@@ -733,22 +597,9 @@ export function Chronicle() {
             )}
           </AnimatePresence>
 
-          {/* Footer - shown only when all events have been loaded */}
           {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
-            <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
-              <StoryDivider className="mx-auto mb-6" size="sm" />
-              <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
-                <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-                Every moment tells a story, kupo!
-                <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-              </p>
-              <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2">
-                ~ to be continued ~
-              </p>
-            </footer>
+            <PageFooter message="Every moment tells a story, kupo!" closing="~ to be continued ~" />
           )}
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

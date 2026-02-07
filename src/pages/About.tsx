@@ -2,9 +2,10 @@ import { memo, useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Heart, Sparkles, RefreshCw, Crown, Shield, Star, Pencil } from 'lucide-react';
+import { ExternalLink, Crown, Pencil } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard } from '../components';
+import { ContentCard, PageLayout, PageHeader, PageFooter, SectionLabel, LoadingState, ErrorState, EmptyState } from '../components';
+import { getRankColor } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import type { StaffMember } from '../types';
 import { FC_RANKS } from '../types';
@@ -15,65 +16,7 @@ const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
 // Assets
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
-import pushingMoogles from '../assets/moogles/moogles pushing.webp';
-import deadMoogle from '../assets/moogles/dead moogle.webp';
-
-// Simple rank config - uses official FC role colors (solid colors, no gradients)
-const rankConfig: Record<string, { 
-  icon: typeof Crown;
-  color: string;
-  bg: string;
-  glow: string;
-  label: string;
-  description: string;
-  memberTerm: { singular: string; plural: string };
-  hexColor: string;
-}> = {
-  'Moogle Guardian': { 
-    // Leader - Cyan #2FECE6
-    icon: Crown,
-    color: 'text-[#2FECE6]',
-    bg: 'bg-[#2FECE6]/10',
-    glow: 'rgba(47, 236, 230, 0.4)',
-    label: 'FC Leader',
-    description: 'Our Moogle Guardian who leads Kupo Life',
-    memberTerm: { singular: 'leader', plural: 'leaders' },
-    hexColor: '#2FECE6',
-  },
-  'Moogle Knight': { 
-    // Knight - Purple #8E42CC
-    icon: Shield,
-    color: 'text-[#8E42CC]',
-    bg: 'bg-[#8E42CC]/10',
-    glow: 'rgba(142, 66, 204, 0.4)',
-    label: 'Moogle Knights',
-    description: 'Our trusted officers who keep things running smoothly',
-    memberTerm: { singular: 'knight', plural: 'knights' },
-    hexColor: '#8E42CC',
-  },
-  'Paissa Trainer': { 
-    // Paissa - Teal #068167
-    icon: Star,
-    color: 'text-[#068167]',
-    bg: 'bg-[#068167]/10',
-    glow: 'rgba(6, 129, 103, 0.4)',
-    label: 'Paissa Trainers',
-    description: 'Exemplary community members hoping to make your day a little brighter',
-    memberTerm: { singular: 'trainer', plural: 'trainers' },
-    hexColor: '#068167',
-  },
-};
-
-const defaultRankConfig = {
-  icon: Star,
-  color: 'text-[var(--bento-primary)]',
-  bg: 'bg-[var(--bento-primary)]/10',
-  glow: 'rgba(199, 91, 122, 0.3)',
-  label: 'Leadership',
-  description: 'Helping guide our FC',
-  memberTerm: { singular: 'member', plural: 'members' },
-  hexColor: '#c75b7a',
-};
+import moogleMail from '../assets/moogles/moogle mail.webp';
 
 interface StaffCardProps {
   member: StaffMember;
@@ -87,7 +30,7 @@ interface StaffCardProps {
 const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentUser = false }: { member: StaffMember; isCurrentUser?: boolean }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
+  const rankColor = getRankColor(member.freeCompanyRank);
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
   
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
@@ -107,7 +50,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
           opacity-40 group-hover:opacity-60
           transition-opacity duration-500 hidden sm:block
         "
-        style={{ backgroundColor: config.glow }}
+        style={{ backgroundColor: rankColor.glow }}
         aria-hidden="true"
       />
       
@@ -115,11 +58,11 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
         className="
           relative flex flex-col items-center text-center
           p-5 sm:p-6 md:p-8
-          bg-[var(--bento-card)]/95 backdrop-blur-md
+          bg-[var(--bento-card)]/80 backdrop-blur-xl
           border-2 border-amber-400/30 rounded-3xl
           shadow-xl shadow-amber-500/10
           sm:hover:shadow-2xl sm:hover:border-amber-400/50
-          active:scale-[0.99] sm:active:scale-100
+          active:scale-[0.98] sm:active:scale-100
           transition-all duration-300
         "
       >
@@ -127,7 +70,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
         <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
           <div 
             className="px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2"
-            style={{ backgroundColor: config.hexColor, boxShadow: `0 10px 15px -3px ${config.glow}` }}
+            style={{ backgroundColor: rankColor.hex, boxShadow: `0 10px 15px -3px ${rankColor.glow}` }}
           >
             <Crown className="w-4 h-4 text-white" />
             <span className="text-xs font-soft font-bold text-white uppercase tracking-wide">
@@ -239,7 +182,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
 const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser = false }: StaffCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  const config = rankConfig[member.freeCompanyRank] || defaultRankConfig;
+  const rankColor = getRankColor(member.freeCompanyRank);
   const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
   
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
@@ -259,7 +202,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
           opacity-0 sm:group-hover:opacity-60
           transition-opacity duration-300 hidden sm:block
         "
-        style={{ backgroundColor: config.glow }}
+        style={{ backgroundColor: rankColor.glow }}
         aria-hidden="true"
       />
       
@@ -267,7 +210,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
         className="
           relative flex flex-row gap-4 sm:gap-4
           p-4 sm:p-4 md:p-5
-          bg-[var(--bento-card)]/90 backdrop-blur-sm
+          bg-[var(--bento-card)]/80 backdrop-blur-md
           border border-[var(--bento-border)] rounded-2xl
           shadow-sm sm:hover:shadow-lg sm:hover:border-[var(--bento-primary)]/20
           active:scale-[0.98] sm:active:scale-100
@@ -349,7 +292,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
               <span className={`
                 inline-flex items-center gap-1.5
                 px-2 py-1 sm:px-2 sm:py-0.5 rounded-full text-[11px] sm:text-xs font-soft font-semibold
-                ${config.bg} ${config.color}
+                ${rankColor.bg} ${rankColor.text}
               `}>
                 {member.freeCompanyRankIcon ? (
                   <img 
@@ -359,7 +302,7 @@ const LeaderCard = memo(function LeaderCard({ member, index = 0, isCurrentUser =
                     aria-hidden="true"
                   />
                 ) : (
-                  <config.icon className="w-3 h-3 sm:w-3 sm:h-3" aria-hidden="true" />
+                  <rankColor.icon className="w-3 h-3 sm:w-3 sm:h-3" aria-hidden="true" />
                 )}
                 {member.freeCompanyRank.replace('Moogle ', '')}
               </span>
@@ -415,8 +358,8 @@ interface RankSectionProps {
  * Uses a 2-column grid for horizontal leader cards
  */
 const RankSection = memo(function RankSection({ rank, members, startIndex, currentUserName }: RankSectionProps) {
-  const config = rankConfig[rank] || defaultRankConfig;
-  const RankIcon = config.icon;
+  const rankColor = getRankColor(rank);
+  const RankIcon = rankColor.icon;
 
   return (
     <section className="mb-8 sm:mb-10 last:mb-0" aria-labelledby={`rank-${rank.replace(/\s+/g, '-').toLowerCase()}`}>
@@ -429,7 +372,7 @@ const RankSection = memo(function RankSection({ rank, members, startIndex, curre
       >
         <div 
           className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-lg shadow-black/10"
-          style={{ backgroundColor: config.hexColor }}
+          style={{ backgroundColor: rankColor.hex }}
         >
           <RankIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" aria-hidden="true" />
         </div>
@@ -438,17 +381,17 @@ const RankSection = memo(function RankSection({ rank, members, startIndex, curre
             id={`rank-${rank.replace(/\s+/g, '-').toLowerCase()}`}
             className="font-display font-bold text-base sm:text-lg text-[var(--bento-text)]"
           >
-            {config.label}
+            {rankColor.label}
           </h3>
           <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] font-soft">
-            {config.description}
+            {rankColor.description}
           </p>
         </div>
         <span className={`
           flex-shrink-0 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-soft font-semibold
-          ${config.bg} ${config.color}
+          ${rankColor.bg} ${rankColor.text}
         `}>
-          {members.length} {members.length === 1 ? config.memberTerm.singular : config.memberTerm.plural}
+          {members.length} {members.length === 1 ? rankColor.memberTerm.singular : rankColor.memberTerm.plural}
         </span>
       </motion.div>
 
@@ -510,44 +453,12 @@ export function About() {
   }, [officers]);
 
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background decorations - extends full viewport behind header/nav */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={flyingMoogles} />
-      <FloatingSparkles minimal />
-
-      <div className="relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10">
-        <div className="max-w-5xl mx-auto">
-          {/* Page header */}
-          <motion.header 
-            className="text-center mb-6 sm:mb-10"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {/* Decorative opener */}
-            <motion.p
-              className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-secondary)] mb-3 sm:mb-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              ~ The ones who guide us ~
-            </motion.p>
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3">
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                About Us
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-3 sm:mb-4">
-              Meet the moogles keeping things magical
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-            </p>
-
-            <StoryDivider className="mx-auto" size="sm" />
-          </motion.header>
+    <PageLayout moogles={{ primary: wizardMoogle, secondary: flyingMoogles }} maxWidth="max-w-5xl">
+          <PageHeader
+            opener="~ The ones who guide us ~"
+            title="About Us"
+            subtitle="Meet the moogles keeping things magical"
+          />
 
           {/* About section */}
           <motion.section
@@ -573,93 +484,26 @@ export function About() {
 
           {/* Leadership section */}
           <section aria-labelledby="leadership-heading">
-            <motion.div
-              className="flex items-center gap-3 px-2 mb-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />
-              <h2 
-                id="leadership-heading"
-                className="text-sm font-soft font-semibold text-[var(--bento-primary)]"
-              >
-                Our Team
-              </h2>
-              {staff.length > 0 && (
+            <SectionLabel 
+              label="Our Team"
+              badge={staff.length > 0 ? (
                 <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--bento-primary)]/10 text-[var(--bento-primary)]">
                   {staff.length} members
                 </span>
-              )}
-              <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
-            </motion.div>
+              ) : undefined}
+            />
 
             {/* Staff list */}
             {isLoading ? (
-              <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-                <motion.img 
-                  src={pushingMoogles} 
-                  alt="" 
-                  className="w-40 md:w-52 mx-auto mb-4"
-                  animate={{ 
-                    x: [0, 4, -4, 4, 0],
-                    rotate: [0, 1.5, -1.5, 1.5, 0],
-                  }}
-                  transition={{ 
-                    duration: 0.7, 
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  aria-hidden="true"
-                />
-                <motion.p 
-                  className="font-accent text-2xl text-[var(--bento-text-muted)]"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  role="status"
-                >
-                  Gathering the leadership, kupo...
-                </motion.p>
-              </ContentCard>
+              <LoadingState message="Gathering the leadership, kupo..." />
             ) : isError ? (
-              <ContentCard className="text-center py-12 md:py-16" role="alert">
-                <img 
-                  src={deadMoogle} 
-                  alt="" 
-                  className="w-40 h-40 mx-auto mb-5 object-contain"
-                  aria-hidden="true"
-                />
-                <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                  Something went wrong
-                </p>
-                <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
-                  A moogle fell over, kupo...
-                </p>
-                <motion.button
-                  onClick={() => refetch()}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="
-                    inline-flex items-center justify-center gap-2
-                    px-6 py-3 rounded-xl
-                    bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
-                    text-white font-soft font-semibold
-                    shadow-lg shadow-[var(--bento-primary)]/25
-                    hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                    transition-all cursor-pointer
-                    focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
-                  "
-                >
-                  <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                  Try Again
-                </motion.button>
-              </ContentCard>
+              <ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} />
             ) : staff.length === 0 ? (
-              <ContentCard className="text-center py-12">
-                <p className="font-accent text-xl text-[var(--bento-text-muted)]">
-                  No leadership data available yet, kupo~
-                </p>
-              </ContentCard>
+              <EmptyState
+                title="No leadership data"
+                message="No leadership data available yet, kupo~"
+                imageSrc={moogleMail}
+              />
             ) : (
               <div className="space-y-10">
                 {/* FC Leader - Featured prominently */}
@@ -697,22 +541,9 @@ export function About() {
             )}
           </section>
 
-          {/* Footer */}
           {!isLoading && !isError && staff.length > 0 && (
-            <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
-              <StoryDivider className="mx-auto mb-6" size="sm" />
-              <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
-                <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-                Leading with love, kupo!
-                <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-              </p>
-              <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2">
-                ~ fin ~
-              </p>
-            </footer>
+            <PageFooter message="Leading with love, kupo!" />
           )}
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

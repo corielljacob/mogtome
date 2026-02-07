@@ -111,14 +111,26 @@ export function PaginatedMemberGrid({
   
   // Update URL when page would be out of bounds (e.g., after filtering reduces results)
   useEffect(() => {
-    const clampedPage = Math.max(0, Math.min(totalPages - 1, urlPage - 1));
-    if (clampedPage !== urlPage - 1 && totalPages > 0) {
+    // Determine the effective total pages (at least 1 if we have content? No, if 0 items, 0 pages)
+    // If totalPages is 0, we can treat it as page 1 (index 0) for display purposes or just hide pagination
+    // But here we want to ensure urlPage doesn't exceed totalPages when totalPages > 0
+    
+    if (totalPages === 0) return; // Nothing to clamp if empty
+
+    const maxPageIdx = totalPages - 1;
+    const urlPageIdx = urlPage - 1;
+    
+    // Clamp index to [0, maxPageIdx]
+    const clampedPageIdx = Math.max(0, Math.min(maxPageIdx, urlPageIdx));
+
+    if (clampedPageIdx !== urlPageIdx) {
+      // console.log('Clamping page:', { urlPageIdx, clampedPageIdx, totalPages });
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
-        if (clampedPage === 0) {
-          next.delete(pageParam); // Clean URL for page 1
+        if (clampedPageIdx === 0) {
+          next.delete(pageParam);
         } else {
-          next.set(pageParam, String(clampedPage + 1));
+          next.set(pageParam, String(clampedPageIdx + 1));
         }
         return next;
       }, { replace: true });
@@ -127,15 +139,22 @@ export function PaginatedMemberGrid({
   
   // Reset to page 1 when members array changes (filtering/searching)
   // We track the first member's ID to detect actual content changes, not just count
-  const prevFirstMemberId = useRef(members[0]?.characterId);
+  const prevFirstMemberId = useRef<string | undefined>(undefined);
   const prevMemberCount = useRef(members.length);
+  
   useEffect(() => {
+    // Update refs on mount/update
+    // But check for change first
+    
     const firstMemberId = members[0]?.characterId;
     const countChanged = members.length !== prevMemberCount.current;
     const contentChanged = firstMemberId !== prevFirstMemberId.current;
     
+    // console.log('Member content check:', { countChanged, contentChanged, currentPage, firstMemberId, prevId: prevFirstMemberId.current });
+
     // Reset to page 1 if content changed and we're not already on page 1
     if ((countChanged || contentChanged) && currentPage !== 0) {
+      // console.log('Resetting to page 1 due to content change');
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
         next.delete(pageParam);

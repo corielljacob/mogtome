@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { 
   User, 
-  Sparkles, 
   Send, 
   Check, 
   AlertCircle, 
@@ -15,31 +14,17 @@ import {
   Shield,
   Quote,
   Globe,
-  ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
-import { ContentCard, MembershipCard, StoryDivider, FloatingSparkles, MobileSheet } from '../components';
+import { ContentCard, MembershipCard, StoryDivider, MobileSheet, PageLayout, PageHeader, SectionLabel, DiscordIcon } from '../components';
+import { getRankColor } from '../constants';
 import { useIsMobile } from '../hooks';
 
 const MAX_BIO_LENGTH = 300;
 
 import type { BiographySubmission } from '../types';
-
-// Rank color config for profile display
-const rankColors: Record<string, { bg: string; text: string; hex: string }> = {
-  'Moogle Guardian': { bg: 'bg-[#2FECE6]/10', text: 'text-[#2FECE6]', hex: '#2FECE6' },
-  'Moogle Knight': { bg: 'bg-[#8E42CC]/10', text: 'text-[#8E42CC]', hex: '#8E42CC' },
-  'Paissa Trainer': { bg: 'bg-[#068167]/10', text: 'text-[#068167]', hex: '#068167' },
-  'Coeurl Hunter': { bg: 'bg-[#056D04]/10', text: 'text-[#056D04]', hex: '#056D04' },
-  'Mandragora': { bg: 'bg-[#E67E22]/10', text: 'text-[#E67E22]', hex: '#E67E22' },
-  'Apkallu Seeker': { bg: 'bg-[#4D88BB]/10', text: 'text-[#4D88BB]', hex: '#4D88BB' },
-  'Kupo Shelf': { bg: 'bg-[#5ABE32]/10', text: 'text-[#5ABE32]', hex: '#5ABE32' },
-  'Bom Boko': { bg: 'bg-stone-400/10', text: 'text-stone-400', hex: '#a8a29e' },
-};
-
-const defaultRankColor = { bg: 'bg-[var(--bento-primary)]/10', text: 'text-[var(--bento-primary)]', hex: '#c75b7a' };
 
 /**
  * ProfileHeader - The main profile display section showing the user's identity
@@ -80,7 +65,7 @@ const ProfileHeader = memo(function ProfileHeader({
   isLoadingBiography: boolean;
 }) {
   const isMobile = useIsMobile();
-  const rankColor = rankColors[rank] || defaultRankColor;
+  const rankColor = getRankColor(rank);
   const lodestoneUrl = characterId
     ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
     : null;
@@ -110,7 +95,7 @@ const ProfileHeader = memo(function ProfileHeader({
         className="relative"
       >
         {/* Background gradient card */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)] to-[var(--bento-bg)] border border-[var(--bento-border)] shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)]/90 to-[var(--bento-bg)]/80 backdrop-blur-xl border border-[var(--bento-border)] shadow-xl">
           {/* Decorative gradient overlay - simplified on mobile for performance */}
           <div 
             className="absolute inset-0 opacity-[0.03] hidden sm:block"
@@ -214,7 +199,7 @@ const ProfileHeader = memo(function ProfileHeader({
                   {!isLoadingBiography && (
                     <motion.button
                       onClick={onEditClick}
-                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto"
+                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)]/50 backdrop-blur-sm border border-[var(--bento-border)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto shadow-sm hover:shadow-md"
                       whileTap={{ scale: 0.97 }}
                     >
                       <Pencil className="w-4 h-4 sm:w-3 sm:h-3" />
@@ -641,12 +626,8 @@ export function Profile() {
   // Show login prompt if not authenticated
   if (!isLoading && !isAuthenticated) {
     return (
-      <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-        <FloatingSparkles minimal />
-        
-        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <div className="max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <PageLayout maxWidth="max-w-lg">
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -672,16 +653,13 @@ export function Profile() {
                   whileTap={{ scale: 0.98 }}
                   className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#5865F2] text-white font-soft font-semibold cursor-pointer shadow-lg shadow-[#5865F2]/25 hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                  </svg>
+                  <DiscordIcon className="w-5 h-5" />
                   Sign in with Discord
                 </motion.button>
               </ContentCard>
             </motion.div>
-          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
@@ -702,56 +680,13 @@ export function Profile() {
   }
 
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background decorations */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <FloatingSparkles minimal />
-      
-      <div className="relative z-10 container mx-auto px-4 sm:px-4 py-5 sm:py-8 md:py-12">
-        <div className="max-w-3xl mx-auto">
-          {/* Mobile scroll indicator - subtle hint that there's more content */}
-          <motion.div 
-            className="flex justify-center mb-3 md:hidden"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <motion.div
-              animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <ChevronDown className="w-5 h-5 text-[var(--bento-text-subtle)]/50" />
-            </motion.div>
-          </motion.div>
-
-          {/* Page Header - more compact on mobile */}
-          <motion.header
-            className="text-center mb-5 sm:mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <motion.p
-              className="font-accent text-lg sm:text-lg text-[var(--bento-secondary)] mb-1 sm:mb-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              ~ Your adventure awaits ~
-            </motion.p>
-            
-            <h1 className="text-3xl sm:text-3xl md:text-4xl font-display font-bold mb-1 sm:mb-2">
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                My Profile
-              </span>
-            </h1>
-            
-            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft hidden sm:block">
-              View your membership card and share your story
-            </p>
-
-            <StoryDivider className="mx-auto mt-3 sm:mt-4" size="sm" />
-          </motion.header>
+    <PageLayout maxWidth="max-w-3xl">
+          <PageHeader
+            opener="~ Your adventure awaits ~"
+            title="My Profile"
+            subtitle="View your membership card and share your story"
+            showHeart={false}
+          />
 
           {/* Main Content */}
           <div className="space-y-6 sm:space-y-8">
@@ -779,13 +714,7 @@ export function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <div className="flex items-center gap-3 mb-4 sm:mb-4">
-                <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
-                <h2 className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
-                  Membership Card
-                </h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" />
-              </div>
+              <SectionLabel label="Membership Card" />
               
               {/* Card wrapper with tap feedback on mobile */}
               <motion.div
@@ -824,8 +753,6 @@ export function Profile() {
             {/* Mobile bottom spacer for comfortable scrolling */}
             <div className="h-4 sm:hidden" />
           </div>
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

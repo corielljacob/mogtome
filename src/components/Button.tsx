@@ -60,7 +60,7 @@ export function Button({
 
   const baseClasses = `
     inline-flex items-center justify-center gap-2
-    font-inter font-medium
+    font-soft font-medium
     rounded-xl
     transition-all duration-200
     focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2

@@ -135,7 +135,7 @@ export function WelcomeDialog() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="welcome-title"
-            className="relative w-full max-w-lg max-h-[90vh] max-h-[90dvh] overflow-y-auto bg-[var(--bento-card)] rounded-2xl sm:rounded-3xl shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/10"
+            className="relative w-full max-w-lg max-h-[90vh] max-h-[90dvh] overflow-y-auto bg-[var(--bento-card)]/95 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/10"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}

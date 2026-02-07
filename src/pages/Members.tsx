@@ -3,15 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Search, RefreshCw, Users, X, Heart, Sparkles, 
+  Search, Users, X, 
   ArrowUpDown, Filter, SlidersHorizontal 
 } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { PaginatedMemberGrid, StoryDivider, FloatingSparkles, SimpleFloatingMoogles, ContentCard, Dropdown } from '../components';
+import { PaginatedMemberGrid, StoryDivider, Dropdown, PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState } from '../components';
 import { FC_RANKS } from '../types';
-import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
-import deadMoogle from '../assets/moogles/dead moogle.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
 
@@ -37,12 +35,14 @@ export function Members() {
   
   // Read search/filter/sort state from URL
   const searchQuery = searchParams.get('q') || '';
+  const ranksParam = searchParams.get('ranks');
+  
   const selectedRanks = useMemo(() => {
-    const ranksParam = searchParams.get('ranks');
     if (!ranksParam) return [];
     // Validate that ranks are valid FC ranks
     return ranksParam.split(',').filter(r => VALID_RANK_NAMES.has(r));
-  }, [searchParams]);
+  }, [ranksParam]);
+  
   const sortBy = (searchParams.get('sort') as SortOption) || DEFAULT_SORT;
   // Validate sort option
   const validSortBy = SORT_OPTIONS.some(o => o.value === sortBy) ? sortBy : DEFAULT_SORT;
@@ -221,43 +221,19 @@ export function Members() {
   }, [allMembers]);
 
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-hidden">
-      {/* Background decorations - extends full viewport behind header/nav */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
-      <SimpleFloatingMoogles primarySrc={wizardMoogle} secondarySrc={musicMoogle} />
-      <FloatingSparkles minimal />
-
-      <div className="relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10">
-        <div className="max-w-7xl mx-auto">
-          
-          {/* ═══════════════════════════════════════════════════════════════════
-              HERO HEADER - Clean, focused intro
-          ═══════════════════════════════════════════════════════════════════ */}
-          <motion.header 
-            className="text-center mb-8 sm:mb-12"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+    <PageLayout moogles={{ primary: wizardMoogle, secondary: musicMoogle }}>
+          <PageHeader
+            title="Our Family"
+            subtitle="The wonderful members who make our FC special"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold mb-3">
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                Our Family
-              </span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-4">
-              The wonderful members who make our FC special
-              <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
-            </p>
-
             {/* Member count badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm mb-3">
               <Users className="w-4 h-4 text-[var(--bento-secondary)]" />
               <span className="font-soft font-semibold text-[var(--bento-text)]">
                 {allMembers.length} <span className="text-[var(--bento-text-muted)] font-normal">members</span>
               </span>
             </div>
-          </motion.header>
+          </PageHeader>
 
           {/* ═══════════════════════════════════════════════════════════════════
               SEARCH & FILTER SECTION - Unified, intuitive controls
@@ -269,7 +245,7 @@ export function Members() {
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             {/* Main search bar - always visible */}
-            <div className="bg-[var(--bento-card)] border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
+            <div className="bg-[var(--bento-card)]/80 backdrop-blur-md border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
               
               {/* Search input row */}
               <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
@@ -291,7 +267,7 @@ export function Members() {
                     aria-describedby="search-results-count"
                     className="
                       w-full pl-10 sm:pl-11 pr-10 py-3 sm:py-3
-                      bg-[var(--bento-bg)] rounded-xl
+                      bg-[var(--bento-bg)]/50 rounded-xl
                       border border-[var(--bento-border)] 
                       focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
                       font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
@@ -402,19 +378,20 @@ export function Members() {
                               const count = rankCounts[rank.name] || 0;
                               const isSelected = selectedRanks.includes(rank.name);
                               return (
-                                <button
+                                <motion.button
                                   key={rank.name}
                                   onClick={() => toggleRank(rank.name)}
                                   aria-pressed={isSelected}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                   className={`
                                     inline-flex items-center gap-2
                                     px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm font-soft font-medium
-                                    cursor-pointer transition-all duration-150 touch-manipulation
+                                    cursor-pointer transition-colors duration-200 touch-manipulation
                                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                                    active:scale-[0.97]
                                     ${isSelected 
                                       ? 'bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-md' 
-                                      : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
+                                      : 'bg-[var(--bento-bg)]/50 border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
                                     }
                                   `}
                                 >
@@ -428,7 +405,7 @@ export function Members() {
                                   `}>
                                     {count}
                                   </span>
-                                </button>
+                                </motion.button>
                               );
                             })}
                           </div>
@@ -447,7 +424,7 @@ export function Members() {
                   </p>
                   <button
                     onClick={clearFilters}
-                    className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1"
+                    className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1 touch-manipulation"
                   >
                     <X className="w-3.5 h-3.5" />
                     Clear all
@@ -476,7 +453,7 @@ export function Members() {
                     px-3 py-1.5 rounded-full text-sm font-soft font-medium
                     bg-[var(--bento-card)] border border-[var(--bento-border)] 
                     hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
-                    text-[var(--bento-text)] cursor-pointer transition-all
+                    text-[var(--bento-text)] cursor-pointer transition-all touch-manipulation
                     focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                   "
                 >
@@ -493,96 +470,17 @@ export function Members() {
           <StoryDivider className="mx-auto mb-8" />
           
           {isLoading ? (
-            <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-              <motion.img 
-                src={pushingMoogles} 
-                alt="" 
-                className="w-40 md:w-52 mx-auto mb-4"
-                animate={{ 
-                  x: [0, 4, -4, 4, 0],
-                  rotate: [0, 1.5, -1.5, 1.5, 0],
-                }}
-                transition={{ 
-                  duration: 0.7, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                aria-hidden="true"
-              />
-              <motion.p 
-                className="font-accent text-2xl text-[var(--bento-text-muted)]"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                role="status"
-              >
-                Fetching members, kupo...
-              </motion.p>
-            </ContentCard>
+            <LoadingState message="Fetching members, kupo..." />
           ) : isError ? (
-            <ContentCard className="text-center py-12 md:py-16" role="alert">
-              <img 
-                src={deadMoogle} 
-                alt="" 
-                className="w-40 h-40 mx-auto mb-5 object-contain"
-                aria-hidden="true"
-              />
-              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
-                Something went wrong
-              </p>
-              <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
-                A moogle fell over, kupo...
-              </p>
-              <motion.button
-                onClick={() => refetch()}
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="
-                  inline-flex items-center justify-center gap-2
-                  px-6 py-3 rounded-xl
-                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
-                  text-white font-soft font-semibold
-                  shadow-lg shadow-[var(--bento-primary)]/25
-                  hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                  transition-all cursor-pointer
-                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
-                "
-              >
-                <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                Try Again
-              </motion.button>
-            </ContentCard>
+            <ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} />
           ) : filteredMembers.length === 0 ? (
-            <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
-              <img 
-                src={grumpyMoogle} 
-                alt="" 
-                className="w-40 h-40 mx-auto mb-5 object-contain"
-                aria-hidden="true"
-              />
-              <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">No members found</p>
-              <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
-                Kupo? We couldn't find anyone by that name...
-              </p>
-              {hasActiveFilters && (
-                <motion.button
-                  onClick={clearFilters}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="
-                    inline-flex items-center justify-center gap-2
-                    px-5 py-2.5 rounded-xl
-                    bg-transparent border border-[var(--bento-primary)]/30
-                    text-[var(--bento-primary)] font-soft font-semibold
-                    hover:bg-[var(--bento-primary)]/10
-                    transition-all cursor-pointer
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                  "
-                >
-                  <X className="w-4 h-4" aria-hidden="true" />
-                  Clear filters
-                </motion.button>
-              )}
-            </ContentCard>
+            <EmptyState
+              title="No members found"
+              message="Kupo? We couldn't find anyone by that name..."
+              imageSrc={grumpyMoogle}
+              onClear={hasActiveFilters ? clearFilters : undefined}
+              clearLabel="Clear filters"
+            />
           ) : (
             <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
               <PaginatedMemberGrid
@@ -594,24 +492,9 @@ export function Members() {
             </div>
           )}
 
-          {/* ═══════════════════════════════════════════════════════════════════
-              FOOTER
-          ═══════════════════════════════════════════════════════════════════ */}
           {!isLoading && !isError && filteredMembers.length > 0 && (
-            <footer className="text-center mt-16 pt-8" style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}>
-              <StoryDivider className="mx-auto mb-6" />
-              <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5 text-[var(--bento-secondary)]" />
-                Every member makes us stronger, kupo!
-                <Sparkles className="w-5 h-5 text-[var(--bento-secondary)]" />
-              </p>
-              <p className="font-accent text-lg text-[var(--bento-primary)] mt-2">
-                ~ fin ~
-              </p>
-            </footer>
+            <PageFooter message="Every member makes us stronger, kupo!" />
           )}
-        </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }
