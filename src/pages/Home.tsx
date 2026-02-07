@@ -16,10 +16,11 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
-// PERFORMANCE: Detect mobile once at module level to avoid repeated checks
-const IS_MOBILE_DEVICE = typeof window !== 'undefined' && (
-  ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768
-);
+// Utilities
+import { IS_MOBILE } from '../utils';
+
+// PERFORMANCE: Alias for readability in this file
+const IS_MOBILE_DEVICE = IS_MOBILE;
 
 // Assets
 import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';

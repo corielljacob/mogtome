@@ -3,6 +3,7 @@ export { formatRelativeTime, formatFullDate, formatLastUpdated } from './dateFor
 
 // Motion/Animation performance utilities
 export {
+  IS_MOBILE,
   getOptimizedTransition,
   createOptimizedVariants,
   getHoverProps,

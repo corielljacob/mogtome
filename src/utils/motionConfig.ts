@@ -22,6 +22,13 @@ const isMobile = () => {
   return isTouch && isSmallScreen;
 };
 
+/**
+ * PERFORMANCE: Cached mobile detection evaluated once at module load.
+ * Use this for gating expensive visual effects (backdrop-blur, glow layers, etc.)
+ * to avoid repeated checks in render paths.
+ */
+export const IS_MOBILE: boolean = isMobile();
+
 // Detect if device prefers reduced motion
 const prefersReducedMotion = () => {
   if (typeof window === 'undefined') return false;

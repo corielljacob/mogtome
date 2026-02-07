@@ -29,6 +29,7 @@ import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type Toggleabl
 import { useTheme, THEME_DEFINITIONS, type ColorMode, type EventOverride } from '../contexts/ThemeContext';
 import { SEASONAL_EVENTS } from '../constants/seasonalEvents';
 import { ContentCard } from '../components';
+import { IS_MOBILE } from '../utils';
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -765,7 +766,7 @@ export function Settings() {
           transition={{ duration: 0.4 }}
         >
           <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center shadow-lg shadow-[var(--bento-primary)]/25">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center ${IS_MOBILE ? '' : 'shadow-lg shadow-[var(--bento-primary)]/25'}`}>
               <SettingsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
