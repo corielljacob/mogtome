@@ -454,7 +454,7 @@ export function Members() {
           transition={{ delay: 0.2 }}
         >
           <span className="text-sm font-soft text-[var(--bento-text-muted)] mr-2">Quick filter:</span>
-          {FC_RANKS.slice(0, 4).map((rank) => {
+          {FC_RANKS.slice(0, 5).map((rank) => {
             const rankColor = getRankColor(rank.name);
             const RankIcon = rankColor.icon;
             return (
