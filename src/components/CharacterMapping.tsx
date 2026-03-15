@@ -132,7 +132,7 @@ function DiscordUserItem({
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
-          {user.discordUsername}
+          {user.serverNickName}
         </p>
         <p className="text-xs text-[var(--bento-text-muted)]">Discord Account</p>
       </div>
@@ -205,11 +205,11 @@ export function CharacterMapping() {
       queryKey: [
         'unmapped-characters',
         'suggestions',
-        selectedDiscordUser?.discordUsername,
+        selectedDiscordUser?.serverNickName,
       ],
       queryFn: () =>
         characterMappingApi.getUnmappedCharacters(
-          selectedDiscordUser!.discordUsername
+          selectedDiscordUser!.serverNickName
         ),
       enabled: selectionMode === 'discord' && !!selectedDiscordUser,
       staleTime: 1000 * 30,
@@ -256,14 +256,14 @@ export function CharacterMapping() {
     if (selectionMode === 'discord' && suggestedCharactersData) {
       return suggestedCharactersData;
     }
-    return charactersData ?? { suggested: [], all: [] };
+    return charactersData ?? { suggestedCharacters: [], unmappedCharacters: [] };
   }, [selectionMode, suggestedCharactersData, charactersData]);
 
   const discordUsers = useMemo(() => {
     if (selectionMode === 'character' && suggestedDiscordUsersData) {
       return suggestedDiscordUsersData;
     }
-    return discordUsersData ?? { suggested: [], all: [] };
+    return discordUsersData ?? { suggestedDiscordUsers: [], unmappedDiscordUsers: [] };
   }, [selectionMode, suggestedDiscordUsersData, discordUsersData]);
 
   // Filter characters by search
@@ -271,20 +271,20 @@ export function CharacterMapping() {
     const searchLower = characterSearch.toLowerCase().trim();
     if (!searchLower) {
       return {
-        suggested: characters.suggested,
-        all: characters.all,
+        suggested: characters.suggestedCharacters,
+        all: characters.unmappedCharacters,
       };
     }
     return {
-      suggested: characters.suggested.filter(
+      suggested: characters.suggestedCharacters.filter(
         (c) =>
           c.name.toLowerCase().includes(searchLower) ||
-          c.freeCompanyRank.toLowerCase().includes(searchLower)
+          (c.freeCompanyRank && c.freeCompanyRank.toLowerCase().includes(searchLower))
       ),
-      all: characters.all.filter(
+      all: characters.unmappedCharacters.filter(
         (c) =>
           c.name.toLowerCase().includes(searchLower) ||
-          c.freeCompanyRank.toLowerCase().includes(searchLower)
+          (c.freeCompanyRank && c.freeCompanyRank.toLowerCase().includes(searchLower))
       ),
     };
   }, [characters, characterSearch]);
@@ -294,28 +294,28 @@ export function CharacterMapping() {
     const searchLower = discordSearch.toLowerCase().trim();
     if (!searchLower) {
       return {
-        suggested: discordUsers.suggested,
-        all: discordUsers.all,
+        suggested: discordUsers.suggestedDiscordUsers,
+        all: discordUsers.unmappedDiscordUsers,
       };
     }
     return {
-      suggested: discordUsers.suggested.filter((u) =>
-        u.discordUsername.toLowerCase().includes(searchLower)
+      suggested: discordUsers.suggestedDiscordUsers.filter((u) =>
+        u.serverNickName.toLowerCase().includes(searchLower)
       ),
-      all: discordUsers.all.filter((u) =>
-        u.discordUsername.toLowerCase().includes(searchLower)
+      all: discordUsers.unmappedDiscordUsers.filter((u) =>
+        u.serverNickName.toLowerCase().includes(searchLower)
       ),
     };
   }, [discordUsers, discordSearch]);
 
   // Create sets for quick lookup of suggested IDs
   const suggestedCharacterIds = useMemo(
-    () => new Set(characters.suggested.map((c) => c.characterId)),
-    [characters.suggested]
+    () => new Set(characters.suggestedCharacters.map((c) => c.characterId)),
+    [characters.suggestedCharacters]
   );
   const suggestedDiscordIds = useMemo(
-    () => new Set(discordUsers.suggested.map((u) => u.discordId)),
-    [discordUsers.suggested]
+    () => new Set(discordUsers.suggestedDiscordUsers.map((u) => u.discordId)),
+    [discordUsers.suggestedDiscordUsers]
   );
 
   // Handlers
@@ -363,11 +363,11 @@ export function CharacterMapping() {
 
   // Check if there are any unmapped items
   const hasUnmappedCharacters =
-    (charactersData?.all?.length ?? 0) > 0 ||
-    (charactersData?.suggested?.length ?? 0) > 0;
+    (charactersData?.unmappedCharacters?.length ?? 0) > 0 ||
+    (charactersData?.suggestedCharacters?.length ?? 0) > 0;
   const hasUnmappedDiscordUsers =
-    (discordUsersData?.all?.length ?? 0) > 0 ||
-    (discordUsersData?.suggested?.length ?? 0) > 0;
+    (discordUsersData?.unmappedDiscordUsers?.length ?? 0) > 0 ||
+    (discordUsersData?.suggestedDiscordUsers?.length ?? 0) > 0;
   const hasAnyUnmapped = hasUnmappedCharacters || hasUnmappedDiscordUsers;
 
   return (
@@ -472,7 +472,7 @@ export function CharacterMapping() {
                       {selectedDiscordUser ? (
                         <>
                           {' '}
-                          → <strong>{selectedDiscordUser.discordUsername}</strong>
+                          → <strong>{selectedDiscordUser.serverNickName}</strong>
                         </>
                       ) : (
                         ' → Now pick a Discord account'
@@ -481,7 +481,7 @@ export function CharacterMapping() {
                   )}
                   {selectionMode === 'discord' && selectedDiscordUser && (
                     <>
-                      Selected: <strong>{selectedDiscordUser.discordUsername}</strong>
+                      Selected: <strong>{selectedDiscordUser.serverNickName}</strong>
                       {selectedCharacter ? (
                         <>
                           {' '}
@@ -724,7 +724,7 @@ export function CharacterMapping() {
                     <>
                       <Link2 className="w-5 h-5" />
                       Link {selectedCharacter?.name} to{' '}
-                      {selectedDiscordUser?.discordUsername}
+                      {selectedDiscordUser?.serverNickName}
                     </>
                   )}
                 </button>

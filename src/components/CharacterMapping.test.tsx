@@ -34,8 +34,8 @@ describe('CharacterMapping', () => {
   });
 
   it('renders the component header', async () => {
-    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggested: [], all: [] });
-    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggested: [], all: [] });
+    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggestedCharacters: [], unmappedCharacters: [] });
+    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggestedDiscordUsers: [], unmappedDiscordUsers: [] });
 
     render(<CharacterMapping />);
 
@@ -46,8 +46,8 @@ describe('CharacterMapping', () => {
   });
 
   it('renders empty state when no unmapped accounts', async () => {
-    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggested: [], all: [] });
-    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggested: [], all: [] });
+    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggestedCharacters: [], unmappedCharacters: [] });
+    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggestedDiscordUsers: [], unmappedDiscordUsers: [] });
 
     render(<CharacterMapping />);
 
@@ -58,15 +58,15 @@ describe('CharacterMapping', () => {
 
   it('renders character and Discord lists when data is available', async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
-      suggested: [],
-      all: [
+      suggestedCharacters: [],
+      unmappedCharacters: [
         { characterId: '1', name: 'Test Character', avatarLink: 'https://example.com/avatar.png', freeCompanyRank: 'Moogle Knight' },
       ],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
-      suggested: [],
-      all: [
-        { discordId: '123', discordUsername: 'TestDiscordUser' },
+      suggestedDiscordUsers: [],
+      unmappedDiscordUsers: [
+        { discordId: '123', serverNickName: 'TestDiscordUser' },
       ],
     });
 
@@ -83,14 +83,14 @@ describe('CharacterMapping', () => {
 
   it('renders suggested badge for suggested matches', async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
-      suggested: [
+      suggestedCharacters: [
         { characterId: '1', name: 'Suggested Char', avatarLink: 'https://example.com/avatar.png', freeCompanyRank: 'Paissa Trainer' },
       ],
-      all: [],
+      unmappedCharacters: [],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
-      suggested: [],
-      all: [],
+      suggestedDiscordUsers: [],
+      unmappedDiscordUsers: [],
     });
 
     render(<CharacterMapping />);
@@ -105,12 +105,12 @@ describe('CharacterMapping', () => {
 
   it('shows search inputs for filtering', async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
-      suggested: [],
-      all: [{ characterId: '1', name: 'Test Char', avatarLink: '', freeCompanyRank: 'Knight' }],
+      suggestedCharacters: [],
+      unmappedCharacters: [{ characterId: '1', name: 'Test Char', avatarLink: '', freeCompanyRank: 'Knight' }],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
-      suggested: [],
-      all: [{ discordId: '1', discordUsername: 'TestUser' }],
+      suggestedDiscordUsers: [],
+      unmappedDiscordUsers: [{ discordId: '1', serverNickName: 'TestUser' }],
     });
 
     render(<CharacterMapping />);
@@ -122,8 +122,8 @@ describe('CharacterMapping', () => {
   });
 
   it('has a refresh button', async () => {
-    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggested: [], all: [] });
-    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggested: [], all: [] });
+    mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({ suggestedCharacters: [], unmappedCharacters: [] });
+    mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({ suggestedDiscordUsers: [], unmappedDiscordUsers: [] });
 
     render(<CharacterMapping />);
 

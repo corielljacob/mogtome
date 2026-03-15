@@ -15,23 +15,23 @@ export interface UnmappedCharacter {
  */
 export interface UnmappedDiscordUser {
   discordId: string;
-  discordUsername: string;
+  serverNickName: string;
 }
 
 /**
  * Response from get unmapped characters endpoint
  */
 export interface UnmappedCharactersResponse {
-  suggested: UnmappedCharacter[];
-  all: UnmappedCharacter[];
+  suggestedCharacters: UnmappedCharacter[];
+  unmappedCharacters: UnmappedCharacter[];
 }
 
 /**
  * Response from get unmapped Discord users endpoint
  */
 export interface UnmappedDiscordUsersResponse {
-  suggested: UnmappedDiscordUser[];
-  all: UnmappedDiscordUser[];
+  suggestedDiscordUsers: UnmappedDiscordUser[];
+  unmappedDiscordUsers: UnmappedDiscordUser[];
 }
 
 /**
@@ -55,8 +55,8 @@ async function getUnmappedCharacters(
     { params }
   );
   return {
-    suggested: Array.isArray(response.data?.suggested) ? response.data.suggested : [],
-    all: Array.isArray(response.data?.all) ? response.data.all : [],
+    suggestedCharacters: Array.isArray(response.data?.suggestedCharacters) ? response.data.suggestedCharacters : [],
+    unmappedCharacters: Array.isArray(response.data?.unmappedCharacters) ? response.data.unmappedCharacters : [],
   };
 }
 
@@ -73,8 +73,8 @@ async function getUnmappedDiscordUsers(
     { params }
   );
   return {
-    suggested: Array.isArray(response.data?.suggested) ? response.data.suggested : [],
-    all: Array.isArray(response.data?.all) ? response.data.all : [],
+    suggestedDiscordUsers: Array.isArray(response.data?.suggestedDiscordUsers) ? response.data.suggestedDiscordUsers : [],
+    unmappedDiscordUsers: Array.isArray(response.data?.unmappedDiscordUsers) ? response.data.unmappedDiscordUsers : [],
   };
 }
 
