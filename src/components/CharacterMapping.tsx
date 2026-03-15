@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -9,11 +9,14 @@ import {
   AlertCircle,
   RefreshCw,
   Check,
-  ChevronRight,
   Search,
   X,
   Sparkles,
   Inbox,
+  Zap,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { characterMappingApi } from '../api/characterMapping';
 import type {
@@ -21,13 +24,177 @@ import type {
   UnmappedDiscordUser,
 } from '../api/characterMapping';
 import { ContentCard } from './ContentCard';
+import {
+  computeMatches,
+  rankMatchesForCharacter,
+  rankMatchesForDiscordUser,
+  type MatchPair,
+  type MatchConfidence,
+} from '../utils/characterMatching';
 
-type SelectionMode = 'none' | 'character' | 'discord';
+// --- Tab types ---------------------------------------------------------------
+
+type TabId = 'matches' | 'manual';
+
+// --- Confidence badge --------------------------------------------------------
+
+const confidenceConfig: Record<
+  MatchConfidence,
+  { label: string; className: string }
+> = {
+  exact: {
+    label: 'Exact Match',
+    className: 'bg-green-500/15 text-green-600 dark:text-green-400',
+  },
+  high: {
+    label: 'High',
+    className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+  },
+  medium: {
+    label: 'Medium',
+    className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  },
+  low: {
+    label: 'Low',
+    className: 'bg-orange-500/15 text-orange-600 dark:text-orange-400',
+  },
+};
+
+function ConfidenceBadge({ confidence }: { confidence: MatchConfidence }) {
+  const cfg = confidenceConfig[confidence];
+  return (
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-soft font-medium ${cfg.className}`}
+    >
+      {cfg.label}
+    </span>
+  );
+}
+
+// --- Match pair card ---------------------------------------------------------
+
+interface MatchPairCardProps {
+  pair: MatchPair;
+  onConfirm: (pair: MatchPair) => void;
+  onDismiss: (pair: MatchPair) => void;
+  isConfirming: boolean;
+}
+
+function MatchPairCard({
+  pair,
+  onConfirm,
+  onDismiss,
+  isConfirming,
+}: MatchPairCardProps) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="
+        bg-[var(--bento-bg)]/50
+        border border-[var(--bento-border)]
+        rounded-2xl sm:rounded-xl p-4 sm:p-3
+        sm:hover:border-[var(--bento-primary)]/20
+        transition-colors
+      "
+    >
+      {/* Match info row */}
+      <div className="flex items-center gap-3 mb-3">
+        {/* Character side */}
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {pair.character.avatarLink ? (
+            <img
+              src={pair.character.avatarLink}
+              alt=""
+              className="w-9 h-9 rounded-lg object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-lg bg-[var(--bento-primary)]/10 flex items-center justify-center flex-shrink-0">
+              <User className="w-4 h-4 text-[var(--bento-primary)]" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+              {pair.character.name}
+            </p>
+            {pair.character.freeCompanyRank && (
+              <p className="text-xs text-[var(--bento-text-muted)] truncate">
+                {pair.character.freeCompanyRank}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Arrow */}
+        <div className="flex-shrink-0 flex items-center gap-1.5">
+          <div className="w-6 h-px bg-[var(--bento-border)]" />
+          <Link2 className="w-4 h-4 text-[var(--bento-text-muted)]" />
+          <div className="w-6 h-px bg-[var(--bento-border)]" />
+        </div>
+
+        {/* Discord side */}
+        <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+          <div className="min-w-0 text-right">
+            <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+              {pair.discordUser.serverNickName}
+            </p>
+            <p className="text-xs text-[var(--bento-text-muted)]">Discord</p>
+          </div>
+          <div className="w-9 h-9 rounded-lg bg-[#5865F2]/15 flex items-center justify-center flex-shrink-0">
+            <MessageSquare className="w-4 h-4 text-[#5865F2]" />
+          </div>
+        </div>
+      </div>
+
+      {/* Confidence + actions row */}
+      <div className="flex items-center justify-between gap-2">
+        <ConfidenceBadge confidence={pair.confidence} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onDismiss(pair)}
+            disabled={isConfirming}
+            className="
+              px-3 py-1.5 rounded-lg text-xs font-soft font-medium
+              text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]
+              hover:bg-[var(--bento-bg)] transition-colors cursor-pointer
+              disabled:opacity-50 disabled:cursor-not-allowed
+              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+            "
+          >
+            Skip
+          </button>
+          <button
+            onClick={() => onConfirm(pair)}
+            disabled={isConfirming}
+            className="
+              flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-soft font-semibold
+              bg-green-500 hover:bg-green-600 text-white
+              transition-colors cursor-pointer
+              disabled:opacity-50 disabled:cursor-not-allowed
+              focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:outline-none
+            "
+          >
+            {isConfirming ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Check className="w-3.5 h-3.5" />
+            )}
+            Confirm
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// --- Item components for manual picker ---------------------------------------
 
 interface CharacterItemProps {
   character: UnmappedCharacter;
   isSelected: boolean;
-  isSuggested: boolean;
+  matchInfo?: { confidence: MatchConfidence; score: number };
   onClick: () => void;
   disabled?: boolean;
 }
@@ -35,7 +202,7 @@ interface CharacterItemProps {
 function CharacterItem({
   character,
   isSelected,
-  isSuggested,
+  matchInfo,
   onClick,
   disabled,
 }: CharacterItemProps) {
@@ -49,36 +216,41 @@ function CharacterItem({
       disabled={disabled}
       className={`
         w-full flex items-center gap-3 p-3 rounded-xl
-        border transition-all cursor-pointer touch-manipulation
-        text-left
+        border transition-all cursor-pointer touch-manipulation text-left
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
           isSelected
             ? 'bg-[var(--bento-primary)]/15 border-[var(--bento-primary)]/40'
-            : isSuggested
+            : matchInfo
             ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50'
             : 'bg-[var(--bento-bg)]/50 border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30'
         }
       `}
     >
-      <img
-        src={character.avatarLink}
-        alt=""
-        className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-      />
+      {character.avatarLink ? (
+        <img
+          src={character.avatarLink}
+          alt=""
+          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+        />
+      ) : (
+        <div className="w-10 h-10 rounded-lg bg-[var(--bento-primary)]/10 flex items-center justify-center flex-shrink-0">
+          <User className="w-5 h-5 text-[var(--bento-primary)]" />
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
           {character.name}
         </p>
-        <p className="text-xs text-[var(--bento-text-muted)] truncate">
-          {character.freeCompanyRank}
-        </p>
+        {character.freeCompanyRank && (
+          <p className="text-xs text-[var(--bento-text-muted)] truncate">
+            {character.freeCompanyRank}
+          </p>
+        )}
       </div>
-      {isSuggested && !isSelected && (
-        <span className="flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400">
-          Suggested
-        </span>
+      {matchInfo && !isSelected && (
+        <ConfidenceBadge confidence={matchInfo.confidence} />
       )}
       {isSelected && (
         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--bento-primary)] flex items-center justify-center">
@@ -92,7 +264,7 @@ function CharacterItem({
 interface DiscordUserItemProps {
   user: UnmappedDiscordUser;
   isSelected: boolean;
-  isSuggested: boolean;
+  matchInfo?: { confidence: MatchConfidence; score: number };
   onClick: () => void;
   disabled?: boolean;
 }
@@ -100,7 +272,7 @@ interface DiscordUserItemProps {
 function DiscordUserItem({
   user,
   isSelected,
-  isSuggested,
+  matchInfo,
   onClick,
   disabled,
 }: DiscordUserItemProps) {
@@ -114,14 +286,13 @@ function DiscordUserItem({
       disabled={disabled}
       className={`
         w-full flex items-center gap-3 p-3 rounded-xl
-        border transition-all cursor-pointer touch-manipulation
-        text-left
+        border transition-all cursor-pointer touch-manipulation text-left
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
           isSelected
             ? 'bg-[var(--bento-primary)]/15 border-[var(--bento-primary)]/40'
-            : isSuggested
+            : matchInfo
             ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50'
             : 'bg-[var(--bento-bg)]/50 border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30'
         }
@@ -136,10 +307,8 @@ function DiscordUserItem({
         </p>
         <p className="text-xs text-[var(--bento-text-muted)]">Discord Account</p>
       </div>
-      {isSuggested && !isSelected && (
-        <span className="flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400">
-          Suggested
-        </span>
+      {matchInfo && !isSelected && (
+        <ConfidenceBadge confidence={matchInfo.confidence} />
       )}
       {isSelected && (
         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--bento-primary)] flex items-center justify-center">
@@ -150,32 +319,33 @@ function DiscordUserItem({
   );
 }
 
-/**
- * CharacterMapping - Knight Dashboard component for mapping characters to Discord accounts
- *
- * Allows officers to link unmapped FC characters with their Discord accounts.
- * Flow:
- * 1. Load both unmapped characters and Discord users
- * 2. User selects either a character OR Discord account first
- * 3. System fetches suggestions for the opposite list
- * 4. User selects from the suggested/all list
- * 5. Confirm to create the mapping
- */
+// --- Main component ----------------------------------------------------------
+
 export function CharacterMapping() {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<TabId>('matches');
 
-  // Selection state
-  const [selectionMode, setSelectionMode] = useState<SelectionMode>('none');
+  // Track pairs the user explicitly dismissed so they stop showing
+  const [dismissedPairs, setDismissedPairs] = useState<Set<string>>(new Set());
+  // Track which pair is currently being confirmed
+  const [confirmingPairKey, setConfirmingPairKey] = useState<string | null>(
+    null,
+  );
+
+  // Manual picker state
   const [selectedCharacter, setSelectedCharacter] =
     useState<UnmappedCharacter | null>(null);
   const [selectedDiscordUser, setSelectedDiscordUser] =
     useState<UnmappedDiscordUser | null>(null);
-
-  // Search filters
   const [characterSearch, setCharacterSearch] = useState('');
   const [discordSearch, setDiscordSearch] = useState('');
 
-  // Initial fetch of unmapped characters (no suggestions)
+  // Collapsible sections in matches tab
+  const [exactExpanded, setExactExpanded] = useState(true);
+  const [suggestedExpanded, setSuggestedExpanded] = useState(true);
+
+  // -- Data fetching ----------------------------------------------------------
+
   const {
     data: charactersData,
     isLoading: isLoadingCharacters,
@@ -187,7 +357,6 @@ export function CharacterMapping() {
     staleTime: 1000 * 30,
   });
 
-  // Initial fetch of unmapped Discord users (no suggestions)
   const {
     data: discordUsersData,
     isLoading: isLoadingDiscordUsers,
@@ -199,152 +368,217 @@ export function CharacterMapping() {
     staleTime: 1000 * 30,
   });
 
-  // Fetch characters with suggestions when a Discord user is selected
-  const { data: suggestedCharactersData, isLoading: isLoadingSuggestedCharacters } =
-    useQuery({
-      queryKey: [
-        'unmapped-characters',
-        'suggestions',
-        selectedDiscordUser?.serverNickName,
-      ],
-      queryFn: () =>
-        characterMappingApi.getUnmappedCharacters(
-          selectedDiscordUser!.serverNickName
-        ),
-      enabled: selectionMode === 'discord' && !!selectedDiscordUser,
-      staleTime: 1000 * 30,
-    });
+  const isLoading = isLoadingCharacters || isLoadingDiscordUsers;
+  const isError = isCharactersError || isDiscordUsersError;
 
-  // Fetch Discord users with suggestions when a character is selected
-  const { data: suggestedDiscordUsersData, isLoading: isLoadingSuggestedDiscord } =
-    useQuery({
-      queryKey: [
-        'unmapped-discord-users',
-        'suggestions',
-        selectedCharacter?.name,
-      ],
-      queryFn: () =>
-        characterMappingApi.getUnmappedDiscordUsers(selectedCharacter!.name),
-      enabled: selectionMode === 'character' && !!selectedCharacter,
-      staleTime: 1000 * 30,
-    });
+  // All unmapped items (combine API suggested + unmapped into one flat list)
+  const allCharacters = useMemo(() => {
+    if (!charactersData) return [];
+    const map = new Map<string, UnmappedCharacter>();
+    for (const c of charactersData.suggestedCharacters)
+      map.set(c.characterId, c);
+    for (const c of charactersData.unmappedCharacters)
+      map.set(c.characterId, c);
+    return Array.from(map.values());
+  }, [charactersData]);
 
-  // Map mutation
-  const mapMutation = useMutation({
-    mutationFn: () =>
-      characterMappingApi.mapCharacter(
-        selectedCharacter!.characterId,
-        selectedDiscordUser!.discordId
+  const allDiscordUsers = useMemo(() => {
+    if (!discordUsersData) return [];
+    const map = new Map<string, UnmappedDiscordUser>();
+    for (const u of discordUsersData.suggestedDiscordUsers)
+      map.set(u.discordId, u);
+    for (const u of discordUsersData.unmappedDiscordUsers)
+      map.set(u.discordId, u);
+    return Array.from(map.values());
+  }, [discordUsersData]);
+
+  // -- FE matching engine -----------------------------------------------------
+
+  const matchResults = useMemo(
+    () => computeMatches(allCharacters, allDiscordUsers),
+    [allCharacters, allDiscordUsers],
+  );
+
+  // Filter out dismissed pairs
+  const pairKey = (p: MatchPair) =>
+    `${p.character.characterId}::${p.discordUser.discordId}`;
+
+  const visibleExactMatches = useMemo(
+    () =>
+      matchResults.exactMatches.filter((p) => !dismissedPairs.has(pairKey(p))),
+    [matchResults.exactMatches, dismissedPairs],
+  );
+  const visibleSuggestedMatches = useMemo(
+    () =>
+      matchResults.suggestedMatches.filter(
+        (p) => !dismissedPairs.has(pairKey(p)),
       ),
+    [matchResults.suggestedMatches, dismissedPairs],
+  );
+
+  const totalMatches =
+    visibleExactMatches.length + visibleSuggestedMatches.length;
+
+  // -- Per-selection ranking (for manual tab) ---------------------------------
+
+  const rankedDiscordUsers = useMemo(() => {
+    if (!selectedCharacter) return null;
+    return rankMatchesForCharacter(selectedCharacter, allDiscordUsers);
+  }, [selectedCharacter, allDiscordUsers]);
+
+  const rankedCharacters = useMemo(() => {
+    if (!selectedDiscordUser) return null;
+    return rankMatchesForDiscordUser(selectedDiscordUser, allCharacters);
+  }, [selectedDiscordUser, allCharacters]);
+
+  // Build lookup maps for match info
+  const discordMatchInfo = useMemo(() => {
+    if (!rankedDiscordUsers)
+      return new Map<string, { confidence: MatchConfidence; score: number }>();
+    return new Map(
+      rankedDiscordUsers.map((u) => [
+        u.discordId,
+        { confidence: u.confidence, score: u.score },
+      ]),
+    );
+  }, [rankedDiscordUsers]);
+
+  const characterMatchInfo = useMemo(() => {
+    if (!rankedCharacters)
+      return new Map<string, { confidence: MatchConfidence; score: number }>();
+    return new Map(
+      rankedCharacters.map((c) => [
+        c.characterId,
+        { confidence: c.confidence, score: c.score },
+      ]),
+    );
+  }, [rankedCharacters]);
+
+  // -- Filtered lists for manual picker ---------------------------------------
+
+  const filteredCharacters = useMemo(() => {
+    const searchLower = characterSearch.toLowerCase().trim();
+    if (!searchLower) return allCharacters;
+    return allCharacters.filter(
+      (c) =>
+        c.name.toLowerCase().includes(searchLower) ||
+        (c.freeCompanyRank &&
+          c.freeCompanyRank.toLowerCase().includes(searchLower)),
+    );
+  }, [allCharacters, characterSearch]);
+
+  const filteredDiscordUsers = useMemo(() => {
+    const searchLower = discordSearch.toLowerCase().trim();
+    if (!searchLower) return allDiscordUsers;
+    return allDiscordUsers.filter((u) =>
+      u.serverNickName.toLowerCase().includes(searchLower),
+    );
+  }, [allDiscordUsers, discordSearch]);
+
+  // Sort filtered lists: matched items first when a selection exists
+  const sortedCharacters = useMemo(() => {
+    if (!selectedDiscordUser || characterMatchInfo.size === 0)
+      return filteredCharacters;
+    return [...filteredCharacters].sort((a, b) => {
+      const sa = characterMatchInfo.get(a.characterId)?.score ?? 0;
+      const sb = characterMatchInfo.get(b.characterId)?.score ?? 0;
+      return sb - sa;
+    });
+  }, [filteredCharacters, selectedDiscordUser, characterMatchInfo]);
+
+  const sortedDiscordUsers = useMemo(() => {
+    if (!selectedCharacter || discordMatchInfo.size === 0)
+      return filteredDiscordUsers;
+    return [...filteredDiscordUsers].sort((a, b) => {
+      const sa = discordMatchInfo.get(a.discordId)?.score ?? 0;
+      const sb = discordMatchInfo.get(b.discordId)?.score ?? 0;
+      return sb - sa;
+    });
+  }, [filteredDiscordUsers, selectedCharacter, discordMatchInfo]);
+
+  // -- Mutations --------------------------------------------------------------
+
+  const invalidateAll = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['unmapped-characters'] });
+    queryClient.invalidateQueries({ queryKey: ['unmapped-discord-users'] });
+    queryClient.invalidateQueries({ queryKey: ['members'] });
+  }, [queryClient]);
+
+  const mapMutation = useMutation({
+    mutationFn: ({
+      characterId,
+      discordId,
+    }: {
+      characterId: string;
+      discordId: string;
+    }) => characterMappingApi.mapCharacter(characterId, discordId),
     onSuccess: () => {
-      // Reset state
-      setSelectionMode('none');
-      setSelectedCharacter(null);
-      setSelectedDiscordUser(null);
-      setCharacterSearch('');
-      setDiscordSearch('');
-      // Invalidate queries to refresh lists
-      queryClient.invalidateQueries({ queryKey: ['unmapped-characters'] });
-      queryClient.invalidateQueries({ queryKey: ['unmapped-discord-users'] });
-      // Also invalidate members since mapping affects member data
-      queryClient.invalidateQueries({ queryKey: ['members'] });
+      invalidateAll();
     },
   });
 
-  // Determine which data to show
-  const characters = useMemo(() => {
-    if (selectionMode === 'discord' && suggestedCharactersData) {
-      return suggestedCharactersData;
-    }
-    return charactersData ?? { suggestedCharacters: [], unmappedCharacters: [] };
-  }, [selectionMode, suggestedCharactersData, charactersData]);
+  // -- Handlers ---------------------------------------------------------------
 
-  const discordUsers = useMemo(() => {
-    if (selectionMode === 'character' && suggestedDiscordUsersData) {
-      return suggestedDiscordUsersData;
-    }
-    return discordUsersData ?? { suggestedDiscordUsers: [], unmappedDiscordUsers: [] };
-  }, [selectionMode, suggestedDiscordUsersData, discordUsersData]);
-
-  // Filter characters by search
-  const filteredCharacters = useMemo(() => {
-    const searchLower = characterSearch.toLowerCase().trim();
-    if (!searchLower) {
-      return {
-        suggested: characters.suggestedCharacters,
-        all: characters.unmappedCharacters,
-      };
-    }
-    return {
-      suggested: characters.suggestedCharacters.filter(
-        (c) =>
-          c.name.toLowerCase().includes(searchLower) ||
-          (c.freeCompanyRank && c.freeCompanyRank.toLowerCase().includes(searchLower))
-      ),
-      all: characters.unmappedCharacters.filter(
-        (c) =>
-          c.name.toLowerCase().includes(searchLower) ||
-          (c.freeCompanyRank && c.freeCompanyRank.toLowerCase().includes(searchLower))
-      ),
-    };
-  }, [characters, characterSearch]);
-
-  // Filter Discord users by search
-  const filteredDiscordUsers = useMemo(() => {
-    const searchLower = discordSearch.toLowerCase().trim();
-    if (!searchLower) {
-      return {
-        suggested: discordUsers.suggestedDiscordUsers,
-        all: discordUsers.unmappedDiscordUsers,
-      };
-    }
-    return {
-      suggested: discordUsers.suggestedDiscordUsers.filter((u) =>
-        u.serverNickName.toLowerCase().includes(searchLower)
-      ),
-      all: discordUsers.unmappedDiscordUsers.filter((u) =>
-        u.serverNickName.toLowerCase().includes(searchLower)
-      ),
-    };
-  }, [discordUsers, discordSearch]);
-
-  // Create sets for quick lookup of suggested IDs
-  const suggestedCharacterIds = useMemo(
-    () => new Set(characters.suggestedCharacters.map((c) => c.characterId)),
-    [characters.suggestedCharacters]
-  );
-  const suggestedDiscordIds = useMemo(
-    () => new Set(discordUsers.suggestedDiscordUsers.map((u) => u.discordId)),
-    [discordUsers.suggestedDiscordUsers]
+  const handleConfirmPair = useCallback(
+    (pair: MatchPair) => {
+      const key = pairKey(pair);
+      setConfirmingPairKey(key);
+      mapMutation.mutate(
+        {
+          characterId: pair.character.characterId,
+          discordId: pair.discordUser.discordId,
+        },
+        {
+          onSettled: () => setConfirmingPairKey(null),
+          onSuccess: () => {
+            // Also dismiss to avoid flash while query invalidates
+            setDismissedPairs((prev) => new Set(prev).add(key));
+          },
+        },
+      );
+    },
+    [mapMutation],
   );
 
-  // Handlers
+  const handleDismissPair = useCallback((pair: MatchPair) => {
+    setDismissedPairs((prev) => new Set(prev).add(pairKey(pair)));
+  }, []);
+
+  const handleManualConfirm = useCallback(() => {
+    if (!selectedCharacter || !selectedDiscordUser) return;
+    mapMutation.mutate(
+      {
+        characterId: selectedCharacter.characterId,
+        discordId: selectedDiscordUser.discordId,
+      },
+      {
+        onSuccess: () => {
+          setSelectedCharacter(null);
+          setSelectedDiscordUser(null);
+          setCharacterSearch('');
+          setDiscordSearch('');
+        },
+      },
+    );
+  }, [selectedCharacter, selectedDiscordUser, mapMutation]);
+
   const handleCharacterSelect = (character: UnmappedCharacter) => {
-    if (selectionMode === 'none' || selectionMode === 'character') {
-      // Starting with character selection
-      setSelectionMode('character');
-      setSelectedCharacter(character);
-      setSelectedDiscordUser(null);
-    } else if (selectionMode === 'discord') {
-      // Completing selection after picking Discord user first
+    if (selectedCharacter?.characterId === character.characterId) {
+      setSelectedCharacter(null);
+    } else {
       setSelectedCharacter(character);
     }
   };
 
   const handleDiscordUserSelect = (user: UnmappedDiscordUser) => {
-    if (selectionMode === 'none' || selectionMode === 'discord') {
-      // Starting with Discord selection
-      setSelectionMode('discord');
-      setSelectedDiscordUser(user);
-      setSelectedCharacter(null);
-    } else if (selectionMode === 'character') {
-      // Completing selection after picking character first
+    if (selectedDiscordUser?.discordId === user.discordId) {
+      setSelectedDiscordUser(null);
+    } else {
       setSelectedDiscordUser(user);
     }
   };
 
   const handleReset = () => {
-    setSelectionMode('none');
     setSelectedCharacter(null);
     setSelectedDiscordUser(null);
     setCharacterSearch('');
@@ -353,22 +587,16 @@ export function CharacterMapping() {
 
   const handleRefresh = () => {
     handleReset();
+    setDismissedPairs(new Set());
     refetchCharacters();
     refetchDiscordUsers();
   };
 
-  const canConfirm = selectedCharacter && selectedDiscordUser;
-  const isLoading = isLoadingCharacters || isLoadingDiscordUsers;
-  const isError = isCharactersError || isDiscordUsersError;
+  const hasAnyUnmapped =
+    allCharacters.length > 0 || allDiscordUsers.length > 0;
+  const canManualConfirm = selectedCharacter && selectedDiscordUser;
 
-  // Check if there are any unmapped items
-  const hasUnmappedCharacters =
-    (charactersData?.unmappedCharacters?.length ?? 0) > 0 ||
-    (charactersData?.suggestedCharacters?.length ?? 0) > 0;
-  const hasUnmappedDiscordUsers =
-    (discordUsersData?.unmappedDiscordUsers?.length ?? 0) > 0 ||
-    (discordUsersData?.suggestedDiscordUsers?.length ?? 0) > 0;
-  const hasAnyUnmapped = hasUnmappedCharacters || hasUnmappedDiscordUsers;
+  // -- Render -----------------------------------------------------------------
 
   return (
     <ContentCard className="h-full flex flex-col">
@@ -391,7 +619,6 @@ export function CharacterMapping() {
           </div>
         </div>
 
-        {/* Refresh button */}
         <button
           onClick={handleRefresh}
           disabled={isLoading}
@@ -399,8 +626,7 @@ export function CharacterMapping() {
             p-3 sm:p-2 rounded-xl sm:rounded-lg
             bg-[var(--bento-bg)] active:bg-[var(--bento-primary)]/10 sm:hover:bg-[var(--bento-primary)]/10
             text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)]
-            transition-colors cursor-pointer touch-manipulation
-            disabled:opacity-50
+            transition-colors cursor-pointer touch-manipulation disabled:opacity-50
             focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
           "
           aria-label="Refresh unmapped lists"
@@ -430,13 +656,7 @@ export function CharacterMapping() {
           </p>
           <button
             onClick={handleRefresh}
-            className="
-              flex items-center gap-2 px-4 py-2 rounded-lg
-              bg-[var(--bento-primary)] text-white
-              font-soft font-semibold text-sm
-              cursor-pointer
-              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-            "
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bento-primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
@@ -456,291 +676,409 @@ export function CharacterMapping() {
         </div>
       ) : (
         <div className="flex flex-col flex-1 min-h-0">
-          {/* Selection state indicator */}
-          {selectionMode !== 'none' && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between gap-2 mb-4 p-3 rounded-xl bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20"
+          {/* Tab bar */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bento-bg)]/50 mb-4 flex-shrink-0">
+            <button
+              onClick={() => setActiveTab('matches')}
+              className={`
+                flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+                text-sm font-soft font-medium transition-all cursor-pointer
+                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                ${
+                  activeTab === 'matches'
+                    ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
+                    : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                }
+              `}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <Sparkles className="w-4 h-4 text-[var(--bento-primary)] flex-shrink-0" />
-                <p className="text-sm text-[var(--bento-text)] truncate">
-                  {selectionMode === 'character' && selectedCharacter && (
-                    <>
-                      Selected: <strong>{selectedCharacter.name}</strong>
-                      {selectedDiscordUser ? (
-                        <>
-                          {' '}
-                          → <strong>{selectedDiscordUser.serverNickName}</strong>
-                        </>
-                      ) : (
-                        ' → Now pick a Discord account'
-                      )}
-                    </>
-                  )}
-                  {selectionMode === 'discord' && selectedDiscordUser && (
-                    <>
-                      Selected: <strong>{selectedDiscordUser.serverNickName}</strong>
-                      {selectedCharacter ? (
-                        <>
-                          {' '}
-                          → <strong>{selectedCharacter.name}</strong>
-                        </>
-                      ) : (
-                        ' → Now pick a character'
-                      )}
-                    </>
-                  )}
-                </p>
-              </div>
-              <button
-                onClick={handleReset}
-                className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[var(--bento-bg)]/50 text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] transition-colors cursor-pointer"
-                aria-label="Clear selection"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </motion.div>
-          )}
-
-          {/* Two column layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
-            {/* Characters column */}
-            <div className="flex flex-col min-h-0">
-              <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-[var(--bento-primary)]" />
-                  <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
-                    Characters
-                  </h3>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
-                    {filteredCharacters.suggested.length + filteredCharacters.all.length}
-                  </span>
-                </div>
-                {isLoadingSuggestedCharacters && (
-                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
-                )}
-              </div>
-
-              {/* Search input */}
-              <div className="relative mb-3 flex-shrink-0">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--bento-text-muted)]" />
-                <input
-                  type="text"
-                  value={characterSearch}
-                  onChange={(e) => setCharacterSearch(e.target.value)}
-                  placeholder="Search characters..."
-                  className="
-                    w-full pl-9 pr-4 py-2 rounded-xl
-                    bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]
-                    text-sm text-[var(--bento-text)]
-                    placeholder:text-[var(--bento-text-muted)]
-                    focus:outline-none focus:border-[var(--bento-primary)]/40
-                    transition-colors
-                  "
-                />
-              </div>
-
-              {/* Character list */}
-              <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
-                <AnimatePresence mode="popLayout">
-                  {/* Suggested characters first */}
-                  {filteredCharacters.suggested.map((character) => (
-                    <CharacterItem
-                      key={character.characterId}
-                      character={character}
-                      isSelected={
-                        selectedCharacter?.characterId === character.characterId
-                      }
-                      isSuggested={true}
-                      onClick={() => handleCharacterSelect(character)}
-                      disabled={
-                        selectionMode === 'character' &&
-                        selectedCharacter?.characterId !== character.characterId &&
-                        !selectedDiscordUser
-                      }
-                    />
-                  ))}
-                  {/* All characters (excluding suggested) */}
-                  {filteredCharacters.all
-                    .filter((c) => !suggestedCharacterIds.has(c.characterId))
-                    .map((character) => (
-                      <CharacterItem
-                        key={character.characterId}
-                        character={character}
-                        isSelected={
-                          selectedCharacter?.characterId === character.characterId
-                        }
-                        isSuggested={false}
-                        onClick={() => handleCharacterSelect(character)}
-                        disabled={
-                          selectionMode === 'character' &&
-                          selectedCharacter?.characterId !== character.characterId &&
-                          !selectedDiscordUser
-                        }
-                      />
-                    ))}
-                  {filteredCharacters.suggested.length === 0 &&
-                    filteredCharacters.all.length === 0 && (
-                      <div className="flex flex-col items-center justify-center py-6 text-center">
-                        <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                        <p className="text-sm text-[var(--bento-text-muted)]">
-                          {characterSearch ? 'No characters match your search' : 'No unmapped characters'}
-                        </p>
-                      </div>
-                    )}
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Arrow indicator between columns (desktop only) */}
-            <div className="hidden lg:flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-              <div className="w-8 h-8 rounded-full bg-[var(--bento-bg)] border border-[var(--bento-border)] flex items-center justify-center">
-                <ChevronRight className="w-4 h-4 text-[var(--bento-text-muted)]" />
-              </div>
-            </div>
-
-            {/* Discord users column */}
-            <div className="flex flex-col min-h-0">
-              <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-[#5865F2]" />
-                  <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
-                    Discord Accounts
-                  </h3>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
-                    {filteredDiscordUsers.suggested.length + filteredDiscordUsers.all.length}
-                  </span>
-                </div>
-                {isLoadingSuggestedDiscord && (
-                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
-                )}
-              </div>
-
-              {/* Search input */}
-              <div className="relative mb-3 flex-shrink-0">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--bento-text-muted)]" />
-                <input
-                  type="text"
-                  value={discordSearch}
-                  onChange={(e) => setDiscordSearch(e.target.value)}
-                  placeholder="Search Discord users..."
-                  className="
-                    w-full pl-9 pr-4 py-2 rounded-xl
-                    bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]
-                    text-sm text-[var(--bento-text)]
-                    placeholder:text-[var(--bento-text-muted)]
-                    focus:outline-none focus:border-[var(--bento-primary)]/40
-                    transition-colors
-                  "
-                />
-              </div>
-
-              {/* Discord user list */}
-              <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
-                <AnimatePresence mode="popLayout">
-                  {/* Suggested Discord users first */}
-                  {filteredDiscordUsers.suggested.map((user) => (
-                    <DiscordUserItem
-                      key={user.discordId}
-                      user={user}
-                      isSelected={
-                        selectedDiscordUser?.discordId === user.discordId
-                      }
-                      isSuggested={true}
-                      onClick={() => handleDiscordUserSelect(user)}
-                      disabled={
-                        selectionMode === 'discord' &&
-                        selectedDiscordUser?.discordId !== user.discordId &&
-                        !selectedCharacter
-                      }
-                    />
-                  ))}
-                  {/* All Discord users (excluding suggested) */}
-                  {filteredDiscordUsers.all
-                    .filter((u) => !suggestedDiscordIds.has(u.discordId))
-                    .map((user) => (
-                      <DiscordUserItem
-                        key={user.discordId}
-                        user={user}
-                        isSelected={
-                          selectedDiscordUser?.discordId === user.discordId
-                        }
-                        isSuggested={false}
-                        onClick={() => handleDiscordUserSelect(user)}
-                        disabled={
-                          selectionMode === 'discord' &&
-                          selectedDiscordUser?.discordId !== user.discordId &&
-                          !selectedCharacter
-                        }
-                      />
-                    ))}
-                  {filteredDiscordUsers.suggested.length === 0 &&
-                    filteredDiscordUsers.all.length === 0 && (
-                      <div className="flex flex-col items-center justify-center py-6 text-center">
-                        <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                        <p className="text-sm text-[var(--bento-text-muted)]">
-                          {discordSearch ? 'No users match your search' : 'No unmapped Discord users'}
-                        </p>
-                      </div>
-                    )}
-                </AnimatePresence>
-              </div>
-            </div>
+              <Zap className="w-4 h-4" />
+              Smart Matches
+              {totalMatches > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-500/15 text-green-600 dark:text-green-400">
+                  {totalMatches}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('manual')}
+              className={`
+                flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+                text-sm font-soft font-medium transition-all cursor-pointer
+                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                ${
+                  activeTab === 'manual'
+                    ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
+                    : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                }
+              `}
+            >
+              <Search className="w-4 h-4" />
+              Manual
+              <span className="px-1.5 py-0.5 rounded-full text-xs bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
+                {allCharacters.length + allDiscordUsers.length}
+              </span>
+            </button>
           </div>
 
-          {/* Confirm button */}
-          <AnimatePresence>
-            {canConfirm && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="mt-4 flex-shrink-0"
-              >
-                <button
-                  onClick={() => mapMutation.mutate()}
-                  disabled={mapMutation.isPending}
-                  className="
-                    w-full flex items-center justify-center gap-2
-                    px-4 py-3.5 sm:py-3 rounded-xl
-                    bg-gradient-to-r from-blue-500 to-cyan-500
-                    active:from-blue-600 active:to-cyan-600
-                    sm:hover:from-blue-600 sm:hover:to-cyan-600
-                    text-white font-soft font-semibold text-sm
-                    transition-all cursor-pointer touch-manipulation
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none
-                    shadow-lg shadow-blue-500/25
-                  "
-                >
-                  {mapMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Creating Link...
-                    </>
-                  ) : (
-                    <>
-                      <Link2 className="w-5 h-5" />
-                      Link {selectedCharacter?.name} to{' '}
-                      {selectedDiscordUser?.serverNickName}
-                    </>
+          {/* -- Smart Matches Tab --------------------------------------------- */}
+          {activeTab === 'matches' && (
+            <div className="flex-1 overflow-y-auto min-h-0 space-y-4">
+              {totalMatches === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--bento-primary)]/10 flex items-center justify-center mb-3">
+                    <HelpCircle className="w-7 h-7 text-[var(--bento-primary)]" />
+                  </div>
+                  <p className="text-sm text-[var(--bento-text)] font-soft font-semibold mb-1">
+                    No matches found
+                  </p>
+                  <p className="text-xs text-[var(--bento-text-muted)] max-w-xs">
+                    The matching engine couldn&apos;t find any likely pairs. Use
+                    the Manual tab to link accounts by hand.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Exact matches section */}
+                  {visibleExactMatches.length > 0 && (
+                    <div>
+                      <button
+                        onClick={() => setExactExpanded(!exactExpanded)}
+                        className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
+                      >
+                        {exactExpanded ? (
+                          <ChevronDown className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <ChevronUp className="w-4 h-4 text-green-500" />
+                        )}
+                        <Sparkles className="w-4 h-4 text-green-500" />
+                        <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+                          Exact Matches
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-green-500/15 text-green-600 dark:text-green-400">
+                          {visibleExactMatches.length}
+                        </span>
+                      </button>
+                      <AnimatePresence mode="popLayout">
+                        {exactExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-2 overflow-hidden"
+                          >
+                            {visibleExactMatches.map((pair) => (
+                              <MatchPairCard
+                                key={pairKey(pair)}
+                                pair={pair}
+                                onConfirm={handleConfirmPair}
+                                onDismiss={handleDismissPair}
+                                isConfirming={
+                                  confirmingPairKey === pairKey(pair)
+                                }
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   )}
-                </button>
 
-                {mapMutation.isError && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-2 text-sm text-red-500 text-center"
+                  {/* Suggested matches section */}
+                  {visibleSuggestedMatches.length > 0 && (
+                    <div>
+                      <button
+                        onClick={() =>
+                          setSuggestedExpanded(!suggestedExpanded)
+                        }
+                        className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
+                      >
+                        {suggestedExpanded ? (
+                          <ChevronDown className="w-4 h-4 text-amber-500" />
+                        ) : (
+                          <ChevronUp className="w-4 h-4 text-amber-500" />
+                        )}
+                        <HelpCircle className="w-4 h-4 text-amber-500" />
+                        <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+                          Suggested Matches
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                          {visibleSuggestedMatches.length}
+                        </span>
+                      </button>
+                      <AnimatePresence mode="popLayout">
+                        {suggestedExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-2 overflow-hidden"
+                          >
+                            {visibleSuggestedMatches.map((pair) => (
+                              <MatchPairCard
+                                key={pairKey(pair)}
+                                pair={pair}
+                                onConfirm={handleConfirmPair}
+                                onDismiss={handleDismissPair}
+                                isConfirming={
+                                  confirmingPairKey === pairKey(pair)
+                                }
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Unmatched summary */}
+                  {(matchResults.unmatchedCharacters.length > 0 ||
+                    matchResults.unmatchedDiscordUsers.length > 0) && (
+                    <div className="pt-2 border-t border-[var(--bento-border)]">
+                      <p className="text-xs text-[var(--bento-text-muted)] font-soft">
+                        {matchResults.unmatchedCharacters.length} character
+                        {matchResults.unmatchedCharacters.length !== 1
+                          ? 's'
+                          : ''}{' '}
+                        and {matchResults.unmatchedDiscordUsers.length} Discord
+                        user
+                        {matchResults.unmatchedDiscordUsers.length !== 1
+                          ? 's'
+                          : ''}{' '}
+                        couldn&apos;t be auto-matched.{' '}
+                        <button
+                          onClick={() => setActiveTab('manual')}
+                          className="text-[var(--bento-primary)] font-semibold hover:underline cursor-pointer"
+                        >
+                          Link them manually &rarr;
+                        </button>
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* -- Manual Tab ---------------------------------------------------- */}
+          {activeTab === 'manual' && (
+            <div className="flex flex-col flex-1 min-h-0">
+              {/* Selection indicator */}
+              {(selectedCharacter || selectedDiscordUser) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-between gap-2 mb-4 p-3 rounded-xl bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Sparkles className="w-4 h-4 text-[var(--bento-primary)] flex-shrink-0" />
+                    <p className="text-sm text-[var(--bento-text)] truncate">
+                      {selectedCharacter && selectedDiscordUser ? (
+                        <>
+                          <strong>{selectedCharacter.name}</strong> &rarr;{' '}
+                          <strong>
+                            {selectedDiscordUser.serverNickName}
+                          </strong>
+                        </>
+                      ) : selectedCharacter ? (
+                        <>
+                          <strong>{selectedCharacter.name}</strong> &rarr; Pick
+                          a Discord account
+                        </>
+                      ) : selectedDiscordUser ? (
+                        <>
+                          <strong>
+                            {selectedDiscordUser.serverNickName}
+                          </strong>{' '}
+                          &rarr; Pick a character
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleReset}
+                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[var(--bento-bg)]/50 text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] transition-colors cursor-pointer"
+                    aria-label="Clear selection"
                   >
-                    Failed to create link. Please try again.
-                  </motion.p>
+                    <X className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Two column picker */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
+                {/* Characters column */}
+                <div className="flex flex-col min-h-0">
+                  <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                    <User className="w-4 h-4 text-[var(--bento-primary)]" />
+                    <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+                      Characters
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
+                      {filteredCharacters.length}
+                    </span>
+                  </div>
+
+                  <div className="relative mb-3 flex-shrink-0">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--bento-text-muted)]" />
+                    <input
+                      type="text"
+                      value={characterSearch}
+                      onChange={(e) => setCharacterSearch(e.target.value)}
+                      placeholder="Search characters..."
+                      className="
+                        w-full pl-9 pr-4 py-2 rounded-xl
+                        bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]
+                        text-sm text-[var(--bento-text)] placeholder:text-[var(--bento-text-muted)]
+                        focus:outline-none focus:border-[var(--bento-primary)]/40 transition-colors
+                      "
+                    />
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
+                    <AnimatePresence mode="popLayout">
+                      {sortedCharacters.map((character) => (
+                        <CharacterItem
+                          key={character.characterId}
+                          character={character}
+                          isSelected={
+                            selectedCharacter?.characterId ===
+                            character.characterId
+                          }
+                          matchInfo={
+                            selectedDiscordUser
+                              ? characterMatchInfo.get(character.characterId)
+                              : undefined
+                          }
+                          onClick={() => handleCharacterSelect(character)}
+                        />
+                      ))}
+                      {filteredCharacters.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                          <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
+                          <p className="text-sm text-[var(--bento-text-muted)]">
+                            {characterSearch
+                              ? 'No characters match your search'
+                              : 'No unmapped characters'}
+                          </p>
+                        </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                {/* Discord users column */}
+                <div className="flex flex-col min-h-0">
+                  <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                    <MessageSquare className="w-4 h-4 text-[#5865F2]" />
+                    <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+                      Discord Accounts
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
+                      {filteredDiscordUsers.length}
+                    </span>
+                  </div>
+
+                  <div className="relative mb-3 flex-shrink-0">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--bento-text-muted)]" />
+                    <input
+                      type="text"
+                      value={discordSearch}
+                      onChange={(e) => setDiscordSearch(e.target.value)}
+                      placeholder="Search Discord users..."
+                      className="
+                        w-full pl-9 pr-4 py-2 rounded-xl
+                        bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]
+                        text-sm text-[var(--bento-text)] placeholder:text-[var(--bento-text-muted)]
+                        focus:outline-none focus:border-[var(--bento-primary)]/40 transition-colors
+                      "
+                    />
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
+                    <AnimatePresence mode="popLayout">
+                      {sortedDiscordUsers.map((user) => (
+                        <DiscordUserItem
+                          key={user.discordId}
+                          user={user}
+                          isSelected={
+                            selectedDiscordUser?.discordId === user.discordId
+                          }
+                          matchInfo={
+                            selectedCharacter
+                              ? discordMatchInfo.get(user.discordId)
+                              : undefined
+                          }
+                          onClick={() => handleDiscordUserSelect(user)}
+                        />
+                      ))}
+                      {filteredDiscordUsers.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                          <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
+                          <p className="text-sm text-[var(--bento-text-muted)]">
+                            {discordSearch
+                              ? 'No users match your search'
+                              : 'No unmapped Discord users'}
+                          </p>
+                        </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+
+              {/* Manual confirm button */}
+              <AnimatePresence>
+                {canManualConfirm && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="mt-4 flex-shrink-0"
+                  >
+                    <button
+                      onClick={handleManualConfirm}
+                      disabled={mapMutation.isPending}
+                      className="
+                        w-full flex items-center justify-center gap-2
+                        px-4 py-3.5 sm:py-3 rounded-xl
+                        bg-gradient-to-r from-blue-500 to-cyan-500
+                        active:from-blue-600 active:to-cyan-600
+                        sm:hover:from-blue-600 sm:hover:to-cyan-600
+                        text-white font-soft font-semibold text-sm
+                        transition-all cursor-pointer touch-manipulation
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none
+                        shadow-lg shadow-blue-500/25
+                      "
+                    >
+                      {mapMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Creating Link...
+                        </>
+                      ) : (
+                        <>
+                          <Link2 className="w-5 h-5" />
+                          Link {selectedCharacter?.name} to{' '}
+                          {selectedDiscordUser?.serverNickName}
+                        </>
+                      )}
+                    </button>
+
+                    {mapMutation.isError && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-2 text-sm text-red-500 text-center"
+                      >
+                        Failed to create link. Please try again.
+                      </motion.p>
+                    )}
+                  </motion.div>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       )}
     </ContentCard>
