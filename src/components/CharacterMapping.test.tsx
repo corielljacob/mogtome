@@ -4,6 +4,20 @@ import userEvent from '@testing-library/user-event';
 import { CharacterMapping } from './CharacterMapping';
 import { characterMappingApi } from '../api/characterMapping';
 
+// Mock @tanstack/react-virtual since jsdom has no layout engine
+vi.mock('@tanstack/react-virtual', () => ({
+  useVirtualizer: (opts: { count: number; estimateSize: () => number; gap?: number }) => ({
+    getTotalSize: () => opts.count * (opts.estimateSize() + (opts.gap ?? 0)),
+    getVirtualItems: () =>
+      Array.from({ length: opts.count }, (_, i) => ({
+        index: i,
+        key: i,
+        start: i * (opts.estimateSize() + (opts.gap ?? 0)),
+        size: opts.estimateSize(),
+      })),
+  }),
+}));
+
 // Mock the characterMappingApi
 vi.mock('../api/characterMapping', () => ({
   characterMappingApi: {

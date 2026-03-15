@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+﻿import { useState, useMemo, useCallback, useRef, memo, useDeferredValue } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -24,6 +24,7 @@ import type {
   UnmappedDiscordUser,
 } from '../api/characterMapping';
 import { ContentCard } from './ContentCard';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   computeMatches,
   rankMatchesForCharacter,
@@ -199,7 +200,7 @@ interface CharacterItemProps {
   disabled?: boolean;
 }
 
-function CharacterItem({
+const CharacterItem = memo(function CharacterItem({
   character,
   isSelected,
   matchInfo,
@@ -207,16 +208,12 @@ function CharacterItem({
   disabled,
 }: CharacterItemProps) {
   return (
-    <motion.button
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+    <button
       onClick={onClick}
       disabled={disabled}
       className={`
         w-full flex items-center gap-3 p-3 rounded-xl
-        border transition-all cursor-pointer touch-manipulation text-left
+        border transition-colors cursor-pointer touch-manipulation text-left
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
@@ -257,9 +254,9 @@ function CharacterItem({
           <Check className="w-4 h-4 text-white" />
         </div>
       )}
-    </motion.button>
+    </button>
   );
-}
+});
 
 interface DiscordUserItemProps {
   user: UnmappedDiscordUser;
@@ -269,7 +266,7 @@ interface DiscordUserItemProps {
   disabled?: boolean;
 }
 
-function DiscordUserItem({
+const DiscordUserItem = memo(function DiscordUserItem({
   user,
   isSelected,
   matchInfo,
@@ -277,16 +274,12 @@ function DiscordUserItem({
   disabled,
 }: DiscordUserItemProps) {
   return (
-    <motion.button
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+    <button
       onClick={onClick}
       disabled={disabled}
       className={`
         w-full flex items-center gap-3 p-3 rounded-xl
-        border transition-all cursor-pointer touch-manipulation text-left
+        border transition-colors cursor-pointer touch-manipulation text-left
         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
@@ -315,9 +308,9 @@ function DiscordUserItem({
           <Check className="w-4 h-4 text-white" />
         </div>
       )}
-    </motion.button>
+    </button>
   );
-}
+});
 
 // --- Main component ----------------------------------------------------------
 
@@ -339,6 +332,12 @@ export function CharacterMapping() {
     useState<UnmappedDiscordUser | null>(null);
   const [characterSearch, setCharacterSearch] = useState('');
   const [discordSearch, setDiscordSearch] = useState('');
+  const deferredCharSearch = useDeferredValue(characterSearch);
+  const deferredDiscordSearch = useDeferredValue(discordSearch);
+
+  // Scroll container refs for virtualization
+  const characterScrollRef = useRef<HTMLDivElement>(null);
+  const discordScrollRef = useRef<HTMLDivElement>(null);
 
   // Collapsible sections in matches tab
   const [exactExpanded, setExactExpanded] = useState(true);
@@ -457,7 +456,7 @@ export function CharacterMapping() {
   // -- Filtered lists for manual picker ---------------------------------------
 
   const filteredCharacters = useMemo(() => {
-    const searchLower = characterSearch.toLowerCase().trim();
+    const searchLower = deferredCharSearch.toLowerCase().trim();
     if (!searchLower) return allCharacters;
     return allCharacters.filter(
       (c) =>
@@ -465,15 +464,15 @@ export function CharacterMapping() {
         (c.freeCompanyRank &&
           c.freeCompanyRank.toLowerCase().includes(searchLower)),
     );
-  }, [allCharacters, characterSearch]);
+  }, [allCharacters, deferredCharSearch]);
 
   const filteredDiscordUsers = useMemo(() => {
-    const searchLower = discordSearch.toLowerCase().trim();
+    const searchLower = deferredDiscordSearch.toLowerCase().trim();
     if (!searchLower) return allDiscordUsers;
     return allDiscordUsers.filter((u) =>
       u.serverNickName.toLowerCase().includes(searchLower),
     );
-  }, [allDiscordUsers, discordSearch]);
+  }, [allDiscordUsers, deferredDiscordSearch]);
 
   // Sort filtered lists: matched items first when a selection exists
   const sortedCharacters = useMemo(() => {
@@ -495,6 +494,25 @@ export function CharacterMapping() {
       return sb - sa;
     });
   }, [filteredDiscordUsers, selectedCharacter, discordMatchInfo]);
+
+  // -- Virtualizers -----------------------------------------------------------
+
+  const ITEM_HEIGHT = 64; // p-3 (24px padding) + 40px content
+  const ITEM_GAP = 8; // space-y-2
+
+  const characterVirtualizer = useVirtualizer({
+    count: sortedCharacters.length,
+    getScrollElement: () => characterScrollRef.current,
+    estimateSize: () => ITEM_HEIGHT + ITEM_GAP,
+    overscan: 10,
+  });
+
+  const discordVirtualizer = useVirtualizer({
+    count: sortedDiscordUsers.length,
+    getScrollElement: () => discordScrollRef.current,
+    estimateSize: () => ITEM_HEIGHT + ITEM_GAP,
+    overscan: 10,
+  });
 
   // -- Mutations --------------------------------------------------------------
 
@@ -934,35 +952,58 @@ export function CharacterMapping() {
                     />
                   </div>
 
-                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
-                    <AnimatePresence mode="popLayout">
-                      {sortedCharacters.map((character) => (
-                        <CharacterItem
-                          key={character.characterId}
-                          character={character}
-                          isSelected={
-                            selectedCharacter?.characterId ===
-                            character.characterId
-                          }
-                          matchInfo={
-                            selectedDiscordUser
-                              ? characterMatchInfo.get(character.characterId)
-                              : undefined
-                          }
-                          onClick={() => handleCharacterSelect(character)}
-                        />
-                      ))}
-                      {filteredCharacters.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                          <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                          <p className="text-sm text-[var(--bento-text-muted)]">
-                            {characterSearch
-                              ? 'No characters match your search'
-                              : 'No unmapped characters'}
-                          </p>
-                        </div>
-                      )}
-                    </AnimatePresence>
+                  <div
+                    ref={characterScrollRef}
+                    className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-none"
+                  >
+                    {sortedCharacters.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-6 text-center">
+                        <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
+                        <p className="text-sm text-[var(--bento-text-muted)]">
+                          {characterSearch
+                            ? 'No characters match your search'
+                            : 'No unmapped characters'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          height: `${characterVirtualizer.getTotalSize()}px`,
+                          width: '100%',
+                          position: 'relative',
+                        }}
+                      >
+                        {characterVirtualizer.getVirtualItems().map((virtualItem) => {
+                          const character = sortedCharacters[virtualItem.index];
+                          return (
+                            <div
+                              key={character.characterId}
+                              style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                transform: `translateY(${virtualItem.start}px)`,
+                              }}
+                            >
+                              <CharacterItem
+                                character={character}
+                                isSelected={
+                                  selectedCharacter?.characterId ===
+                                  character.characterId
+                                }
+                                matchInfo={
+                                  selectedDiscordUser
+                                    ? characterMatchInfo.get(character.characterId)
+                                    : undefined
+                                }
+                                onClick={() => handleCharacterSelect(character)}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -994,34 +1035,57 @@ export function CharacterMapping() {
                     />
                   </div>
 
-                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 max-h-[300px] lg:max-h-none">
-                    <AnimatePresence mode="popLayout">
-                      {sortedDiscordUsers.map((user) => (
-                        <DiscordUserItem
-                          key={user.discordId}
-                          user={user}
-                          isSelected={
-                            selectedDiscordUser?.discordId === user.discordId
-                          }
-                          matchInfo={
-                            selectedCharacter
-                              ? discordMatchInfo.get(user.discordId)
-                              : undefined
-                          }
-                          onClick={() => handleDiscordUserSelect(user)}
-                        />
-                      ))}
-                      {filteredDiscordUsers.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                          <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                          <p className="text-sm text-[var(--bento-text-muted)]">
-                            {discordSearch
-                              ? 'No users match your search'
-                              : 'No unmapped Discord users'}
-                          </p>
-                        </div>
-                      )}
-                    </AnimatePresence>
+                  <div
+                    ref={discordScrollRef}
+                    className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-none"
+                  >
+                    {sortedDiscordUsers.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-6 text-center">
+                        <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
+                        <p className="text-sm text-[var(--bento-text-muted)]">
+                          {discordSearch
+                            ? 'No users match your search'
+                            : 'No unmapped Discord users'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          height: `${discordVirtualizer.getTotalSize()}px`,
+                          width: '100%',
+                          position: 'relative',
+                        }}
+                      >
+                        {discordVirtualizer.getVirtualItems().map((virtualItem) => {
+                          const user = sortedDiscordUsers[virtualItem.index];
+                          return (
+                            <div
+                              key={user.discordId}
+                              style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                transform: `translateY(${virtualItem.start}px)`,
+                              }}
+                            >
+                              <DiscordUserItem
+                                user={user}
+                                isSelected={
+                                  selectedDiscordUser?.discordId === user.discordId
+                                }
+                                matchInfo={
+                                  selectedCharacter
+                                    ? discordMatchInfo.get(user.discordId)
+                                    : undefined
+                                }
+                                onClick={() => handleDiscordUserSelect(user)}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
