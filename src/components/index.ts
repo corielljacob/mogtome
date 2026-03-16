@@ -42,7 +42,7 @@ export { MissingUserDataDialog } from './MissingUserDataDialog';
 export { PendingSubmissions } from './PendingSubmissions';
 
 // Character Mapping
-export { CharacterMapping } from './CharacterMapping';
+export { CharacterMapping } from '../features/characterMapping';
 
 // Mobile
 export { MobileSheet } from './MobileSheet';

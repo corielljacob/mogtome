@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '../test/test-utils';
 import userEvent from '@testing-library/user-event';
-import { CharacterMapping } from './CharacterMapping';
+import { CharacterMapping } from '../features/characterMapping';
 import { characterMappingApi } from '../api/characterMapping';
 
 // Mock @tanstack/react-virtual since jsdom has no layout engine
