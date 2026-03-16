@@ -189,9 +189,6 @@ export function CharacterMapping() {
             >
               <Search className="w-4 h-4" />
               Manual
-              <span className="px-1.5 py-0.5 rounded-full text-xs bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
-                {allCharacters.length + allDiscordUsers.length}
-              </span>
             </button>
           </div>
 
