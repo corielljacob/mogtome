@@ -9,7 +9,7 @@ export {
   CharacterItem,
   DiscordUserItem,
   MatchPairCard,
-  SmartMatchesTab,
+  AutoMatchesTab,
   ManualPickerTab,
 } from './components';
 

@@ -10,7 +10,7 @@ import {
   Sparkles,
   Inbox,
 } from 'lucide-react';
-import type { UnmappedCharacter, UnmappedDiscordUser, MatchInfo } from '../types';
+import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
 import { CharacterItem } from './CharacterItem';
 import { DiscordUserItem } from './DiscordUserItem';
 import { SearchInput } from './SearchInput';
@@ -30,10 +30,6 @@ interface ManualPickerTabProps {
   // Lists
   sortedCharacters: UnmappedCharacter[];
   sortedDiscordUsers: UnmappedDiscordUser[];
-
-  // Match info
-  characterMatchInfo: Map<string, MatchInfo>;
-  discordMatchInfo: Map<string, MatchInfo>;
 
   // Actions
   onSelectCharacter: (character: UnmappedCharacter) => void;
@@ -59,8 +55,6 @@ export function ManualPickerTab({
   onDiscordSearchChange,
   sortedCharacters,
   sortedDiscordUsers,
-  characterMatchInfo,
-  discordMatchInfo,
   onSelectCharacter,
   onSelectDiscordUser,
   onReset,
@@ -184,11 +178,6 @@ export function ManualPickerTab({
                         isSelected={
                           selectedCharacter?.characterId === character.characterId
                         }
-                        matchInfo={
-                          selectedDiscordUser
-                            ? characterMatchInfo.get(character.characterId)
-                            : undefined
-                        }
                         onClick={() => onSelectCharacter(character)}
                       />
                     </div>
@@ -255,11 +244,6 @@ export function ManualPickerTab({
                         user={user}
                         isSelected={
                           selectedDiscordUser?.discordId === user.discordId
-                        }
-                        matchInfo={
-                          selectedCharacter
-                            ? discordMatchInfo.get(user.discordId)
-                            : undefined
                         }
                         onClick={() => onSelectDiscordUser(user)}
                       />

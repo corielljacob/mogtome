@@ -4,5 +4,5 @@ export { SearchInput } from './SearchInput';
 export { CharacterItem } from './CharacterItem';
 export { DiscordUserItem } from './DiscordUserItem';
 export { MatchPairCard } from './MatchPairCard';
-export { SmartMatchesTab } from './SmartMatchesTab';
+export { AutoMatchesTab } from './AutoMatchesTab';
 export { ManualPickerTab } from './ManualPickerTab';

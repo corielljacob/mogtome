@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { ContentCard } from '../../components/ContentCard';
 import { useCharacterMapping, useManualPicker } from './hooks';
-import { EmptyState, SmartMatchesTab, ManualPickerTab } from './components';
+import { EmptyState, AutoMatchesTab, ManualPickerTab } from './components';
 import type { TabId } from './types';
 
 export function CharacterMapping() {
@@ -34,8 +34,6 @@ export function CharacterMapping() {
     confirmingPairKey,
     isMapping,
     mappingError,
-    getRankedDiscordUsers,
-    getRankedCharacters,
   } = useCharacterMapping();
 
   const {
@@ -48,16 +46,12 @@ export function CharacterMapping() {
     setDiscordSearch,
     sortedCharacters,
     sortedDiscordUsers,
-    characterMatchInfo,
-    discordMatchInfo,
     selectCharacter,
     selectDiscordUser,
     reset: resetPicker,
   } = useManualPicker({
     allCharacters,
     allDiscordUsers,
-    getRankedDiscordUsers,
-    getRankedCharacters,
   });
 
   // -- Handlers ---------------------------------------------------------------
@@ -173,7 +167,7 @@ export function CharacterMapping() {
               `}
             >
               <Zap className="w-4 h-4" />
-              Smart Matches
+              Auto
               {totalMatches > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-500/15 text-green-600 dark:text-green-400">
                   {totalMatches}
@@ -203,7 +197,7 @@ export function CharacterMapping() {
 
           {/* Tab content */}
           {activeTab === 'matches' && (
-            <SmartMatchesTab
+            <AutoMatchesTab
               visibleExactMatches={visibleExactMatches}
               visibleSuggestedMatches={visibleSuggestedMatches}
               totalMatches={totalMatches}
@@ -227,8 +221,6 @@ export function CharacterMapping() {
               onDiscordSearchChange={setDiscordSearch}
               sortedCharacters={sortedCharacters}
               sortedDiscordUsers={sortedDiscordUsers}
-              characterMatchInfo={characterMatchInfo}
-              discordMatchInfo={discordMatchInfo}
               onSelectCharacter={selectCharacter}
               onSelectDiscordUser={selectDiscordUser}
               onReset={resetPicker}

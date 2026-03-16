@@ -6,7 +6,7 @@ import { MatchPairCard } from './MatchPairCard';
 import { EmptyState } from './EmptyState';
 import { pairKey } from '../hooks';
 
-interface SmartMatchesTabProps {
+interface AutoMatchesTabProps {
   visibleExactMatches: MatchPair[];
   visibleSuggestedMatches: MatchPair[];
   totalMatches: number;
@@ -18,7 +18,7 @@ interface SmartMatchesTabProps {
   onSwitchToManual: () => void;
 }
 
-export function SmartMatchesTab({
+export function AutoMatchesTab({
   visibleExactMatches,
   visibleSuggestedMatches,
   totalMatches,
@@ -28,7 +28,7 @@ export function SmartMatchesTab({
   onConfirmPair,
   onDismissPair,
   onSwitchToManual,
-}: SmartMatchesTabProps) {
+}: AutoMatchesTabProps) {
   const [exactExpanded, setExactExpanded] = useState(true);
   const [suggestedExpanded, setSuggestedExpanded] = useState(true);
 
