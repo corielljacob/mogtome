@@ -43,7 +43,7 @@ export function SmartMatchesTab({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto min-h-0 space-y-4">
+    <div className="flex-1 overflow-y-auto min-h-0 max-h-[500px] space-y-4">
       {/* Exact matches section */}
       {visibleExactMatches.length > 0 && (
         <div>
@@ -70,7 +70,7 @@ export function SmartMatchesTab({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="space-y-2 overflow-hidden"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden"
               >
                 {visibleExactMatches.map((pair) => (
                   <MatchPairCard
@@ -113,7 +113,7 @@ export function SmartMatchesTab({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="space-y-2 overflow-hidden"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden"
               >
                 {visibleSuggestedMatches.map((pair) => (
                   <MatchPairCard

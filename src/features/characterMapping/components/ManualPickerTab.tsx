@@ -147,7 +147,7 @@ export function ManualPickerTab({
 
           <div
             ref={characterScrollRef}
-            className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-none"
+            className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-[400px]"
           >
             {sortedCharacters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
@@ -219,7 +219,7 @@ export function ManualPickerTab({
 
           <div
             ref={discordScrollRef}
-            className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-none"
+            className="flex-1 overflow-y-auto pr-1 min-h-0 max-h-[300px] lg:max-h-[400px]"
           >
             {sortedDiscordUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
