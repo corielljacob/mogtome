@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Shield, Sparkles, MessageCircle, Lightbulb } from 'lucide-react';
-import { PendingSubmissions, ContentCard } from '../components';
+import { PendingSubmissions, ContentCard, CharacterMapping } from '../components';
 
 /**
  * Knight Dashboard - Only accessible to users with knighthood
@@ -87,6 +87,11 @@ export function KnightDashboard() {
                   </p>
                 </div>
               </ContentCard>
+            </div>
+
+            {/* Character Mapping */}
+            <div className="lg:col-span-2">
+              <CharacterMapping />
             </div>
           </motion.div>
         </div>

@@ -41,5 +41,8 @@ export { MissingUserDataDialog } from './MissingUserDataDialog';
 // Biography
 export { PendingSubmissions } from './PendingSubmissions';
 
+// Character Mapping
+export { CharacterMapping } from '../features/characterMapping';
+
 // Mobile
 export { MobileSheet } from './MobileSheet';
