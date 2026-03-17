@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Link2,
   Loader2,
@@ -13,15 +13,16 @@ import {
   Sparkles,
   ArrowLeft,
   ChevronRight,
-} from 'lucide-react';
-import { ContentCard } from '../../components/ContentCard';
-import { useCharacterMapping, useManualPicker } from './hooks';
-import { EmptyState, AutoMatchesTab, ManualPickerTab } from './components';
-import type { TabId } from './types';
+} from "lucide-react";
+import { ContentCard } from "../../components/ContentCard";
+import { useCharacterMapping, useManualPicker } from "./hooks";
+import { EmptyState, AutoMatchesTab, ManualPickerTab } from "./components";
+import type { TabId, UnmappedDiscordUser } from "./types";
 
 export function CharacterMapping() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>('matches');
+  const [activeTab, setActiveTab] = useState<TabId>("matches");
+  const [discordUsername, setDiscordUsername] = useState("");
 
   // -- Custom hooks -----------------------------------------------------------
 
@@ -33,6 +34,7 @@ export function CharacterMapping() {
     visibleSuggestedMatches,
     totalMatches,
     isLoading,
+    isLoadingCharacters,
     isError,
     confirmPair,
     dismissPair,
@@ -41,7 +43,7 @@ export function CharacterMapping() {
     confirmingPairKey,
     isMapping,
     mappingError,
-  } = useCharacterMapping();
+  } = useCharacterMapping({ discordUsername });
 
   const {
     selectedCharacter,
@@ -61,13 +63,19 @@ export function CharacterMapping() {
     allDiscordUsers,
   });
 
+  function onSelectDiscordUser(user: UnmappedDiscordUser) {
+    console.log(user.serverNickName);
+    setDiscordUsername(user.serverNickName);
+    selectDiscordUser(user);
+  }
+
   // -- Effects ----------------------------------------------------------------
 
   // Lock body scroll when overlay is open
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
@@ -77,10 +85,10 @@ export function CharacterMapping() {
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === "Escape") setIsOpen(false);
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [isOpen]);
 
   // -- Handlers ---------------------------------------------------------------
@@ -88,7 +96,10 @@ export function CharacterMapping() {
   const handleManualConfirm = useCallback(async () => {
     if (!selectedCharacter || !selectedDiscordUser) return;
     try {
-      await mapManually(selectedCharacter.characterId, selectedDiscordUser.discordId);
+      await mapManually(
+        selectedCharacter.characterId,
+        selectedDiscordUser.discordId,
+      );
       resetPicker();
     } catch {
       // Error is surfaced via mappingError from the hook
@@ -101,7 +112,7 @@ export function CharacterMapping() {
   }, [resetPicker, refresh]);
 
   const handleSwitchToManual = useCallback(() => {
-    setActiveTab('manual');
+    setActiveTab("manual");
   }, []);
 
   const hasAnyUnmapped = allCharacters.length > 0 || allDiscordUsers.length > 0;
@@ -112,7 +123,7 @@ export function CharacterMapping() {
     <div
       onClick={() => setIsOpen(true)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           setIsOpen(true);
         }
@@ -252,7 +263,7 @@ export function CharacterMapping() {
                 aria-label="Refresh unmapped lists"
               >
                 <RefreshCw
-                  className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`}
+                  className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
                 />
               </button>
             </div>
@@ -261,108 +272,114 @@ export function CharacterMapping() {
           {/* Content area — fills remaining viewport */}
           <div className="relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6 w-full flex-1 flex flex-col min-h-0">
-              {isLoading ? (
+              {
+                /* {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-16">
                   <Loader2 className="w-8 h-8 text-[var(--bento-primary)] animate-spin mb-3" />
                   <p className="text-sm text-[var(--bento-text-muted)] font-soft">
                     Loading unmapped accounts...
                   </p>
                 </div>
-              ) : isError ? (
-                <EmptyState
-                  icon={<AlertCircle className="w-7 h-7 text-red-500" />}
-                  title="Failed to load unmapped accounts"
-                  subtitle="Something went wrong, kupo..."
-                  action={
-                    <button
-                      onClick={handleRefresh}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bento-primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      Try Again
-                    </button>
-                  }
-                />
-              ) : !hasAnyUnmapped ? (
-                <EmptyState
-                  icon={<Check className="w-7 h-7 text-green-500" />}
-                  title="All accounts mapped!"
-                  subtitle="Every character is linked to a Discord account, kupo~"
-                />
-              ) : (
-                <div className="flex-1 flex flex-col min-h-0">
-                  {/* Tab bar */}
-                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bento-card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
-                    <button
-                      onClick={() => setActiveTab('matches')}
-                      className={`
+              ) :  */
+                isError ? (
+                  <EmptyState
+                    icon={<AlertCircle className="w-7 h-7 text-red-500" />}
+                    title="Failed to load unmapped accounts"
+                    subtitle="Something went wrong, kupo..."
+                    action={
+                      <button
+                        onClick={handleRefresh}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bento-primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                        Try Again
+                      </button>
+                    }
+                  />
+                ) : !hasAnyUnmapped ? (
+                  <EmptyState
+                    icon={<Check className="w-7 h-7 text-green-500" />}
+                    title="All accounts mapped!"
+                    subtitle="Every character is linked to a Discord account, kupo~"
+                  />
+                ) : (
+                  <div className="flex-1 flex flex-col min-h-0">
+                    {/* Tab bar */}
+                    <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bento-card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
+                      <button
+                        onClick={() => setActiveTab("matches")}
+                        className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
                         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                         ${
-                          activeTab === 'matches'
-                            ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
-                            : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                          activeTab === "matches"
+                            ? "bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm"
+                            : "text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]"
                         }
                       `}
-                    >
-                      <Zap className="w-4 h-4" />
-                      Auto
-                      {totalMatches > 0 && (
-                        <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-500/15 text-green-600 dark:text-green-400">
-                          {totalMatches}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('manual')}
-                      className={`
+                      >
+                        <Zap className="w-4 h-4" />
+                        Auto
+                        {totalMatches > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-500/15 text-green-600 dark:text-green-400">
+                            {totalMatches}
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("manual")}
+                        className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
                         focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
                         ${
-                          activeTab === 'manual'
-                            ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
-                            : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                          activeTab === "manual"
+                            ? "bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm"
+                            : "text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]"
                         }
                       `}
-                    >
-                      <Search className="w-4 h-4" />
-                      Manual
-                    </button>
+                      >
+                        <Search className="w-4 h-4" />
+                        Manual
+                      </button>
+                    </div>
+
+                    {/* Tab content */}
+                    {activeTab === "matches" && (
+                      <AutoMatchesTab
+                        visibleExactMatches={visibleExactMatches}
+                        visibleSuggestedMatches={visibleSuggestedMatches}
+                        totalMatches={totalMatches}
+                        unmatchedCharacters={matchResults.unmatchedCharacters}
+                        unmatchedDiscordUsers={
+                          matchResults.unmatchedDiscordUsers
+                        }
+                        confirmingPairKey={confirmingPairKey}
+                        onConfirmPair={confirmPair}
+                        onDismissPair={dismissPair}
+                        onSwitchToManual={handleSwitchToManual}
+                      />
+                    )}
+
+                    {activeTab === "manual" && (
+                      <ManualPickerTab
+                        selectedCharacter={selectedCharacter}
+                        selectedDiscordUser={selectedDiscordUser}
+                        characterSearch={characterSearch}
+                        discordSearch={discordSearch}
+                        onCharacterSearchChange={setCharacterSearch}
+                        onDiscordSearchChange={setDiscordSearch}
+                        sortedCharacters={sortedCharacters}
+                        sortedDiscordUsers={sortedDiscordUsers}
+                        onSelectCharacter={selectCharacter}
+                        onSelectDiscordUser={onSelectDiscordUser}
+                        isLoadingCharacters={isLoadingCharacters}
+                      />
+                    )}
                   </div>
-
-                  {/* Tab content */}
-                  {activeTab === 'matches' && (
-                    <AutoMatchesTab
-                      visibleExactMatches={visibleExactMatches}
-                      visibleSuggestedMatches={visibleSuggestedMatches}
-                      totalMatches={totalMatches}
-                      unmatchedCharacters={matchResults.unmatchedCharacters}
-                      unmatchedDiscordUsers={matchResults.unmatchedDiscordUsers}
-                      confirmingPairKey={confirmingPairKey}
-                      onConfirmPair={confirmPair}
-                      onDismissPair={dismissPair}
-                      onSwitchToManual={handleSwitchToManual}
-                    />
-                  )}
-
-                  {activeTab === 'manual' && (
-                    <ManualPickerTab
-                      selectedCharacter={selectedCharacter}
-                      selectedDiscordUser={selectedDiscordUser}
-                      characterSearch={characterSearch}
-                      discordSearch={discordSearch}
-                      onCharacterSearchChange={setCharacterSearch}
-                      onDiscordSearchChange={setDiscordSearch}
-                      sortedCharacters={sortedCharacters}
-                      sortedDiscordUsers={sortedDiscordUsers}
-                      onSelectCharacter={selectCharacter}
-                      onSelectDiscordUser={selectDiscordUser}
-                    />
-                  )}
-                </div>
-              )}
+                )
+              }
             </div>
           </div>
 
@@ -370,10 +387,10 @@ export function CharacterMapping() {
           <AnimatePresence>
             {(selectedCharacter || selectedDiscordUser) && (
               <motion.div
-                initial={{ y: '100%' }}
+                initial={{ y: "100%" }}
                 animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 className="relative z-10 flex-shrink-0 border-t border-[var(--bento-border)]/50 bg-[var(--bento-bg)]/80 backdrop-blur-lg"
               >
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3">
@@ -383,19 +400,21 @@ export function CharacterMapping() {
                       <p className="text-sm text-[var(--bento-text)] truncate">
                         {selectedCharacter && selectedDiscordUser ? (
                           <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{' '}
-                            <strong>{selectedDiscordUser.serverNickName}</strong>
+                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
+                            <strong>
+                              {selectedDiscordUser.serverNickName}
+                            </strong>
                           </>
                         ) : selectedCharacter ? (
                           <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{' '}
+                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
                             Pick a Discord account
                           </>
                         ) : (
                           <>
                             <strong>
                               {selectedDiscordUser!.serverNickName}
-                            </strong>{' '}
+                            </strong>{" "}
                             &rarr; Pick a character
                           </>
                         )}
@@ -436,7 +455,7 @@ export function CharacterMapping() {
                         ) : (
                           <>
                             <Link2 className="w-5 h-5" />
-                            Link {selectedCharacter?.name} to{' '}
+                            Link {selectedCharacter?.name} to{" "}
                             {selectedDiscordUser?.serverNickName}
                           </>
                         )}

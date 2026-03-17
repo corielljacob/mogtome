@@ -1,14 +1,11 @@
-import { useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  User,
-  MessageSquare,
-  Inbox,
-} from 'lucide-react';
-import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
-import { CharacterItem } from './CharacterItem';
-import { DiscordUserItem } from './DiscordUserItem';
-import { SearchInput } from './SearchInput';
+import { useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { User, MessageSquare, Inbox } from "lucide-react";
+import type { UnmappedCharacter, UnmappedDiscordUser } from "../types";
+import { CharacterItem } from "./CharacterItem";
+import { DiscordUserItem } from "./DiscordUserItem";
+import { SearchInput } from "./SearchInput";
+import { Loader2 } from "lucide-react";
 
 interface ManualPickerTabProps {
   // Selection state
@@ -28,6 +25,8 @@ interface ManualPickerTabProps {
   // Actions
   onSelectCharacter: (character: UnmappedCharacter) => void;
   onSelectDiscordUser: (user: UnmappedDiscordUser) => void;
+
+  isLoadingCharacters: boolean;
 }
 
 const ITEM_HEIGHT = 64; // p-3 (24px padding) + 40px content
@@ -44,6 +43,7 @@ export function ManualPickerTab({
   sortedDiscordUsers,
   onSelectCharacter,
   onSelectDiscordUser,
+  isLoadingCharacters,
 }: ManualPickerTabProps) {
   const characterScrollRef = useRef<HTMLDivElement>(null);
   const discordScrollRef = useRef<HTMLDivElement>(null);
@@ -86,23 +86,25 @@ export function ManualPickerTab({
 
           <div
             ref={characterScrollRef}
-            className="flex-1 overflow-y-auto pr-1 min-h-0"
+            className="flex-1 flex justify-center overflow-y-auto pr-1 min-h-0"
           >
-            {sortedCharacters.length === 0 ? (
+            {isLoadingCharacters ? (
+              <Loader2 className="w-8 h-8 text-[var(--bento-primary)] animate-spin mb-3" />
+            ) : sortedCharacters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
                 <p className="text-sm text-[var(--bento-text-muted)]">
                   {characterSearch
-                    ? 'No characters match your search'
-                    : 'No unmapped characters'}
+                    ? "No characters match your search"
+                    : "No unmapped characters"}
                 </p>
               </div>
             ) : (
               <div
                 style={{
                   height: `${characterVirtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
+                  width: "100%",
+                  position: "relative",
                 }}
               >
                 {characterVirtualizer.getVirtualItems().map((virtualItem) => {
@@ -111,17 +113,18 @@ export function ManualPickerTab({
                     <div
                       key={character.characterId}
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 0,
                         left: 0,
-                        width: '100%',
+                        width: "100%",
                         transform: `translateY(${virtualItem.start}px)`,
                       }}
                     >
                       <CharacterItem
                         character={character}
                         isSelected={
-                          selectedCharacter?.characterId === character.characterId
+                          selectedCharacter?.characterId ===
+                          character.characterId
                         }
                         onClick={() => onSelectCharacter(character)}
                       />
@@ -160,16 +163,16 @@ export function ManualPickerTab({
                 <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
                 <p className="text-sm text-[var(--bento-text-muted)]">
                   {discordSearch
-                    ? 'No users match your search'
-                    : 'No unmapped Discord users'}
+                    ? "No users match your search"
+                    : "No unmapped Discord users"}
                 </p>
               </div>
             ) : (
               <div
                 style={{
                   height: `${discordVirtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
+                  width: "100%",
+                  position: "relative",
                 }}
               >
                 {discordVirtualizer.getVirtualItems().map((virtualItem) => {
@@ -178,10 +181,10 @@ export function ManualPickerTab({
                     <div
                       key={user.discordId}
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 0,
                         left: 0,
-                        width: '100%',
+                        width: "100%",
                         transform: `translateY(${virtualItem.start}px)`,
                       }}
                     >
