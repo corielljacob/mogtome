@@ -1,7 +1,9 @@
 import { motion } from 'motion/react';
-import { User, MessageSquare, Loader2, Check, X, ArrowDown } from 'lucide-react';
+import { Loader2, Check, X, ArrowDown } from 'lucide-react';
 import type { MatchPair } from '../types';
 import { ConfidenceBadge } from './ConfidenceBadge';
+import FfxivIcon from "../../../assets/icons/ffxiv.png";
+import DiscordIcon from "../../../assets/icons/discord.png";
 
 interface MatchPairCardProps {
   pair: MatchPair;
@@ -41,7 +43,7 @@ export function MatchPairCard({
           />
         ) : (
           <div className="w-8 h-8 rounded-lg bg-[var(--bento-primary)]/10 flex items-center justify-center flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--bento-primary)]" />
+            <img src={FfxivIcon} className="w-7 h-7 text-[var(--bento-primary)]" />
           </div>
         )}
         <div className="min-w-0 flex-1">
@@ -68,7 +70,7 @@ export function MatchPairCard({
       {/* Discord */}
       <div className="flex items-center gap-2.5 mb-3">
         <div className="w-8 h-8 rounded-lg bg-[#5865F2]/15 flex items-center justify-center flex-shrink-0">
-          <MessageSquare className="w-4 h-4 text-[#5865F2]" />
+          <img src={DiscordIcon} className="w-6 h-5 text-[#5865F2]" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
@@ -76,9 +78,6 @@ export function MatchPairCard({
           </p>
           <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate leading-tight">
             {pair.discordUser.discordId}
-          </p>
-          <p className="text-[10px] text-[var(--bento-text-muted)] leading-tight">
-            Discord
           </p>
         </div>
       </div>
