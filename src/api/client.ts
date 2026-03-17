@@ -1,9 +1,11 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// Use an env-provided base URL in production; fall back to /api for local proxy
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-const AUTH_API_URL = 'https://api.mogtome.com';
+// In development/test, always use the Vite proxy to avoid CORS on localhost.
+// In production, allow an env-provided base URL (or fall back to the public API).
+const API_BASE_URL = (import.meta.env.DEV || import.meta.env.MODE === 'test')
+  ? '/api'
+  : (import.meta.env.VITE_API_BASE_URL || 'https://api.mogtome.com');
 
 const AUTH_TOKEN_KEY = 'mogtome_auth_token';
 
@@ -55,7 +57,7 @@ apiClient.interceptors.request.use((config) => {
 async function refreshAuthToken(): Promise<string | null> {
   try {
     const response = await axios.get(
-      `${AUTH_API_URL}/auth/discord/refresh`,
+      `${API_BASE_URL}/auth/discord/refresh`,
       {
         withCredentials: true, // Important: sends the HttpOnly refresh token cookie
       }

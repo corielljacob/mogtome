@@ -7,7 +7,7 @@ describe('apiClient', () => {
   });
 
   it('should use /api as base URL by default', () => {
-    // In test environment, VITE_API_BASE_URL is not set, so it defaults to /api
+    // In test/dev, we always use the Vite proxy base URL.
     expect(apiClient.defaults.baseURL).toBe('/api');
   });
 });
