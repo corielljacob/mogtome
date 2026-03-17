@@ -51,6 +51,9 @@ export const CharacterItem = memo(function CharacterItem({
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
           {character.name}
         </p>
+        <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate">
+          {character.characterId}
+        </p>
         {character.freeCompanyRank && (
           <p className="text-xs text-[var(--bento-text-muted)] truncate">
             {character.freeCompanyRank}
