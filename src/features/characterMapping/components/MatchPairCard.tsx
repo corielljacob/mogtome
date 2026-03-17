@@ -62,7 +62,7 @@ export function MatchPairCard({
       </div>
 
       {/* Connector */}
-      <div className="flex items-center gap-2 pl-3 mb-2">
+      <div className="flex items-center gap-2 pl-2 mb-2">
         <ArrowDown className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
         <ConfidenceBadge confidence={pair.confidence} />
       </div>
