@@ -119,6 +119,7 @@ export function CharacterMapping() {
       }}
       role="button"
       tabIndex={0}
+      aria-label="Open Character Mapping"
       className="cursor-pointer group"
     >
       <ContentCard className="h-full flex flex-col group-hover:border-[var(--bento-primary)]/25 transition-colors">

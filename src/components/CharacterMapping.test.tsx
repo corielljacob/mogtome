@@ -39,6 +39,7 @@ describe('CharacterMapping', () => {
   });
 
   it('renders loading state initially', async () => {
+    const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockReturnValue(
       new Promise(() => {}),
     );
@@ -47,6 +48,9 @@ describe('CharacterMapping', () => {
     );
 
     render(<CharacterMapping />);
+
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
 
     expect(
       screen.getByText(/loading unmapped accounts/i),
@@ -91,6 +95,7 @@ describe('CharacterMapping', () => {
   });
 
   it('shows tab bar with Auto and Manual tabs', async () => {
+    const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
@@ -110,6 +115,9 @@ describe('CharacterMapping', () => {
     });
 
     render(<CharacterMapping />);
+
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
 
     await waitFor(() => {
       expect(screen.getByText('Auto')).toBeInTheDocument();
@@ -139,6 +147,9 @@ describe('CharacterMapping', () => {
 
     render(<CharacterMapping />);
 
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+
     // Switch to manual tab
     await waitFor(() => {
       expect(screen.getByText('Manual')).toBeInTheDocument();
@@ -155,6 +166,7 @@ describe('CharacterMapping', () => {
   });
 
   it('shows exact match pairs when names match', async () => {
+    const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
@@ -174,6 +186,9 @@ describe('CharacterMapping', () => {
     });
 
     render(<CharacterMapping />);
+
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
 
     // Auto tab is the default
     await waitFor(() => {
@@ -204,6 +219,9 @@ describe('CharacterMapping', () => {
 
     render(<CharacterMapping />);
 
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+
     await waitFor(() => {
       expect(screen.getByText('Manual')).toBeInTheDocument();
     });
@@ -220,6 +238,7 @@ describe('CharacterMapping', () => {
   });
 
   it('has a refresh button', async () => {
+    const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [],
@@ -230,6 +249,9 @@ describe('CharacterMapping', () => {
     });
 
     render(<CharacterMapping />);
+
+    // Open the overlay
+    await user.click(screen.getByRole('button', { name: /character mapping/i }));
 
     await waitFor(() => {
       expect(
