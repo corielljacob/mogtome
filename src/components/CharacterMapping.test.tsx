@@ -90,7 +90,7 @@ describe('CharacterMapping', () => {
     });
   });
 
-  it('shows tab bar with Smart Matches and Manual tabs', async () => {
+  it('shows tab bar with Auto and Manual tabs', async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
@@ -112,7 +112,7 @@ describe('CharacterMapping', () => {
     render(<CharacterMapping />);
 
     await waitFor(() => {
-      expect(screen.getByText('Smart Matches')).toBeInTheDocument();
+      expect(screen.getByText('Auto')).toBeInTheDocument();
       expect(screen.getByText('Manual')).toBeInTheDocument();
     });
   });
@@ -175,7 +175,7 @@ describe('CharacterMapping', () => {
 
     render(<CharacterMapping />);
 
-    // Smart Matches tab is the default
+    // Auto tab is the default
     await waitFor(() => {
       expect(screen.getByText('Exact Matches')).toBeInTheDocument();
     });
