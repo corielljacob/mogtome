@@ -1,14 +1,12 @@
 import { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  User,
-  MessageSquare,
-  Inbox,
-} from 'lucide-react';
+import { Inbox } from 'lucide-react';
 import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
 import { CharacterItem } from './CharacterItem';
 import { DiscordUserItem } from './DiscordUserItem';
 import { SearchInput } from './SearchInput';
+import { DiscordIcon } from "../../../../src/components/DiscordIcon"
+import FfxivIcon from "../../../assets/icons/ffxiv.png";
 
 interface ManualPickerTabProps {
   // Selection state
@@ -69,7 +67,7 @@ export function ManualPickerTab({
         {/* Characters column */}
         <div className="flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--bento-primary)]" />
+            <img src={FfxivIcon} className="w-6 h-6 text-[var(--bento-primary)]" />
             <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
               Characters
             </h3>
@@ -136,7 +134,7 @@ export function ManualPickerTab({
         {/* Discord users column */}
         <div className="flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-            <MessageSquare className="w-4 h-4 text-[#5865F2]" />
+            <DiscordIcon className="w-5 text-[#5865F2]" />
             <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
               Discord Accounts
             </h3>

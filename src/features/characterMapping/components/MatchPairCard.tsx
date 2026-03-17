@@ -3,7 +3,7 @@ import { Loader2, Check, X, ArrowDown } from 'lucide-react';
 import type { MatchPair } from '../types';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import FfxivIcon from "../../../assets/icons/ffxiv.png";
-import DiscordIcon from "../../../assets/icons/discord.png";
+import { DiscordIcon } from "../../../../src/components/DiscordIcon"
 
 interface MatchPairCardProps {
   pair: MatchPair;
@@ -70,7 +70,7 @@ export function MatchPairCard({
       {/* Discord */}
       <div className="flex items-center gap-2.5 mb-3">
         <div className="w-8 h-8 rounded-lg bg-[#5865F2]/15 flex items-center justify-center flex-shrink-0">
-          <img src={DiscordIcon} className="w-6 h-5 text-[#5865F2]" />
+          <DiscordIcon className="h-6 text-[#5865F2]" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
