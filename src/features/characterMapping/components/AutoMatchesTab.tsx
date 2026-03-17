@@ -43,7 +43,7 @@ export function AutoMatchesTab({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto min-h-0 max-h-[500px] space-y-4">
+    <div className="flex-1 overflow-y-auto min-h-0 space-y-4">
       {/* Exact matches section */}
       {visibleExactMatches.length > 0 && (
         <div>

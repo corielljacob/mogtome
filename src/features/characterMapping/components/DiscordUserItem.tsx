@@ -43,7 +43,9 @@ export const DiscordUserItem = memo(function DiscordUserItem({
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
           {user.serverNickName}
         </p>
-        <p className="text-xs text-[var(--bento-text-muted)]">Discord Account</p>
+        <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate">
+          {user.discordId}
+        </p>
       </div>
       {matchInfo && !isSelected && (
         <ConfidenceBadge confidence={matchInfo.confidence} />

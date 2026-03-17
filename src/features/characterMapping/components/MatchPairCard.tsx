@@ -48,6 +48,9 @@ export function MatchPairCard({
           <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
             {pair.character.name}
           </p>
+          <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate leading-tight">
+            {pair.character.characterId}
+          </p>
           {pair.character.freeCompanyRank && (
             <p className="text-[10px] text-[var(--bento-text-muted)] truncate leading-tight">
               {pair.character.freeCompanyRank}
@@ -70,6 +73,9 @@ export function MatchPairCard({
         <div className="min-w-0 flex-1">
           <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
             {pair.discordUser.serverNickName}
+          </p>
+          <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate leading-tight">
+            {pair.discordUser.discordId}
           </p>
           <p className="text-[10px] text-[var(--bento-text-muted)] leading-tight">
             Discord

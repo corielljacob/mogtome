@@ -90,7 +90,7 @@ export function KnightDashboard() {
             </div>
 
             {/* Character Mapping */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-1">
               <CharacterMapping />
             </div>
           </motion.div>
