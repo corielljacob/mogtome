@@ -1,7 +1,8 @@
 import { memo } from 'react';
-import { User, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { UnmappedCharacter, MatchInfo } from '../types';
 import { ConfidenceBadge } from './ConfidenceBadge';
+import FfxivIcon from "../../../assets/icons/ffxiv.png";
 
 interface CharacterItemProps {
   character: UnmappedCharacter;
@@ -44,7 +45,7 @@ export const CharacterItem = memo(function CharacterItem({
         />
       ) : (
         <div className="w-10 h-10 rounded-lg bg-[var(--bento-primary)]/10 flex items-center justify-center flex-shrink-0">
-          <User className="w-5 h-5 text-[var(--bento-primary)]" />
+          <img src={FfxivIcon} className="w-9 h-9 text-[var(--bento-primary)]" />
         </div>
       )}
       <div className="flex-1 min-w-0">

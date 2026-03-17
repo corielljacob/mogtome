@@ -1,7 +1,8 @@
 import { memo } from 'react';
-import { MessageSquare, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { UnmappedDiscordUser, MatchInfo } from '../types';
 import { ConfidenceBadge } from './ConfidenceBadge';
+import { DiscordIcon } from "../../../../src/components/DiscordIcon"
 
 interface DiscordUserItemProps {
   user: UnmappedDiscordUser;
@@ -37,7 +38,7 @@ export const DiscordUserItem = memo(function DiscordUserItem({
       `}
     >
       <div className="w-10 h-10 rounded-lg bg-[#5865F2]/15 flex items-center justify-center flex-shrink-0">
-        <MessageSquare className="w-5 h-5 text-[#5865F2]" aria-hidden="true" />
+        <DiscordIcon className="h-8 text-[#5865F2]" aria-hidden="true" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
