@@ -20,7 +20,7 @@ describe('ContentCard', () => {
     
     const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass('rounded-2xl');
-    expect(card).toHaveClass('shadow-lg');
+    expect(card).toHaveClass('shadow-sm');
   });
 
   it('applies custom className', () => {

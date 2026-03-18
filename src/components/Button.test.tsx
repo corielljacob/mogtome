@@ -12,7 +12,7 @@ describe('Button', () => {
   it('applies primary variant by default', () => {
     render(<Button>Primary Button</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-gradient-to-r');
+    expect(button).toHaveClass('bg-[var(--primary)]');
   });
 
   it('applies secondary variant when specified', () => {
@@ -24,7 +24,7 @@ describe('Button', () => {
   it('applies ghost variant when specified', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-transparent');
+    expect(button).toHaveClass('bg-[var(--card)]');
   });
 
   it('applies danger variant when specified', () => {
@@ -44,13 +44,13 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('px-2.5', 'py-1');
 
     rerender(<Button size="sm">SM</Button>);
-    expect(screen.getByRole('button')).toHaveClass('px-3', 'py-1.5');
+    expect(screen.getByRole('button')).toHaveClass('px-3.5', 'py-1.5');
 
     rerender(<Button size="md">MD</Button>);
-    expect(screen.getByRole('button')).toHaveClass('px-4', 'py-2');
+    expect(screen.getByRole('button')).toHaveClass('px-5', 'py-2.5');
 
     rerender(<Button size="lg">LG</Button>);
-    expect(screen.getByRole('button')).toHaveClass('px-6', 'py-3');
+    expect(screen.getByRole('button')).toHaveClass('px-7', 'py-3');
   });
 
   it('shows loading state and disables button', () => {

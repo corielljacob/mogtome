@@ -1,6 +1,20 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
+import React from 'react';
+
+// Mock @iconify/react so icons render in jsdom (no network needed)
+vi.mock('@iconify/react', () => ({
+  Icon: (props: Record<string, unknown>) => {
+    const { icon, width, height, ...rest } = props;
+    return React.createElement('svg', {
+      'data-icon': icon,
+      width: width ?? '1em',
+      height: height ?? '1em',
+      ...rest,
+    });
+  },
+}));
 
 // Cleanup after each test
 afterEach(() => {

@@ -22,21 +22,21 @@ describe('StoryDivider', () => {
     
     const svg = container.querySelector('svg');
     // Medium size classes
-    expect(svg).toHaveClass('w-56', 'md:w-72', 'h-6');
+    expect(svg).toHaveClass('w-56', 'md:w-72', 'h-7');
   });
 
   it('applies small size when specified', () => {
     const { container } = render(<StoryDivider size="sm" />);
     
     const svg = container.querySelector('svg');
-    expect(svg).toHaveClass('w-48', 'md:w-64', 'h-5');
+    expect(svg).toHaveClass('w-48', 'md:w-64', 'h-6');
   });
 
   it('applies large size when specified', () => {
     const { container } = render(<StoryDivider size="lg" />);
     
     const svg = container.querySelector('svg');
-    expect(svg).toHaveClass('w-64', 'md:w-80', 'h-7');
+    expect(svg).toHaveClass('w-64', 'md:w-80', 'h-8');
   });
 
   it('applies custom className', () => {
