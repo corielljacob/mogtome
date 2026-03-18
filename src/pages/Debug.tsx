@@ -29,7 +29,7 @@ const Sparkles = memo(function Sparkles() {
         delay: Math.random() * 0.8,
         duration: 1.5 + Math.random() * 1,
         size: 3 + Math.random() * 5,
-        color: i % 3 === 0 ? 'var(--bento-primary)' : i % 3 === 1 ? 'var(--bento-secondary)' : '#FFD700',
+        color: i % 3 === 0 ? 'var(--primary)' : i % 3 === 1 ? 'var(--secondary)' : 'var(--accent)',
       })),
     []
   );
@@ -69,7 +69,7 @@ const Sparkles = memo(function Sparkles() {
 function CardShine({ delay = 0 }: { delay?: number }) {
   return (
     <motion.div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
@@ -122,7 +122,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bento-bg)]/95 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg)]/95 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -130,22 +130,22 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] hover:bg-[var(--bento-primary)]/10 transition-colors cursor-pointer z-10"
+        className="absolute top-4 right-4 p-2 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer z-10"
       >
-        <X className="w-5 h-5 text-[var(--bento-text)]" />
+        <X className="w-5 h-5 text-[var(--text)]" />
       </button>
 
       {/* Replay button */}
       <button
         onClick={replay}
-        className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bento-card)] border border-[var(--bento-border)] hover:bg-[var(--bento-primary)]/10 transition-colors cursor-pointer z-10"
+        className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer z-10"
       >
-        <RotateCcw className="w-4 h-4 text-[var(--bento-text)]" />
-        <span className="text-sm font-soft text-[var(--bento-text)]">Replay</span>
+        <RotateCcw className="w-4 h-4 text-[var(--text)]" />
+        <span className="text-sm font-soft text-[var(--text)]">Replay</span>
       </button>
 
       {/* Phase indicator */}
-      <div className="absolute top-16 left-4 text-xs text-[var(--bento-text-muted)] font-mono">
+      <div className="absolute top-16 left-4 text-xs text-[var(--text-muted)] font-mono">
         Phase: {phase}
       </div>
 
@@ -166,7 +166,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
             }}
           >
             <motion.p 
-              className="text-[var(--bento-text-muted)] font-soft text-sm mb-2"
+              className="text-[var(--text-muted)] font-soft text-sm mb-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
@@ -174,7 +174,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               Welcome to the family, {firstName}
             </motion.p>
             <motion.p
-              className="font-accent text-2xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] bg-clip-text text-transparent"
+              className="font-accent text-2xl text-[var(--primary)]"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -253,7 +253,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
             <AnimatePresence mode="wait">
               {phase >= 3 && (
                 <motion.p
-                  className="font-accent text-base text-[var(--bento-secondary)]"
+                  className="font-accent text-base text-[var(--secondary)]"
                   initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -275,12 +275,12 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
                 }}
                 onClick={onClose}
                 className="
-                  px-8 py-3 rounded-2xl
-                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                  px-8 py-3 rounded-lg
+                  bg-[var(--primary)]
                   text-white font-soft font-semibold text-sm
-                  shadow-xl shadow-[var(--bento-primary)]/30
-                  transition-shadow duration-300
-                  hover:shadow-2xl hover:shadow-[var(--bento-primary)]/40
+                  shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
+                  transition-shadow duration-150
+                  hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)]
                   cursor-pointer
                 "
               >
@@ -305,16 +305,16 @@ export function Debug() {
     <div className="min-h-[100dvh] px-4 pt-[calc(5rem+env(safe-area-inset-top))] pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-8">
-          <h1 className="font-display text-2xl font-bold text-[var(--bento-text)] mb-2">
+          <h1 className="font-display text-2xl font-bold text-[var(--text)] mb-2">
             🛠️ Debug Tools
           </h1>
-          <p className="text-[var(--bento-text-muted)] font-soft text-sm">
+          <p className="text-[var(--text-muted)] font-soft text-sm">
             Preview animations and test components
           </p>
         </div>
 
         <ContentCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--bento-text)] mb-4">
+          <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">
             First-Time Login Experience
           </h2>
           
@@ -323,10 +323,10 @@ export function Debug() {
               onClick={() => setShowPreview(true)}
               className="
                 w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl
-                bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                bg-[var(--primary)]
                 text-white font-soft font-semibold
-                shadow-lg shadow-[var(--bento-primary)]/20
-                hover:shadow-xl hover:scale-[1.01]
+                shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
+                hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)] hover:scale-[1.01]
                 active:scale-[0.99]
                 transition-all cursor-pointer
               "
@@ -335,14 +335,14 @@ export function Debug() {
               Preview Card Reveal
             </button>
 
-            <p className="text-xs text-[var(--bento-text-subtle)] text-center">
+            <p className="text-xs text-[var(--text-subtle)] text-center">
               Uses mock data: {MOCK_USER.memberName} ({MOCK_USER.memberRank})
             </p>
           </div>
         </ContentCard>
 
         <ContentCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--bento-text)] mb-4">
+          <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">
             Membership Card Preview
           </h2>
           

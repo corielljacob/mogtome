@@ -28,7 +28,7 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
         const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
         const distance = 80 + Math.random() * 120;
         const size = 2 + Math.random() * 4;
-        const colors = ['var(--bento-primary)', 'var(--bento-secondary)', '#FFD700', '#FF69B4', '#87CEEB'];
+        const colors = ['var(--primary)', 'var(--secondary)', 'var(--accent)', 'var(--primary)', 'var(--secondary)'];
         return {
           id: i,
           // Start near center
@@ -112,7 +112,7 @@ const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean 
         delay: i * 0.1,
         size: 4 + Math.random() * 6,
         duration: 2 + Math.random() * 1.5,
-        color: i % 2 === 0 ? 'var(--bento-primary)' : 'var(--bento-secondary)',
+        color: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)',
       })),
     []
   );
@@ -159,7 +159,7 @@ function CardShine({ delay = 0, intensity = 'normal' }: { delay?: number; intens
 
   return (
     <motion.div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay, duration: 0.3 }}
@@ -223,16 +223,16 @@ function ProcessingScreen() {
   return (
     <div className="text-center py-4">
       <motion.div
-        className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 flex items-center justify-center"
+        className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-[var(--primary)]/20 to-[var(--secondary)]/20 flex items-center justify-center"
         animate={{ rotate: 360 }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
       >
-        <Loader2 className="w-7 h-7 text-[var(--bento-primary)]" />
+        <Loader2 className="w-7 h-7 text-[var(--primary)]" />
       </motion.div>
-      <h2 className="font-display text-xl font-bold text-[var(--bento-text)] mb-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
         Logging you in, kupo~!
       </h2>
-      <p className="text-[var(--bento-text-muted)] font-soft text-sm">
+      <p className="text-[var(--text-muted)] font-soft text-sm">
         Completing Discord authentication...
       </p>
     </div>
@@ -348,7 +348,7 @@ function FirstTimeWelcome({
         transition={{ duration: 0.5 }}
       >
         <motion.p 
-          className="text-[var(--bento-text-muted)] font-soft text-sm mb-2"
+          className="text-[var(--text-muted)] font-soft text-sm mb-2"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -360,7 +360,7 @@ function FirstTimeWelcome({
           Welcome to the family, {firstName}
         </motion.p>
         <motion.p
-          className="font-accent text-2xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] bg-clip-text text-transparent"
+          className="font-accent text-2xl text-[var(--primary)]"
           initial={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ 
@@ -470,7 +470,7 @@ function FirstTimeWelcome({
           {showCelebration && (
             <motion.p
               key="celebration-text"
-              className="font-accent text-base text-[var(--bento-secondary)]"
+              className="font-accent text-base text-[var(--secondary)]"
               initial={{ opacity: 0, y: 16, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
@@ -508,12 +508,12 @@ function FirstTimeWelcome({
               }}
               onClick={handleContinue}
               className="
-                px-8 py-3 rounded-2xl
-                bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                px-8 py-3 rounded-lg
+                bg-[var(--primary)]
                 text-white font-soft font-semibold text-sm
-                shadow-xl shadow-[var(--bento-primary)]/30
+                shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
                 cursor-pointer
-                focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary)] focus-visible:outline-none
               "
             >
               <span className="inline-flex items-center gap-2">
@@ -566,11 +566,11 @@ function ReturningUserWelcome({
         transition={{ delay: 0.1 }}
         className="mb-4"
       >
-        <p className="text-[var(--bento-text-muted)] font-soft text-sm mb-1">
+        <p className="text-[var(--text-muted)] font-soft text-sm mb-1">
           Welcome back, kupo!
         </p>
         <motion.p
-          className="font-accent text-lg text-[var(--bento-primary)]"
+          className="font-accent text-lg text-[var(--primary)]"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
         >
@@ -594,14 +594,14 @@ function ReturningUserWelcome({
       </motion.div>
 
       <motion.div 
-        className="flex items-center justify-center gap-1.5 text-xs text-[var(--bento-text-subtle)]"
+        className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--bento-success)] opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--bento-success)]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]" />
         </span>
         <span className="font-soft">Taking you home...</span>
       </motion.div>
@@ -634,13 +634,13 @@ function ErrorScreen({ error, onReturnHome }: { error: string; onReturnHome: () 
       >
         <AlertCircle className="w-8 h-8 text-red-500" />
       </motion.div>
-      <h2 className="font-display text-xl font-bold text-[var(--bento-text)] mb-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
         Oh no, kupo!
       </h2>
-      <p className="text-[var(--bento-text-muted)] font-soft text-sm mb-5">{error}</p>
+      <p className="text-[var(--text-muted)] font-soft text-sm mb-5">{error}</p>
       <button
         onClick={onReturnHome}
-        className="px-5 py-2 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-soft font-semibold text-sm shadow-lg shadow-[var(--bento-primary)]/20 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+        className="px-5 py-2 rounded-lg bg-[var(--primary)] text-white font-soft font-semibold text-sm shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)] hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)] active:scale-[0.98] transition-all"
       >
         Return Home
       </button>
@@ -715,7 +715,7 @@ export function AuthCallback() {
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="w-full max-w-lg relative z-10"
       >
-        <div className={`bg-[var(--bento-card)] rounded-2xl p-6 shadow-xl border border-[var(--bento-border)] relative overflow-hidden transition-all duration-300 ${status === 'success' ? 'max-w-lg' : 'max-w-sm'}`}>
+        <div className={`bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] relative overflow-hidden transition-all duration-300 ${status === 'success' ? 'max-w-lg' : 'max-w-sm'}`}>
           {status === 'processing' && <ProcessingScreen />}
           {status === 'success' && user && (
             <SuccessScreen 

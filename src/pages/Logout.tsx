@@ -75,7 +75,7 @@ export function Logout() {
               scale: { duration: 0.5, delay: i * 0.1 },
             }}
           >
-            <Stars className="w-4 h-4 text-[var(--bento-secondary)]" />
+            <Stars className="w-4 h-4 text-[var(--secondary)]" />
           </motion.div>
         ))}
       </div>
@@ -91,7 +91,7 @@ export function Logout() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="w-full max-w-sm relative z-10"
       >
-        <div className="bg-[var(--bento-card)] rounded-2xl p-6 shadow-xl border border-[var(--bento-border)] text-center relative overflow-hidden">
+        <div className="bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] text-center relative overflow-hidden">
           {/* Waving moogle */}
           <motion.div
             className="w-24 h-24 mx-auto mb-4"
@@ -114,10 +114,10 @@ export function Logout() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="font-display text-xl font-bold text-[var(--bento-text)] mb-2">
+            <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
               Goodbye{displayUser ? `, ${displayUser.memberName.split(' ')[0]}` : ''}!
             </h2>
-            <p className="text-[var(--bento-text-muted)] font-soft text-sm mb-4">
+            <p className="text-[var(--text-muted)] font-soft text-sm mb-4">
               {farewell}
             </p>
           </motion.div>
@@ -125,7 +125,7 @@ export function Logout() {
 
           {/* Redirect notice */}
           <motion.div
-            className="flex items-center justify-center gap-1.5 text-xs text-[var(--bento-text-subtle)]"
+            className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
