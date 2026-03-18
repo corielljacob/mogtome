@@ -78,7 +78,7 @@ export function MissingUserDataDialog() {
             aria-modal="true"
             aria-labelledby="missing-data-title"
             aria-describedby="missing-data-desc"
-            className="relative w-full max-w-md bg-[var(--bento-card)] rounded-3xl shadow-2xl shadow-amber-500/20 border border-amber-500/20 overflow-hidden"
+            className="relative w-full max-w-md bg-[var(--card)] rounded-lg shadow-sm border border-[var(--border)] overflow-hidden"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -109,10 +109,10 @@ export function MissingUserDataDialog() {
             <button
               ref={closeButtonRef}
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-[var(--bento-bg)] transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-[var(--bg)] transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               aria-label="Close dialog"
             >
-              <X className="w-5 h-5 text-[var(--bento-text-muted)]" />
+              <X className="w-5 h-5 text-[var(--text-muted)]" />
             </button>
 
             {/* Content */}
@@ -139,13 +139,13 @@ export function MissingUserDataDialog() {
 
               {/* Message */}
               <div id="missing-data-desc" className="space-y-4 text-center">
-                <p className="text-[var(--bento-text)] leading-relaxed">
+                <p className="text-[var(--text)] leading-relaxed">
                   Your Discord has not yet been linked to your character.
                 </p>
-                <p className="text-[var(--bento-text-muted)] leading-relaxed">
+                <p className="text-[var(--text-muted)] leading-relaxed">
                   Please try logging in again in a few hours. If you still see this message, 
                   shoot a message to{' '}
-                  <span className="font-semibold text-[var(--bento-primary)]">Plane Donut</span>{' '}
+                  <span className="font-semibold text-[var(--primary)]">Plane Donut</span>{' '}
                   on Discord!
                 </p>
               </div>

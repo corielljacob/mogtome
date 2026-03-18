@@ -109,21 +109,20 @@ export function AccessibilityMenu() {
   return (
     <div ref={menuRef} className="relative">
       {/* Trigger button */}
-      <motion.button
+      <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          relative w-10 h-10 md:w-9 md:h-9 rounded-xl 
-          bg-[var(--bento-card)]/80 border cursor-pointer shadow-sm
-          transition-colors duration-200
-          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+          relative w-10 h-10 md:w-9 md:h-9 rounded-2xl 
+          surface border-2 cursor-pointer shadow-sm
+          transition-all duration-200
+          hover:scale-105 active:scale-95
+          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
           ${activeCount > 0 
-            ? 'border-[var(--bento-primary)]/30 text-[var(--bento-primary)]' 
-            : 'border-[var(--bento-primary)]/15 text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+            ? 'border-[var(--primary)]/30 text-[var(--primary)]' 
+            : 'border-[var(--primary)]/15 text-[var(--text-muted)] hover:text-[var(--text)]'
           }
         `}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
         aria-label={`Accessibility settings${activeCount > 0 ? `, ${activeCount} options enabled` : ''}`}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -133,13 +132,13 @@ export function AccessibilityMenu() {
         {/* Badge showing active count */}
         {activeCount > 0 && (
           <span 
-            className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--bento-primary)] text-white text-[10px] font-bold flex items-center justify-center"
+            className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--primary)] text-white text-[10px] font-bold flex items-center justify-center"
             aria-hidden="true"
           >
             {activeCount}
           </span>
         )}
-      </motion.button>
+      </button>
 
       {/* Dropdown menu */}
       <AnimatePresence>
@@ -154,18 +153,18 @@ export function AccessibilityMenu() {
             aria-label="Accessibility settings"
             aria-modal="true"
           >
-            <div className="bg-[var(--bento-card)] rounded-2xl border border-[var(--bento-primary)]/15 shadow-xl overflow-hidden">
+            <div className="surface rounded-2xl border-2 border-[var(--border)] overflow-hidden">
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--bento-border)]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
                 <div className="flex items-center gap-2">
-                  <Accessibility className="w-5 h-5 text-[var(--bento-primary)]" aria-hidden="true" />
-                  <h2 className="font-display font-semibold text-[var(--bento-text)]">
+                  <Accessibility className="w-5 h-5 text-[var(--primary)]" aria-hidden="true" />
+                  <h2 className="font-display font-semibold text-[var(--text)]">
                     Accessibility
                   </h2>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                  className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--card)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
                   aria-label="Close accessibility menu"
                 >
                   <X className="w-4 h-4" />
@@ -187,12 +186,12 @@ export function AccessibilityMenu() {
                           className={`
                             w-full flex items-start gap-3 p-3 rounded-xl text-left
                             transition-all duration-150 cursor-pointer
-                            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                            focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                             ${isDisabled 
                               ? 'opacity-50 cursor-not-allowed' 
                               : isEnabled
-                                ? 'bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20'
-                                : 'hover:bg-[var(--bento-bg)] border border-transparent'
+                                ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
+                                : 'hover:bg-[var(--card)] border border-transparent'
                             }
                           `}
                           role="switch"
@@ -203,8 +202,8 @@ export function AccessibilityMenu() {
                           <div className={`
                             flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
                             ${isEnabled 
-                              ? 'bg-[var(--bento-primary)] text-white' 
-                              : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+                              ? 'bg-[var(--primary)] text-white' 
+                              : 'bg-[color:color-mix(in_srgb,var(--bg)_72%,var(--card))] text-[var(--text-muted)]'
                             }
                           `}>
                             <Icon className="w-5 h-5" aria-hidden="true" />
@@ -213,14 +212,14 @@ export function AccessibilityMenu() {
                           {/* Text */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className={`font-soft font-semibold text-sm ${isEnabled ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+                              <span className={`font-soft font-semibold text-sm ${isEnabled ? 'text-[var(--primary)]' : 'text-[var(--text)]'}`}>
                                 {label}
                               </span>
                               {isEnabled && (
-                                <Check className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />
+                                <Check className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />
                               )}
                             </div>
-                            <p id={`${key}-description`} className="text-xs text-[var(--bento-text-muted)] mt-0.5">
+                            <p id={`${key}-description`} className="text-xs text-[var(--text-muted)] mt-0.5">
                               {description}
                               {isDisabled && ' (enable dark mode first)'}
                             </p>
@@ -230,7 +229,7 @@ export function AccessibilityMenu() {
                           <div 
                             className={`
                               flex-shrink-0 w-11 h-6 rounded-full p-0.5 transition-colors duration-200
-                              ${isEnabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-border)]'}
+                              ${isEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}
                             `}
                             aria-hidden="true"
                           >
@@ -248,16 +247,16 @@ export function AccessibilityMenu() {
                 </ul>
 
                 {/* Colorblind Mode Section */}
-                <div className="mt-3 pt-3 border-t border-[var(--bento-border)]">
+                <div className="mt-3 pt-3 border-t border-[var(--border)]">
                   <button
                     onClick={() => setColorblindExpanded(!colorblindExpanded)}
                     className={`
                       w-full flex items-start gap-3 p-3 rounded-xl text-left
                       transition-all duration-150 cursor-pointer
-                      focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                      focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                       ${settings.colorblindMode !== 'none'
-                        ? 'bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/20'
-                        : 'hover:bg-[var(--bento-bg)] border border-transparent'
+                        ? 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
+                        : 'hover:bg-[var(--bg)] border border-transparent'
                       }
                     `}
                     aria-expanded={colorblindExpanded}
@@ -266,8 +265,8 @@ export function AccessibilityMenu() {
                     <div className={`
                       flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
                       ${settings.colorblindMode !== 'none'
-                        ? 'bg-[var(--bento-primary)] text-white' 
-                        : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
+                        ? 'bg-[var(--primary)] text-white' 
+                        : 'bg-[var(--bg)] text-[var(--text-muted)]'
                       }
                     `}>
                       <Eye className="w-5 h-5" aria-hidden="true" />
@@ -276,14 +275,14 @@ export function AccessibilityMenu() {
                     {/* Text */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`font-soft font-semibold text-sm ${settings.colorblindMode !== 'none' ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
+                        <span className={`font-soft font-semibold text-sm ${settings.colorblindMode !== 'none' ? 'text-[var(--primary)]' : 'text-[var(--text)]'}`}>
                           Colorblind Mode
                         </span>
                         {settings.colorblindMode !== 'none' && (
-                          <Check className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />
+                          <Check className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />
                         )}
                       </div>
-                      <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
                         {settings.colorblindMode !== 'none' 
                           ? COLORBLIND_MODES.find(m => m.value === settings.colorblindMode)?.label
                           : 'Adjust colors for color vision deficiency'
@@ -293,7 +292,7 @@ export function AccessibilityMenu() {
 
                     {/* Chevron */}
                     <ChevronDown 
-                      className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform duration-200 ${colorblindExpanded ? 'rotate-180' : ''}`} 
+                      className={`w-5 h-5 text-[var(--text-muted)] transition-transform duration-200 ${colorblindExpanded ? 'rotate-180' : ''}`} 
                       aria-hidden="true" 
                     />
                   </button>
@@ -319,10 +318,10 @@ export function AccessibilityMenu() {
                                 className={`
                                   w-full flex items-center gap-3 p-2.5 rounded-lg text-left
                                   transition-all duration-150 cursor-pointer
-                                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                                   ${isSelected
-                                    ? 'bg-[var(--bento-primary)]/15 text-[var(--bento-primary)]'
-                                    : 'hover:bg-[var(--bento-bg)] text-[var(--bento-text)]'
+                                    ? 'bg-[var(--primary)]/15 text-[var(--primary)]'
+                                    : 'hover:bg-[var(--bg)] text-[var(--text)]'
                                   }
                                 `}
                                 role="radio"
@@ -332,8 +331,8 @@ export function AccessibilityMenu() {
                                 <div className={`
                                   flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center
                                   ${isSelected 
-                                    ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]' 
-                                    : 'border-[var(--bento-text-muted)]'
+                                    ? 'border-[var(--primary)] bg-[var(--primary)]' 
+                                    : 'border-[var(--text-muted)]'
                                   }
                                 `}>
                                   {isSelected && (
@@ -343,10 +342,10 @@ export function AccessibilityMenu() {
 
                                 {/* Text */}
                                 <div className="flex-1 min-w-0">
-                                  <span className={`font-soft font-medium text-sm ${isSelected ? 'text-[var(--bento-primary)]' : ''}`}>
+                                  <span className={`font-soft font-medium text-sm ${isSelected ? 'text-[var(--primary)]' : ''}`}>
                                     {label}
                                   </span>
-                                  <p className="text-xs text-[var(--bento-text-muted)]">
+                                  <p className="text-xs text-[var(--text-muted)]">
                                     {description}
                                   </p>
                                 </div>
@@ -362,10 +361,10 @@ export function AccessibilityMenu() {
 
               {/* Footer with reset button */}
               {activeCount > 0 && (
-                <div className="px-4 py-3 border-t border-[var(--bento-border)]">
+                <div className="px-4 py-3 border-t border-[var(--border)]">
                   <button
                     onClick={resetSettings}
-                    className="flex items-center gap-2 text-sm font-soft font-medium text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded"
+                    className="flex items-center gap-2 text-sm font-soft font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded"
                   >
                     <RotateCcw className="w-4 h-4" aria-hidden="true" />
                     Reset all settings
@@ -374,8 +373,8 @@ export function AccessibilityMenu() {
               )}
 
               {/* Info footer */}
-              <div className="px-4 py-2 bg-[var(--bento-bg)]/50 border-t border-[var(--bento-border)]">
-                <p className="text-xs text-[var(--bento-text-subtle)] text-center">
+              <div className="px-4 py-2 bg-[var(--bg)]/50 border-t border-[var(--border)]">
+                <p className="text-xs text-[var(--text-subtle)] text-center">
                   Settings are saved automatically
                 </p>
               </div>

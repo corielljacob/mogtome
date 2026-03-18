@@ -109,20 +109,20 @@ export const MobileSheet = memo(function MobileSheet({
             aria-label={title}
           >
             <div className={`
-              bg-[var(--bento-card)] rounded-t-3xl shadow-2xl 
+              bg-[var(--card)] rounded-t-xl border-t border-x border-[var(--border)] 
               flex flex-col
               ${sizeClasses[size]}
             `}>
               {/* Drag handle - larger touch area */}
               <div className="flex justify-center pt-4 pb-3 flex-shrink-0">
-                <div className="w-12 h-1.5 rounded-full bg-[var(--bento-text-subtle)]/30" />
+                <div className="w-12 h-1.5 rounded-full bg-[var(--text-subtle)]/30" />
               </div>
               
               {/* Header - only if title or close button */}
               {(title || showCloseButton) && (
-                <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--bento-border)] flex-shrink-0">
+                <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--border)] flex-shrink-0">
                   {title ? (
-                    <h2 className="font-display font-bold text-xl text-[var(--bento-text)]">
+                    <h2 className="font-display font-bold text-xl text-[var(--text)]">
                       {title}
                     </h2>
                   ) : (
@@ -131,7 +131,7 @@ export const MobileSheet = memo(function MobileSheet({
                   {showCloseButton && (
                     <motion.button
                       onClick={onClose}
-                      className="p-2.5 -mr-2 rounded-xl text-[var(--bento-text-muted)] active:bg-[var(--bento-bg)] active:text-[var(--bento-text)] cursor-pointer touch-manipulation"
+                      className="p-2.5 -mr-2 rounded-xl text-[var(--text-muted)] active:bg-[var(--bg)] active:text-[var(--text)] cursor-pointer touch-manipulation"
                       whileTap={{ scale: 0.9 }}
                       aria-label="Close"
                     >
