@@ -22,7 +22,7 @@ interface DropdownProps<T extends string = string> {
 }
 
 /**
- * Custom styled dropdown that matches the Soft Bento design system.
+ * Custom styled dropdown with accessible keyboard navigation.
  * Replaces native <select> with a fully styled accessible dropdown.
  * Uses a portal to escape overflow:hidden containers.
  * 
@@ -160,9 +160,9 @@ export function Dropdown<T extends string = string>({
       }}
       className="
         z-[9999]
-        bg-[var(--bento-card)]/90 backdrop-blur-xl
-        border border-[var(--bento-border)]
-        rounded-xl shadow-xl shadow-[var(--bento-primary)]/10
+        surface
+        border border-[var(--border)]
+        rounded-xl shadow-sm
         py-1 sm:py-1.5 max-h-60 overflow-auto
         focus:outline-none
       "
@@ -182,18 +182,18 @@ export function Dropdown<T extends string = string>({
             className={`
               flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-2 sm:py-2.5 mx-1 sm:mx-1.5 rounded-lg
               cursor-pointer transition-colors
-              ${isFocused ? 'bg-[var(--bento-primary)]/10' : ''}
-              ${isSelected ? 'text-[var(--bento-primary)] font-semibold' : 'text-[var(--bento-text)]'}
+              ${isFocused ? 'bg-[var(--primary)]/10' : ''}
+              ${isSelected ? 'text-[var(--primary)] font-semibold' : 'text-[var(--text)]'}
             `}
           >
             {option.icon && (
-              <span className={isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'} aria-hidden="true">
+              <span className={isSelected ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'} aria-hidden="true">
                 {option.icon}
               </span>
             )}
             <span className="flex-1 text-xs sm:text-sm font-soft">{option.label}</span>
             {isSelected && (
-              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" aria-hidden="true" />
+              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--primary)]" aria-hidden="true" />
             )}
           </li>
         );
@@ -218,17 +218,17 @@ export function Dropdown<T extends string = string>({
         aria-labelledby={ariaLabelledBy}
         className={`
           w-full flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl
-          bg-[var(--bento-bg)]/50
-          border border-[var(--bento-border)]
-          hover:border-[var(--bento-primary)]/20 hover:bg-[var(--bento-bg)]
-          focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20 focus:outline-none
-          font-soft font-medium text-xs sm:text-sm text-[var(--bento-text)]
+          bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
+          border border-[var(--border)]
+          hover:border-[var(--primary)]/30 hover:bg-[var(--card)]
+          focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 focus:outline-none
+          font-soft font-medium text-xs sm:text-sm text-[var(--text)]
           cursor-pointer transition-all duration-200
-          ${isOpen ? 'border-[var(--bento-primary)] ring-2 ring-[var(--bento-primary)]/20 bg-[var(--bento-bg)]' : ''}
+          ${isOpen ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/15 bg-[var(--card)]' : ''}
         `}
       >
         {icon && (
-          <span className="text-[var(--bento-secondary)] flex-shrink-0" aria-hidden="true">
+          <span className="text-[var(--secondary)] flex-shrink-0" aria-hidden="true">
             {icon}
           </span>
         )}
@@ -237,7 +237,7 @@ export function Dropdown<T extends string = string>({
         </span>
         <ChevronDown 
           className={`
-            w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-text-muted)] flex-shrink-0
+            w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--text-muted)] flex-shrink-0
             transition-transform duration-200
             ${isOpen ? 'rotate-180' : ''}
           `}

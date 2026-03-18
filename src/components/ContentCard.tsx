@@ -30,11 +30,9 @@ export function ContentCard({
   return (
     <div 
       className={`
-        bg-[var(--bento-card)]/80
-        ${IS_MOBILE ? '' : 'shadow-lg shadow-[var(--bento-primary)]/10'}
-        border border-[var(--bento-primary)]/10
-        rounded-2xl p-4 sm:p-6 md:p-8 
-        ${IS_MOBILE ? 'shadow-sm' : ''}
+        relative isolate rounded-2xl surface shadow-sm
+        border border-[var(--border)]
+        p-4 sm:p-6 md:p-8 
         ${className}
       `}
       role={role}

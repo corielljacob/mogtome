@@ -9,8 +9,8 @@ interface CardProps {
 }
 
 /**
- * Card - Soft Bento design system card component.
- * Clean, modern cards with subtle shadows and optional hover effects.
+ * Card - Base card component.
+ * Clean cards with subtle shadows and optional hover effects.
  */
 export function Card({ 
   children, 
@@ -20,9 +20,9 @@ export function Card({
   hover = true,
 }: CardProps) {
   const variantClasses = {
-    default: 'bg-[var(--bento-card)]/80 border border-[var(--bento-border)] shadow-sm',
-    glass: 'bento-glass',
-    flat: 'bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]',
+    default: 'surface',
+    glass: 'surface surface-glass',
+    flat: 'surface surface-flat',
   };
 
   const paddingClasses = {
@@ -33,12 +33,12 @@ export function Card({
   };
 
   const hoverClasses = hover 
-    ? 'hover:shadow-lg hover:shadow-[var(--bento-primary)]/5 hover:-translate-y-0.5 transition-all duration-300' 
+    ? 'hover-lift' 
     : '';
 
   return (
     <div className={`
-      rounded-2xl
+      relative isolate rounded-2xl
       ${variantClasses[variant]}
       ${paddingClasses[padding]}
       ${hoverClasses}
@@ -66,7 +66,7 @@ interface CardTitleProps {
 
 export function CardTitle({ children, className = '', as: Tag = 'h3' }: CardTitleProps) {
   return (
-    <Tag className={`font-display font-bold text-lg text-[var(--bento-text)] ${className}`}>
+    <Tag className={`font-display text-[1.18rem] font-bold tracking-[-0.03em] text-[var(--text)] ${className}`}>
       {children}
     </Tag>
   );
@@ -87,7 +87,7 @@ export function CardActions({ children, className = '', justify = 'end' }: CardA
   }[justify];
 
   return (
-    <div className={`flex items-center gap-3 pt-4 ${justifyClass} ${className}`}>
+    <div className={`flex items-center gap-3 pt-5 ${justifyClass} ${className}`}>
       {children}
     </div>
   );
@@ -100,7 +100,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={`flex items-center justify-between pb-4 border-b border-[var(--bento-border)] ${className}`}>
+    <div className={`flex items-center justify-between pb-4 border-b border-[color:color-mix(in_srgb,var(--primary)_10%,var(--border))] ${className}`}>
       {children}
     </div>
   );
