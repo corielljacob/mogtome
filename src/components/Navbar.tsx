@@ -61,15 +61,15 @@ function UserMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      <motion.button
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
           group flex items-center gap-2 px-1.5 py-1 rounded-xl
           cursor-pointer transition-all duration-200
-          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-          ${isOpen ? 'bg-[var(--bento-bg)]' : 'hover:bg-[var(--bento-bg)]/60'}
+          active:scale-[0.98]
+          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+          ${isOpen ? 'bg-[var(--bg)]' : 'hover:bg-[var(--bg)]/60'}
         `}
-        whileTap={{ scale: 0.98 }}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-label={`User menu for ${displayName}`}
@@ -77,19 +77,19 @@ function UserMenu() {
         <img
           src={avatarUrl}
           alt=""
-          className="w-7 h-7 rounded-lg object-cover ring-1 ring-[var(--bento-border)] group-hover:ring-[var(--bento-primary)]/30 transition-all"
+          className="w-7 h-7 rounded-xl object-cover ring-1 ring-[var(--border)] group-hover:ring-[var(--primary)]/30 transition-all"
         />
-        <span className="hidden lg:block font-soft text-sm font-medium text-[var(--bento-text)] max-w-[90px] truncate">
+        <span className="hidden lg:block font-soft text-sm font-medium text-[var(--text)] max-w-[90px] truncate">
           {displayName}
         </span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
+        <div
+          className="transition-transform duration-200"
+          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
           aria-hidden="true"
         >
-          <ChevronDown className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
-        </motion.div>
-      </motion.button>
+          <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+        </div>
+      </button>
 
       <AnimatePresence>
         {isOpen && (
@@ -102,13 +102,13 @@ function UserMenu() {
             role="menu"
             aria-label="User menu"
           >
-            <div className="bg-[var(--bento-card)] rounded-xl border border-[var(--bento-border)] shadow-lg shadow-black/8 overflow-hidden">
+            <div className="surface rounded-2xl border-[var(--border)] overflow-hidden">
               {/* User info header */}
-              <div className="px-3 py-2.5 border-b border-[var(--bento-border)] bg-[var(--bento-bg)]/30">
-                <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+              <div className="px-3 py-2.5 border-b border-[var(--border)] bg-[var(--bg)]">
+                <p className="font-soft font-semibold text-sm text-[var(--text)] truncate">
                   {displayName}
                 </p>
-                <p className="text-xs text-[var(--bento-text-muted)] truncate">
+                <p className="text-xs text-[var(--text-muted)] truncate">
                   {user.memberRank}
                 </p>
               </div>
@@ -120,7 +120,7 @@ function UserMenu() {
                     setIsOpen(false);
                     navigate('/profile');
                   }}
-                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
                   role="menuitem"
                 >
                   <FileText className="w-4 h-4" aria-hidden="true" />
@@ -131,7 +131,7 @@ function UserMenu() {
                     setIsOpen(false);
                     navigate('/auth/logout');
                   }}
-                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
                   role="menuitem"
                 >
                   <LogOut className="w-4 h-4" aria-hidden="true" />
@@ -153,16 +153,17 @@ function LoginButton() {
   if (isLoading || isAuthenticated) return null;
 
   return (
-    <motion.button
+    <button
       onClick={login}
-      className="flex items-center gap-2 px-3.5 py-2.5 md:px-3 md:py-1.5 rounded-xl md:rounded-lg bg-[#5865F2] text-white font-soft text-sm font-medium cursor-pointer active:bg-[#4752C4] md:hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
-      whileTap={{ scale: 0.97 }}
+      className="flex items-center gap-2 px-3.5 py-2.5 md:px-3 md:py-1.5 rounded-2xl bg-[#5865F2] text-white font-soft text-sm font-semibold cursor-pointer active:scale-[0.97] active:bg-[#4752C4] md:hover:bg-[#4752C4] border-2 border-[#4752C4] shadow-[0_2px_8px_-2px_rgba(88,101,242,0.4)] transition-[transform,background-color,box-shadow] focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation hover:not-disabled:-translate-y-0.5"
       aria-label="Login with Discord"
     >
-      <DiscordIcon className="w-5 h-5 md:w-4 md:h-4" aria-hidden="true" />
+      <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-black/10 border border-white/12 md:h-6 md:w-6">
+        <DiscordIcon className="w-4 h-4 md:w-3.5 md:h-3.5" aria-hidden="true" />
+      </span>
       <span className="md:hidden">Login</span>
       <span className="hidden lg:inline">Login</span>
-    </motion.button>
+    </button>
   );
 }
 
@@ -212,8 +213,8 @@ function KupoBadge() {
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            <div className="relative bg-[var(--bento-card)] rounded-2xl p-4 shadow-2xl shadow-[var(--bento-primary)]/20 border border-[var(--bento-primary)]/20">
-              <div className="absolute -top-2 right-6 w-4 h-4 bg-[var(--bento-card)] rotate-45 border-l border-t border-[var(--bento-primary)]/20" />
+            <div className="relative bg-[var(--card)] rounded-lg p-4 shadow-sm border border-[var(--border)]">
+              <div className="absolute -top-2 right-6 w-4 h-4 bg-[var(--card)] rotate-45 border-l border-t border-[var(--primary)]/20" />
               
               <motion.div
                 className="relative"
@@ -228,7 +229,7 @@ function KupoBadge() {
               </motion.div>
               
               <motion.div 
-                className="mt-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-accent text-sm text-center whitespace-nowrap shadow-lg"
+                className="mt-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-accent text-sm text-center whitespace-nowrap shadow-lg"
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -253,7 +254,7 @@ function KupoBadge() {
                     ease: "easeInOut" 
                   }}
                 >
-                  <Heart className="w-3 h-3 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+                  <Heart className="w-3 h-3 text-[var(--primary)] fill-[var(--primary)]" />
                 </motion.div>
               ))}
             </div>
@@ -279,9 +280,9 @@ function KupoBadge() {
             transition={{ duration: 1, delay: sparkle.delay, ease: "easeOut" }}
           >
             {sparkle.type === 'sparkle' ? (
-              <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" />
+              <Sparkles className="w-4 h-4 text-[var(--primary)]" />
             ) : (
-              <Heart className="w-3 h-3 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
+              <Heart className="w-3 h-3 text-[var(--secondary)] fill-[var(--secondary)]" />
             )}
           </motion.div>
         ))}
@@ -291,7 +292,7 @@ function KupoBadge() {
       <motion.button 
         key={wiggleKey}
         onClick={handleClick}
-        className="hidden lg:flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--bento-card)]/80 border border-[var(--bento-primary)]/20 shadow-md shadow-[var(--bento-primary)]/10 cursor-pointer select-none"
+        className="hidden lg:flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--card)]/80 border border-[var(--primary)]/20 shadow-md shadow-[var(--primary)]/10 cursor-pointer select-none"
         initial={wiggleKey > 0 ? { rotate: 0 } : false}
         animate={isActivated ? { 
           scale: [1, 1.2, 0.9, 1.1, 1],
@@ -310,14 +311,14 @@ function KupoBadge() {
           } : { scale: [1, 1.2, 1] }}
           transition={isActivated ? { duration: 0.5 } : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-4 h-4 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+          <Heart className="w-4 h-4 text-[var(--primary)] fill-[var(--primary)]" />
         </motion.div>
-        <span className="font-accent text-lg text-[var(--bento-primary)] leading-none">kupo!</span>
+        <span className="font-accent text-lg text-[var(--primary)] leading-none">kupo!</span>
         <motion.div
           animate={isActivated ? { rotate: [0, 360] } : { rotate: [0, 10, -10, 0] }}
           transition={isActivated ? { duration: 0.5 } : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Wand2 className="w-3.5 h-3.5 text-[var(--bento-secondary)]" />
+          <Wand2 className="w-3.5 h-3.5 text-[var(--secondary)]" />
         </motion.div>
       </motion.button>
     </div>
@@ -346,17 +347,17 @@ function BottomNavItem({
       className={`
         relative flex flex-col items-center justify-center gap-1.5 py-3 px-3 min-w-[56px] min-h-[52px]
         transition-all duration-150
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-inset rounded-xl
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-inset rounded-xl
         touch-manipulation
         ${isActive 
-          ? 'text-[var(--bento-primary)]' 
-          : 'text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] active:scale-90'
+          ? 'text-[var(--primary)]' 
+          : 'text-[var(--text-muted)] active:text-[var(--primary)] active:scale-90'
         }
       `}
     >
       {/* Active indicator dot — CSS only */}
       {isActive && (
-        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--bento-primary)]" />
+        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
       )}
       
       <div
@@ -423,13 +424,13 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
     >
       <div className="relative max-w-lg mx-auto pointer-events-auto">
         {/* Pill background - thicker for better touch area */}
-        <div className="absolute inset-0 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10" />
+        <div className="absolute inset-0 surface rounded-2xl border-2 border-[var(--border)]" />
         
         {/* Left fade indicator */}
         <div 
           className={`
-            absolute left-0 top-0 bottom-0 w-6 z-10 rounded-l-2xl
-            bg-gradient-to-r from-[var(--bento-card)] to-transparent
+            absolute left-0 top-0 bottom-0 w-6 z-10 rounded-l-lg
+            bg-gradient-to-r from-[var(--card)] to-transparent
             pointer-events-none transition-opacity duration-200
             ${showLeftFade ? 'opacity-80' : 'opacity-0'}
           `}
@@ -439,8 +440,8 @@ function MobileBottomNav({ navItems }: { navItems: Array<{ path: string; label: 
         {/* Right fade indicator */}
         <div 
           className={`
-            absolute right-0 top-0 bottom-0 w-6 z-10 rounded-r-2xl
-            bg-gradient-to-l from-[var(--bento-card)] to-transparent
+            absolute right-0 top-0 bottom-0 w-6 z-10 rounded-r-lg
+            bg-gradient-to-l from-[var(--card)] to-transparent
             pointer-events-none transition-opacity duration-200
             ${showRightFade ? 'opacity-80' : 'opacity-0'}
           `}
@@ -535,14 +536,14 @@ export function Navbar() {
           {/* Logo - floating pill with larger touch target */}
           <Link 
             to="/" 
-            className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none active:scale-95 transition-transform touch-manipulation"
+            className="pointer-events-auto flex items-center gap-2 p-2 rounded-[1.6rem] surface border-[color:color-mix(in_srgb,var(--primary)_10%,var(--border))] focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none active:scale-95 transition-transform touch-manipulation"
             aria-label="MogTome - Go to home page"
           >
             <LogoIcon hovered={false} />
           </Link>
 
           {/* Right side controls - floating pill with better spacing */}
-          <div className="pointer-events-auto flex items-center gap-2 p-2 bg-[var(--bento-card)]/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/10">
+          <div className="pointer-events-auto flex items-center gap-2 p-2 rounded-[1.6rem] surface border-[color:color-mix(in_srgb,var(--primary)_10%,var(--border))]">
             <LoginButton />
             <UserMenu />
           </div>
@@ -551,10 +552,10 @@ export function Navbar() {
 
       {/* Desktop top bar - modern floating pill with user controls */}
       <header 
-        className="hidden md:block fixed top-0 right-0 z-50 pt-3 pr-4 lg:pr-5 pointer-events-none"
+        className="hidden md:block fixed top-0 right-0 z-50 pt-4 pb-4 pr-4 lg:pr-5 pointer-events-none"
         aria-label="User controls"
       >
-        <div className="pointer-events-auto flex items-center gap-2 py-2 px-2.5 bg-[var(--bento-card)]/90 backdrop-blur-xl rounded-2xl shadow-md shadow-black/5 border border-[var(--bento-border)]">
+        <div className="pointer-events-auto flex items-center gap-2 py-2.5 px-2.5 surface rounded-[1.6rem] border-[color:color-mix(in_srgb,var(--primary)_10%,var(--border))]">
           <KupoBadge />
           <LoginButton />
           <UserMenu />

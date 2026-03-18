@@ -58,8 +58,8 @@ const queryClient = new QueryClient({
 // Minimal loading fallback - keeps layout stable during lazy load
 function PageLoader() {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+    <div className="min-h-full flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      <div className="w-10 h-10 rounded-full border-3 border-[var(--primary)]/20 border-t-[var(--primary)] animate-spin" />
     </div>
   );
 }
@@ -74,7 +74,7 @@ function AppContent() {
       // Set global transition duration to 0 when reduced motion is on
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
-      <div className="min-h-[100dvh] bg-[var(--bento-bg)] bento-bg-mesh transition-colors duration-300 overflow-x-hidden flex">
+      <div className="h-full bg-[var(--bg)] page-bg transition-colors duration-300 flex">
         
         {/* First-visit welcome dialog */}
         <WelcomeDialog />
@@ -91,11 +91,11 @@ function AppContent() {
         <Sidebar />
         
         {/* Main content area */}
-        <div className="flex-1 min-w-0 overflow-x-hidden">
+        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto">
           {/* Mobile top bar + desktop user controls */}
           <Navbar />
           
-          <main id="main-content" tabIndex={-1}>
+          <main id="main-content" className="flex-1" tabIndex={-1}>
             <ChunkErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>

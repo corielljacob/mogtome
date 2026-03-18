@@ -1,6 +1,6 @@
 import { useState, useEffect, memo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence, useMotionTemplate, useMotionValue } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { 
   Home, Users, Scroll, Info, Crown, Settings,
   ChevronLeft, ChevronRight, UserCircle, Sun, Moon
@@ -37,23 +37,24 @@ const NavItem = memo(function NavItem({ path, label, icon: Icon, isActive, isCol
       to={path}
       aria-current={isActive ? 'page' : undefined}
       className={`
-        group relative flex items-center py-2.5 rounded-xl
-        font-soft text-sm font-medium
-        transition-all duration-200
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        group relative flex items-center py-2.5 rounded-lg
+        font-soft text-sm font-semibold
+        transition-[transform,background-color,color,border-color,box-shadow] duration-150
+        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
         ${isActive
-          ? `bg-gradient-to-r from-[var(--bento-primary)]/20 to-[var(--bento-primary)]/10 ${accentColor || 'text-[var(--bento-primary)]'} shadow-sm`
-          : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60'
+          ? `surface ${accentColor || 'text-[var(--primary)]'} border-[color:color-mix(in_srgb,var(--primary)_18%,var(--border))]`
+          : 'text-[var(--text-muted)] border border-transparent hover:text-[var(--text)] hover:bg-[var(--bg)] hover:border-[var(--border)]'
         }
         ${isCollapsed ? 'justify-center px-1 gap-0' : 'px-3 gap-3'}
       `}
     >
-      <motion.div
-        animate={{ scale: isActive ? 1.05 : 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      <motion.span
+        className={`icon-badge ${isCollapsed ? 'w-10 h-10' : 'w-9 h-9'} shrink-0 ${isActive ? accentColor || 'text-[var(--primary)]' : 'text-[var(--text-muted)] group-hover:text-[var(--primary)]'}
+          transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+        style={{ transform: isActive ? 'scale(1.05)' : 'scale(1)' }}
       >
-        <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? '' : 'group-hover:scale-110'} transition-transform`} />
-      </motion.div>
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? '' : 'group-hover:scale-110'} transition-transform`} />
+      </motion.span>
       
       <AnimatePresence>
         {!isCollapsed && (
@@ -73,10 +74,10 @@ const NavItem = memo(function NavItem({ path, label, icon: Icon, isActive, isCol
       {isCollapsed && (
         <div className="
           absolute left-full ml-3 px-3 py-1.5 
-          bg-[var(--bento-card)]/95 backdrop-blur-sm 
-          border border-[var(--bento-primary)]/10
-          rounded-xl shadow-lg shadow-[var(--bento-primary)]/5
-          text-sm text-[var(--bento-text)] whitespace-nowrap
+          bg-[var(--card)]
+          border border-[var(--border)]
+          rounded-lg shadow-[var(--panel-shadow)]
+          text-sm text-[var(--text)] whitespace-nowrap
           opacity-0 group-hover:opacity-100 pointer-events-none
           transition-opacity z-50
         ">
@@ -103,7 +104,7 @@ const ProfileItem = memo(function ProfileItem({ isCollapsed }: { isCollapsed: bo
       icon={UserCircle}
       isActive={isActive}
       isCollapsed={isCollapsed}
-      accentColor="text-[var(--bento-secondary)]"
+      accentColor="text-[var(--secondary)]"
     />
   );
 });
@@ -141,53 +142,46 @@ const ThemeToggle = memo(function ThemeToggle({ isCollapsed }: { isCollapsed: bo
   };
 
   return (
-    <motion.button
+    <button
       onClick={toggleTheme}
       className={`
         group relative flex items-center py-2.5 rounded-xl
-        text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60
-        font-soft text-sm font-medium
-        transition-all duration-200 cursor-pointer
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg)]
+        border border-transparent hover:border-[var(--border)]
+        font-soft text-sm font-semibold
+        transition-[transform,background-color,color,border-color] duration-200 cursor-pointer
+        active:scale-[0.97]
+        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
         ${isCollapsed ? 'justify-center w-full px-1 gap-0' : 'w-full px-3 gap-3'}
       `}
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-      whileTap={{ scale: 0.97 }}
     >
       {/* Icon */}
-      <motion.div
-        className="w-5 h-5 flex-shrink-0 relative"
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      <span
+        className={`icon-badge ${isCollapsed ? 'w-10 h-10' : 'w-9 h-9'} flex-shrink-0 relative`}
       >
         {/* Sun icon */}
-        <motion.div
-          initial={false}
-          animate={{ 
-            rotate: isDarkMode ? 90 : 0,
-            scale: isDarkMode ? 0 : 1,
-            opacity: isDarkMode ? 0 : 1
+        <div
+          className="absolute inset-0 flex items-center justify-center transition-all duration-300"
+          style={{
+            transform: isDarkMode ? 'rotate(90deg) scale(0)' : 'rotate(0deg) scale(1)',
+            opacity: isDarkMode ? 0 : 1,
           }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="absolute inset-0 flex items-center justify-center"
         >
           <Sun className="w-5 h-5" strokeWidth={1.75} />
-        </motion.div>
+        </div>
         
         {/* Moon icon */}
-        <motion.div
-          initial={false}
-          animate={{ 
-            rotate: isDarkMode ? 0 : -90,
-            scale: isDarkMode ? 1 : 0,
-            opacity: isDarkMode ? 1 : 0
+        <div
+          className="absolute inset-0 flex items-center justify-center transition-all duration-300"
+          style={{
+            transform: isDarkMode ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0)',
+            opacity: isDarkMode ? 1 : 0,
           }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="absolute inset-0 flex items-center justify-center"
         >
           <Moon className="w-5 h-5" strokeWidth={1.75} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </span>
 
       {/* Label */}
       <AnimatePresence>
@@ -208,38 +202,29 @@ const ThemeToggle = memo(function ThemeToggle({ isCollapsed }: { isCollapsed: bo
       {isCollapsed && (
         <div className="
           absolute left-full ml-3 px-3 py-1.5 
-          bg-[var(--bento-card)]/95 backdrop-blur-sm 
-          border border-[var(--bento-primary)]/10
-          rounded-xl shadow-lg shadow-[var(--bento-primary)]/5
-          text-sm text-[var(--bento-text)] whitespace-nowrap
+          bg-[var(--card)]
+          border border-[var(--border)]
+          rounded-lg shadow-[var(--panel-shadow)]
+          text-sm text-[var(--text)] whitespace-nowrap
           opacity-0 group-hover:opacity-100 pointer-events-none
           transition-opacity z-50
         ">
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
         </div>
       )}
-    </motion.button>
+    </button>
   );
 });
 
 export function Sidebar() {
   const location = useLocation();
+  // Sidebar state
   const [isCollapsed, setIsCollapsed] = useState(() => {
     // Persist collapse state
     const saved = localStorage.getItem('sidebar-collapsed');
     return saved ? JSON.parse(saved) : false;
   });
   const [logoHovered, setLogoHovered] = useState(false);
-  
-  // Spotlight effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
 
   useEffect(() => {
     localStorage.setItem('sidebar-collapsed', JSON.stringify(isCollapsed));
@@ -255,37 +240,19 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Sidebar - floating pill design matching site aesthetic */}
-      <motion.aside
-        className="group/sidebar hidden md:flex fixed left-3 top-3 bottom-3 z-40 flex-col 
-          bg-[var(--bento-card)]/80 backdrop-blur-xl 
-          border border-[var(--bento-primary)]/10 
-          rounded-2xl shadow-lg shadow-[var(--bento-primary)]/10 overflow-hidden"
-        initial={false}
-        animate={{ width: sidebarWidth - 24 }} // Account for margins
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
+      {/* Sidebar - in document flow so it naturally respects the flex container height */}
+      <aside
+        className="group/sidebar hidden md:flex flex-shrink-0 ml-3 mr-3 my-4 z-40 flex-col surface rounded-2xl border-[var(--border)] overflow-hidden transition-[width] duration-200 ease-in-out"
+        style={{ width: sidebarWidth - 24 }}
         aria-label="Main navigation"
-        onMouseMove={handleMouseMove}
       >
-        {/* Spotlight overlay */}
-        <motion.div
-          className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover/sidebar:opacity-100 z-0"
-          style={{
-            background: useMotionTemplate`
-              radial-gradient(
-                400px circle at ${mouseX}px ${mouseY}px,
-                color-mix(in srgb, var(--bento-primary), transparent 92%),
-                transparent 80%
-              )
-            `,
-          }}
-        />
+        {/* Spotlight overlay - removed for cozy indie feel */}
 
           {/* Logo section */}
           <div className={`relative z-10 h-[72px] flex items-center justify-center ${isCollapsed ? 'px-0' : 'px-3'} overflow-hidden transition-all duration-200`}>
             <Link 
               to="/" 
-              className={`flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl p-1.5 ${isCollapsed ? 'w-full justify-center' : ''}`}
+              className={`flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded-xl p-1.5 ${isCollapsed ? 'w-full justify-center' : ''}`}
               aria-label="MogTome - Go to home page"
               onMouseEnter={handleLogoMouseEnter}
               onMouseLeave={handleLogoMouseLeave}
@@ -304,20 +271,19 @@ export function Sidebar() {
                 >
                   {/* Main logo text */}
                   <div className="flex items-baseline gap-0.5">
-                    <motion.span 
-                      className="font-display font-bold text-lg leading-tight text-[var(--bento-text)]"
-                      animate={{ color: logoHovered ? 'var(--bento-primary)' : 'var(--bento-text)' }}
-                      transition={{ duration: 0.2 }}
+                    <span 
+                      className="font-display font-bold text-lg leading-tight transition-colors duration-200"
+                      style={{ color: logoHovered ? 'var(--primary)' : 'var(--text)' }}
                     >
                       Mog
-                    </motion.span>
-                    <span className="font-display font-bold text-lg leading-tight bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
+                    </span>
+                    <span className="font-display font-bold text-lg leading-tight text-highlight">
                       Tome
                     </span>
                   </div>
                   
                   {/* Subtitle */}
-                  <span className="font-accent text-xs text-[var(--bento-secondary)] whitespace-nowrap">
+                  <span className="eyebrow-script text-sm text-[var(--secondary)] whitespace-nowrap">
                     Kupo Life!~
                   </span>
                 </motion.div>
@@ -327,7 +293,7 @@ export function Sidebar() {
         </div>
 
         {/* Decorative divider */}
-        <div className="mx-3 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
+        <div className="mx-3 divider" />
 
         {/* Navigation section */}
         <nav className={`relative z-10 flex-1 py-4 space-y-1 overflow-y-auto overflow-x-hidden transition-[padding] duration-200 ${isCollapsed ? 'px-2' : 'px-3'}`}>
@@ -347,7 +313,7 @@ export function Sidebar() {
 
           {/* Profile & Dashboard (conditional based on auth) */}
           <div className="pt-3 mt-3 space-y-1">
-            <div className="mx-0 mb-2 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/15 to-transparent" />
+            <div className="mx-0 mb-2 divider" />
             <ProfileItem isCollapsed={isCollapsed} />
             <KnightDashboardItem isCollapsed={isCollapsed} />
           </div>
@@ -356,7 +322,7 @@ export function Sidebar() {
         {/* Bottom section - Theme Toggle + Settings + Collapse toggle */}
         <div className={`relative z-10 py-3 space-y-1.5 overflow-hidden transition-[padding] duration-200 ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {/* Decorative divider */}
-          <div className="mx-0 mb-2 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
+          <div className="mx-0 mb-2 divider" />
           
           {/* Theme Toggle */}
           <ThemeToggle isCollapsed={isCollapsed} />
@@ -371,30 +337,28 @@ export function Sidebar() {
           />
 
           {/* Collapse toggle button */}
-          <motion.button
+          <button
             onClick={toggleCollapsed}
             className={`
               w-full flex items-center py-2.5 rounded-xl
-              text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-bg)]/60
-              font-soft text-sm font-medium
-              transition-all duration-200 cursor-pointer
-              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+              text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg)]
+              border border-transparent hover:border-[var(--border)]
+              font-soft text-sm font-semibold
+              transition-[transform,background-color,color,border-color] duration-200 cursor-pointer
+              active:scale-[0.97]
+              focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
               ${isCollapsed ? 'justify-center px-1 gap-0' : 'px-3 gap-3'}
             `}
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-expanded={!isCollapsed}
-            whileTap={{ scale: 0.97 }}
           >
-            <motion.div
-              animate={{ rotate: isCollapsed ? 0 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div>
               {isCollapsed ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
                 <ChevronLeft className="w-5 h-5" />
               )}
-            </motion.div>
+            </div>
             <AnimatePresence>
               {!isCollapsed && (
                 <motion.span
@@ -408,19 +372,10 @@ export function Sidebar() {
                 </motion.span>
               )}
             </AnimatePresence>
-          </motion.button>
+          </button>
         </div>
 
-      </motion.aside>
-
-      {/* Spacer to push content - this prevents content from going under the sidebar */}
-      <motion.div
-        className="hidden md:block flex-shrink-0"
-        initial={false}
-        animate={{ width: sidebarWidth }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
-        aria-hidden="true"
-      />
+      </aside>
     </>
   );
 }

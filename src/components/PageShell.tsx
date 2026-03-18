@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { motion } from 'motion/react';
 import { Heart, RefreshCw, Sparkles, X } from 'lucide-react';
 import { StoryDivider } from './StoryDivider';
 import { FloatingSparkles } from './FloatingSparkles';
@@ -30,9 +29,9 @@ export function PageLayout({
   className = '',
 }: PageLayoutProps) {
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-hidden">
+    <div className="min-h-full relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       {/* Background gradient overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_10%,transparent)_0%,_transparent_32%),linear-gradient(180deg,_color-mix(in_srgb,var(--card)_12%,transparent)_0%,_transparent_36%)]" />
       
       {/* Floating background decorations */}
       {moogles && <SimpleFloatingMoogles primarySrc={moogles.primary} secondarySrc={moogles.secondary} />}
@@ -75,34 +74,28 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <motion.header 
-      className="text-center mb-6 sm:mb-10"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+    <header 
+      className="text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]"
     >
       {opener && (
-        <motion.p
-          className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-secondary)] mb-3 sm:mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
+        <p
+          className="eyebrow-script text-xl sm:text-2xl md:text-3xl text-[var(--secondary)]/90 mb-3 sm:mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]"
         >
           {opener}
-        </motion.p>
+        </p>
       )}
 
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3">
-        <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
+      <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3 sm:mb-4 text-[var(--text)]">
+        <span className="text-highlight">
           {title}
         </span>
       </h1>
 
       {subtitle && (
-        <p className="text-base sm:text-lg text-[var(--bento-text-muted)] font-soft flex items-center justify-center gap-2 mb-3 sm:mb-4">
+        <p className="text-base sm:text-lg text-[var(--text-muted)] font-soft flex items-center justify-center gap-2 mb-4 sm:mb-5">
           {subtitle}
           {showHeart && (
-            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)] fill-[var(--primary)]/90" />
           )}
         </p>
       )}
@@ -110,7 +103,7 @@ export function PageHeader({
       {children}
 
       <StoryDivider className="mx-auto mt-3 sm:mt-0" size={dividerSize} />
-    </motion.header>
+    </header>
   );
 }
 
@@ -132,12 +125,12 @@ export function PageFooter({ message, closing = '~ fin ~' }: PageFooterProps) {
       style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}
     >
       <StoryDivider className="mx-auto mb-6" size="sm" />
-      <p className="font-accent text-xl text-[var(--bento-text-muted)] flex items-center justify-center gap-2">
-        <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+      <p className="eyebrow-script text-2xl text-[var(--text-muted)] flex items-center justify-center gap-2">
+        <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
         {message}
-        <Heart className="w-5 h-5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+        <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
       </p>
-      <p className="font-accent text-lg text-[var(--bento-secondary)] mt-2">
+      <p className="eyebrow-script text-xl text-[var(--secondary)] mt-2">
         {closing}
       </p>
     </footer>
@@ -160,12 +153,14 @@ interface SectionLabelProps {
 export function SectionLabel({ label, badge, icon }: SectionLabelProps) {
   return (
     <div className="flex items-center gap-3 px-2 mb-6">
-      {icon || <Sparkles className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />}
-      <h2 className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
+      <span className="icon-badge w-9 h-9 shrink-0 text-[var(--primary)]">
+        {icon || <Sparkles className="w-4 h-4" aria-hidden="true" />}
+      </span>
+      <h2 className="text-sm font-soft font-semibold tracking-[0.14em] uppercase text-[var(--primary)]">
         {label}
       </h2>
       {badge}
-      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
+      <div className="divider flex-1" aria-hidden="true" />
     </div>
   );
 }
@@ -184,29 +179,18 @@ interface LoadingStateProps {
 export function LoadingState({ message, imageSrc }: LoadingStateProps) {
   return (
     <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-      <motion.img 
+      <img 
         src={imageSrc || pushingMoogles} 
         alt="" 
-        className="w-40 md:w-52 mx-auto mb-4"
-        animate={{ 
-          x: [0, 4, -4, 4, 0],
-          rotate: [0, 1.5, -1.5, 1.5, 0],
-        }}
-        transition={{ 
-          duration: 0.7, 
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+        className="w-40 md:w-52 mx-auto mb-4 animate-[wiggle_0.7s_ease-in-out_infinite]"
         aria-hidden="true"
       />
-      <motion.p 
-        className="font-accent text-2xl text-[var(--bento-text-muted)]"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+      <p 
+        className="font-accent text-2xl text-[var(--text-muted)] animate-pulse"
         role="status"
       >
         {message}
-      </motion.p>
+      </p>
     </ContentCard>
   );
 }
@@ -231,30 +215,31 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
         className="w-40 h-40 mx-auto mb-5 object-contain"
         aria-hidden="true"
       />
-      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">
+      <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">
         Something went wrong
       </p>
-      <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-6">
+      <p className="font-accent text-2xl text-[var(--text-muted)] mb-6">
         {message}
       </p>
-      <motion.button
+      <button
         onClick={onRetry}
-        whileHover={{ scale: 1.03, y: -2 }}
-        whileTap={{ scale: 0.97 }}
         className="
           inline-flex items-center justify-center gap-2
-          px-6 py-3 rounded-xl
-          bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+          px-6 py-3 rounded-2xl
+          bg-[var(--primary)]
           text-white font-soft font-semibold
-          shadow-lg shadow-[var(--bento-primary)]/25
-          hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-          transition-all cursor-pointer touch-manipulation
-          focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+          shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
+          hover:shadow-[0_4px_12px_-3px_color-mix(in_srgb,var(--primary)_50%,transparent)]
+          hover:-translate-y-0.5
+          active:scale-[0.97]
+          transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer touch-manipulation
+          border-2 border-[color:color-mix(in_srgb,var(--primary)_72%,black)]
+          focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary)] focus-visible:outline-none
         "
       >
         <RefreshCw className="w-4 h-4" aria-hidden="true" />
         Try Again
-      </motion.button>
+      </button>
     </ContentCard>
   );
 }
@@ -285,28 +270,28 @@ export function EmptyState({ title, message, imageSrc, onClear, clearLabel = 'Cl
         className="w-40 h-40 mx-auto mb-5 object-contain"
         aria-hidden="true"
       />
-      <p className="text-xl font-display font-semibold mb-2 text-[var(--bento-text)]">{title}</p>
-      <p className="font-accent text-2xl text-[var(--bento-text-muted)] mb-5">
+      <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">{title}</p>
+      <p className="font-accent text-2xl text-[var(--text-muted)] mb-5">
         {message}
       </p>
       {onClear && (
-        <motion.button
+        <button
           onClick={onClear}
-          whileHover={{ scale: 1.03, y: -2 }}
-          whileTap={{ scale: 0.97 }}
           className="
             inline-flex items-center justify-center gap-2
-            px-5 py-2.5 rounded-xl
-            bg-transparent border border-[var(--bento-primary)]/30
-            text-[var(--bento-primary)] font-soft font-semibold
-            hover:bg-[var(--bento-primary)]/10
-            transition-all cursor-pointer touch-manipulation
-            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+            px-5 py-2.5 rounded-2xl
+            bg-transparent border border-[var(--primary)]/30
+            text-[var(--primary)] font-soft font-semibold
+            hover:bg-[var(--primary)]/10
+            hover:-translate-y-0.5
+            active:scale-[0.97]
+            transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer touch-manipulation
+            focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
           "
         >
           <X className="w-4 h-4" aria-hidden="true" />
           {clearLabel}
-        </motion.button>
+        </button>
       )}
     </ContentCard>
   );
