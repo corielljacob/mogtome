@@ -1,5 +1,3 @@
-import { motion } from 'motion/react';
-
 interface MooglePomProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -35,14 +33,14 @@ export function MooglePom({
       border: 'border-white/30',
     },
     coral: {
-      gradient: 'from-red-300 via-[var(--bento-primary)] to-rose-600',
-      glow: 'bg-[var(--bento-primary)]/50',
+      gradient: 'from-red-300 via-[var(--primary)] to-rose-600',
+      glow: 'bg-[var(--primary)]/50',
       stem: 'from-red-300/80 to-red-200/40',
       border: 'border-white/30',
     },
     purple: {
-      gradient: 'from-violet-300 via-[var(--bento-secondary)] to-purple-600',
-      glow: 'bg-[var(--bento-secondary)]/50',
+      gradient: 'from-violet-300 via-[var(--secondary)] to-purple-600',
+      glow: 'bg-[var(--secondary)]/50',
       stem: 'from-violet-300/80 to-violet-200/40',
       border: 'border-white/30',
     },
@@ -51,7 +49,7 @@ export function MooglePom({
   const { pom, stem, glow, border } = sizeConfig[size];
   const colors = colorConfig[color];
 
-  const PomContent = (
+  const pomContent = (
     <div className={`relative inline-flex flex-col items-center ${className}`}>
       {/* Glow effect */}
       <div className={`absolute ${pom} rounded-full ${colors.glow} ${glow} scale-150`} />
@@ -76,20 +74,13 @@ export function MooglePom({
 
   if (animate) {
     return (
-      <motion.div
-        animate={{ y: [0, -3, 0] }}
-        transition={{ 
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      >
-        {PomContent}
-      </motion.div>
+      <div className="animate-float-gentle">
+        {pomContent}
+      </div>
     );
   }
 
-  return PomContent;
+  return pomContent;
 }
 
 /**
