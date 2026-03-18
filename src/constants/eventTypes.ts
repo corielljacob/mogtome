@@ -49,8 +49,8 @@ export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
   },
   Announcement: { 
     Icon: Scroll, 
-    color: 'text-[var(--bento-primary)]', 
-    bgColor: 'bg-[var(--bento-primary)]/10',
+    color: 'text-[var(--primary)]', 
+    bgColor: 'bg-[var(--primary)]/10',
     label: 'Announcement',
   },
 };
@@ -60,8 +60,8 @@ export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
  */
 export const DEFAULT_EVENT_TYPE_CONFIG: EventTypeConfig = {
   Icon: Sparkles,
-  color: 'text-[var(--bento-text-muted)]',
-  bgColor: 'bg-[var(--bento-bg)]',
+  color: 'text-[var(--text-muted)]',
+  bgColor: 'bg-[var(--bg)]',
   label: 'Event',
 };
 

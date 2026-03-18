@@ -275,7 +275,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Update background color for flash prevention
     // Small delay to let CSS variables update first
     requestAnimationFrame(() => {
-      const bgColor = getComputedStyle(root).getPropertyValue('--bento-bg').trim() || (dark ? '#1A1722' : '#FFF9F5');
+      const bgColor = getComputedStyle(root).getPropertyValue('--bg').trim() || (dark ? '#1A1722' : '#FFF9F5');
       root.style.backgroundColor = bgColor;
     });
     
