@@ -18,11 +18,11 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@iconify/react": "^6.0.2",
     "@microsoft/signalr": "^10.0.0",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-virtual": "^3.13.18",
     "axios": "^1.13.2",
-    "lucide-react": "^0.562.0",
     "motion": "^12.25.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
