@@ -1,8 +1,6 @@
 import { useState, useEffect, memo, useCallback, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'motion/react';
 import { 
-  User, 
   Send, 
   Check, 
   AlertCircle, 
@@ -12,13 +10,12 @@ import {
   Pencil,
   XCircle,
   Shield,
-  Quote,
   Globe,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
-import { ContentCard, MembershipCard, StoryDivider, MobileSheet, PageLayout, PageHeader, SectionLabel, DiscordIcon } from '../components';
+import { MembershipCard, MobileSheet, DiscordIcon } from '../components';
 import { getRankColor } from '../constants';
 import { useIsMobile } from '../hooks';
 
@@ -88,154 +85,102 @@ const ProfileHeader = memo(function ProfileHeader({
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative"
-      >
-        {/* Background gradient card */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[var(--bento-card)]/90 to-[var(--bento-bg)]/80 border border-[var(--bento-border)] shadow-xl">
-          {/* Decorative gradient overlay - simplified on mobile for performance */}
-          <div 
-            className="absolute inset-0 opacity-[0.03] hidden sm:block"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, ${rankColor.hex} 1px, transparent 1px)`,
-              backgroundSize: '20px 20px',
-            }}
-          />
-          
-          {/* Rank accent bar - thicker on mobile for better visual impact */}
-          <div 
-            className="h-1.5 sm:h-1.5"
-            style={{ backgroundColor: rankColor.hex }}
-          />
+      <div className="relative">
+        {/* Profile card */}
+        <div className="border border-[var(--border)] rounded-lg bg-[var(--card)] overflow-hidden">
+          {/* Rank accent bar */}
+          <div className="h-1" style={{ backgroundColor: rankColor.hex }} />
 
-          <div className="relative p-5 sm:p-6 md:p-8">
-            {/* Top section: Avatar and basic info */}
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
-              {/* Avatar - larger on mobile for better visual hierarchy */}
-              <motion.div 
-                className="relative group flex-shrink-0"
-                whileTap={{ scale: 0.98 }}
-              >
-                <motion.div
-                  className="absolute -inset-2 rounded-2xl blur-xl opacity-40 hidden sm:block"
-                  style={{ backgroundColor: rankColor.hex }}
-                  animate={{ opacity: [0.3, 0.5, 0.3] }}
-                  transition={{ duration: 3, repeat: Infinity }}
+          <div className="p-4 sm:p-6">
+            <div className="flex gap-4 sm:gap-5">
+              {/* Avatar */}
+              <div className="relative shrink-0">
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover border border-[var(--border)]"
                 />
-                <div className="relative w-28 h-28 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 {lodestoneUrl && (
-                  <motion.a
+                  <a
                     href={lodestoneUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute -bottom-2 -right-2 flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-lg active:scale-95 sm:hover:scale-110 transition-transform"
+                    className="absolute -bottom-1.5 -right-1.5 flex items-center justify-center w-7 h-7 rounded-full bg-[var(--card)] border border-[var(--border)] hover:text-[var(--primary)] transition-colors"
                     aria-label="View Lodestone profile"
-                    whileTap={{ scale: 0.9 }}
                   >
-                    <Globe className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-text-muted)]" />
-                  </motion.a>
+                    <Globe className="w-3.5 h-3.5" />
+                  </a>
                 )}
-              </motion.div>
+              </div>
 
-              {/* Name and details */}
-              <div className="flex-1 min-w-0 text-center sm:text-left w-full">
-                <h1 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[var(--bento-text)] mb-3 sm:mb-2">
+              {/* Name, rank, date */}
+              <div className="min-w-0 flex-1">
+                <h1 className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] mb-1.5">
                   {name}
                 </h1>
                 
-                {/* Rank badge - stacked on mobile for better layout */}
-                <div className="flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-start gap-2 mb-4 sm:mb-3">
-                  <span className={`
-                    inline-flex items-center gap-1.5 px-4 py-1.5 sm:px-3 sm:py-1 rounded-full
-                    text-sm sm:text-sm font-soft font-semibold
-                    ${rankColor.bg} ${rankColor.text}
-                  `}>
-                    <Shield className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-soft font-medium ${rankColor.bg} ${rankColor.text}`}>
+                    <Shield className="w-3 h-3" />
                     {rank}
                   </span>
                   
                   {formattedDate && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 rounded-full text-xs font-soft text-[var(--bento-text-muted)] bg-[var(--bento-bg)]">
+                    <span className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)]">
                       <Calendar className="w-3 h-3" />
                       <span className="sm:hidden">Since {formattedDateShort}</span>
-                      <span className="hidden sm:inline">Member since {formattedDate}</span>
+                      <span className="hidden sm:inline">Since {formattedDate}</span>
                     </span>
                   )}
                 </div>
 
-                {/* Biography section - shows loading, display, or editor (desktop only) */}
-                <div className="relative mt-4">
-                  {isLoadingBiography ? (
-                    // Loading state for biography
-                    <div className="flex items-center justify-center sm:justify-start gap-2 py-3 sm:py-2">
-                      <div className="w-5 h-5 sm:w-4 sm:h-4 rounded-full border-2 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
-                      <p className="text-sm text-[var(--bento-text-muted)] font-soft">
-                        Loading biography...
-                      </p>
-                    </div>
-                  ) : biography ? (
-                    <div className="relative">
-                      <Quote className="absolute -left-1 -top-1 w-6 h-6 text-[var(--bento-primary)]/20 hidden sm:block" />
-                      <p className="text-base sm:text-base text-[var(--bento-text-muted)] leading-relaxed sm:pl-5 italic">
-                        {biography}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-[var(--bento-text-subtle)] italic">
-                      No biography yet. Tell the FC about yourself!
-                    </p>
-                  )}
-                  
-                  {/* Edit button - larger touch target on mobile */}
-                  {!isLoadingBiography && (
-                    <motion.button
-                      onClick={onEditClick}
-                      className="mt-4 sm:mt-3 inline-flex items-center justify-center sm:justify-start gap-2 px-5 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-soft font-semibold cursor-pointer transition-colors bg-[var(--bento-bg)]/50 border border-[var(--bento-border)] active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/10 text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] w-full sm:w-auto shadow-sm hover:shadow-md"
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Pencil className="w-4 h-4 sm:w-3 sm:h-3" />
-                      {biography ? 'Edit Biography' : 'Add Biography'}
-                    </motion.button>
-                  )}
-                </div>
+                {/* Biography */}
+                {isLoadingBiography ? (
+                  <p className="text-sm text-[var(--text-muted)]">Loading biography…</p>
+                ) : biography ? (
+                  <p className="text-sm text-[var(--text-muted)] leading-relaxed italic">
+                    "{biography}"
+                  </p>
+                ) : (
+                  <p className="text-sm text-[var(--text-subtle)] italic">
+                    No biography yet.
+                  </p>
+                )}
 
-                {/* Desktop inline editor - only show on desktop when editing */}
-                {isEditing && !isMobile && (
-                  <div className="mt-4">
-                    {isLoadingSubmission ? (
-                      <div className="flex items-center gap-2 py-4">
-                        <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" />
-                        <p className="text-sm text-[var(--bento-text-muted)] font-soft">
-                          Loading...
-                        </p>
-                      </div>
-                    ) : (
-                      <BiographyEditor 
-                        canSetDirectly={canSetDirectly}
-                        onBiographyChange={onBiographyChange}
-                        initialBiography={biography}
-                        pendingSubmission={pendingSubmission}
-                        onSubmissionUpdate={onSubmissionUpdate}
-                        onCancel={onEditClick}
-                        compact
-                      />
-                    )}
-                  </div>
+                {/* Edit button */}
+                {!isLoadingBiography && (
+                  <button
+                    onClick={onEditClick}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-soft text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    {biography ? 'Edit' : 'Add biography'}
+                  </button>
                 )}
               </div>
             </div>
+
+            {/* Desktop inline editor */}
+            {isEditing && !isMobile && (
+              <div className="mt-4 pt-4 border-t border-[var(--border)]">
+                {isLoadingSubmission ? (
+                  <p className="text-sm text-[var(--text-muted)]">Loading…</p>
+                ) : (
+                  <BiographyEditor 
+                    canSetDirectly={canSetDirectly}
+                    onBiographyChange={onBiographyChange}
+                    initialBiography={biography}
+                    pendingSubmission={pendingSubmission}
+                    onSubmissionUpdate={onSubmissionUpdate}
+                    onCancel={onEditClick}
+                    compact
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Mobile bottom sheet for bio editing */}
       <MobileSheet
@@ -244,12 +189,7 @@ const ProfileHeader = memo(function ProfileHeader({
         title={biography ? 'Edit Biography' : 'Add Biography'}
       >
         {isLoadingSubmission ? (
-          <div className="flex items-center justify-center gap-3 py-8">
-            <Loader2 className="w-6 h-6 text-[var(--bento-primary)] animate-spin" />
-            <p className="text-base text-[var(--bento-text-muted)] font-soft">
-              Loading...
-            </p>
-          </div>
+          <p className="text-sm text-[var(--text-muted)] py-4">Loading…</p>
         ) : (
           <BiographyEditor 
             canSetDirectly={canSetDirectly}
@@ -435,16 +375,16 @@ const BiographyEditor = memo(function BiographyEditor({
           autoFocus={compact && !isMobile}
           className={`
             w-full px-4 py-4 sm:py-3
-            bg-[var(--bento-bg)] border-2 rounded-2xl sm:rounded-xl
-            font-soft text-base leading-relaxed text-[var(--bento-text)]
-            placeholder:text-[var(--bento-text-muted)]/60
-            focus:outline-none focus:border-[var(--bento-primary)]
+            bg-[var(--bg)] border-2 rounded-lg sm:rounded-xl
+            font-soft text-base leading-relaxed text-[var(--text)]
+            placeholder:text-[var(--text-muted)]/60
+            focus:outline-none focus:border-[var(--primary)]
             disabled:opacity-50 disabled:cursor-not-allowed
             resize-none
             transition-all duration-200
             ${isOverLimit 
               ? 'border-red-500' 
-              : 'border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/50'
+              : 'border-[var(--border)] sm:hover:border-[var(--primary)]/50'
             }
           `}
           style={{ fontSize: '16px' }} // Prevents iOS zoom on focus
@@ -453,7 +393,7 @@ const BiographyEditor = memo(function BiographyEditor({
         {/* Character count and info */}
         <div className="flex justify-between items-center mt-3 sm:mt-2 px-1">
           {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission ? (
-            <p className="text-xs text-[var(--bento-text-subtle)]">
+            <p className="text-xs text-[var(--text-subtle)]">
               Will be reviewed by a Knight
             </p>
           ) : (
@@ -464,7 +404,7 @@ const BiographyEditor = memo(function BiographyEditor({
               ? 'text-red-500' 
               : charactersRemaining < 50 
                 ? 'text-amber-500' 
-                : 'text-[var(--bento-text-muted)]'
+                : 'text-[var(--text-muted)]'
           }`}>
             {charactersRemaining} / {MAX_BIO_LENGTH}
           </span>
@@ -473,82 +413,60 @@ const BiographyEditor = memo(function BiographyEditor({
 
       {/* Success message */}
       {successMessage && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20"
-        >
-          <Check className="w-3.5 h-3.5 text-green-500 flex-shrink-0" aria-hidden="true" />
-          <p className="text-xs text-green-600 dark:text-green-400">
-            {successMessage}
-          </p>
-        </motion.div>
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+          <Check className="w-3.5 h-3.5 text-green-500 shrink-0" aria-hidden="true" />
+          <p className="text-xs text-green-600 dark:text-green-400">{successMessage}</p>
+        </div>
       )}
 
       {/* Error message */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20"
-        >
-          <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" aria-hidden="true" />
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+          <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" aria-hidden="true" />
           <p className="text-xs text-red-600 dark:text-red-400">
             {error instanceof Error ? error.message : 'Something went wrong'}
           </p>
-        </motion.div>
+        </div>
       )}
 
-      {/* Action buttons - larger touch targets on mobile */}
-      <div className={`flex gap-3 sm:gap-2 ${compact && !isMobile ? '' : 'flex-col sm:flex-row'}`}>
+      {/* Action buttons */}
+      <div className={`flex gap-2 ${compact && !isMobile ? '' : 'flex-col sm:flex-row'}`}>
         {onCancel && !isMobile && (
-          <motion.button
+          <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className={`
-              ${compact ? 'flex-1' : 'w-full sm:w-auto order-2 sm:order-1'}
-              flex items-center justify-center gap-1.5
-              px-4 py-2 rounded-lg
-              font-soft font-medium text-sm
-              transition-colors cursor-pointer
-              bg-[var(--bento-bg)] hover:bg-[var(--bento-border)] text-[var(--bento-text-muted)]
-              disabled:opacity-50 disabled:cursor-not-allowed
-            `}
-            whileTap={{ scale: 0.97 }}
+            className="px-3 py-1.5 rounded-lg font-soft text-sm text-[var(--text-muted)] hover:bg-[var(--bg)] transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
-          </motion.button>
+          </button>
         )}
-        <motion.button
+        <button
           type="submit"
           disabled={!biography.trim() || isOverLimit || isSubmitting}
-          className={`
-            ${compact && !isMobile ? 'flex-1' : 'w-full sm:flex-1 order-1 sm:order-2'}
-            flex items-center justify-center gap-2 sm:gap-1.5
-            px-5 py-4 sm:px-4 sm:py-2 ${compact && !isMobile ? '' : 'sm:py-2.5'} rounded-2xl sm:rounded-lg
-            font-soft font-semibold text-base sm:text-sm
-            transition-all cursor-pointer
-            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+          className="
+            flex items-center justify-center gap-1.5
+            px-4 py-2 rounded-lg
+            font-soft font-medium text-sm
+            bg-[var(--primary)] text-white cursor-pointer
             disabled:opacity-50 disabled:cursor-not-allowed
-            bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white 
-            shadow-md shadow-[var(--bento-primary)]/20 active:shadow-sm sm:hover:shadow-lg
-          `}
-          whileTap={{ scale: 0.97 }}
+            hover:brightness-110 transition-all
+            focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+          "
         >
           {isSubmitting ? (
-            <Loader2 className="w-5 h-5 sm:w-3.5 sm:h-3.5 animate-spin" aria-hidden="true" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
           ) : (
             <>
               {hasPendingSubmission ? (
-                <Pencil className="w-5 h-5 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
+                <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
               ) : (
-                <Send className="w-5 h-5 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
+                <Send className="w-3.5 h-3.5" aria-hidden="true" />
               )}
               {getButtonText()}
             </>
           )}
-        </motion.button>
+        </button>
       </div>
     </form>
   );
@@ -626,40 +544,21 @@ export function Profile() {
   // Show login prompt if not authenticated
   if (!isLoading && !isAuthenticated) {
     return (
-      <PageLayout maxWidth="max-w-lg">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <ContentCard className="text-center py-10 sm:py-12">
-                <motion.div 
-                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center mx-auto mb-5 shadow-xl shadow-[var(--bento-primary)]/25"
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <User className="w-10 h-10 text-white" />
-                </motion.div>
-                <h1 className="font-display font-bold text-2xl sm:text-3xl text-[var(--bento-text)] mb-3">
-                  Your Profile
-                </h1>
-                <p className="text-sm sm:text-base text-[var(--bento-text-muted)] mb-6 max-w-xs mx-auto">
-                  Sign in with Discord to view your membership card and manage your biography.
-                </p>
-                <motion.button
-                  onClick={login}
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-[#5865F2] text-white font-soft font-semibold cursor-pointer shadow-lg shadow-[#5865F2]/25 hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none"
-                >
-                  <DiscordIcon className="w-5 h-5" />
-                  Sign in with Discord
-                </motion.button>
-              </ContentCard>
-            </motion.div>
+      <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 px-4">
+        <div className="text-center max-w-xs">
+          <h1 className="font-display font-bold text-lg text-[var(--text)] mb-2">Your Profile</h1>
+          <p className="text-sm text-[var(--text-muted)] mb-4">
+            Sign in with Discord to view your membership card and manage your biography.
+          </p>
+          <button
+            onClick={login}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#5865F2] text-white font-soft font-medium text-sm cursor-pointer hover:bg-[#4752C4] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            <DiscordIcon className="w-4 h-4" />
+            Sign in with Discord
+          </button>
         </div>
-      </PageLayout>
+      </div>
     );
   }
 
@@ -667,87 +566,46 @@ export function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <motion.div 
-          className="flex flex-col items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="w-12 h-12 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
-          <p className="font-accent text-lg text-[var(--bento-text-muted)]">Loading your profile, kupo~</p>
-        </motion.div>
+        <p className="text-sm text-[var(--text-muted)]">Loading your profile…</p>
       </div>
     );
   }
 
   return (
-    <PageLayout maxWidth="max-w-3xl">
-          <PageHeader
-            opener="~ Your adventure awaits ~"
-            title="My Profile"
-            subtitle="View your membership card and share your story"
-            showHeart={false}
+    <div className="min-h-[100dvh] pt-[calc(4rem+env(safe-area-inset-top)+1.5rem)] sm:pt-[calc(4rem+env(safe-area-inset-top)+2rem)] md:pt-8 pb-[calc(5rem+env(safe-area-inset-bottom)+1.5rem)] sm:pb-[calc(5rem+env(safe-area-inset-bottom)+2rem)] md:pb-8 px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="max-w-lg mx-auto space-y-6">
+        <h1 className="font-display font-bold text-lg text-[var(--text)]">My Profile</h1>
+
+        {/* Profile Header */}
+        <ProfileHeader
+          name={user?.memberName || ''}
+          rank={user?.memberRank || ''}
+          avatarUrl={user?.memberPortraitUrl || ''}
+          biography={previewBiography || existingBiography}
+          memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
+          characterId={characterId}
+          isEditing={isEditingBio}
+          onEditClick={handleEditClick}
+          onBiographyChange={handleBiographyChange}
+          canSetDirectly={canSetBiographyDirectly}
+          pendingSubmission={userSubmission}
+          onSubmissionUpdate={handleSubmissionUpdate}
+          isLoadingSubmission={isLoadingSubmission}
+          isLoadingBiography={isLoadingStaff}
+        />
+
+        {/* Membership Card */}
+        <section>
+          <h2 className="font-display font-semibold text-sm text-[var(--text)] mb-3">Membership Card</h2>
+          <MembershipCard
+            name={user?.memberName || ''}
+            rank={user?.memberRank || ''}
+            avatarUrl={user?.memberPortraitUrl || ''}
+            characterId={characterId}
+            memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
           />
-
-          {/* Main Content */}
-          <div className="space-y-6 sm:space-y-8">
-            {/* Profile Header - Main identity section with inline bio editing */}
-            <ProfileHeader
-              name={user?.memberName || ''}
-              rank={user?.memberRank || ''}
-              avatarUrl={user?.memberPortraitUrl || ''}
-              biography={previewBiography || existingBiography}
-              memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
-              characterId={characterId}
-              isEditing={isEditingBio}
-              onEditClick={handleEditClick}
-              onBiographyChange={handleBiographyChange}
-              canSetDirectly={canSetBiographyDirectly}
-              pendingSubmission={userSubmission}
-              onSubmissionUpdate={handleSubmissionUpdate}
-              isLoadingSubmission={isLoadingSubmission}
-              isLoadingBiography={isLoadingStaff}
-            />
-
-            {/* Membership Card Section */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-            >
-              <SectionLabel label="Membership Card" />
-              
-              {/* Card wrapper with tap feedback on mobile */}
-              <motion.div
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.1 }}
-                className="touch-manipulation"
-              >
-                <MembershipCard
-                  name={user?.memberName || ''}
-                  rank={user?.memberRank || ''}
-                  avatarUrl={user?.memberPortraitUrl || ''}
-                  characterId={characterId}
-                  memberSince={user?.firstLoginDate ? new Date(user.firstLoginDate) : undefined}
-                />
-              </motion.div>
-            </motion.section>
-
-            {/* Future Features Teaser - hidden on mobile to reduce clutter */}
-            <motion.div
-              className="text-center py-4 sm:py-8 hidden sm:block"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <StoryDivider className="mx-auto mb-4" size="sm" />
-              <p className="font-accent text-sm sm:text-base text-[var(--bento-text-subtle)]">
-                More profile features coming soon, kupo~
-              </p>
-            </motion.div>
-            
-            {/* Mobile bottom spacer for comfortable scrolling */}
-            <div className="h-4 sm:hidden" />
-          </div>
-    </PageLayout>
+        </section>
+      </div>
+    </div>
   );
 }

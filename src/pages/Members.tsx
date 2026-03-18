@@ -229,10 +229,10 @@ export function Members() {
         subtitle="The wonderful members who make our FC special"
       >
         {/* Member count badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm mb-3">
-          <Users className="w-4 h-4 text-[var(--bento-secondary)]" />
-          <span className="font-soft font-semibold text-[var(--bento-text)]">
-            {allMembers.length} <span className="text-[var(--bento-text-muted)] font-normal">members</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-sm mb-3">
+          <Users className="w-4 h-4 text-[var(--secondary)]" />
+          <span className="font-soft font-semibold text-[var(--text)]">
+            {allMembers.length} <span className="text-[var(--text-muted)] font-normal">members</span>
           </span>
         </div>
       </PageHeader>
@@ -247,14 +247,14 @@ export function Members() {
         transition={{ duration: 0.3, delay: 0.1 }}
       >
         {/* Main search bar - always visible */}
-        <div className="bg-[var(--bento-card)]/80 border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 overflow-hidden">
+        <div className="bg-[var(--card)]/80 border border-[var(--border)] rounded-lg shadow-lg shadow-[var(--primary)]/5 overflow-hidden">
           
           {/* Search input row */}
           <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
             <div className="relative flex-1">
               <label htmlFor="member-search" className="sr-only">Search members by name or rank</label>
               <Search 
-                className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--bento-text-subtle)] pointer-events-none" 
+                className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] pointer-events-none" 
                 aria-hidden="true" 
               />
               <input
@@ -269,10 +269,10 @@ export function Members() {
                 aria-describedby="search-results-count"
                 className="
                   w-full pl-10 sm:pl-11 pr-10 py-3 sm:py-3
-                  bg-[var(--bento-bg)]/50 rounded-xl
-                  border border-[var(--bento-border)] 
-                  focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
-                  font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
+                  bg-[var(--bg)]/50 rounded-xl
+                  border border-[var(--border)] 
+                  focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
+                  font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
                   focus:outline-none transition-all
                   touch-manipulation
                 "
@@ -281,10 +281,10 @@ export function Members() {
               {inputValue && (
                 <button
                   onClick={() => { setInputValue(''); setSearchQuery(''); }}
-                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-1 rounded-lg bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/20 transition-colors cursor-pointer touch-manipulation"
+                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-1 rounded-lg bg-[var(--primary)]/10 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
                   aria-label="Clear search"
                 >
-                  <X className="w-4 h-4 text-[var(--bento-primary)]" />
+                  <X className="w-4 h-4 text-[var(--primary)]" />
                 </button>
               )}
             </div>
@@ -298,11 +298,11 @@ export function Members() {
                 flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-xl
                 font-soft font-medium text-sm
                 transition-all cursor-pointer touch-manipulation
-                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                 active:scale-95
                 ${showFilters 
-                  ? 'bg-[var(--bento-primary)] text-white shadow-lg shadow-[var(--bento-primary)]/25' 
-                  : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/5'
+                  ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/25' 
+                  : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text)] sm:hover:border-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/5'
                 }
               `}
             >
@@ -311,7 +311,7 @@ export function Members() {
               {selectedRanks.length > 0 && (
                 <span className={`
                   px-1.5 py-0.5 text-xs font-bold rounded-full min-w-[1.25rem] text-center
-                  ${showFilters ? 'bg-white/25 text-white' : 'bg-[var(--bento-primary)] text-white'}
+                  ${showFilters ? 'bg-white/25 text-white' : 'bg-[var(--primary)] text-white'}
                 `}>
                   {selectedRanks.length}
                 </span>
@@ -330,7 +330,7 @@ export function Members() {
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="overflow-hidden"
               >
-                <div className="px-4 pb-5 pt-2 border-t border-[var(--bento-border)]">
+                <div className="px-4 pb-5 pt-2 border-t border-[var(--border)]">
                   
                   {/* Sort & Filter controls - stacked on mobile */}
                   <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-5 lg:gap-6 pt-4">
@@ -338,8 +338,8 @@ export function Members() {
                     {/* Sort dropdown */}
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <ArrowUpDown className="w-4 h-4 text-[var(--bento-secondary)]" />
-                        <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">Sort by</span>
+                        <ArrowUpDown className="w-4 h-4 text-[var(--secondary)]" />
+                        <span className="font-soft font-semibold text-sm text-[var(--text)]">Sort by</span>
                       </div>
                       <Dropdown
                         options={SORT_OPTIONS}
@@ -355,10 +355,10 @@ export function Members() {
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Filter className="w-4 h-4 text-[var(--bento-secondary)]" />
-                          <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">Filter by rank</span>
+                          <Filter className="w-4 h-4 text-[var(--secondary)]" />
+                          <span className="font-soft font-semibold text-sm text-[var(--text)]">Filter by rank</span>
                           {selectedRanks.length > 0 && (
-                            <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--bento-primary)] text-white">
+                            <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--primary)] text-white">
                               {selectedRanks.length}
                             </span>
                           )}
@@ -366,7 +366,7 @@ export function Members() {
                         {selectedRanks.length > 0 && (
                           <button
                             onClick={() => setSelectedRanks([])}
-                            className="text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] transition-colors cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-lg active:bg-[var(--bento-primary)]/10 touch-manipulation"
+                            className="text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] sm:hover:text-[var(--primary)] transition-colors cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-lg active:bg-[var(--primary)]/10 touch-manipulation"
                           >
                             <X className="w-4 h-4" />
                             Clear
@@ -392,10 +392,10 @@ export function Members() {
                                 inline-flex items-center gap-2
                                 px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm font-soft font-medium
                                 cursor-pointer transition-all duration-200 touch-manipulation
-                                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                                focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                                 ${isSelected 
                                   ? 'text-white shadow-md' 
-                                  : 'bg-[var(--bento-bg)]/50 border border-[var(--bento-border)] hover:bg-[var(--bento-primary)]/5 text-[var(--bento-text)]'
+                                  : 'bg-[var(--bg)]/50 border border-[var(--border)] hover:bg-[var(--primary)]/5 text-[var(--text)]'
                                 }
                               `}
                               style={isSelected ? {
@@ -409,7 +409,7 @@ export function Members() {
                                 text-xs px-2 py-0.5 rounded-full
                                 ${isSelected 
                                   ? 'bg-white/20' 
-                                  : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)]'
+                                  : 'bg-[var(--card)] text-[var(--text-muted)]'
                                 }
                               `}>
                                 {count}
@@ -427,13 +427,13 @@ export function Members() {
 
           {/* Active filters summary bar - shows when filters active but panel closed */}
           {hasActiveFilters && !showFilters && (
-            <div className="px-3 sm:px-4 pb-3 flex items-center justify-between gap-3 border-t border-[var(--bento-border)] pt-3">
-              <p id="search-results-count" className="font-soft text-sm text-[var(--bento-text)]" aria-live="polite">
-                Showing <span className="font-bold text-[var(--bento-primary)]">{filteredMembers.length}</span> of {allMembers.length} members
+            <div className="px-3 sm:px-4 pb-3 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-3">
+              <p id="search-results-count" className="font-soft text-sm text-[var(--text)]" aria-live="polite">
+                Showing <span className="font-bold text-[var(--primary)]">{filteredMembers.length}</span> of {allMembers.length} members
               </p>
               <button
                 onClick={clearFilters}
-                className="text-sm font-soft font-medium text-[var(--bento-primary)] hover:text-[var(--bento-primary)]/80 transition-colors cursor-pointer flex items-center gap-1 touch-manipulation"
+                className="text-sm font-soft font-medium text-[var(--primary)] hover:text-[var(--primary)]/80 transition-colors cursor-pointer flex items-center gap-1 touch-manipulation"
               >
                 <X className="w-3.5 h-3.5" />
                 Clear all
@@ -453,7 +453,7 @@ export function Members() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <span className="text-sm font-soft text-[var(--bento-text-muted)] mr-2">Quick filter:</span>
+          <span className="text-sm font-soft text-[var(--text-muted)] mr-2">Quick filter:</span>
           {FC_RANKS.slice(0, 5).map((rank) => {
             const rankColor = getRankColor(rank.name);
             const RankIcon = rankColor.icon;
@@ -464,10 +464,10 @@ export function Members() {
                 className="
                   inline-flex items-center gap-1.5
                   px-3 py-1.5 rounded-full text-sm font-soft font-medium
-                  bg-[var(--bento-card)] border border-[var(--bento-border)] 
-                  hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
-                  text-[var(--bento-text)] cursor-pointer transition-all touch-manipulation
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                  bg-[var(--card)] border border-[var(--border)] 
+                  hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
+                  text-[var(--text)] cursor-pointer transition-all touch-manipulation
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                 "
               >
                 <RankIcon className="w-3.5 h-3.5" style={{ color: rankColor.hex }} aria-hidden="true" />
