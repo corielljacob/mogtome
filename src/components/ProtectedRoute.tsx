@@ -29,7 +29,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <div className="w-10 h-10 rounded-full border-3 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
+        <div className="w-10 h-10 rounded-full border-3 border-[var(--primary)]/20 border-t-[var(--primary)] animate-spin" />
       </div>
     );
   }
@@ -39,7 +39,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return (
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         {/* Background gradient */}
-        <div className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.06] via-[var(--bento-accent)]/[0.03] to-[var(--bento-secondary)]/[0.05] pointer-events-none" />
+        <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
         
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
           <motion.div
@@ -49,7 +49,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
             transition={{ duration: 0.5 }}
           >
             {/* Card container */}
-            <div className="bg-[var(--bento-card)]/80 rounded-3xl p-8 md:p-10 border border-[var(--bento-primary)]/15 shadow-xl shadow-[var(--bento-primary)]/5 text-center">
+            <div className="bg-[var(--card)] rounded-lg p-8 md:p-10 border border-[var(--border)] shadow-sm text-center">
               {/* Moogle mascot */}
               <motion.div
                 className="relative mb-6"
@@ -57,7 +57,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className="absolute inset-0 bg-gradient-radial from-[var(--bento-primary)]/20 to-transparent blur-2xl scale-[1.5]" />
+                <div className="absolute inset-0 bg-gradient-radial from-[var(--primary)]/20 to-transparent blur-2xl scale-[1.5]" />
                 <motion.img 
                   src={wizardMoogle} 
                   alt="A moogle wizard guarding the page" 
@@ -81,14 +81,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.2, type: "spring" }}
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center shadow-lg shadow-[var(--bento-primary)]/25">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/25">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
               </motion.div>
 
               {/* Title */}
               <motion.h1
-                className="text-2xl md:text-3xl font-display font-bold text-[var(--bento-text)] mb-2"
+                className="text-2xl md:text-3xl font-display font-bold text-[var(--text)] mb-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -98,7 +98,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
               {/* Description */}
               <motion.p
-                className="text-[var(--bento-text-muted)] font-soft mb-6"
+                className="text-[var(--text-muted)] font-soft mb-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -116,15 +116,15 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                   onClick={login}
                   className="
                     group w-full flex items-center justify-center gap-3
-                    px-6 py-4 rounded-2xl
+                    px-6 py-4 rounded-lg
                     bg-[#5865F2] text-white
                     font-soft font-semibold text-lg
-                    shadow-lg shadow-[#5865F2]/30
-                    hover:bg-[#4752C4] hover:shadow-xl hover:shadow-[#5865F2]/40
+                    shadow-[2px_2px_0_rgba(88,101,242,0.35)]
+                    hover:bg-[#4752C4] hover:shadow-[3px_3px_0_rgba(88,101,242,0.4)]
                     focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-                    transition-all duration-200 cursor-pointer
+                    transition-all duration-150 cursor-pointer
                   "
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: 1.01, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <DiscordIcon className="w-6 h-6" />
@@ -135,22 +135,22 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
               {/* Feature hints */}
               <motion.div
-                className="mt-6 pt-6 border-t border-[var(--bento-primary)]/10"
+                className="mt-6 pt-6 border-t border-[var(--primary)]/10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                <p className="text-xs text-[var(--bento-text-subtle)] font-soft mb-3">
+                <p className="text-xs text-[var(--text-subtle)] font-soft mb-3">
                   What you'll get access to:
                 </p>
-                <div className="flex items-center justify-center gap-4 text-sm text-[var(--bento-text-muted)] font-soft">
+                <div className="flex items-center justify-center gap-4 text-sm text-[var(--text-muted)] font-soft">
                   <span className="flex items-center gap-1.5">
-                    <Scroll className="w-4 h-4 text-[var(--bento-primary)]" />
+                    <Scroll className="w-4 h-4 text-[var(--primary)]" />
                     Live Chronicle
                   </span>
-                  <span className="text-[var(--bento-border)]">•</span>
+                  <span className="text-[var(--border)]">•</span>
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[var(--bento-secondary)]" />
+                    <Sparkles className="w-4 h-4 text-[var(--secondary)]" />
                     Member Features
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
             {/* Footer note */}
             <motion.p
-              className="text-center mt-6 text-sm text-[var(--bento-text-muted)] font-accent"
+              className="text-center mt-6 text-sm text-[var(--text-muted)] font-accent"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
