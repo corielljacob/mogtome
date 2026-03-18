@@ -33,37 +33,37 @@ const FC_VALUES = [
     icon: Users,
     title: 'Welcoming Community',
     description: 'New or veteran, sprout or mentor — everyone finds a home here.',
-    color: 'var(--bento-primary)',
+    color: 'var(--primary)',
   },
   {
     icon: Swords,
     title: 'All Playstyles',
     description: 'Raiding, crafting, glamour, housing — we do it all, kupo!',
-    color: 'var(--bento-secondary)',
+    color: 'var(--secondary)',
   },
   {
     icon: PartyPopper,
     title: 'Regular Events',
     description: 'Screenshot contests, treasure hunts, giveaways, and more.',
-    color: 'var(--bento-accent)',
+    color: 'var(--accent)',
   },
   {
     icon: Handshake,
     title: 'Helpful Mentors',
     description: 'Friendly officers ready to guide you through any content.',
-    color: 'var(--bento-primary)',
+    color: 'var(--primary)',
   },
   {
     icon: Sun,
     title: 'Cozy Atmosphere',
     description: 'A drama-free, positive space to relax after a long day.',
-    color: 'var(--bento-secondary)',
+    color: 'var(--secondary)',
   },
   {
     icon: MessageCircleHeart,
     title: 'Active Discord',
     description: 'Stay connected with FC mates even when you\'re not in-game.',
-    color: 'var(--bento-accent)',
+    color: 'var(--accent)',
   },
 ] as const;
 
@@ -104,56 +104,27 @@ interface StaffCardProps {
 }
 
 /**
- * ValueCard - A single FC value/pillar displayed in the feature grid
+ * ValueCard - A single FC value/pillar displayed as a simple list item
  */
 const ValueCard = memo(function ValueCard({ 
-  icon: Icon, title, description, color, index 
+  icon: Icon, title, description, color,
 }: typeof FC_VALUES[number] & { index: number }) {
   return (
-    <SpotlightCard
-      spotlightColor={`color-mix(in srgb, ${color} 15%, transparent)`}
-      className="rounded-2xl"
-    >
-      <motion.div
-        className="
-          relative h-full
-          p-5 sm:p-6
-          bg-[var(--bento-card)]/60
-          border border-[var(--bento-border)]
-          rounded-2xl
-          transition-colors duration-300
-        "
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.4, delay: index * 0.08 }}
-      >
-        {/* Icon circle */}
-        <div 
-          className="
-            w-11 h-11 sm:w-12 sm:h-12 rounded-xl mb-4
-            flex items-center justify-center
-            shadow-lg shadow-black/5
-          "
-          style={{ 
-            backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
-          }}
-        >
-          <Icon 
-            className="w-5 h-5 sm:w-6 sm:h-6" 
-            style={{ color }} 
-            aria-hidden="true" 
-          />
-        </div>
-
-        <h3 className="font-display font-bold text-base sm:text-lg text-[var(--bento-text)] mb-1.5">
+    <li className="flex items-start gap-3">
+      <Icon 
+        className="w-4 h-4 mt-0.5 shrink-0" 
+        style={{ color }} 
+        aria-hidden="true" 
+      />
+      <div>
+        <span className="font-display font-semibold text-sm text-[var(--text)]">
           {title}
-        </h3>
-        <p className="font-soft text-sm text-[var(--bento-text-muted)] leading-relaxed">
-          {description}
-        </p>
-      </motion.div>
-    </SpotlightCard>
+        </span>
+        <span className="font-soft text-sm text-[var(--text-muted)]">
+          {' — '}{description}
+        </span>
+      </div>
+    </li>
   );
 });
 
@@ -193,16 +164,16 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
       <SpotlightCard
         spotlightColor="rgba(255, 255, 255, 0.06)"
         spotlightSize={500}
-        className="rounded-3xl"
+        className="rounded-xl"
       >
         <div 
           className="
             relative flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8
             p-6 sm:p-8 md:p-10
-            bg-[var(--bento-card)]/80
-            border-2 rounded-3xl
-            shadow-xl
-            sm:hover:shadow-2xl
+            bg-[var(--card)]/80
+            border-2 rounded-xl
+            shadow-sm
+            sm:hover:shadow-sm
             active:scale-[0.99] sm:active:scale-100
             transition-all duration-300
             overflow-hidden
@@ -217,7 +188,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
             <div 
               className="absolute inset-0"
               style={{
-                backgroundImage: `radial-gradient(circle at 20% 30%, ${rankColor.hex}, transparent 50%), radial-gradient(circle at 80% 70%, var(--bento-secondary), transparent 50%)`,
+                backgroundImage: `radial-gradient(circle at 20% 30%, ${rankColor.hex}, transparent 50%), radial-gradient(circle at 80% 70%, var(--secondary), transparent 50%)`,
               }}
             />
           </div>
@@ -242,14 +213,14 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
             rel="noopener noreferrer"
             className="
               relative flex-shrink-0
-              focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none rounded-2xl
+              focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none rounded-lg
             "
             aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
           >
             <div 
               className="
                 relative w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 
-                rounded-2xl overflow-hidden shadow-2xl
+                rounded-lg overflow-hidden shadow-sm
               "
               style={{ 
                 boxShadow: `0 20px 40px -8px ${rankColor.glow.replace('0.4', '0.3')}`,
@@ -257,7 +228,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
             >
               {/* Animated ring */}
               <div 
-                className="absolute -inset-[3px] rounded-2xl z-[-1]"
+                className="absolute -inset-[3px] rounded-lg z-[-1]"
                 style={{
                   background: `linear-gradient(135deg, ${rankColor.hex}, transparent 40%, transparent 60%, ${rankColor.hex})`,
                   opacity: 0.5,
@@ -266,7 +237,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
               />
 
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--card)] to-[var(--bg)] animate-shimmer" aria-hidden="true" />
               )}
               
               <img
@@ -318,7 +289,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
           {/* Info column */}
           <div className="flex-1 min-w-0 text-center sm:text-left sm:pt-1">
             {/* Name */}
-            <h3 className="font-display font-bold text-2xl sm:text-2xl md:text-3xl text-[var(--bento-text)] mb-1">
+            <h3 className="font-display font-bold text-2xl sm:text-2xl md:text-3xl text-[var(--text)] mb-1">
               {member.name}
             </h3>
 
@@ -332,8 +303,8 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
               </span>
               {promotionLabel && (
                 <>
-                  <span className="text-[var(--bento-text-muted)]/40 hidden sm:inline" aria-hidden="true">&middot;</span>
-                  <span className="flex items-center gap-1 text-xs text-[var(--bento-text-muted)] font-soft">
+                  <span className="text-[var(--text-muted)]/40 hidden sm:inline" aria-hidden="true">&middot;</span>
+                  <span className="flex items-center gap-1 text-xs text-[var(--text-muted)] font-soft">
                     <CalendarDays className="w-3 h-3" aria-hidden="true" />
                     Since {promotionLabel}
                   </span>
@@ -348,7 +319,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
                 style={{ color: rankColor.hex }}
                 aria-hidden="true" 
               />
-              <p className="text-[var(--bento-text-muted)] font-soft text-sm sm:text-base md:text-lg leading-relaxed pl-4 sm:pl-5 max-w-lg">
+              <p className="text-[var(--text-muted)] font-soft text-sm sm:text-base md:text-lg leading-relaxed pl-4 sm:pl-5 max-w-lg">
                 {member.biography || (
                   <span className="italic opacity-75">Leading Kupo Life with heart and dedication, kupo~</span>
                 )}
@@ -396,7 +367,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
     <SpotlightCard
       spotlightColor={`${rankColor.glow.replace('0.4', '0.08')}`}
       spotlightSize={400}
-      className="rounded-2xl"
+      className="rounded-lg"
     >
       <motion.article 
         className="group/card relative touch-manipulation h-full"
@@ -410,16 +381,16 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
           className="
             relative flex flex-col items-center text-center h-full
             p-5 sm:p-6
-            bg-[var(--bento-card)]/80
-            border rounded-2xl
+            bg-[var(--card)]/80
+            border rounded-lg
             shadow-sm
-            sm:hover:shadow-xl
+            sm:hover:shadow-md
             active:scale-[0.98] sm:active:scale-100
             transition-all duration-300
             overflow-hidden
           "
           style={{ 
-            borderColor: `color-mix(in srgb, ${rankColor.hex} 15%, var(--bento-border))`,
+            borderColor: `color-mix(in srgb, ${rankColor.hex} 15%, var(--border))`,
           }}
         >
           {/* Top gradient accent bar */}
@@ -446,7 +417,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
             rel="noopener noreferrer"
             className="
               relative mt-2 mb-4
-              focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-xl
+              focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded-xl
             "
             aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
           >
@@ -457,7 +428,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
               }}
             >
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bento-bg)] via-[var(--bento-card)] to-[var(--bento-bg)] animate-shimmer" aria-hidden="true" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--card)] to-[var(--bg)] animate-shimmer" aria-hidden="true" />
               )}
               
               <img
@@ -507,7 +478,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
           </a>
           
           {/* Name */}
-          <h3 className="font-display font-bold text-lg sm:text-xl text-[var(--bento-text)] mb-2">
+          <h3 className="font-display font-bold text-lg sm:text-xl text-[var(--text)] mb-2">
             {member.name}
           </h3>
           
@@ -542,7 +513,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
               <span className="
                 inline-flex items-center gap-1
                 px-2 py-1 rounded-full text-xs font-soft font-semibold 
-                bg-[var(--bento-secondary)]/12 text-[var(--bento-secondary)]
+                bg-[var(--secondary)]/12 text-[var(--secondary)]
               ">
                 <Sparkles className="w-3 h-3" aria-hidden="true" />
                 New!
@@ -552,7 +523,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
 
           {/* Promotion date */}
           {promotionLabel && (
-            <p className="flex items-center justify-center gap-1 text-[11px] text-[var(--bento-text-muted)]/70 font-soft mb-3">
+            <p className="flex items-center justify-center gap-1 text-[11px] text-[var(--text-muted)]/70 font-soft mb-3">
               <CalendarDays className="w-3 h-3" aria-hidden="true" />
               Since {promotionLabel}
             </p>
@@ -566,7 +537,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
           />
 
           {/* Biography */}
-          <p className="text-[var(--bento-text-muted)] font-soft text-sm leading-relaxed flex-1 px-1">
+          <p className="text-[var(--text-muted)] font-soft text-sm leading-relaxed flex-1 px-1">
             {member.biography || (
               <span className="italic opacity-60">{getPlaceholderBio(index)}</span>
             )}
@@ -579,10 +550,10 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
               className="
                 inline-flex items-center gap-2 mt-4
                 px-3 py-2 rounded-xl
-                bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/20 sm:hover:bg-[var(--bento-primary)]/20
-                text-[var(--bento-primary)] font-soft font-semibold text-sm
+                bg-[var(--primary)]/10 active:bg-[var(--primary)]/20 sm:hover:bg-[var(--primary)]/20
+                text-[var(--primary)] font-soft font-semibold text-sm
                 transition-colors touch-manipulation
-                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
               "
             >
               <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
@@ -632,11 +603,11 @@ const RankSection = memo(function RankSection({ rank, members, startIndex, curre
         <div className="flex-1 min-w-0">
           <h3 
             id={`rank-${rank.replace(/\s+/g, '-').toLowerCase()}`}
-            className="font-display font-bold text-lg sm:text-xl text-[var(--bento-text)]"
+            className="font-display font-bold text-lg sm:text-xl text-[var(--text)]"
           >
             {rankColor.label}
           </h3>
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] font-soft">
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] font-soft">
             {rankColor.description}
           </p>
         </div>
@@ -734,7 +705,7 @@ export function About() {
           <div 
             className="absolute inset-0 opacity-[0.035] pointer-events-none"
             style={{
-              background: 'radial-gradient(ellipse at 30% 20%, var(--bento-primary), transparent 60%), radial-gradient(ellipse at 70% 80%, var(--bento-secondary), transparent 60%)',
+              background: 'radial-gradient(ellipse at 30% 20%, var(--primary), transparent 60%), radial-gradient(ellipse at 70% 80%, var(--secondary), transparent 60%)',
             }}
             aria-hidden="true"
           />
@@ -751,41 +722,39 @@ export function About() {
               aria-hidden="true"
             />
 
-            <h2 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)] mb-3 sm:mb-4">
+            <h2 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--text)] mb-3 sm:mb-4">
               Welcome to Kupo Life!
             </h2>
-            <p className="text-[var(--bento-text-muted)] font-soft text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-2 px-1 sm:px-0">
-              We're a cozy Free Company on <strong className="text-[var(--bento-text)] font-semibold">Zalera</strong>, part of the <strong className="text-[var(--bento-text)] font-semibold">Crystal Data Center</strong>, where adventurers become family. 
+            <p className="text-[var(--text-muted)] font-soft text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-2 px-1 sm:px-0">
+              We're a cozy Free Company on <strong className="text-[var(--text)] font-semibold">Zalera</strong>, part of the <strong className="text-[var(--text)] font-semibold">Crystal Data Center</strong>, where adventurers become family. 
               Whether you're new to Eorzea or a seasoned Warrior of Light, there's always a warm hearth 
               and friendly moogles waiting for you here.
             </p>
-            <p className="font-accent text-lg sm:text-xl text-[var(--bento-secondary)]">
+            <p className="font-accent text-lg sm:text-xl text-[var(--secondary)]">
               ~ Kupo! ~
             </p>
           </div>
         </ContentCard>
       </motion.section>
 
-      {/* ── FC Values / Feature Grid ──────────────────────────────────── */}
-      <motion.section 
+      {/* ── FC Values ─────────────────────────────────────────────── */}
+      <section 
         className="mb-10 sm:mb-14"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.3 }}
         aria-labelledby="values-heading"
       >
         <SectionLabel 
           label="What We're About"
-          icon={<BookOpen className="w-4 h-4 text-[var(--bento-primary)]" aria-hidden="true" />}
+          icon={<BookOpen className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {FC_VALUES.map((value, idx) => (
-            <ValueCard key={value.title} {...value} index={idx} />
-          ))}
-        </div>
-      </motion.section>
+        <ContentCard className="p-5 sm:p-6">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {FC_VALUES.map((value, idx) => (
+              <ValueCard key={value.title} {...value} index={idx} />
+            ))}
+          </ul>
+        </ContentCard>
+      </section>
 
       {/* ── Visual break ──────────────────────────────────────────────── */}
       <div className="flex justify-center mb-10 sm:mb-14">
@@ -797,7 +766,7 @@ export function About() {
         <SectionLabel 
           label="Our Team"
           badge={staff.length > 0 ? (
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--bento-primary)]/10 text-[var(--bento-primary)]">
+            <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
               {staff.length} members
             </span>
           ) : undefined}
@@ -864,23 +833,23 @@ export function About() {
             <div 
               className="absolute inset-0 opacity-[0.04] pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse at 50% 0%, var(--bento-primary), transparent 70%)',
+                background: 'radial-gradient(ellipse at 50% 0%, var(--primary), transparent 70%)',
               }}
               aria-hidden="true"
             />
 
             <div className="relative z-10">
               <Heart 
-                className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-[var(--bento-primary)] fill-[var(--bento-primary)]" 
+                className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 text-[var(--primary)] fill-[var(--primary)]" 
                 aria-hidden="true" 
               />
               <h2 
                 id="join-heading"
-                className="font-display font-bold text-xl sm:text-2xl text-[var(--bento-text)] mb-2"
+                className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] mb-2"
               >
                 Want to Join the Family?
               </h2>
-              <p className="text-[var(--bento-text-muted)] font-soft text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-5">
+              <p className="text-[var(--text-muted)] font-soft text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-5">
                 We're always looking for new friends! If Kupo Life sounds like home, 
                 come say hi in our Discord or find us on Zalera.
               </p>
@@ -890,15 +859,14 @@ export function About() {
                   className="
                     inline-flex items-center justify-center gap-2
                     px-6 py-3 rounded-xl
-                    bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                    bg-[var(--primary)]
                     text-white font-soft font-semibold text-sm
-                    shadow-lg shadow-[var(--bento-primary)]/25
-                    hover:shadow-xl hover:shadow-[var(--bento-primary)]/30
-                    hover:brightness-110
+                    shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
+                    hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)]
                     active:scale-[0.97]
                     transition-all duration-200
                     touch-manipulation
-                    focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+                    focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary)] focus-visible:outline-none
                   "
                 >
                   <Users className="w-4 h-4" aria-hidden="true" />

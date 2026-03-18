@@ -76,7 +76,7 @@ const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { stat
     connected: { color: 'text-green-500 bg-green-500/10 border-green-500/20', label: 'Live', Icon: Wifi, ariaLabel: 'Real-time connection active' },
     connecting: { color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20', label: 'Connecting...', Icon: Wifi, ariaLabel: 'Connecting to real-time updates' },
     reconnecting: { color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20', label: 'Reconnecting...', Icon: Wifi, ariaLabel: 'Reconnecting to real-time updates' },
-    disconnected: { color: 'text-[var(--bento-text-muted)] bg-[var(--bento-card)] border-[var(--bento-border)]', label: 'Offline', Icon: WifiOff, ariaLabel: 'Disconnected from real-time updates' },
+    disconnected: { color: 'text-[var(--text-muted)] bg-[var(--card)] border-[var(--border)]', label: 'Offline', Icon: WifiOff, ariaLabel: 'Disconnected from real-time updates' },
     error: { color: 'text-red-500 bg-red-500/10 border-red-500/20', label: 'Error', Icon: WifiOff, ariaLabel: 'Error connecting to real-time updates' },
   };
 
@@ -119,16 +119,16 @@ const TimelineEventCard = memo(function TimelineEventCard({
       whileHover={{ y: -2, scale: 1.005 }}
       className={`
         relative flex gap-3 sm:gap-4 p-4 sm:p-5 md:p-6
-        bg-[var(--bento-card)]/90
-        border border-[var(--bento-border)] rounded-2xl
-        shadow-sm hover:shadow-lg hover:shadow-[var(--bento-primary)]/5 hover:border-[var(--bento-primary)]/30
+        bg-[var(--card)]/90
+        border border-[var(--border)] rounded-lg
+        shadow-sm hover:shadow-lg hover:shadow-[var(--primary)]/5 hover:border-[var(--primary)]/30
         transition-all duration-300 touch-manipulation group
-        ${isRealtime ? 'ring-2 ring-[var(--bento-primary)]/30 ring-offset-2 ring-offset-[var(--bento-bg)]' : ''}
+        ${isRealtime ? 'ring-2 ring-[var(--primary)]/30 ring-offset-2 ring-offset-[var(--bg)]' : ''}
       `}
     >
       {/* Event type icon - larger on mobile for better visual hierarchy */}
       <div className={`
-        flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl
+        flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg
         flex items-center justify-center
         transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3
         ${bgColor} ${color}
@@ -152,7 +152,7 @@ const TimelineEventCard = memo(function TimelineEventCard({
                 </span>
                 {isRealtime && (
                   <motion.span
-                    className="px-2 py-1 rounded-full text-[11px] sm:text-xs font-soft font-bold bg-[var(--bento-primary)] text-white uppercase tracking-wide"
+                    className="px-2 py-1 rounded-full text-[11px] sm:text-xs font-soft font-bold bg-[var(--primary)] text-white uppercase tracking-wide"
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -161,23 +161,23 @@ const TimelineEventCard = memo(function TimelineEventCard({
                 )}
               </div>
               {/* Mobile timestamp - inline with badge */}
-              <span className="text-[11px] sm:hidden font-soft font-medium text-[var(--bento-primary)]">
+              <span className="text-[11px] sm:hidden font-soft font-medium text-[var(--primary)]">
                 {formatRelativeTime(event.createdAt)}
               </span>
             </div>
 
             {/* Event text - larger on mobile */}
-            <p className="text-[var(--bento-text)] font-soft text-sm sm:text-base leading-relaxed group-hover:text-[var(--bento-text)]/90 transition-colors">
+            <p className="text-[var(--text)] font-soft text-sm sm:text-base leading-relaxed group-hover:text-[var(--text)]/90 transition-colors">
               {event.text}
             </p>
           </div>
 
           {/* Desktop timestamp */}
           <div className="flex-shrink-0 text-right hidden sm:block">
-            <p className="text-xs font-soft font-bold text-[var(--bento-primary)]">
+            <p className="text-xs font-soft font-bold text-[var(--primary)]">
               {formatRelativeTime(event.createdAt)}
             </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5 font-medium">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5 font-medium">
               {formatFullDate(event.createdAt)}
             </p>
           </div>
@@ -185,7 +185,7 @@ const TimelineEventCard = memo(function TimelineEventCard({
       </div>
 
       {/* Timeline connector line (for visual continuity) - hidden on mobile */}
-      <div className="absolute left-7 sm:left-8 md:left-9 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--bento-border)] to-transparent hidden sm:block opacity-50" />
+      <div className="absolute left-7 sm:left-8 md:left-9 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--border)] to-transparent hidden sm:block opacity-50" />
     </motion.div>
   );
 });
@@ -323,11 +323,11 @@ export function Chronicle() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
           >
-            <div className="bg-[var(--bento-card)]/80 border border-[var(--bento-border)] rounded-2xl shadow-lg shadow-[var(--bento-primary)]/5 p-3 sm:p-5">
+            <div className="bg-[var(--card)]/80 border border-[var(--border)] rounded-lg shadow-lg shadow-[var(--primary)]/5 p-3 sm:p-5">
               <div className="relative group">
                 <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
                 <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--bento-text-subtle)] group-focus-within:text-[var(--bento-primary)] transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] group-focus-within:text-[var(--primary)] transition-colors"
                   aria-hidden="true"
                 />
                 <input
@@ -341,11 +341,11 @@ export function Chronicle() {
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="
                     w-full pl-11 pr-10 py-3.5
-                    bg-[var(--bento-bg)]/50 hover:bg-[var(--bento-bg)]
+                    bg-[var(--bg)]/50 hover:bg-[var(--bg)]
                     rounded-xl
-                    border border-[var(--bento-border)]
-                    focus:border-[var(--bento-primary)] focus:ring-2 focus:ring-[var(--bento-primary)]/20
-                    font-soft text-base text-[var(--bento-text)] placeholder:text-[var(--bento-text-subtle)]
+                    border border-[var(--border)]
+                    focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
+                    font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
                     focus:outline-none transition-all duration-300
                     touch-manipulation
                   "
@@ -354,10 +354,10 @@ export function Chronicle() {
                 {searchInput && (
                   <button
                     onClick={handleClearSearch}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-1.5 rounded-lg bg-[var(--bento-primary)]/10 active:bg-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-primary)]/20 transition-colors cursor-pointer touch-manipulation"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-1.5 rounded-lg bg-[var(--primary)]/10 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
                     aria-label="Clear search"
                   >
-                    <X className="w-4 h-4 text-[var(--bento-primary)]" />
+                    <X className="w-4 h-4 text-[var(--primary)]" />
                   </button>
                 )}
               </div>
@@ -378,10 +378,10 @@ export function Chronicle() {
                         inline-flex items-center gap-1.5
                         px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-sm font-soft font-semibold
                         cursor-pointer transition-colors duration-200 touch-manipulation
-                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                         ${isActive
                           ? `${config.bgColor} ${config.color} border border-current/20 shadow-md shadow-current/10`
-                          : 'bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5'
+                          : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5'
                         }
                       `}
                     >
@@ -400,8 +400,8 @@ export function Chronicle() {
                     className="
                       inline-flex items-center gap-1.5
                       px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-sm font-soft font-medium
-                      text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)]
-                      bg-[var(--bento-bg)] border border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
+                      text-[var(--text-muted)] hover:text-[var(--primary)]
+                      bg-[var(--bg)] border border-[var(--border)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
                       cursor-pointer transition-all touch-manipulation
                     "
                     aria-label="Clear filter"
@@ -414,7 +414,7 @@ export function Chronicle() {
 
               {/* Search/filter results count */}
               {(isSearching || hasActiveFilter) && !isLoading && (
-                <p className="mt-2.5 px-1 font-soft text-sm text-[var(--bento-text-muted)]" aria-live="polite">
+                <p className="mt-2.5 px-1 font-soft text-sm text-[var(--text-muted)]" aria-live="polite">
                   {isTransitioning ? (
                     <span className="inline-flex items-center gap-1.5">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
@@ -422,7 +422,7 @@ export function Chronicle() {
                     </span>
                   ) : (
                     <>
-                      Found <span className="font-bold text-[var(--bento-primary)]">{displayedEvents.length}</span> event{displayedEvents.length !== 1 ? 's' : ''}
+                      Found <span className="font-bold text-[var(--primary)]">{displayedEvents.length}</span> event{displayedEvents.length !== 1 ? 's' : ''}
                     </>
                   )}
                 </p>
@@ -445,7 +445,7 @@ export function Chronicle() {
               {(status === 'disconnected' || status === 'error') && (
                 <motion.button
                   onClick={reconnect}
-                  className="flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-semibold bg-[var(--bento-primary)] text-white active:bg-[var(--bento-primary)]/80 sm:hover:bg-[var(--bento-primary)]/90 transition-all cursor-pointer touch-manipulation"
+                  className="flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-semibold bg-[var(--primary)] text-white active:bg-[var(--primary)]/80 sm:hover:bg-[var(--primary)]/90 transition-all cursor-pointer touch-manipulation"
                   whileTap={{ scale: 0.95 }}
                 >
                   <Wifi className="w-4 h-4" />
@@ -462,11 +462,11 @@ export function Chronicle() {
                   <button
                     onClick={() => setShowRealtimeEvents(!showRealtimeEvents)}
                     className={`
-                      flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-medium
+                      flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-medium
                       transition-all cursor-pointer touch-manipulation active:scale-[0.98]
                       ${showRealtimeEvents 
-                        ? 'bg-[var(--bento-primary)]/10 text-[var(--bento-primary)] border border-[var(--bento-primary)]/20' 
-                        : 'bg-[var(--bento-card)] text-[var(--bento-text-muted)] border border-[var(--bento-border)]'
+                        ? 'bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20' 
+                        : 'bg-[var(--card)] text-[var(--text-muted)] border border-[var(--border)]'
                       }
                     `}
                   >
@@ -480,7 +480,7 @@ export function Chronicle() {
                 {unseenCount > 0 && (
                   <button
                     onClick={markAllAsSeen}
-                    className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-1.5 rounded-2xl sm:rounded-full text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] sm:hover:text-[var(--bento-primary)] bg-[var(--bento-card)] border border-[var(--bento-border)] sm:hover:border-[var(--bento-primary)]/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
+                    className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] sm:hover:text-[var(--primary)] bg-[var(--card)] border border-[var(--border)] sm:hover:border-[var(--primary)]/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
                   >
                     Mark as read
                   </button>
@@ -542,15 +542,15 @@ export function Chronicle() {
                   >
                     <div className="flex items-center gap-3 px-2">
                       <motion.div
-                        className="w-2 h-2 rounded-full bg-[var(--bento-primary)]"
+                        className="w-2 h-2 rounded-full bg-[var(--primary)]"
                         animate={{ scale: [1, 1.5, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                         aria-hidden="true"
                       />
-                      <span className="text-sm font-soft font-semibold text-[var(--bento-primary)]">
+                      <span className="text-sm font-soft font-semibold text-[var(--primary)]">
                         Live Updates
                       </span>
-                      <div className="flex-1 h-px bg-gradient-to-r from-[var(--bento-primary)]/30 to-transparent" aria-hidden="true" />
+                      <div className="flex-1 border-t border-dashed border-[var(--primary)]/30" aria-hidden="true" />
                     </div>
                     
                     {visibleRealtimeEvents.map((event, index) => (
@@ -562,11 +562,11 @@ export function Chronicle() {
                     ))}
 
                     <div className="flex items-center gap-3 px-2 pt-2">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent" />
-                      <span className="text-xs font-soft text-[var(--bento-text-muted)]">
+                      <div className="flex-1 border-t border-dashed border-[var(--border)]" />
+                      <span className="text-xs font-soft text-[var(--text-muted)]">
                         Earlier events
                       </span>
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent" />
+                      <div className="flex-1 border-t border-dashed border-[var(--border)]" />
                     </div>
                   </motion.div>
                 )}
@@ -591,14 +591,14 @@ export function Chronicle() {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="flex items-center gap-2.5 text-[var(--bento-text-muted)]"
+                      className="flex items-center gap-2.5 text-[var(--text-muted)]"
                       role="status"
                     >
-                      <Loader2 className="w-5 h-5 animate-spin text-[var(--bento-primary)]" aria-hidden="true" />
+                      <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" aria-hidden="true" />
                       <span className="font-soft text-sm font-medium">Loading more events...</span>
                     </motion.div>
                   ) : (
-                    <span className="text-xs text-[var(--bento-text-muted)]/50">&#8203;</span>
+                    <span className="text-xs text-[var(--text-muted)]/50">&#8203;</span>
                   )}
                 </div>
               )}

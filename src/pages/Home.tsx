@@ -2,14 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Users, Heart, ArrowRight, Sparkles, Star,
-  LogIn, BookOpen, Compass, CalendarDays,
+  Heart, ArrowRight, Sparkles, Star,
+  LogIn, CalendarDays,
   Ghost, Skull, Moon, Snowflake, TreePine, Gift,
 } from 'lucide-react';
 
 // Shared components
 import {
-  Button, FloatingMoogles, DiscordIcon, type MoogleConfig,
+  Button, FloatingMoogles, DiscordIcon, StoryDivider, MooglePom, type MoogleConfig,
 } from '../components';
 
 // Contexts
@@ -66,12 +66,6 @@ const floatingMoogles: MoogleConfig[] = [
   { src: lilGuyMoogle, position: 'bottom-14 right-3 md:right-16', size: 'w-14 md:w-20', rotate: -6, delay: 1.5 },
 ];
 
-const EXPLORE_LINKS = [
-  { to: '/members', icon: Users, label: 'Our Family', color: 'var(--bento-primary)' },
-  { to: '/chronicle', icon: BookOpen, label: 'Chronicle', color: 'var(--bento-secondary)' },
-  { to: '/about', icon: Compass, label: 'About Us', color: 'var(--bento-accent)' },
-];
-
 // Default fairy lights — warm twinkling dots
 const DEFAULT_FAIRY_LIGHTS = [
   { left: '8%', top: '10%', size: 4, color: 'rgba(251,191,36,0.50)', delay: 0, dur: 3 },
@@ -111,13 +105,9 @@ function getTimeGreeting(): string {
   return 'Up late, kupo? ✧';
 }
 
-/** Time-of-day tagline — shifts the vibe with the hour */
-function getTimeTagline(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'Your cozy morning awaits';
-  if (hour >= 12 && hour < 17) return 'Your sunny afternoon awaits';
-  if (hour >= 17 && hour < 21) return 'Your cozy evening awaits';
-  return 'Your peaceful night awaits';
+/** Tagline — clear statement of purpose */
+function getTagline(): string {
+  return 'A companion experience for Kupo Life!';
 }
 
 /**
@@ -322,7 +312,7 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       >
-        <div className="w-full h-full rounded-full bg-gradient-to-br from-[var(--bento-primary)]/30 via-amber-400/25 to-[var(--bento-secondary)]/30 blur-3xl" />
+        <div className="w-full h-full rounded-full bg-gradient-to-br from-[var(--primary)]/30 via-amber-400/25 to-[var(--secondary)]/30 blur-3xl" />
       </motion.div>
 
       {/* Inner rotating warm halo */}
@@ -335,7 +325,7 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         }}
         aria-hidden="true"
       >
-        <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400/25 via-[var(--bento-accent)]/20 to-rose-400/20 blur-2xl" />
+        <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400/25 via-[var(--accent)]/20 to-rose-400/20 blur-2xl" />
       </motion.div>
     </>
   );
@@ -466,7 +456,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       >
-        <Heart className="w-3.5 h-3.5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+        <Heart className="w-3.5 h-3.5 text-[var(--primary)] fill-[var(--primary)]" />
       </motion.div>
 
       {/* Left — warm heart */}
@@ -493,7 +483,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       >
-        <Sparkles className="w-3.5 h-3.5 text-[var(--bento-accent)]" />
+        <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
       </motion.div>
 
       {/* Bottom-left — heart */}
@@ -502,35 +492,9 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.9, 0.4] }}
         transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
-        <Heart className="w-3.5 h-3.5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
+        <Heart className="w-3.5 h-3.5 text-[var(--secondary)] fill-[var(--secondary)]" />
       </motion.div>
     </motion.div>
-  );
-}
-
-/** Discord login CTA — compact */
-function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
-  return (
-    <motion.button
-      onClick={onLogin}
-      className="
-        group flex items-center justify-center gap-2.5
-        px-6 py-3 sm:py-3.5 rounded-2xl
-        bg-[#5865F2] text-white
-        font-soft font-semibold text-base sm:text-lg
-        shadow-xl shadow-[#5865F2]/30
-        sm:hover:bg-[#4752C4] sm:hover:shadow-2xl sm:hover:shadow-[#5865F2]/40
-        active:bg-[#4752C4] active:scale-[0.97]
-        focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2
-        focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-        transition-all duration-150 cursor-pointer touch-manipulation
-      "
-      whileTap={{ scale: 0.97 }}
-    >
-      <DiscordIcon className="w-5 h-5" />
-      <span>Login with Discord</span>
-      <LogIn className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-    </motion.button>
   );
 }
 
@@ -1081,16 +1045,16 @@ function EventBanner({ event }: { event: SeasonalEvent }) {
   const EventIcon = event.icon;
   return (
     <motion.div
-      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15"
+      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/15"
       initial={{ opacity: 0, y: -10, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.3 }}
     >
-      <EventIcon className="w-3.5 h-3.5 text-[var(--bento-primary)]" aria-hidden="true" />
-      <span className="font-soft font-semibold text-[11px] sm:text-xs text-[var(--bento-primary)]">
+      <EventIcon className="w-3.5 h-3.5 text-[var(--primary)]" aria-hidden="true" />
+      <span className="font-soft font-semibold text-[11px] sm:text-xs text-[var(--primary)]">
         {event.name}
       </span>
-      <CalendarDays className="w-3 h-3 text-[var(--bento-primary)]/60" aria-hidden="true" />
+      <CalendarDays className="w-3 h-3 text-[var(--primary)]/60" aria-hidden="true" />
     </motion.div>
   );
 }
@@ -1111,26 +1075,23 @@ export function Home() {
 
   const [quoteIndex, setQuoteIndex] = useState(-1);
 
-  // Time-aware values — computed once on mount
+  // Time-aware values
   const timeGreeting = useMemo(() => getTimeGreeting(), []);
-  const timeTagline = useMemo(() => getTimeTagline(), []);
+  const defaultTagline = useMemo(() => getTagline(), []);
 
-  // Personal greeting for authenticated users, time-based for visitors
   const firstGreeting = user
     ? `Welcome home, ${user.memberName.split(' ')[0]}!`
     : timeGreeting;
 
-  // -1 = personal/time greeting, 0+ = regular quote rotation
   const displayQuote = quoteIndex < 0 ? firstGreeting : kupoQuotes[quoteIndex];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length);
-    }, 4000);
+    }, 4500); // slightly slower pace for a relaxed feel
     return () => clearInterval(interval);
   }, [kupoQuotes]);
 
-  // Event-derived atmosphere
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
       return generateEventFairyLights(activeEvent.atmosphere.fairyLightColors);
@@ -1145,237 +1106,223 @@ export function Home() {
     return DEFAULT_WARM_MOTES;
   }, [isEventThemeActive, activeEvent]);
 
-  // Event tagline overrides the time-based tagline
   const tagline = (isEventThemeActive && activeEvent)
     ? activeEvent.tagline
-    : timeTagline;
+    : defaultTagline;
+
+  // Render whimsical background blob
+  const renderWhimsicalBlobs = () => (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <motion.div
+        className="absolute w-[45vw] h-[45vw] min-w-[320px] min-h-[320px] opacity-[0.12] filter blur-[80px]"
+        style={{
+          background: isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#a855f7' :
+                      isEventThemeActive && activeEvent?.id === 'starlight' ? '#fbbf24' : 'var(--primary)',
+          top: '-15%', left: '-8%'
+        }}
+        animate={{
+          rotate: [0, 120, 240, 360],
+          borderRadius: [
+            "40% 60% 70% 30% / 40% 50% 60% 50%",
+            "60% 40% 30% 70% / 50% 60% 40% 50%",
+            "50% 50% 40% 60% / 60% 40% 50% 50%",
+            "40% 60% 70% 30% / 40% 50% 60% 50%"
+          ]
+        }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div
+        className="absolute w-[40vw] h-[40vw] min-w-[280px] min-h-[280px] opacity-[0.10] filter blur-[70px]"
+        style={{
+          background: isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#f97316' :
+                      isEventThemeActive && activeEvent?.id === 'starlight' ? '#ef4444' : 'var(--secondary)',
+          bottom: '5%', right: '-8%'
+        }}
+        animate={{
+          rotate: [360, 240, 120, 0],
+          borderRadius: [
+            "60% 40% 30% 70% / 60% 30% 70% 40%",
+            "40% 60% 70% 30% / 50% 60% 40% 50%",
+            "50% 50% 60% 40% / 40% 50% 50% 60%",
+            "60% 40% 30% 70% / 60% 30% 70% 40%"
+          ]
+        }}
+        transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+      />
+    </div>
+  );
 
   return (
-    <div
-      className="
-        h-[100dvh] w-full overflow-hidden
-        flex flex-col relative
-        pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0
-        pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0
-      "
-    >
-      {/* ── Atmosphere ──────────────────────────────────────────────── */}
-
-      {/* Base theme gradient — uses event colors when active */}
+    <div className="h-full w-full flex flex-col relative bg-[var(--background)] selection:bg-[var(--primary)] selection:text-white overflow-hidden">
+      
+      {/* ── Background Atmospherics ── */}
       <div
-        className="fixed inset-0 pointer-events-none"
+        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
         style={{
           background: (isEventThemeActive && activeEvent)
             ? activeEvent.atmosphere.backgroundGradient
-            : undefined,
+            : 'radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)',
         }}
         aria-hidden="true"
       />
-      {/* Fallback default gradient when no event is active */}
-      {!isEventThemeActive && (
-        <div
-          className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.06] via-[var(--bento-accent)]/[0.03] to-[var(--bento-secondary)]/[0.05] pointer-events-none"
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Center glow — adapts to event (hidden on mobile to reduce glow overhead) */}
-      {!IS_MOBILE_DEVICE && (
-        <div
-          className="
-            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
-            w-[min(700px,100vw)] h-[min(700px,100vw)]
-            rounded-full blur-3xl pointer-events-none
-          "
-          style={{
-            background: (isEventThemeActive && activeEvent)
-              ? `radial-gradient(circle, ${activeEvent.atmosphere.centerGlowFrom}, ${activeEvent.atmosphere.centerGlowVia}, transparent)`
-              : undefined,
-          }}
-          aria-hidden="true"
-        />
-      )}
-      {/* Fallback default center glow */}
-      {!IS_MOBILE_DEVICE && !isEventThemeActive && (
-        <div
-          className="
-            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
-            w-[min(700px,100vw)] h-[min(700px,100vw)]
-            rounded-full
-            bg-gradient-radial from-amber-400/[0.08] via-orange-300/[0.04] to-transparent
-            blur-3xl pointer-events-none
-          "
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Soft vignette — draws eye to the warm center (hidden on mobile) */}
-      {!IS_MOBILE_DEVICE && (
-        <div
-          className="fixed inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.08) 100%)',
-          }}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Fairy lights — warm twinkling dots (event-aware colors) */}
+      {!IS_MOBILE_DEVICE && renderWhimsicalBlobs()}
       <FairyLights lights={fairyLights} />
-
-      {/* Event particles — floating icon decorations during events */}
-      {isEventThemeActive && activeEvent && (
-        <EventParticles particles={activeEvent.particles} />
-      )}
-
-      {/* Flagship event overlays — All Saints' Wake & Starlight get the full treatment */}
+      {isEventThemeActive && activeEvent && <EventParticles particles={activeEvent.particles} />}
       {isEventThemeActive && activeEvent?.id === 'all-saints-wake' && <HalloweenOverlay />}
       {isEventThemeActive && activeEvent?.id === 'starlight' && <StarlightOverlay />}
+      <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
 
-      {/* Background moogles — slightly more visible for coziness */}
-      <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.12, 0.22]} />
-
-      {/* ── Content — fills viewport exactly ─────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center relative z-10 px-4 py-3 md:py-6 min-h-0">
-
-        {/* ── Cozy nest — warm pillowy card that grounds everything ── */}
-        <motion.div
-          className="
-            relative max-w-lg w-full
-            bg-gradient-to-b from-[var(--bento-card)]/40 via-[var(--bento-card)]/55 to-[var(--bento-card)]/65
-            rounded-[2rem] sm:rounded-[2.5rem]
-            px-5 sm:px-7 md:px-9
-            pt-3 sm:pt-5 md:pt-6
-            pb-5 sm:pb-6 md:pb-8
-            border border-[var(--bento-primary)]/[0.12]
-          "
-          style={{
-            boxShadow: IS_MOBILE_DEVICE
-              ? '0 2px 16px -4px rgba(0,0,0,0.10)'
-              : isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                ? '0 8px 60px -12px rgba(109,40,217,0.20), 0 0 100px -20px rgba(249,115,22,0.12), 0 0 40px -8px rgba(74,222,128,0.08), 0 2px 20px -4px rgba(0,0,0,0.10)'
-                : isEventThemeActive && activeEvent?.id === 'starlight'
-                  ? '0 8px 60px -12px rgba(220,38,38,0.15), 0 0 100px -20px rgba(251,191,36,0.12), 0 0 40px -8px rgba(22,163,74,0.08), 0 2px 20px -4px rgba(0,0,0,0.06)'
-                  : '0 8px 50px -12px rgba(251,191,36,0.10), 0 0 80px -20px rgba(251,113,133,0.05), 0 2px 20px -4px rgba(0,0,0,0.06)',
-          }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Inner glow at top — adapts to flagship events (hidden on mobile) */}
-          {!IS_MOBILE_DEVICE && (
-            <div
-              className={`absolute top-0 inset-x-0 h-44 rounded-t-[2rem] sm:rounded-t-[2.5rem] bg-gradient-to-b pointer-events-none ${
-                isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                  ? 'from-purple-500/[0.10] via-orange-400/[0.04] to-transparent'
-                  : isEventThemeActive && activeEvent?.id === 'starlight'
-                    ? 'from-amber-400/[0.10] via-red-400/[0.04] to-transparent'
-                    : 'from-amber-400/[0.07] via-amber-400/[0.03] to-transparent'
-              }`}
-              aria-hidden="true"
-            />
-          )}
-
-          {/* Corner decorations — event-aware */}
-          {isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? (
-            <>
-              <Ghost className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-400/30" aria-hidden="true" />
-              <Skull className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-400/30" aria-hidden="true" />
-              <Moon className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-300/25" aria-hidden="true" />
-              <Ghost className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400/25" aria-hidden="true" />
-            </>
-          ) : isEventThemeActive && activeEvent?.id === 'starlight' ? (
-            <>
-              <Snowflake className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300/30" aria-hidden="true" />
-              <Star className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/30 fill-amber-300/30" aria-hidden="true" />
-              <TreePine className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400/25" aria-hidden="true" />
-              <Gift className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400/25" aria-hidden="true" />
-            </>
-          ) : (
-            <>
-              <Heart className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-primary)]/25 fill-[var(--bento-primary)]/25" aria-hidden="true" />
-              <Heart className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-secondary)]/25 fill-[var(--bento-secondary)]/25" aria-hidden="true" />
-              <Star className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-secondary)]/20 fill-[var(--bento-secondary)]/20" aria-hidden="true" />
-              <Star className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-primary)]/20 fill-[var(--bento-primary)]/20" aria-hidden="true" />
-            </>
-          )}
-
-          {/* Warm embers drifting upward — fireplace warmth (event-aware) */}
-          <WarmMotes motes={warmMotes} />
-
-          <div className="relative flex flex-col items-center text-center">
-
-          {/* ── Event banner (shown during active events) ──────────── */}
-          {isEventThemeActive && activeEvent && (
-            <div className="mb-1">
-              <EventBanner event={activeEvent} />
-            </div>
-          )}
-
-          {/* ── Moogle mascot with warm glow ─────────────────────────── */}
+      {/* ── Main Layout ── */}
+      {/* Mobile: pad for fixed top/bottom bars. Desktop: no padding needed (sidebar handles nav) */}
+      <div className="flex-1 min-h-0 relative z-10 flex flex-col lg:flex-row items-center justify-center p-4 sm:p-8 lg:py-8 lg:px-12 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4">
+        
+        {/* ── Left Side: Whimsical Text & CTA ── */}
+          <div className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left z-20">
           <motion.div
-            className="relative inline-block mb-1"
-            initial={{ opacity: 0, scale: 0.4, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 180, damping: 14, delay: 0.15 }}
+            initial={{ opacity: 0, x: -40, rotate: -2 }}
+            animate={{ opacity: 1, x: 0, rotate: 0 }}
+            transition={{ type: "spring", bounce: 0.4, duration: 1.2 }}
           >
-            <WarmMoogleAura eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
-            <MoogleCharms eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
-
-            {/* The moogle — gently floating + happy sway */}
-            <motion.img
-              src={welcomingMoogle}
-              alt="A friendly moogle mascot welcoming you to MogTome"
-              className="relative w-32 sm:w-40 md:w-48 lg:w-56 sm:drop-shadow-2xl"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              animate={{
-                y: [0, -7, 0],
-                rotate: [-1.5, 1.5, -1.5],
-              }}
-              transition={{
-                y: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
-                rotate: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
-              }}
-            />
+            <p className="eyebrow-script text-2xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-2 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md">
+              Welcome to
+            </p>
           </motion.div>
 
-          {/* ── Speech bubble — cozy round shape ─────────────────────── */}
+          {/* Staggered Giant Title */}
+          <motion.h1
+            className="font-display font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
+          >
+            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--text)] drop-shadow-sm flex">
+              {Array.from("Mog").map((char, i) => (
+                <motion.span
+                  key={`mog-${i}`}
+                  className="inline-block hover:text-[var(--primary)] transition-colors duration-200 cursor-default"
+                  whileHover={{ y: -15, rotate: i % 2 === 0 ? -6 : 6, scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 12 }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
+            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-highlight ml-4 sm:ml-12 lg:ml-24 flex">
+              {Array.from("Tome").map((char, i) => (
+                <motion.span
+                  key={`tome-${i}`}
+                  className="inline-block hover:text-[var(--secondary)] transition-colors duration-200 cursor-default"
+                  whileHover={{ y: -15, rotate: i % 2 === 0 ? 6 : -6, scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 12 }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
+          </motion.h1>
+
           <motion.div
-            className="relative mb-1.5 sm:mb-2"
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.35 }}
+            className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.6 }}
+          >
+            <p className="text-xl sm:text-2xl md:text-[1.75rem] text-[var(--text-subtle)] font-display italic tracking-wide">
+              {tagline.split('Kupo Life!').map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && (
+                    <span className="text-[var(--primary)] font-bold">
+                      Kupo Life!
+                    </span>
+                  )}
+                </span>
+              ))}
+            </p>
+
+            {isEventThemeActive && activeEvent && <EventBanner event={activeEvent} />}
+          </motion.div>
+
+          <motion.div
+            className="flex items-center justify-center lg:justify-start w-full lg:w-auto z-30 relative ml-0 sm:ml-8 lg:ml-20 mt-8"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.8 }}
+          >
+            {!isLoading && !isAuthenticated ? (
+              <div className="relative group inline-block focus-visible:outline-none cursor-pointer">
+                {/* Wobbly background for CTA */}
+                <div className="absolute inset-[-10%] bg-[var(--primary)] opacity-20 rounded-[40%_60%_60%_40%/50%_50%_50%_50%] scale-[0.85] blur-lg group-hover:scale-100 group-hover:opacity-40 group-active:scale-95 transition-all duration-300" aria-hidden="true" />
+                <Button
+                  size="lg"
+                  onClick={login}
+                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden w-full sm:w-auto focus-visible:ring-offset-[var(--background)]"
+                >
+                  {/* Subtle shine effect */}
+                  <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-150%] skew-x-[-45deg] group-hover:animate-shine pointer-events-none" aria-hidden="true" />
+                  <DiscordIcon className="w-[1.35rem] h-[1.35rem] opacity-90" />
+                  <span className="font-soft font-bold tracking-wide">Login with Discord</span>
+                  <ArrowRight className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:translate-x-1.5 transition-transform" />
+                </Button>
+              </div>
+            ) : (
+              <Link to="/members" className="relative group inline-block focus-visible:outline-none">
+                {/* Wobbly background for CTA */}
+                <div className="absolute inset-[-10%] bg-[var(--primary)] opacity-20 rounded-[40%_60%_60%_40%/50%_50%_50%_50%] scale-[0.85] blur-lg group-hover:scale-100 group-hover:opacity-40 group-active:scale-95 transition-all duration-300" aria-hidden="true" />
+                <Button
+                  size="lg"
+                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden"
+                >
+                  {/* Subtle shine effect */}
+                  <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-150%] skew-x-[-45deg] group-hover:animate-shine" aria-hidden="true" />
+                  <Heart className="w-5 h-5 fill-white/20" />
+                  <span className="font-soft font-bold tracking-wide">Enter the Book</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </Button>
+              </Link>
+            )}
+          </motion.div>
+
+        </div>
+
+        {/* ── Right Side: Moogle Showcase ── */}
+        <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
+
+          {/* Speech bubble lives ABOVE the moogle in DOM flow */}
+          <motion.div
+            className="relative z-40 mb-3 sm:mb-4 lg:mb-6 lg:mr-10 xl:mr-20"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ y: [0, -8, 0], opacity: 1, scale: 1 }}
+            transition={{ 
+              opacity: { delay: 1, duration: 0.4 },
+              scale: { type: "spring", delay: 1, bounce: 0.5 },
+              y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.4 }
+            }}
             role="region"
             aria-label="Moogle greeting"
           >
             <div
               className="
-                relative bg-[var(--bento-card)]/90
-                rounded-3xl px-5 sm:px-6 py-3 sm:py-3.5
-                border border-[var(--bento-primary)]/10
-                max-w-[280px] sm:max-w-[320px] mx-auto
-                ${isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                  ? 'shadow-lg shadow-purple-500/[0.12]'
-                  : isEventThemeActive && activeEvent?.id === 'starlight'
-                    ? 'shadow-lg shadow-amber-500/[0.10]'
-                    : 'shadow-lg shadow-amber-500/[0.06]'}
+                relative bg-[var(--card)]/95 backdrop-blur-md
+                px-5 sm:px-7 py-3 sm:py-4
+                rounded-[2rem] rounded-br-md
+                shadow-xl border-2 border-[var(--border)]/60
+                max-w-[260px] sm:max-w-[300px]
               "
             >
-              {/* Rounded bubble tail */}
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[14px] border-b-[var(--bento-card)]" />
-              </div>
+              {/* Thought bubble dots trailing down toward moogle */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-3 w-3.5 h-3.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40" aria-hidden="true" />
+              <div className="absolute -bottom-7 left-1/2 translate-x-1 w-2.5 h-2.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40" aria-hidden="true" />
+              <div className="absolute -bottom-10 left-1/2 translate-x-4 w-1.5 h-1.5 bg-[var(--primary)]/60 rounded-full" aria-hidden="true" />
 
               <AnimatePresence mode="wait">
                 <motion.p
                   key={quoteIndex < 0 ? 'greeting' : quoteIndex}
-                  className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-text)] text-center leading-snug"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className="font-accent text-base sm:text-lg md:text-xl text-[var(--primary)] text-center leading-snug font-bold"
+                  initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, rotate: 2 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   aria-live="polite"
                   aria-atomic="true"
                 >
@@ -1383,138 +1330,53 @@ export function Home() {
                 </motion.p>
               </AnimatePresence>
             </div>
-            <p
-              className="font-accent text-xs sm:text-sm text-[var(--bento-text-muted)] mt-1.5"
-              aria-hidden="true"
-            >
-              {isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                ? '~ whispers the spooky moogle ~'
-                : isEventThemeActive && activeEvent?.id === 'starlight'
-                  ? '~ hums the festive moogle ~'
-                  : '~ says the friendly moogle ~'}
-            </p>
           </motion.div>
 
-          {/* ── Heart divider — handmade decorative touch ────────────── */}
-          <div className="flex items-center justify-center gap-2.5 mb-2 sm:mb-3" aria-hidden="true">
-            <div className="w-10 h-px bg-gradient-to-r from-transparent to-[var(--bento-primary)]/35" />
-            <Heart className="w-3 h-3 text-[var(--bento-primary)]/45 fill-[var(--bento-primary)]/45" />
-            <div className="w-10 h-px bg-gradient-to-l from-transparent to-[var(--bento-primary)]/35" />
-          </div>
-
-          {/* ── Title area ───────────────────────────────────────────── */}
-          <motion.div
-            className="mb-4 sm:mb-5"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+          <motion.div 
+            className="relative lg:mr-10 xl:mr-20 pointer-events-auto"
+            initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", bounce: 0.5, duration: 1.5, delay: 0.3 }}
           >
-            {/* Handwritten welcome */}
-            <p className="font-accent text-base sm:text-lg md:text-xl text-[var(--bento-secondary)] mb-0.5">
-              Welcome to
-            </p>
-
-            {/* Main title with warm glow (glow hidden on mobile) */}
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-1.5"
-              style={{
-                textShadow: IS_MOBILE_DEVICE
-                  ? 'none'
-                  : '0 0 50px color-mix(in srgb, var(--bento-primary), transparent 65%), 0 0 100px rgba(251,191,36,0.08)',
+            <WarmMoogleAura eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
+            <MoogleCharms eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
+            
+            {/* The majestic floating Moogle */}
+            <motion.img
+              src={welcomingMoogle}
+              alt="A magical mogtome moogle"
+              className="relative w-40 sm:w-56 md:w-72 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
+              drag
+              dragConstraints={{ left: -20, right: 20, top: -15, bottom: 15 }}
+              dragElastic={0.15}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95, rotate: -5 }}
+              onClick={() => setQuoteIndex(prev => (prev + 1) % kupoQuotes.length)}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              animate={{
+                y: [-8, 12, -8],
+                rotate: [-1.5, 2.5, -1.5],
               }}
-            >
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                MogTome
-              </span>
-            </h1>
-
-            {/* Cozy tagline — event or time-based */}
-            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft max-w-xs mx-auto leading-snug flex items-center justify-center gap-1.5">
-              {tagline}
-              {isEventThemeActive && activeEvent ? (
-                <activeEvent.icon className="w-3.5 h-3.5 text-[var(--bento-primary)] shrink-0" aria-hidden="true" />
-              ) : (
-                <Heart className="w-3.5 h-3.5 text-[var(--bento-primary)] fill-[var(--bento-primary)] shrink-0" aria-hidden="true" />
-              )}
-            </p>
-          </motion.div>
-
-          {/* ── CTA ─────────────────────────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.65 }}
-          >
-            {!isLoading && !isAuthenticated ? (
-              <DiscordLoginCTA onLogin={login} />
-            ) : (
-              <Link to="/members">
-                <Button
-                  size="lg"
-                  className="gap-2.5 px-7 py-3.5 text-base group shadow-xl shadow-[var(--bento-primary)]/30"
-                >
-                  <Heart className="w-4 h-4" />
-                  <span className="font-soft font-semibold">Meet the Family</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            )}
-          </motion.div>
-
-          </div>
-        </motion.div>
-
-        {/* ── Bottom bar — explore + footer ──────────────────────────── */}
-        <motion.div
-          className="absolute bottom-2 sm:bottom-3 md:bottom-5 inset-x-0 text-center px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-        >
-          {/* Explore pills */}
-          <nav
-            className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap mb-2"
-            aria-label="Quick explore"
-          >
-            {EXPLORE_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="
-                  group inline-flex items-center gap-1.5 px-3 py-1.5
-                  bg-[var(--bento-card)]/50
-                  border border-[var(--bento-border)]/40
-                  rounded-full
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-card)]/80
-                  active:scale-[0.97]
-                  transition-all duration-200 touch-manipulation
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                "
-              >
-                <link.icon
-                  className="w-3 h-3"
-                  style={{ color: link.color }}
-                  aria-hidden="true"
-                />
-                <span className="font-soft font-medium text-xs sm:text-sm text-[var(--bento-text-muted)]">
-                  {link.label}
-                </span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Mini footer */}
-          <p className="font-accent text-[11px] sm:text-xs text-[var(--bento-text-subtle)] flex items-center justify-center gap-1">
-            Made with
-            <Heart
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400 fill-rose-400"
-              aria-hidden="true"
+              transition={{
+                y: { duration: 5, repeat: Infinity, ease: 'easeInOut' },
+                rotate: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+              }}
             />
-            <span className="sr-only">love</span>
-            by moogles, for moogles
-          </p>
-        </motion.div>
+            <WarmMotes motes={warmMotes} />
+          </motion.div>
+
+        </div>
       </div>
+
+      {/* ── Cozy footer signature ── */}
+      <div className="shrink-0 w-full flex justify-center py-2 z-10">
+        <p className="font-accent text-[11px] text-[var(--text-subtle)] flex items-center gap-1.5">
+          Crafted with <Heart className="w-2.5 h-2.5 text-rose-400 fill-rose-400 animate-pulse" aria-hidden="true" /> inside a cozy nest
+        </p>
+      </div>
+
     </div>
   );
 }
