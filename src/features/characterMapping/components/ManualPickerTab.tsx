@@ -69,11 +69,11 @@ export function ManualPickerTab({
         {/* Characters column */}
         <div className="flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--bento-primary)]" />
-            <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+            <User className="w-4 h-4 text-[var(--primary)]" />
+            <h3 className="font-soft font-semibold text-sm text-[var(--text)]">
               Characters
             </h3>
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
+            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bg)] text-[var(--text-muted)]">
               {sortedCharacters.length}
             </span>
           </div>
@@ -90,8 +90,8 @@ export function ManualPickerTab({
           >
             {sortedCharacters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                <p className="text-sm text-[var(--bento-text-muted)]">
+                <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
+                <p className="text-sm text-[var(--text-muted)]">
                   {characterSearch
                     ? 'No characters match your search'
                     : 'No unmapped characters'}
@@ -137,10 +137,10 @@ export function ManualPickerTab({
         <div className="flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-shrink-0">
             <MessageSquare className="w-4 h-4 text-[#5865F2]" />
-            <h3 className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+            <h3 className="font-soft font-semibold text-sm text-[var(--text)]">
               Discord Accounts
             </h3>
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bento-bg)] text-[var(--bento-text-muted)]">
+            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-[var(--bg)] text-[var(--text-muted)]">
               {sortedDiscordUsers.length}
             </span>
           </div>
@@ -157,8 +157,8 @@ export function ManualPickerTab({
           >
             {sortedDiscordUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <Inbox className="w-8 h-8 text-[var(--bento-text-muted)] mb-2" />
-                <p className="text-sm text-[var(--bento-text-muted)]">
+                <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
+                <p className="text-sm text-[var(--text-muted)]">
                   {discordSearch
                     ? 'No users match your search'
                     : 'No unmapped Discord users'}

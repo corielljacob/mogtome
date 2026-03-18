@@ -106,7 +106,7 @@ export function CharacterMapping() {
 
   const hasAnyUnmapped = allCharacters.length > 0 || allDiscordUsers.length > 0;
 
-  // -- Render: Trigger card (sits in the bento grid) -------------------------
+  // -- Render: Trigger card (sits in the dashboard grid) -------------------------
 
   const triggerCard = (
     <div
@@ -122,7 +122,7 @@ export function CharacterMapping() {
       aria-label="Open Character Mapping"
       className="cursor-pointer group"
     >
-      <ContentCard className="h-full flex flex-col group-hover:border-[var(--bento-primary)]/25 transition-colors">
+      <ContentCard className="h-full flex flex-col group-hover:border-[var(--primary)]/25 transition-colors">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-2.5 sm:gap-3">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-400/15 to-cyan-400/15 flex items-center justify-center flex-shrink-0">
@@ -132,52 +132,52 @@ export function CharacterMapping() {
               />
             </div>
             <div>
-              <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
+              <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
                 Character Mapping
               </h2>
-              <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
                 Link characters to Discord accounts
               </p>
             </div>
           </div>
-          <ChevronRight className="w-5 h-5 text-[var(--bento-text-muted)] group-hover:text-[var(--bento-primary)] transition-colors mt-2" />
+          <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors mt-2" />
         </div>
 
         <div className="flex-1 flex items-center justify-center py-6 sm:py-8">
           {isLoading ? (
-            <Loader2 className="w-6 h-6 text-[var(--bento-primary)] animate-spin" />
+            <Loader2 className="w-6 h-6 text-[var(--primary)] animate-spin" />
           ) : isError ? (
             <div className="text-center">
               <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
-              <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+              <p className="text-sm text-[var(--text-muted)] font-soft">
                 Error loading data
               </p>
             </div>
           ) : !hasAnyUnmapped ? (
             <div className="text-center">
               <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
-              <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+              <p className="text-sm text-[var(--text-muted)] font-soft">
                 All accounts mapped!
               </p>
             </div>
           ) : (
             <div className="flex items-center gap-6 text-center">
               <div>
-                <p className="text-2xl font-display font-bold text-[var(--bento-text)]">
+                <p className="text-2xl font-display font-bold text-[var(--text)]">
                   {allCharacters.length}
                 </p>
-                <p className="text-xs text-[var(--bento-text-muted)] font-soft">
+                <p className="text-xs text-[var(--text-muted)] font-soft">
                   Unmapped Characters
                 </p>
               </div>
               {totalMatches > 0 && (
                 <>
-                  <div className="w-px h-8 bg-[var(--bento-border)]" />
+                  <div className="w-px h-8 bg-[var(--border)]" />
                   <div>
                     <p className="text-2xl font-display font-bold text-green-500">
                       {totalMatches}
                     </p>
-                    <p className="text-xs text-[var(--bento-text-muted)] font-soft">
+                    <p className="text-xs text-[var(--text-muted)] font-soft">
                       Auto Matches
                     </p>
                   </div>
@@ -200,22 +200,22 @@ export function CharacterMapping() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex flex-col bg-[var(--bento-bg)]"
+          className="fixed inset-0 z-50 flex flex-col bg-[var(--bg)]"
         >
           {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.04] via-transparent to-[var(--bento-secondary)]/[0.03] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/[0.04] via-transparent to-[var(--secondary)]/[0.03] pointer-events-none" />
 
           {/* Header */}
-          <div className="relative z-10 flex-shrink-0 border-b border-[var(--bento-border)]/50 bg-[var(--bento-bg)]/80 backdrop-blur-lg">
+          <div className="relative z-10 flex-shrink-0 border-b border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-lg">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsOpen(false)}
                   className="
                     p-2 -ml-2 rounded-xl
-                    text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] hover:bg-[var(--bento-card)]
+                    text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--card)]
                     transition-colors cursor-pointer
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                   "
                   aria-label="Close"
                 >
@@ -229,10 +229,10 @@ export function CharacterMapping() {
                     />
                   </div>
                   <div>
-                    <h1 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">
+                    <h1 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
                       Character Mapping
                     </h1>
-                    <p className="text-xs text-[var(--bento-text-muted)] hidden sm:block">
+                    <p className="text-xs text-[var(--text-muted)] hidden sm:block">
                       Link characters to Discord accounts
                     </p>
                   </div>
@@ -244,10 +244,10 @@ export function CharacterMapping() {
                 disabled={isLoading}
                 className="
                   p-2.5 sm:p-2 rounded-xl sm:rounded-lg
-                  bg-[var(--bento-card)] hover:bg-[var(--bento-primary)]/10
-                  text-[var(--bento-text-muted)] hover:text-[var(--bento-primary)]
+                  bg-[var(--card)] hover:bg-[var(--primary)]/10
+                  text-[var(--text-muted)] hover:text-[var(--primary)]
                   transition-colors cursor-pointer touch-manipulation disabled:opacity-50
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                 "
                 aria-label="Refresh unmapped lists"
               >
@@ -263,8 +263,8 @@ export function CharacterMapping() {
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6 w-full flex-1 flex flex-col min-h-0">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-16">
-                  <Loader2 className="w-8 h-8 text-[var(--bento-primary)] animate-spin mb-3" />
-                  <p className="text-sm text-[var(--bento-text-muted)] font-soft">
+                  <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mb-3" />
+                  <p className="text-sm text-[var(--text-muted)] font-soft">
                     Loading unmapped accounts...
                   </p>
                 </div>
@@ -276,7 +276,7 @@ export function CharacterMapping() {
                   action={
                     <button
                       onClick={handleRefresh}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bento-primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
                     >
                       <RefreshCw className="w-4 h-4" />
                       Try Again
@@ -292,17 +292,17 @@ export function CharacterMapping() {
               ) : (
                 <div className="flex-1 flex flex-col min-h-0">
                   {/* Tab bar */}
-                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bento-card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
+                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
                     <button
                       onClick={() => setActiveTab('matches')}
                       className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
-                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                         ${
                           activeTab === 'matches'
-                            ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
-                            : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                            ? 'bg-[var(--card)] text-[var(--text)] shadow-sm'
+                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                         }
                       `}
                     >
@@ -319,11 +319,11 @@ export function CharacterMapping() {
                       className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
-                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                         ${
                           activeTab === 'manual'
-                            ? 'bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm'
-                            : 'text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]'
+                            ? 'bg-[var(--card)] text-[var(--text)] shadow-sm'
+                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                         }
                       `}
                     >
@@ -374,13 +374,13 @@ export function CharacterMapping() {
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative z-10 flex-shrink-0 border-t border-[var(--bento-border)]/50 bg-[var(--bento-bg)]/80 backdrop-blur-lg"
+                className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-lg"
               >
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Sparkles className="w-4 h-4 text-[var(--bento-primary)] flex-shrink-0" />
-                      <p className="text-sm text-[var(--bento-text)] truncate">
+                      <Sparkles className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                      <p className="text-sm text-[var(--text)] truncate">
                         {selectedCharacter && selectedDiscordUser ? (
                           <>
                             <strong>{selectedCharacter.name}</strong> &rarr;{' '}
@@ -403,7 +403,7 @@ export function CharacterMapping() {
                     </div>
                     <button
                       onClick={resetPicker}
-                      className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[var(--bento-card)] text-[var(--bento-text-muted)] hover:text-[var(--bento-text)] transition-colors cursor-pointer"
+                      className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors cursor-pointer"
                       aria-label="Clear selection"
                     >
                       <X className="w-4 h-4" />

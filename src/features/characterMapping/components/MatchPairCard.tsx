@@ -23,10 +23,10 @@ export function MatchPairCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className="
-        bg-[var(--bento-bg)]/50
-        border border-[var(--bento-border)]
+        bg-[var(--bg)]/50
+        border border-[var(--border)]
         rounded-xl p-3
-        hover:border-[var(--bento-primary)]/20
+        hover:border-[var(--primary)]/20
         transition-colors
         flex flex-col
       "
@@ -40,19 +40,19 @@ export function MatchPairCard({
             className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
           />
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-[var(--bento-primary)]/10 flex items-center justify-center flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--bento-primary)]" />
+          <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-[var(--primary)]" />
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
+          <p className="font-soft font-semibold text-sm text-[var(--text)] truncate leading-tight">
             {pair.character.name}
           </p>
-          <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate leading-tight">
+          <p className="text-[10px] font-mono text-[var(--text-muted)]/50 truncate leading-tight">
             {pair.character.characterId}
           </p>
           {pair.character.freeCompanyRank && (
-            <p className="text-[10px] text-[var(--bento-text-muted)] truncate leading-tight">
+            <p className="text-[10px] text-[var(--text-muted)] truncate leading-tight">
               {pair.character.freeCompanyRank}
             </p>
           )}
@@ -61,7 +61,7 @@ export function MatchPairCard({
 
       {/* Connector */}
       <div className="flex items-center gap-2 pl-3 mb-2">
-        <ArrowDown className="w-3.5 h-3.5 text-[var(--bento-text-muted)]" />
+        <ArrowDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
         <ConfidenceBadge confidence={pair.confidence} />
       </div>
 
@@ -71,13 +71,13 @@ export function MatchPairCard({
           <MessageSquare className="w-4 h-4 text-[#5865F2]" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate leading-tight">
+          <p className="font-soft font-semibold text-sm text-[var(--text)] truncate leading-tight">
             {pair.discordUser.serverNickName}
           </p>
-          <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate leading-tight">
+          <p className="text-[10px] font-mono text-[var(--text-muted)]/50 truncate leading-tight">
             {pair.discordUser.discordId}
           </p>
-          <p className="text-[10px] text-[var(--bento-text-muted)] leading-tight">
+          <p className="text-[10px] text-[var(--text-muted)] leading-tight">
             Discord
           </p>
         </div>
@@ -109,10 +109,10 @@ export function MatchPairCard({
           disabled={isConfirming}
           className="
             p-2 rounded-lg
-            text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]
-            hover:bg-[var(--bento-bg)] transition-colors cursor-pointer
+            text-[var(--text-muted)] hover:text-[var(--text)]
+            hover:bg-[var(--bg)] transition-colors cursor-pointer
             disabled:opacity-50 disabled:cursor-not-allowed
-            focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+            focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
           "
           aria-label="Skip this match"
         >

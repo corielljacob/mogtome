@@ -25,14 +25,14 @@ export const DiscordUserItem = memo(function DiscordUserItem({
       className={`
         w-full flex items-center gap-3 p-3 rounded-xl
         border transition-colors cursor-pointer touch-manipulation text-left
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
           isSelected
-            ? 'bg-[var(--bento-primary)]/15 border-[var(--bento-primary)]/40'
+            ? 'bg-[var(--primary)]/15 border-[var(--primary)]/40'
             : matchInfo
               ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50'
-              : 'bg-[var(--bento-bg)]/50 border-[var(--bento-border)] hover:border-[var(--bento-primary)]/30'
+              : 'bg-[var(--bg)]/50 border-[var(--border)] hover:border-[var(--primary)]/30'
         }
       `}
     >
@@ -40,10 +40,10 @@ export const DiscordUserItem = memo(function DiscordUserItem({
         <MessageSquare className="w-5 h-5 text-[#5865F2]" aria-hidden="true" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-soft font-semibold text-sm text-[var(--bento-text)] truncate">
+        <p className="font-soft font-semibold text-sm text-[var(--text)] truncate">
           {user.serverNickName}
         </p>
-        <p className="text-[10px] font-mono text-[var(--bento-text-muted)]/50 truncate">
+        <p className="text-[10px] font-mono text-[var(--text-muted)]/50 truncate">
           {user.discordId}
         </p>
       </div>
@@ -51,7 +51,7 @@ export const DiscordUserItem = memo(function DiscordUserItem({
         <ConfidenceBadge confidence={matchInfo.confidence} />
       )}
       {isSelected && (
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--bento-primary)] flex items-center justify-center">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--primary)] flex items-center justify-center">
           <Check className="w-4 h-4 text-white" />
         </div>
       )}

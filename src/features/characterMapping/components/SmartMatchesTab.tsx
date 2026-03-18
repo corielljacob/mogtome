@@ -35,7 +35,7 @@ export function SmartMatchesTab({
   if (totalMatches === 0) {
     return (
       <EmptyState
-        icon={<HelpCircle className="w-7 h-7 text-[var(--bento-primary)]" />}
+        icon={<HelpCircle className="w-7 h-7 text-[var(--primary)]" />}
         title="No matches found"
         subtitle="The matching engine couldn't find any likely pairs. Use the Manual tab to link accounts by hand."
       />
@@ -49,7 +49,7 @@ export function SmartMatchesTab({
         <div>
           <button
             onClick={() => setExactExpanded(!exactExpanded)}
-            className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
+            className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded-lg"
           >
             {exactExpanded ? (
               <ChevronDown className="w-4 h-4 text-green-500" />
@@ -57,7 +57,7 @@ export function SmartMatchesTab({
               <ChevronUp className="w-4 h-4 text-green-500" />
             )}
             <Sparkles className="w-4 h-4 text-green-500" />
-            <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+            <span className="font-soft font-semibold text-sm text-[var(--text)]">
               Exact Matches
             </span>
             <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-green-500/15 text-green-600 dark:text-green-400">
@@ -92,7 +92,7 @@ export function SmartMatchesTab({
         <div>
           <button
             onClick={() => setSuggestedExpanded(!suggestedExpanded)}
-            className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
+            className="flex items-center gap-2 mb-3 w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded-lg"
           >
             {suggestedExpanded ? (
               <ChevronDown className="w-4 h-4 text-amber-500" />
@@ -100,7 +100,7 @@ export function SmartMatchesTab({
               <ChevronUp className="w-4 h-4 text-amber-500" />
             )}
             <HelpCircle className="w-4 h-4 text-amber-500" />
-            <span className="font-soft font-semibold text-sm text-[var(--bento-text)]">
+            <span className="font-soft font-semibold text-sm text-[var(--text)]">
               Suggested Matches
             </span>
             <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-amber-500/15 text-amber-600 dark:text-amber-400">
@@ -132,8 +132,8 @@ export function SmartMatchesTab({
 
       {/* Unmatched summary */}
       {(unmatchedCharacters.length > 0 || unmatchedDiscordUsers.length > 0) && (
-        <div className="pt-2 border-t border-[var(--bento-border)]">
-          <p className="text-xs text-[var(--bento-text-muted)] font-soft">
+        <div className="pt-2 border-t border-[var(--border)]">
+          <p className="text-xs text-[var(--text-muted)] font-soft">
             {unmatchedCharacters.length} character
             {unmatchedCharacters.length !== 1 ? 's' : ''} and{' '}
             {unmatchedDiscordUsers.length} Discord user
@@ -141,7 +141,7 @@ export function SmartMatchesTab({
             auto-matched.{' '}
             <button
               onClick={onSwitchToManual}
-              className="text-[var(--bento-primary)] font-semibold hover:underline cursor-pointer"
+              className="text-[var(--primary)] font-semibold hover:underline cursor-pointer"
             >
               Link them manually &rarr;
             </button>
