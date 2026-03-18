@@ -72,11 +72,11 @@ export const rankThemes: Record<string, RankTheme> = {
 };
 
 export const defaultTheme: RankTheme = {
-  gradient: 'from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)]',
+  gradient: 'from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]',
   glow: 'rgba(199, 91, 122, 0.4)',
-  bg: 'bg-[var(--bento-primary)]/10',
+  bg: 'bg-[var(--primary)]/10',
   icon: Sword,
-  accent: 'text-[var(--bento-primary)]',
+  accent: 'text-[var(--primary)]',
 };
 
 export function getTheme(rank: string | undefined): RankTheme {

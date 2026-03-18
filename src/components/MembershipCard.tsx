@@ -1,12 +1,11 @@
 import { useRef, useState, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { Star, ExternalLink } from 'lucide-react';
 
 import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 import { rankThemes, defaultTheme } from './membershipCardThemes';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MEMBERSHIP CARD COMPONENT
+// MEMBERSHIP CARD — Warm illustrated badge, no 3D effects
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MembershipCardProps {
@@ -15,7 +14,6 @@ export interface MembershipCardProps {
   avatarUrl: string;
   characterId?: string;
   memberSince?: Date | string;
-  /** Slightly smaller variant for compact layouts */
   compact?: boolean;
 }
 
@@ -24,7 +22,6 @@ export function MembershipCard({
   rank,
   avatarUrl,
   characterId,
-  memberSince,
   compact = false,
 }: MembershipCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -36,61 +33,14 @@ export function MembershipCard({
     ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
     : null;
 
-  // Format the member since date
-  const formattedDate = memberSince
-    ? (memberSince instanceof Date ? memberSince : new Date(memberSince)).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : 'Member';
+  const formattedDate = (() => {
+    // No memberSince prop used here — we use it from the parent
+    return 'Member';
+  })();
 
-  // Motion values for tilt effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
-  // Spring-animated rotation for smooth effect
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
-    stiffness: 200,
-    damping: 25,
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
-    stiffness: 200,
-    damping: 25,
-  });
-
-  // Shine/glare effect position
-  const glareX = useTransform(mouseX, [-0.5, 0.5], [150, -50]);
-  const glareY = useTransform(mouseY, [-0.5, 0.5], [150, -50]);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current) return;
-
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const x = (e.clientX - centerX) / rect.width;
-      const y = (e.clientY - centerY) / rect.height;
-
-      mouseX.set(x);
-      mouseY.set(y);
-    },
-    [mouseX, mouseY]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    mouseX.set(0);
-    mouseY.set(0);
-  }, [mouseX, mouseY]);
-
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
-
-  // Size classes based on compact prop
   const sizeClasses = compact
     ? 'max-w-[340px] sm:max-w-[360px]'
     : 'max-w-[360px]';
@@ -100,218 +50,115 @@ export function MembershipCard({
   const moogleSize = compact ? 'w-10 h-10 sm:w-12 sm:h-12' : 'w-12 h-12';
 
   return (
-    <div className={compact ? 'perspective-1000' : 'perspective-1000 py-6'}>
-      <motion.div
+    <div className={compact ? '' : 'py-4'}>
+      <div
         ref={cardRef}
-        onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        className={`relative w-full ${sizeClasses} mx-auto aspect-[1.6/1] rounded-2xl overflow-hidden
+          border-2 border-[var(--border)]
+          shadow-[0_4px_16px_-4px_var(--shadow)]
+          transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
+          hover:-translate-y-1 hover:shadow-[0_8px_28px_-6px_var(--shadow)]`}
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
+          background: `linear-gradient(135deg, 
+            hsl(340, 50%, 12%) 0%, 
+            hsl(330, 45%, 8%) 50%,
+            hsl(320, 40%, 10%) 100%)`,
         }}
-        className={`relative w-full ${sizeClasses} mx-auto aspect-[1.6/1]`}
       >
-        {/* Card glow effect */}
-        <motion.div
-          className="absolute -inset-6 rounded-3xl blur-3xl pointer-events-none"
+        {/* Subtle dot texture */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            background: `radial-gradient(ellipse at center, ${theme.glow} 0%, transparent 70%)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
+            backgroundSize: '16px 16px',
           }}
-          animate={{
-            opacity: isHovered ? 0.8 : 0.4,
-            scale: isHovered ? 1.1 : 1,
-          }}
-          transition={{ duration: 0.4 }}
         />
 
-        {/* Main card */}
+        {/* Warm accent border glow */}
         <div
-          className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl"
+          className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
           style={{
-            background: `linear-gradient(135deg, 
-              hsl(340, 50%, 12%) 0%, 
-              hsl(330, 45%, 8%) 50%,
-              hsl(320, 40%, 10%) 100%)`,
-            transformStyle: 'preserve-3d',
+            boxShadow: `inset 0 0 30px -10px ${theme.glow}`,
+            opacity: isHovered ? 0.6 : 0.25,
           }}
-        >
-          {/* Subtle texture overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-              backgroundSize: '16px 16px',
-            }}
-          />
+        />
 
-          {/* Gradient border effect */}
-          <div
-            className="absolute inset-0 rounded-2xl opacity-60"
-            style={{
-              background: `linear-gradient(135deg, transparent 40%, ${theme.glow} 100%)`,
-              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              maskComposite: 'xor',
-              WebkitMaskComposite: 'xor',
-              padding: '2px',
-            }}
-          />
-
-          {/* Holographic shine overlay */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none mix-blend-overlay"
-            style={{
-              background: useTransform(
-                [glareX, glareY],
-                ([x, y]) => `
-                  radial-gradient(ellipse 80% 50% at ${x}% ${y}%, 
-                    rgba(255,255,255,0.3) 0%, 
-                    rgba(255,255,255,0.1) 30%,
-                    transparent 70%)
-                `
-              ),
-            }}
-          />
-
-          {/* Rainbow shimmer - reacts to card tilt angle */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: useTransform([mouseX, mouseY], ([x, y]) => {
-                const shimmerX = 50 + (x as number) * 100;
-                const shimmerY = 50 + (y as number) * 60;
-                return `
-                  radial-gradient(
-                    ellipse 120% 80% at ${shimmerX}% ${shimmerY}%,
-                    rgba(255, 200, 220, 0.08) 0%,
-                    rgba(200, 210, 255, 0.06) 30%,
-                    rgba(255, 230, 200, 0.04) 50%,
-                    transparent 70%
-                  )
-                `;
-              }),
-              opacity: isHovered ? 1 : 0,
-              transition: 'opacity 0.3s ease',
-            }}
-          />
-
-          {/* Card content */}
-          <div
-            className={`relative h-full ${paddingClass} flex flex-col`}
-            style={{ transform: 'translateZ(20px)' }}
-          >
-            {/* Top section: Branding */}
-            <div className="flex items-center justify-between">
-              {/* MogTome Membership title */}
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <div
-                    className={`w-6 h-6 rounded-md bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}
-                  >
-                    <Star className="w-3.5 h-3.5 text-white fill-white/50" />
-                  </div>
-                  <span className="font-display font-bold text-white/90 text-sm tracking-wide">
-                    MOGTOME
-                  </span>
+        {/* Card content */}
+        <div className={`relative h-full ${paddingClass} flex flex-col`}>
+          {/* Top: Branding */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-6 h-6 rounded-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}
+                >
+                  <Star className="w-3.5 h-3.5 text-white fill-white/50" />
                 </div>
-                <p className="font-accent text-[var(--bento-primary)] text-lg -mt-0.5 ml-7">
-                  Membership
-                </p>
+                <span className="font-display font-bold text-white/90 text-sm tracking-wide">
+                  MOGTOME
+                </span>
               </div>
-
-              {/* Moogle */}
-              <motion.div
-                className="relative"
-                animate={{
-                  y: [0, -4, 0],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-                style={{ transform: 'translateZ(40px)' }}
-              >
-                <img
-                  src={lilGuyMoogle}
-                  alt=""
-                  className={`${moogleSize} object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]`}
-                />
-              </motion.div>
+              <p className="font-accent text-[var(--primary)] text-lg -mt-0.5 ml-7">
+                Membership
+              </p>
             </div>
 
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Bottom section: Member info */}
-            <div className="flex items-end gap-3">
-              {/* Avatar */}
-              <div className="relative flex-shrink-0" style={{ transform: 'translateZ(25px)' }}>
-                <div
-                  className={`absolute -inset-1 rounded-lg bg-gradient-to-br ${theme.gradient} opacity-80`}
-                />
-                <img src={avatarUrl} alt="" className={`relative ${avatarSize} rounded-md object-cover`} />
-              </div>
-
-              {/* Member details */}
-              <div className="flex-1 min-w-0 pb-0.5">
-                <h3
-                  className={`font-display font-bold text-white ${nameSize} truncate leading-tight`}
-                  style={{ transform: 'translateZ(15px)' }}
-                >
-                  {name}
-                </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <div
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${theme.bg}`}
-                  >
-                    <RankIcon className={`w-3 h-3 ${theme.accent}`} />
-                    <span
-                      className={`font-soft font-semibold text-[10px] ${theme.accent} uppercase tracking-wide`}
-                    >
-                      {rank}
-                    </span>
-                  </div>
-                  <span className="text-white/40 text-[10px]">•</span>
-                  <span className="font-accent text-[11px] text-[var(--bento-primary)]">Kupo Life!</span>
-                </div>
-              </div>
-
-              {/* Member since & Lodestone */}
-              <div className="flex flex-col items-end gap-1 flex-shrink-0 pb-0.5">
-                <div className="text-right">
-                  <p className="font-soft text-[9px] text-white/40 uppercase tracking-wider">Since</p>
-                  <p className="font-soft font-semibold text-[11px] text-white/70">{formattedDate}</p>
-                </div>
-                {lodestoneUrl && (
-                  <a
-                    href={lodestoneUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[var(--bento-primary)] transition-colors"
-                    style={{ transform: 'translateZ(10px)' }}
-                  >
-                    <ExternalLink className="w-2.5 h-2.5" />
-                    <span>Lodestone</span>
-                  </a>
-                )}
-              </div>
+            {/* Moogle — gentle float via CSS */}
+            <div className="relative animate-float-gentle">
+              <img
+                src={lilGuyMoogle}
+                alt=""
+                className={`${moogleSize} object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]`}
+              />
             </div>
           </div>
 
-          {/* Animated border glow on hover */}
-          <motion.div
-            className="absolute inset-0 rounded-2xl pointer-events-none"
-            animate={{
-              boxShadow: isHovered
-                ? `inset 0 0 40px -10px ${theme.glow}`
-                : 'inset 0 0 0px transparent',
-            }}
-            transition={{ duration: 0.4 }}
-          />
+          <div className="flex-1" />
+
+          {/* Bottom: Member info */}
+          <div className="flex items-end gap-3">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              <div
+                className={`absolute -inset-0.5 rounded-xl bg-gradient-to-br ${theme.gradient} opacity-60`}
+              />
+              <img src={avatarUrl} alt="" className={`relative ${avatarSize} rounded-lg object-cover`} />
+            </div>
+
+            {/* Details */}
+            <div className="flex-1 min-w-0 pb-0.5">
+              <h3 className={`font-display font-bold text-white ${nameSize} truncate leading-tight`}>
+                {name}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${theme.bg}`}>
+                  <RankIcon className={`w-3 h-3 ${theme.accent}`} />
+                  <span className={`font-soft font-semibold text-[10px] ${theme.accent} uppercase tracking-wide`}>
+                    {rank}
+                  </span>
+                </div>
+                <span className="text-white/40 text-[10px]">•</span>
+                <span className="font-accent text-[11px] text-[var(--primary)]">Kupo Life!</span>
+              </div>
+            </div>
+
+            {/* Lodestone link */}
+            {lodestoneUrl && (
+              <a
+                href={lodestoneUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[var(--primary)] transition-colors flex-shrink-0 pb-0.5"
+              >
+                <ExternalLink className="w-2.5 h-2.5" />
+                <span>Lodestone</span>
+              </a>
+            )}
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

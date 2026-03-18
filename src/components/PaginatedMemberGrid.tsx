@@ -72,7 +72,7 @@ function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: 
         <RankIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" aria-hidden="true" />
       </div>
       <div className="flex items-center gap-2 sm:gap-2.5">
-        <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--bento-text)]">
+        <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--text)]">
           {rankColor.label}
         </h2>
         <span 
@@ -371,19 +371,19 @@ export function PaginatedMemberGrid({
 
       {/* Pagination controls */}
       {totalPages > 1 && (
-        <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-[var(--bento-border)]">
+        <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-[var(--border)]">
           {/* Mobile-first pagination - simpler, larger touch targets */}
           <div className="sm:hidden">
             {/* Page indicator */}
             <div className="flex items-center justify-center mb-4">
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm" role="status" aria-live="polite">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)] shadow-sm" role="status" aria-live="polite">
                 {isPending ? (
-                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" aria-hidden="true" />
+                  <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
                 ) : (
-                  <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
+                  <Star className="w-4 h-4 text-[var(--secondary)] fill-[var(--secondary)]" aria-hidden="true" />
                 )}
-                <span className="font-soft font-medium text-sm text-[var(--bento-text)]">
-                  Page <span className="text-[var(--bento-primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
+                <span className="font-soft font-medium text-sm text-[var(--text)]">
+                  Page <span className="text-[var(--primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
                 </span>
               </div>
             </div>
@@ -395,12 +395,12 @@ export function PaginatedMemberGrid({
                 disabled={currentPage === 0 || isPending}
                 aria-label="Go to previous page"
                 className="
-                  flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl
-                  bg-[var(--bento-card)] border border-[var(--bento-border)]
-                  text-[var(--bento-text)] font-soft font-semibold text-base
-                  active:scale-[0.97] active:bg-[var(--bento-primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:bg-[var(--bento-card)]
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                  flex-1 flex items-center justify-center gap-2 py-4 rounded-lg
+                  bg-[var(--card)] border border-[var(--border)]
+                  text-[var(--text)] font-soft font-semibold text-base
+                  active:scale-[0.97] active:bg-[var(--primary)]/10
+                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:bg-[var(--card)]
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                   transition-all cursor-pointer touch-manipulation
                 "
               >
@@ -413,10 +413,10 @@ export function PaginatedMemberGrid({
                 disabled={currentPage === totalPages - 1 || isPending}
                 aria-label="Go to next page"
                 className="
-                  flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl
-                  bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                  flex-1 flex items-center justify-center gap-2 py-4 rounded-lg
+                  bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]
                   text-white font-soft font-semibold text-base
-                  shadow-lg shadow-[var(--bento-primary)]/25
+                  shadow-lg shadow-[var(--primary)]/25
                   active:scale-[0.97] active:shadow-sm
                   disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
                   focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
@@ -434,16 +434,16 @@ export function PaginatedMemberGrid({
                 <button
                   onClick={handleFirstPage}
                   disabled={currentPage === 0 || isPending}
-                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronsLeft className="w-4 h-4 inline-block mr-1" aria-hidden="true" />
                   First
                 </button>
-                <span className="text-[var(--bento-text-subtle)]">·</span>
+                <span className="text-[var(--text-subtle)]">·</span>
                 <button
                   onClick={handleLastPage}
                   disabled={currentPage === totalPages - 1 || isPending}
-                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--bento-text-muted)] active:text-[var(--bento-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   Last
                   <ChevronsRight className="w-4 h-4 inline-block ml-1" aria-hidden="true" />
@@ -456,18 +456,18 @@ export function PaginatedMemberGrid({
           <div className="hidden sm:block">
             {/* Page info header with loading indicator */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" aria-hidden="true" />
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--bento-card)] border border-[var(--bento-border)] shadow-sm" role="status" aria-live="polite">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/20 to-transparent" aria-hidden="true" />
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-sm" role="status" aria-live="polite">
                 {isPending ? (
-                  <Loader2 className="w-4 h-4 text-[var(--bento-primary)] animate-spin" aria-hidden="true" />
+                  <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
                 ) : (
-                  <Star className="w-4 h-4 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" aria-hidden="true" />
+                  <Star className="w-4 h-4 text-[var(--secondary)] fill-[var(--secondary)]" aria-hidden="true" />
                 )}
-                <span className="font-soft font-medium text-sm text-[var(--bento-text)]">
-                  Page <span className="text-[var(--bento-primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
+                <span className="font-soft font-medium text-sm text-[var(--text)]">
+                  Page <span className="text-[var(--primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
                 </span>
               </div>
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" aria-hidden="true" />
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/20 to-transparent" aria-hidden="true" />
             </div>
 
             {/* Main pagination controls */}
@@ -485,12 +485,12 @@ export function PaginatedMemberGrid({
                   aria-label="Go to first page"
                   className="
                     flex items-center justify-center w-10 h-10 rounded-xl
-                    bg-[var(--bento-card)] border border-[var(--bento-border)]
-                    text-[var(--bento-text-muted)]
-                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 hover:text-[var(--bento-primary)]
-                    active:scale-95 active:bg-[var(--bento-primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    bg-[var(--card)] border border-[var(--border)]
+                    text-[var(--text-muted)]
+                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 hover:text-[var(--primary)]
+                    active:scale-95 active:bg-[var(--primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                     transition-all cursor-pointer
                   "
                 >
@@ -504,12 +504,12 @@ export function PaginatedMemberGrid({
                   aria-label="Go to previous page"
                   className="
                     flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
-                    bg-[var(--bento-card)] border border-[var(--bento-border)]
-                    text-[var(--bento-text)] font-soft font-medium text-sm
-                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
-                    active:scale-95 active:bg-[var(--bento-primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    bg-[var(--card)] border border-[var(--border)]
+                    text-[var(--text)] font-soft font-medium text-sm
+                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
+                    active:scale-95 active:bg-[var(--primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                     transition-all cursor-pointer
                   "
                 >
@@ -523,7 +523,7 @@ export function PaginatedMemberGrid({
                     page === 'ellipsis' ? (
                       <span 
                         key={`ellipsis-${idx}`} 
-                        className="w-8 text-center text-[var(--bento-text-muted)] font-soft select-none text-sm"
+                        className="w-8 text-center text-[var(--text-muted)] font-soft select-none text-sm"
                         aria-hidden="true"
                       >
                         ···
@@ -540,10 +540,10 @@ export function PaginatedMemberGrid({
                           transition-all cursor-pointer
                           active:scale-95
                           disabled:cursor-wait
-                          focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none focus-visible:ring-offset-2
+                          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none focus-visible:ring-offset-2
                           ${currentPage === page
-                            ? 'bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white shadow-lg shadow-[var(--bento-primary)]/30'
-                            : 'bg-[var(--bento-card)] border border-[var(--bento-border)] text-[var(--bento-text)] hover:border-[var(--bento-primary)]/40 hover:bg-[var(--bento-primary)]/10 hover:text-[var(--bento-primary)]'
+                            ? 'bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white shadow-lg shadow-[var(--primary)]/30'
+                            : 'bg-[var(--card)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]'
                           }
                         `}
                       >
@@ -560,12 +560,12 @@ export function PaginatedMemberGrid({
                   aria-label="Go to next page"
                   className="
                     flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
-                    bg-[var(--bento-card)] border border-[var(--bento-border)]
-                    text-[var(--bento-text)] font-soft font-medium text-sm
-                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5
-                    active:scale-95 active:bg-[var(--bento-primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    bg-[var(--card)] border border-[var(--border)]
+                    text-[var(--text)] font-soft font-medium text-sm
+                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
+                    active:scale-95 active:bg-[var(--primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                     transition-all cursor-pointer
                   "
                 >
@@ -580,12 +580,12 @@ export function PaginatedMemberGrid({
                   aria-label="Go to last page"
                   className="
                     flex items-center justify-center w-10 h-10 rounded-xl
-                    bg-[var(--bento-card)] border border-[var(--bento-border)]
-                    text-[var(--bento-text-muted)]
-                    hover:border-[var(--bento-primary)]/30 hover:bg-[var(--bento-primary)]/5 hover:text-[var(--bento-primary)]
-                    active:scale-95 active:bg-[var(--bento-primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--bento-card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                    bg-[var(--card)] border border-[var(--border)]
+                    text-[var(--text-muted)]
+                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 hover:text-[var(--primary)]
+                    active:scale-95 active:bg-[var(--primary)]/10
+                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
+                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                     transition-all cursor-pointer
                   "
                 >
@@ -595,10 +595,10 @@ export function PaginatedMemberGrid({
             </nav>
 
             {/* Keyboard hint */}
-            <p className="text-center mt-4 text-xs text-[var(--bento-text-subtle)] font-soft">
-              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">←</kbd>
+            <p className="text-center mt-4 text-xs text-[var(--text-subtle)] font-soft">
+              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg)] border border-[var(--border)] text-[var(--text-muted)] font-mono text-[10px]">←</kbd>
               {' '}
-              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bento-bg)] border border-[var(--bento-border)] text-[var(--bento-text-muted)] font-mono text-[10px]">→</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg)] border border-[var(--border)] text-[var(--text-muted)] font-mono text-[10px]">→</kbd>
               {' '}to navigate pages
             </p>
           </div>
