@@ -1362,3 +1362,8 @@
 .preserve-3d {
   transform-style: preserve-3d;
 }
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
