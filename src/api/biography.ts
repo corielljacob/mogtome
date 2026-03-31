@@ -6,7 +6,7 @@ import type { BiographySubmission } from '../types';
  * @param biography - The biography text to set
  */
 async function setBiography(biography: string): Promise<void> {
-  await apiClient.post('/biography', { biography });
+  await apiClient.post('/profile/biography', { biography });
 }
 
 /**
@@ -14,14 +14,14 @@ async function setBiography(biography: string): Promise<void> {
  * @param biography - The biography text to submit for review
  */
 async function submitBiography(biography: string): Promise<void> {
-  await apiClient.post('/submission', { biography });
+  await apiClient.post('/profile/submission', { biography });
 }
 
 /**
  * Retrieve all pending biography submissions (for Knights and above).
  */
 async function getPendingSubmissions(): Promise<BiographySubmission[]> {
-  const response = await apiClient.get<BiographySubmission[]>('/submission');
+  const response = await apiClient.get<BiographySubmission[]>('/profile/submission');
   return Array.isArray(response.data) ? response.data : [];
 }
 
@@ -30,7 +30,7 @@ async function getPendingSubmissions(): Promise<BiographySubmission[]> {
  * @param submissionId - The submissionId of the submission to approve (NOT the id field)
  */
 async function approveSubmission(submissionId: string): Promise<void> {
-  await apiClient.post(`/submission/approve/${submissionId}`);
+  await apiClient.post(`/profile/submission/approve/${submissionId}`);
 }
 
 /**
@@ -38,7 +38,7 @@ async function approveSubmission(submissionId: string): Promise<void> {
  * @param submissionId - The submissionId of the submission to reject (NOT the id field)
  */
 async function rejectSubmission(submissionId: string): Promise<void> {
-  await apiClient.post(`/submission/reject/${submissionId}`);
+  await apiClient.post(`/profile/submission/reject/${submissionId}`);
 }
 
 /**
@@ -47,7 +47,7 @@ async function rejectSubmission(submissionId: string): Promise<void> {
  */
 async function getSubmission(memberId: string): Promise<BiographySubmission | null> {
   try {
-    const response = await apiClient.get<BiographySubmission>(`/submission/${memberId}`);
+    const response = await apiClient.get<BiographySubmission>(`/profile/submission/${memberId}`);
     return response.data ?? null;
   } catch (error) {
     // Return null if no submission found (404) or other errors
@@ -68,7 +68,7 @@ async function getSubmission(memberId: string): Promise<BiographySubmission | nu
  * @param biography - The updated biography text
  */
 async function editSubmission(submissionId: string, biography: string): Promise<void> {
-  await apiClient.post(`/submission/edit/${submissionId}`, { biography });
+  await apiClient.post(`/profile/submission/edit/${submissionId}`, { biography });
 }
 
 export const biographyApi = {
