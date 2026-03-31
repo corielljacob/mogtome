@@ -25,8 +25,8 @@ interface JwtPayload {
   memberName: string;
   memberRank: string;
   memberPortraitUrl: string;
-  hasKnighthood: boolean;
-  hasTemporaryKnighthood: boolean;
+  hasKnighthood: string;
+  hasTemporaryKnighthood: string;
   /** Date of user's first MogTome login (ISO string) - set by backend on first-ever login */
   firstMogTomeLoginDate?: string;
 }
@@ -259,8 +259,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberName: payload.memberName,
         memberRank: payload.memberRank,
         memberPortraitUrl: payload.memberPortraitUrl,
-        hasKnighthood: payload.hasKnighthood,
-        hasTemporaryKnighthood: payload.hasTemporaryKnighthood,
+        hasKnighthood: payload.hasKnighthood === "true",
+        hasTemporaryKnighthood: payload.hasTemporaryKnighthood === "true",
         firstLoginDate: payload.firstMogTomeLoginDate,
         discordId: payload.discordId,
       },
