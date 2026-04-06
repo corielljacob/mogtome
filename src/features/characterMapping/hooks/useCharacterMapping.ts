@@ -6,7 +6,7 @@ import {
   rankMatchesForCharacter,
   rankMatchesForDiscordUser,
 } from '../../../utils/characterMatching';
-import type { UnmappedCharacter, UnmappedDiscordUser, MatchPair, MatchInfo } from '../types';
+import type { UnmappedCharacter, UnmappedDiscordUser, MatchPair, MatchInfo, MappedCharacter } from '../types';
 
 // --- Types -------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ export interface UseCharacterMappingResult {
   allCharacters: UnmappedCharacter[];
   allDiscordUsers: UnmappedDiscordUser[];
   matchResults: ReturnType<typeof computeMatches>;
+  mappedCharacters: MappedCharacter[];
 
   // Visible matches (excluding dismissed)
   visibleExactMatches: MatchPair[];
@@ -24,12 +25,14 @@ export interface UseCharacterMappingResult {
   // Loading/error state
   isLoading: boolean;
   isError: boolean;
+  isUnlinking: boolean;
 
   // Actions
   confirmPair: (pair: MatchPair) => void;
   dismissPair: (pair: MatchPair) => void;
   mapManually: (characterId: string, discordId: string) => Promise<void>;
   refresh: () => void;
+  unlinkCharacter: (pair: MappedCharacter) => Promise<void>;
 
   // Mutation state
   confirmingPairKey: string | null;
@@ -94,8 +97,19 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     staleTime: 1000 * 30,
   });
 
-  const isLoading = isLoadingCharacters || isLoadingDiscordUsers;
-  const isError = isCharactersError || isDiscordUsersError;
+  const {
+    data: mappedCharactersData,
+    isLoading: isLoadingMappedCharacters,
+    isError: isMappedCharactersError,
+    refetch: refetchMappedCharacters,
+  } = useQuery({
+    queryKey: ['mapped-characters'],
+    queryFn: () => characterMappingApi.getMappedCharacters(),
+    staleTime: 1000 * 30,
+  });
+
+  const isLoading = isLoadingCharacters || isLoadingDiscordUsers || isLoadingMappedCharacters;
+  const isError = isCharactersError || isDiscordUsersError || isMappedCharactersError;
 
   // -- Normalize data ---------------------------------------------------------
 
@@ -114,6 +128,11 @@ export function useCharacterMapping(): UseCharacterMappingResult {
       (u) => u.discordId
     );
   }, [discordUsersData]);
+
+  const mappedCharacters = useMemo(() => {
+    if (!mappedCharactersData) return [];
+    return mappedCharactersData.mappedCharacters;
+  }, [mappedCharactersData]);
 
   // -- Matching ---------------------------------------------------------------
 
@@ -166,6 +185,12 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     onSuccess: invalidateAll,
   });
 
+  const unlinkCharacterMutation = useMutation({
+    mutationFn: ({ characterId, discordId }: { characterId: string; discordId: string }) =>
+      characterMappingApi.unlinkCharacter(characterId, discordId),
+    onSuccess: invalidateAll,
+  });
+
   // -- Actions ----------------------------------------------------------------
 
   const confirmPair = useCallback(
@@ -200,17 +225,26 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     [mapMutation]
   );
 
+    const unlinkCharacter = useCallback(
+    async (pair: MappedCharacter) => {
+      await unlinkCharacterMutation.mutateAsync({ characterId: pair.characterId, discordId: pair.discordId });
+    },
+    [unlinkCharacterMutation]
+  );
+
   const refresh = useCallback(() => {
     setDismissedPairs(new Set());
     refetchCharacters();
     refetchDiscordUsers();
-  }, [refetchCharacters, refetchDiscordUsers]);
+    refetchMappedCharacters();
+  }, [refetchCharacters, refetchDiscordUsers, refetchMappedCharacters]);
 
   // -- Return -----------------------------------------------------------------
 
   return {
     allCharacters,
     allDiscordUsers,
+    mappedCharacters,
     matchResults,
     visibleExactMatches,
     visibleSuggestedMatches,
@@ -226,5 +260,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     mappingError: mapMutation.error,
     getRankedDiscordUsers,
     getRankedCharacters,
+    unlinkCharacter,
+    isUnlinking: unlinkCharacterMutation.isPending,
   };
 }

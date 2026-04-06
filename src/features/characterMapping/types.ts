@@ -2,14 +2,15 @@ import type { MatchConfidence, MatchPair } from '../../utils/characterMatching';
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
+  MappedCharacter,
 } from '../../api/characterMapping';
 
 // Re-export for convenience
-export type { MatchConfidence, MatchPair, UnmappedCharacter, UnmappedDiscordUser };
+export type { MatchConfidence, MatchPair, UnmappedCharacter, UnmappedDiscordUser, MappedCharacter };
 
 // --- Tab types ---------------------------------------------------------------
 
-export type TabId = 'matches' | 'manual';
+export type TabId = 'matches' | 'manual' | 'unlink';
 
 // --- Match info --------------------------------------------------------------
 
