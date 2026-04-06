@@ -340,7 +340,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     const loginUrl = new URL('https://api.mogtome.com/auth/discord/login');
     loginUrl.searchParams.set('redirect', redirectUrl);
-    
+
     window.location.href = loginUrl.toString();
   }, []);
 

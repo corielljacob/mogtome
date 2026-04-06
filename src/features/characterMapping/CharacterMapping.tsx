@@ -13,11 +13,13 @@ import {
   Sparkles,
   ArrowLeft,
   ChevronRight,
+  Unlink,
 } from 'lucide-react';
 import { ContentCard } from '../../components/ContentCard';
 import { useCharacterMapping, useManualPicker } from './hooks';
 import { EmptyState, AutoMatchesTab, ManualPickerTab } from './components';
 import type { TabId } from './types';
+import { UnlinkTab } from "./components/UnlinkTab";
 
 export function CharacterMapping() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,6 +30,7 @@ export function CharacterMapping() {
   const {
     allCharacters,
     allDiscordUsers,
+    mappedCharacters,
     matchResults,
     visibleExactMatches,
     visibleSuggestedMatches,
@@ -41,6 +44,8 @@ export function CharacterMapping() {
     confirmingPairKey,
     isMapping,
     mappingError,
+    unlinkCharacter,
+    isUnlinking,
   } = useCharacterMapping();
 
   const {
@@ -330,6 +335,22 @@ export function CharacterMapping() {
                       <Search className="w-4 h-4" />
                       Manual
                     </button>
+                    <button
+                      onClick={() => setActiveTab("unlink")}
+                      className={`
+                        flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+                        text-sm font-soft font-medium transition-all cursor-pointer
+                        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
+                        ${
+                          activeTab === "unlink"
+                            ? "bg-[var(--bento-card)] text-[var(--bento-text)] shadow-sm"
+                            : "text-[var(--bento-text-muted)] hover:text-[var(--bento-text)]"
+                        }
+                      `}
+                    >
+                      <Unlink className="w-4 h-4" />
+                      Unlink
+                    </button>
                   </div>
 
                   {/* Tab content */}
@@ -359,6 +380,14 @@ export function CharacterMapping() {
                       sortedDiscordUsers={sortedDiscordUsers}
                       onSelectCharacter={selectCharacter}
                       onSelectDiscordUser={selectDiscordUser}
+                    />
+                  )}
+
+                  {activeTab === "unlink" && (
+                    <UnlinkTab
+                      mappedCharacters={mappedCharacters}
+                      onUnlink={unlinkCharacter}
+                      isUnlinking={isUnlinking}
                     />
                   )}
                 </div>
