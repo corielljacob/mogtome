@@ -251,7 +251,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     tagline: 'The Gold Saucer glitters with fortune',
     description: 'Increases MGP earned through activities within the Gold Saucer.',
     icon: Coins,
-    dateRange: { startMonth: 6, startDay: 1, endMonth: 6, endDay: 14 },
+    dateRange: { startMonth: 5, startDay: 29, endMonth: 6, endDay: 24 },
     preview: { primary: '#EAB308', secondary: '#7C3AED', accent: '#FDE047' },
     kupoQuotes: [
       "Jackpot, kupo!",
