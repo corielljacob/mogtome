@@ -43,6 +43,24 @@ export interface MapCharacterRequest {
 }
 
 /**
+ * Mapped character from the API
+ */
+export interface MappedCharacter {
+  characterId: string;
+  characterName: string;
+  discordId: string;
+  discordName: string;
+}
+
+/**
+ * Response from get unmapped Discord users endpoint
+ */
+export interface MappedCharactersResponse {
+  totalCount: number;
+  mappedCharacters: MappedCharacter[];
+}
+
+/**
  * Get unmapped characters, optionally filtered by Discord username for suggestions.
  * @param discordUsername - Optional Discord username to find suggested character matches
  */
@@ -90,8 +108,36 @@ async function mapCharacter(
   await apiClient.post('/dashboard/map', { characterId, discordId });
 }
 
+/**
+ * Get unmapped Discord users, optionally filtered by character name for suggestions.
+ * @param characterName - Optional character name (first and last with space) to find suggested Discord matches
+ */
+async function getMappedCharacters(): Promise<MappedCharactersResponse> {
+  const response = await apiClient.get<MappedCharactersResponse>(
+    '/dashboard/mapped-characters'
+  );
+  return {
+    totalCount: response.data?.totalCount || 0,
+    mappedCharacters: Array.isArray(response.data?.mappedCharacters) ? response.data.mappedCharacters : [],
+  };
+}
+
+/**
+ * Remove a mapping between a character and a Discord account.
+ * @param characterId - The character ID to unlink
+ * @param discordId - The Discord ID to unlink
+ */
+async function unlinkCharacter(
+  characterId: string,
+  discordId: string
+): Promise<void> {
+  await apiClient.post('/dashboard/unlink', { characterId, discordId });
+}
+
 export const characterMappingApi = {
   getUnmappedCharacters,
   getUnmappedDiscordUsers,
   mapCharacter,
+  unlinkCharacter,
+  getMappedCharacters,
 };
