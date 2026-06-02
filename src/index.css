@@ -302,163 +302,163 @@
 
 /* Crystal Tower - Cool blues and cyans */
 .theme-crystal {
-  --primary: #3B82F6;
-  --secondary: #06B6D4;
-  --accent: #60A5FA;
-  --shadow: rgba(59, 130, 246, 0.18);
-  --gradient-1: rgba(6, 182, 212, 0.15);
-  --gradient-2: rgba(59, 130, 246, 0.18);
-  --gradient-3: rgba(96, 165, 250, 0.1);
-  --gradient-4: rgba(6, 182, 212, 0.12);
+  --primary: #245F9E;
+  --secondary: #2BA6BE;
+  --accent: #D2A24A;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-crystal {
-  --primary: #60A5FA;
-  --secondary: #22D3EE;
-  --accent: #93C5FD;
-  --shadow: rgba(96, 165, 250, 0.22);
-  --gradient-1: rgba(34, 211, 238, 0.12);
-  --gradient-2: rgba(96, 165, 250, 0.14);
-  --gradient-3: rgba(34, 211, 238, 0.1);
-  --gradient-4: rgba(96, 165, 250, 0.08);
+  --primary: #5E9FDA;
+  --secondary: #45C6DC;
+  --accent: #E6C46E;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Chocobo Gold - Warm yellows and golds */
 .theme-chocobo {
-  --primary: #CA8A04;
-  --secondary: #EA580C;
-  --accent: #FACC15;
-  --shadow: rgba(202, 138, 4, 0.18);
-  --gradient-1: rgba(234, 88, 12, 0.15);
-  --gradient-2: rgba(202, 138, 4, 0.18);
-  --gradient-3: rgba(250, 204, 21, 0.1);
-  --gradient-4: rgba(234, 88, 12, 0.12);
+  --primary: #B5800F;
+  --secondary: #D9682B;
+  --accent: #F2C24C;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-chocobo {
-  --primary: #FACC15;
-  --secondary: #FB923C;
-  --accent: #FDE047;
-  --shadow: rgba(250, 204, 21, 0.22);
-  --gradient-1: rgba(251, 146, 60, 0.12);
-  --gradient-2: rgba(250, 204, 21, 0.14);
-  --gradient-3: rgba(251, 146, 60, 0.1);
-  --gradient-4: rgba(250, 204, 21, 0.08);
+  --primary: #EEB534;
+  --secondary: #F0824A;
+  --accent: #F8D778;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Tonberry Lantern - Deep teals and greens */
 .theme-tonberry {
-  --primary: #0D9488;
-  --secondary: #059669;
-  --accent: #2DD4BF;
-  --shadow: rgba(13, 148, 136, 0.18);
-  --gradient-1: rgba(5, 150, 105, 0.15);
-  --gradient-2: rgba(13, 148, 136, 0.18);
-  --gradient-3: rgba(45, 212, 191, 0.1);
-  --gradient-4: rgba(5, 150, 105, 0.12);
+  --primary: #3C7A4A;
+  --secondary: #2C6657;
+  --accent: #D89A3A;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-tonberry {
-  --primary: #2DD4BF;
-  --secondary: #34D399;
-  --accent: #5EEAD4;
-  --shadow: rgba(45, 212, 191, 0.22);
-  --gradient-1: rgba(52, 211, 153, 0.12);
-  --gradient-2: rgba(45, 212, 191, 0.14);
-  --gradient-3: rgba(52, 211, 153, 0.1);
-  --gradient-4: rgba(45, 212, 191, 0.08);
+  --primary: #5FAE6E;
+  --secondary: #4DA38A;
+  --accent: #ECB85A;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Cactuar Fresh - Bright greens and limes */
 .theme-cactuar {
-  --primary: #16A34A;
-  --secondary: #65A30D;
-  --accent: #4ADE80;
-  --shadow: rgba(22, 163, 74, 0.18);
-  --gradient-1: rgba(101, 163, 13, 0.15);
-  --gradient-2: rgba(22, 163, 74, 0.18);
-  --gradient-3: rgba(74, 222, 128, 0.1);
-  --gradient-4: rgba(101, 163, 13, 0.12);
+  --primary: #33944E;
+  --secondary: #7DA82F;
+  --accent: #E6C257;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-cactuar {
-  --primary: #4ADE80;
-  --secondary: #A3E635;
-  --accent: #86EFAC;
-  --shadow: rgba(74, 222, 128, 0.22);
-  --gradient-1: rgba(163, 230, 53, 0.12);
-  --gradient-2: rgba(74, 222, 128, 0.14);
-  --gradient-3: rgba(163, 230, 53, 0.1);
-  --gradient-4: rgba(74, 222, 128, 0.08);
+  --primary: #5FC97A;
+  --secondary: #A6CF50;
+  --accent: #F2DA7E;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Moogle Cloud - Soft pinks and lavenders */
 .theme-moogle-cloud {
-  --primary: #DB2777;
-  --secondary: #9333EA;
-  --accent: #F472B6;
-  --shadow: rgba(219, 39, 119, 0.18);
-  --gradient-1: rgba(147, 51, 234, 0.15);
-  --gradient-2: rgba(219, 39, 119, 0.18);
-  --gradient-3: rgba(244, 114, 182, 0.1);
-  --gradient-4: rgba(147, 51, 234, 0.12);
+  --primary: #D9527F;
+  --secondary: #8E72C2;
+  --accent: #F2A6C6;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-moogle-cloud {
-  --primary: #F472B6;
-  --secondary: #C084FC;
-  --accent: #F9A8D4;
-  --shadow: rgba(244, 114, 182, 0.22);
-  --gradient-1: rgba(192, 132, 252, 0.12);
-  --gradient-2: rgba(244, 114, 182, 0.14);
-  --gradient-3: rgba(192, 132, 252, 0.1);
-  --gradient-4: rgba(244, 114, 182, 0.08);
+  --primary: #F07DA6;
+  --secondary: #B49AE6;
+  --accent: #F8C2DA;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Midnight Realm - Deep indigos and purples */
 .theme-midnight {
-  --primary: #4B43C4;
-  --secondary: #6D3FC4;
-  --accent: #8E97F5;
-  --shadow: rgba(75, 67, 196, 0.18);
-  --gradient-1: rgba(109, 63, 196, 0.15);
-  --gradient-2: rgba(75, 67, 196, 0.18);
-  --gradient-3: rgba(142, 151, 245, 0.1);
-  --gradient-4: rgba(109, 63, 196, 0.12);
+  --primary: #3F3AA8;
+  --secondary: #6A3CB0;
+  --accent: #8E9AF0;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-midnight {
-  --primary: #8E93F2;
-  --secondary: #B197F5;
-  --accent: #AEB6FA;
-  --shadow: rgba(142, 147, 242, 0.22);
-  --gradient-1: rgba(177, 151, 245, 0.12);
-  --gradient-2: rgba(142, 147, 242, 0.14);
-  --gradient-3: rgba(177, 151, 245, 0.1);
-  --gradient-4: rgba(142, 147, 242, 0.08);
+  --primary: #8A8FF0;
+  --secondary: #AE8AF0;
+  --accent: #B9C6FF;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* Costa del Sol - Warm oranges and corals */
 .theme-sunset {
-  --primary: #EA580C;
-  --secondary: #DC2626;
-  --accent: #FB923C;
-  --shadow: rgba(234, 88, 12, 0.18);
-  --gradient-1: rgba(220, 38, 38, 0.15);
-  --gradient-2: rgba(234, 88, 12, 0.18);
-  --gradient-3: rgba(251, 146, 60, 0.1);
-  --gradient-4: rgba(220, 38, 38, 0.12);
+  --primary: #DE5F28;
+  --secondary: #D84F6A;
+  --accent: #F2B061;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.theme-sunset {
-  --primary: #FB923C;
-  --secondary: #F87171;
-  --accent: #FDBA74;
-  --shadow: rgba(251, 146, 60, 0.22);
-  --gradient-1: rgba(248, 113, 113, 0.12);
-  --gradient-2: rgba(251, 146, 60, 0.14);
-  --gradient-3: rgba(248, 113, 113, 0.1);
-  --gradient-4: rgba(251, 146, 60, 0.08);
+  --primary: #F58A50;
+  --secondary: #F0788E;
+  --accent: #F8C888;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 
@@ -471,173 +471,173 @@
 
 /* ── Heavensturn (January) — Red & Gold New Year ───────────────────────────── */
 .event-heavensturn {
-  --primary: #DC2626;
-  --secondary: #D97706;
-  --accent: #FBBF24;
-  --shadow: rgba(220, 38, 38, 0.18);
-  --gradient-1: rgba(220, 38, 38, 0.15);
-  --gradient-2: rgba(217, 119, 6, 0.18);
-  --gradient-3: rgba(251, 191, 36, 0.10);
-  --gradient-4: rgba(220, 38, 38, 0.12);
+  --primary: #C0392B;
+  --secondary: #C8902C;
+  --accent: #E6B84C;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 10%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.event-heavensturn {
-  --primary: #F87171;
-  --secondary: #FBBF24;
-  --accent: #FDE68A;
-  --shadow: rgba(248, 113, 113, 0.22);
-  --gradient-1: rgba(248, 113, 113, 0.12);
-  --gradient-2: rgba(251, 191, 36, 0.14);
-  --gradient-3: rgba(253, 230, 138, 0.10);
-  --gradient-4: rgba(248, 113, 113, 0.08);
+  --primary: #E8645A;
+  --secondary: #E6B24A;
+  --accent: #F2D27A;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* ── Valentione's Day (February) — Rose & Crimson Romance ──────────────────── */
 .event-valentiones {
   --bg: #FFF5F7;
-  --primary: #E11D48;
-  --secondary: #DB2777;
-  --accent: #FB7185;
-  --shadow: rgba(225, 29, 72, 0.18);
-  --gradient-1: rgba(219, 39, 119, 0.15);
-  --gradient-2: rgba(225, 29, 72, 0.18);
-  --gradient-3: rgba(251, 113, 133, 0.12);
-  --gradient-4: rgba(219, 39, 119, 0.10);
+  --primary: #D6325C;
+  --secondary: #D14F8C;
+  --accent: #F08AA0;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 10%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.event-valentiones {
   --bg: #1C1520;
-  --primary: #FB7185;
-  --secondary: #F472B6;
-  --accent: #FDA4AF;
-  --shadow: rgba(251, 113, 133, 0.22);
-  --gradient-1: rgba(244, 114, 182, 0.12);
-  --gradient-2: rgba(251, 113, 133, 0.14);
-  --gradient-3: rgba(253, 164, 175, 0.10);
-  --gradient-4: rgba(244, 114, 182, 0.08);
+  --primary: #F07090;
+  --secondary: #EC7FB0;
+  --accent: #F8B0C4;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
 /* ── Little Ladies' Day (March) — Cherry Blossom Pink ──────────────────────── */
 .event-little-ladies {
   --bg: #FDF2F8;
-  --primary: #EC4899;
-  --secondary: #F9A8D4;
-  --accent: #FBCFE8;
-  --shadow: rgba(236, 72, 153, 0.18);
-  --gradient-1: rgba(249, 168, 212, 0.18);
-  --gradient-2: rgba(236, 72, 153, 0.14);
-  --gradient-3: rgba(251, 207, 232, 0.12);
-  --gradient-4: rgba(249, 168, 212, 0.10);
+  --primary: #E06699;
+  --secondary: #EE9CC0;
+  --accent: #F7D9E6;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 16%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 14%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 12%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 11%, transparent);
 }
 
 .dark.event-little-ladies {
   --bg: #1A1520;
-  --primary: #F472B6;
-  --secondary: #F9A8D4;
-  --accent: #FBCFE8;
-  --shadow: rgba(244, 114, 182, 0.22);
-  --gradient-1: rgba(249, 168, 212, 0.14);
-  --gradient-2: rgba(244, 114, 182, 0.12);
-  --gradient-3: rgba(251, 207, 232, 0.08);
-  --gradient-4: rgba(249, 168, 212, 0.06);
+  --primary: #F08BB4;
+  --secondary: #F4ADCB;
+  --accent: #FBD7E6;
+  --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
+  --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 8%, transparent);
+  --gradient-4: color-mix(in srgb, var(--secondary) 8%, transparent);
 }
 
 /* ── Hatching-tide (April) — Pastel Easter Carnival ────────────────────────── */
 .event-hatching-tide {
   --bg: #FEFDF5;
-  --primary: #8B5CF6;
-  --secondary: #34D399;
-  --accent: #FBBF24;
-  --shadow: rgba(139, 92, 246, 0.16);
-  --gradient-1: rgba(139, 92, 246, 0.12);
-  --gradient-2: rgba(52, 211, 153, 0.14);
-  --gradient-3: rgba(251, 191, 36, 0.10);
-  --gradient-4: rgba(139, 92, 246, 0.08);
+  --primary: #9B7BE0;
+  --secondary: #52C99A;
+  --accent: #F2C94C;
+  --shadow: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 14%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 11%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 9%, transparent);
 }
 
 .dark.event-hatching-tide {
   --bg: #181820;
-  --primary: #A78BFA;
-  --secondary: #6EE7B7;
-  --accent: #FDE68A;
-  --shadow: rgba(167, 139, 250, 0.22);
-  --gradient-1: rgba(167, 139, 250, 0.12);
-  --gradient-2: rgba(110, 231, 183, 0.10);
-  --gradient-3: rgba(253, 230, 138, 0.08);
-  --gradient-4: rgba(167, 139, 250, 0.06);
+  --primary: #B49AEC;
+  --secondary: #7DDCB4;
+  --accent: #F7DE7E;
+  --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 8%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 7%, transparent);
 }
 
 /* ── Make It Rain Campaign (June) — Gold Saucer Glamour ────────────────────── */
 .event-make-it-rain {
   --bg: #FFFBEB;
-  --primary: #CA8A04;
-  --secondary: #7C3AED;
-  --accent: #FDE047;
-  --shadow: rgba(202, 138, 4, 0.20);
-  --gradient-1: rgba(202, 138, 4, 0.16);
-  --gradient-2: rgba(124, 58, 237, 0.12);
-  --gradient-3: rgba(253, 224, 71, 0.14);
-  --gradient-4: rgba(202, 138, 4, 0.10);
+  --primary: #C8911A;
+  --secondary: #7B45C9;
+  --accent: #F2CE4A;
+  --shadow: color-mix(in srgb, var(--primary) 20%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 16%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 14%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 .dark.event-make-it-rain {
   --bg: #1A1810;
-  --primary: #FACC15;
-  --secondary: #A78BFA;
-  --accent: #FDE68A;
-  --shadow: rgba(250, 204, 21, 0.22);
-  --gradient-1: rgba(250, 204, 21, 0.12);
-  --gradient-2: rgba(167, 139, 250, 0.10);
-  --gradient-3: rgba(253, 230, 138, 0.08);
-  --gradient-4: rgba(250, 204, 21, 0.06);
+  --primary: #F0C234;
+  --secondary: #A87FE6;
+  --accent: #F8DE7A;
+  --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 8%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 /* ── Moonfire Faire (August) — Summer Blaze & Ocean ────────────────────────── */
 .event-moonfire-faire {
   --bg: #FFFAF5;
-  --primary: #EA580C;
-  --secondary: #0EA5E9;
-  --accent: #FDE68A;
-  --shadow: rgba(234, 88, 12, 0.18);
-  --gradient-1: rgba(234, 88, 12, 0.14);
-  --gradient-2: rgba(14, 165, 233, 0.12);
-  --gradient-3: rgba(253, 230, 138, 0.10);
-  --gradient-4: rgba(234, 88, 12, 0.08);
+  --primary: #E8602A;
+  --secondary: #1F95C9;
+  --accent: #F2D27A;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 11%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .dark.event-moonfire-faire {
   --bg: #1A1614;
-  --primary: #FB923C;
-  --secondary: #38BDF8;
-  --accent: #FDE68A;
-  --shadow: rgba(251, 146, 60, 0.22);
-  --gradient-1: rgba(251, 146, 60, 0.12);
-  --gradient-2: rgba(56, 189, 248, 0.10);
-  --gradient-3: rgba(253, 230, 138, 0.08);
-  --gradient-4: rgba(251, 146, 60, 0.06);
+  --primary: #F5874A;
+  --secondary: #3FB4E0;
+  --accent: #F8DE96;
+  --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 8%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 /* ── The Rising (August) — Meteor Red & Crystal Blue ───────────────────────── */
 .event-the-rising {
-  --primary: #DC2626;
-  --secondary: #2563EB;
-  --accent: #F59E0B;
-  --shadow: rgba(220, 38, 38, 0.18);
-  --gradient-1: rgba(220, 38, 38, 0.14);
-  --gradient-2: rgba(37, 99, 235, 0.12);
-  --gradient-3: rgba(245, 158, 11, 0.10);
-  --gradient-4: rgba(220, 38, 38, 0.08);
+  --primary: #C73A35;
+  --secondary: #2E63C4;
+  --accent: #E0A340;
+  --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 10%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .dark.event-the-rising {
-  --primary: #F87171;
-  --secondary: #60A5FA;
-  --accent: #FBBF24;
-  --shadow: rgba(248, 113, 113, 0.22);
-  --gradient-1: rgba(248, 113, 113, 0.12);
-  --gradient-2: rgba(96, 165, 250, 0.10);
-  --gradient-3: rgba(251, 191, 36, 0.08);
-  --gradient-4: rgba(248, 113, 113, 0.06);
+  --primary: #EC6A5C;
+  --secondary: #5A8FE6;
+  --accent: #F2C566;
+  --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
+  --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
+  --gradient-3: color-mix(in srgb, var(--accent) 8%, transparent);
+  --gradient-4: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 /* ── All Saints' Wake (October) — Haunted Purple, Pumpkin & Eerie Green ────── */
