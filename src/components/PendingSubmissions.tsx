@@ -16,6 +16,7 @@ import { biographyApi } from '../api/biography';
 import { membersApi } from '../api/members';
 import type { BiographySubmission, StaffMember } from '../types';
 import { ContentCard } from './ContentCard';
+import { Tag } from './Tag';
 
 interface SubmissionCardProps {
   submission: BiographySubmission;
@@ -90,16 +91,13 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
           </div>
         </div>
 
-        {/* Status badge */}
-        <span className={`
-          flex-shrink-0 px-2.5 py-1 sm:px-2 sm:py-0.5 rounded-full text-xs font-soft font-medium
-          ${submission.status === 'Pending' 
-            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' 
-            : 'bg-[var(--text-muted)]/10 text-[var(--text-muted)]'
-          }
-        `}>
+        {/* Status tag */}
+        <Tag
+          color={submission.status === 'Pending' ? 'var(--warning)' : undefined}
+          className="flex-shrink-0"
+        >
           {submission.status}
-        </span>
+        </Tag>
       </div>
 
       {/* Biography content */}
@@ -342,9 +340,7 @@ export function PendingSubmissions() {
         <div className="flex flex-col">
           {/* Count badge */}
           <div className="flex items-center gap-2 mb-4 flex-shrink-0">
-            <span className="px-2.5 py-1 rounded-full text-xs font-soft font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">
-              {pendingSubmissions.length} pending
-            </span>
+            <Tag color="var(--warning)">{pendingSubmissions.length} pending</Tag>
           </div>
 
           {/* Scrollable submission cards container */}

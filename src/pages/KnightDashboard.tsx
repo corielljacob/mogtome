@@ -6,6 +6,7 @@ import {
   PageLayout,
   PageHeader,
   SectionLabel,
+  Tag,
   PendingSubmissions,
   CharacterMapping,
 } from '../components';
@@ -23,11 +24,7 @@ import { biographyApi } from '../api/biography';
 
 // ─── Small count badge for section labels ────────────────────────────────────
 function CountBadge({ n }: { n: number }) {
-  return (
-    <span className="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] font-number text-xs font-bold">
-      {n}
-    </span>
-  );
+  return <Tag color="var(--primary)">{n}</Tag>;
 }
 
 // ─── A single "needs attention" stat tile — jumps to its section on click ─────

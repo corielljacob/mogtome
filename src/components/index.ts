@@ -4,6 +4,7 @@ export { Input, Textarea, Select } from './Input';
 export { Dropdown, type DropdownOption } from './Dropdown';
 export { Card, CardBody, CardTitle, CardActions, CardHeader } from './Card';
 export { ContentCard } from './ContentCard';
+export { Tag } from './Tag';
 export { MembershipCard, type MembershipCardProps } from './MembershipCard';
 export { getTheme, rankThemes, defaultTheme, type RankTheme } from './membershipCardThemes';
 

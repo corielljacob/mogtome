@@ -9,7 +9,7 @@ import {
   Quote, CalendarDays, Sparkles
 } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { ContentCard, PageLayout, PageHeader, PageFooter, SectionLabel, LoadingState, ErrorState, EmptyState, StoryDivider, SpotlightCard } from '../components';
+import { ContentCard, PageLayout, PageHeader, PageFooter, SectionLabel, LoadingState, ErrorState, EmptyState, StoryDivider, SpotlightCard, Tag } from '../components';
 import { getRankColor } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import type { StaffMember } from '../types';
@@ -31,38 +31,38 @@ import illustratedMoogle from '../assets/moogles/illustrated moogle.webp';
 const FC_VALUES = [
   {
     icon: Users,
-    title: 'Welcoming Community',
-    description: 'New or veteran, sprout or mentor — everyone finds a home here.',
+    title: 'Everyone\'s welcome',
+    description: 'Sprout or veteran — we were all new once. Pull up a chair.',
     color: 'var(--primary)',
   },
   {
     icon: Swords,
-    title: 'All Playstyles',
-    description: 'Raiding, crafting, glamour, housing — we do it all, kupo!',
+    title: 'Whatever you\'re into',
+    description: 'Raids, crafting, glams, housing tours — folks here do a bit of everything.',
     color: 'var(--secondary)',
   },
   {
     icon: PartyPopper,
-    title: 'Regular Events',
-    description: 'Screenshot contests, treasure hunts, giveaways, and more.',
+    title: 'We do silly things',
+    description: 'Screenshot nights, treasure hunts, the odd giveaway, kupo.',
     color: 'var(--accent)',
   },
   {
     icon: Handshake,
-    title: 'Helpful Mentors',
-    description: 'Friendly officers ready to guide you through any content.',
+    title: 'Someone\'ll help',
+    description: 'Stuck on something? Chances are a mate has already done it.',
     color: 'var(--primary)',
   },
   {
     icon: Sun,
-    title: 'Cozy Atmosphere',
-    description: 'A drama-free, positive space to relax after a long day.',
+    title: 'No drama',
+    description: 'We keep it easygoing — a place to unwind, not another job.',
     color: 'var(--secondary)',
   },
   {
     icon: MessageCircleHeart,
-    title: 'Active Discord',
-    description: 'Stay connected with FC mates even when you\'re not in-game.',
+    title: 'Always someone around',
+    description: 'The Discord stays lively even when we\'re logged off.',
     color: 'var(--accent)',
   },
 ] as const;
@@ -476,40 +476,28 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
           
           {/* Badges row */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3">
-            {/* Rank badge */}
-            <span 
-              className="
-                inline-flex items-center gap-1.5
-                px-2.5 py-1 rounded-full text-xs font-soft font-semibold
-              "
-              style={{
-                backgroundColor: `color-mix(in srgb, ${rankColor.hex} 12%, transparent)`,
-                color: rankColor.hex,
-              }}
-            >
-              {member.freeCompanyRankIcon ? (
-                <img 
-                  src={member.freeCompanyRankIcon} 
-                  alt="" 
+            {/* Rank tag */}
+            <Tag
+              color={rankColor.hex}
+              icon={member.freeCompanyRankIcon ? (
+                <img
+                  src={member.freeCompanyRankIcon}
+                  alt=""
                   className="w-3.5 h-3.5"
                   aria-hidden="true"
                 />
               ) : (
                 <rankColor.icon className="w-3.5 h-3.5" aria-hidden="true" />
               )}
+            >
               {member.freeCompanyRank.replace('Moogle ', '')}
-            </span>
+            </Tag>
             
             {/* Recently promoted */}
             {member.recentlyPromoted && (
-              <span className="
-                inline-flex items-center gap-1
-                px-2 py-1 rounded-full text-xs font-soft font-semibold 
-                bg-[var(--secondary)]/12 text-[var(--secondary)]
-              ">
-                <Sparkles className="w-3 h-3" aria-hidden="true" />
+              <Tag color="var(--secondary)" icon={<Sparkles className="w-3 h-3" aria-hidden="true" />}>
                 New!
-              </span>
+              </Tag>
             )}
           </div>
 
@@ -603,17 +591,9 @@ const RankSection = memo(function RankSection({ rank, members, startIndex, curre
             {rankColor.description}
           </p>
         </div>
-        <span 
-          className="
-            flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-soft font-semibold
-          "
-          style={{
-            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 12%, transparent)`,
-            color: rankColor.hex,
-          }}
-        >
+        <Tag color={rankColor.hex} className="flex-shrink-0">
           {members.length} {members.length === 1 ? rankColor.memberTerm.singular : rankColor.memberTerm.plural}
-        </span>
+        </Tag>
       </motion.div>
 
       {/* Members - responsive grid of vertical cards */}
@@ -680,9 +660,9 @@ export function About() {
   return (
     <PageLayout moogles={{ primary: wizardMoogle, secondary: flyingMoogles }} maxWidth="max-w-5xl">
       <PageHeader
-        opener="~ The ones who guide us ~"
+        opener="~ pull up a chair, kupo ~"
         title="About Us"
-        subtitle="Meet the moogles keeping things magical"
+        subtitle="the short version of who we are"
       />
 
       {/* ── Welcome Hero Section ──────────────────────────────────────── */}
@@ -715,12 +695,12 @@ export function About() {
             />
 
             <h2 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--text)] mb-3 sm:mb-4">
-              Welcome to Kupo Life!
+              Hi, we're Kupo Life
             </h2>
             <p className="text-[var(--text-muted)] font-soft text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-2 px-1 sm:px-0">
-              We're a cozy Free Company on <strong className="text-[var(--text)] font-semibold">Zalera</strong>, part of the <strong className="text-[var(--text)] font-semibold">Crystal Data Center</strong>, where adventurers become family. 
-              Whether you're new to Eorzea or a seasoned Warrior of Light, there's always a warm hearth 
-              and friendly moogles waiting for you here.
+              We're a Free Company on <strong className="text-[var(--text)] font-semibold">Zalera</strong>, over in the <strong className="text-[var(--text)] font-semibold">Crystal</strong> data center.
+              It started as a handful of friends who kept ending up in the same parties, and somewhere along the way it turned into this —
+              a place to share a roof, run some content, and mostly just hang out. No quotas, no pressure, kupo.
             </p>
             <p className="font-accent text-lg sm:text-xl text-[var(--secondary)]">
               ~ Kupo! ~
@@ -734,8 +714,8 @@ export function About() {
         className="mb-10 sm:mb-14"
         aria-labelledby="values-heading"
       >
-        <SectionLabel 
-          label="What We're About"
+        <SectionLabel
+          label="A few things about us"
           icon={<BookOpen className="w-4 h-4 text-[var(--primary)]" aria-hidden="true" />}
         />
 
@@ -758,9 +738,7 @@ export function About() {
         <SectionLabel 
           label="Our Team"
           badge={staff.length > 0 ? (
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
-              {staff.length} members
-            </span>
+            <Tag color="var(--primary)">{staff.length} members</Tag>
           ) : undefined}
         />
 
@@ -839,11 +817,11 @@ export function About() {
                 id="join-heading"
                 className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] mb-2"
               >
-                Want to Join the Family?
+                Come say hi
               </h2>
               <p className="text-[var(--text-muted)] font-soft text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-5">
-                We're always looking for new friends! If Kupo Life sounds like home, 
-                come say hi in our Discord or find us on Zalera.
+                If any of this sounds like your kind of place, we'd love to have you.
+                Find us on Zalera or wander into the Discord — no application, just say hello, kupo~
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link

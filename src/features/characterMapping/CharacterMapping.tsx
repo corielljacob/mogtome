@@ -309,7 +309,7 @@ export function CharacterMapping() {
                       <Zap className="w-4 h-4" />
                       Auto
                       {totalMatches > 0 && (
-                        <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-500/15 text-green-600 dark:text-green-400">
+                        <span className="px-1.5 py-0.5 rounded-md border border-green-500/40 text-xs text-green-600 dark:text-green-400">
                           {totalMatches}
                         </span>
                       )}

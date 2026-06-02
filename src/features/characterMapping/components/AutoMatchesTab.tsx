@@ -4,6 +4,7 @@ import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import type { MatchPair, UnmappedCharacter, UnmappedDiscordUser } from '../types';
 import { MatchPairCard } from './MatchPairCard';
 import { EmptyState } from './EmptyState';
+import { Tag } from '../../../components/Tag';
 import { pairKey } from '../hooks';
 
 interface AutoMatchesTabProps {
@@ -60,9 +61,7 @@ export function AutoMatchesTab({
             <span className="font-soft font-semibold text-sm text-[var(--text)]">
               Exact Matches
             </span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-green-500/15 text-green-600 dark:text-green-400">
-              {visibleExactMatches.length}
-            </span>
+            <Tag color="#22c55e">{visibleExactMatches.length}</Tag>
           </button>
           <AnimatePresence mode="popLayout">
             {exactExpanded && (
@@ -103,9 +102,7 @@ export function AutoMatchesTab({
             <span className="font-soft font-semibold text-sm text-[var(--text)]">
               Suggested Matches
             </span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-soft bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              {visibleSuggestedMatches.length}
-            </span>
+            <Tag color="#f59e0b">{visibleSuggestedMatches.length}</Tag>
           </button>
           <AnimatePresence mode="popLayout">
             {suggestedExpanded && (

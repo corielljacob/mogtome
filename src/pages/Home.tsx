@@ -1048,22 +1048,123 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
   );
 }
 
-/** Event banner — a subtle pill showing the active event name */
-function EventBanner({ event }: { event: SeasonalEvent }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Event spotlight — a bold, themed card announcing the active seasonal event
+// ─────────────────────────────────────────────────────────────────────────────
+
+const MONTH_ABBR = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+/** "Oct 20 – Nov 1" */
+function formatEventDates(range: SeasonalEvent['dateRange']): string {
+  return `${MONTH_ABBR[range.startMonth - 1]} ${range.startDay} – ${MONTH_ABBR[range.endMonth - 1]} ${range.endDay}`;
+}
+
+/** Whole days remaining until the event's end (handles year wrap). */
+function getEventDaysLeft(range: SeasonalEvent['dateRange']): number {
+  const now = new Date();
+  let end = new Date(now.getFullYear(), range.endMonth - 1, range.endDay, 23, 59, 59);
+  if (end.getTime() < now.getTime()) {
+    end = new Date(now.getFullYear() + 1, range.endMonth - 1, range.endDay, 23, 59, 59);
+  }
+  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86_400_000));
+}
+
+function eventCountdownLabel(daysLeft: number): string {
+  if (daysLeft <= 0) return 'last day to celebrate!';
+  if (daysLeft === 1) return '1 day left to celebrate';
+  return `${daysLeft} days left to celebrate`;
+}
+
+/**
+ * EventSpotlight — themed centerpiece for the active seasonal event.
+ *
+ * One adaptive card: a compact horizontal strip below `lg` (so the fixed-height
+ * hero never overflows on phones), and a bold vertical spotlight at `lg`+ where
+ * the left column has room. Colors come from the active event theme tokens.
+ */
+function EventSpotlight({ event }: { event: SeasonalEvent }) {
   const EventIcon = event.icon;
+  const daysLeft = getEventDaysLeft(event.dateRange);
+  const dates = formatEventDates(event.dateRange);
+  const countdown = eventCountdownLabel(daysLeft);
+
   return (
-    <motion.div
-      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/15"
-      initial={{ opacity: 0, y: -10, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.3 }}
-    >
-      <EventIcon className="w-3.5 h-3.5 text-[var(--primary)]" aria-hidden="true" />
-      <span className="font-soft font-semibold text-[11px] sm:text-xs text-[var(--primary)]">
-        {event.name}
-      </span>
-      <CalendarDays className="w-3 h-3 text-[var(--primary)]/60" aria-hidden="true" />
-    </motion.div>
+    <div className="relative w-full max-w-sm">
+      {/* Ambient themed aura — lets the card sit in the scene like the moogle's own glow (desktop) */}
+      <div
+        className="hidden lg:block absolute -inset-5 rounded-[2.75rem] blur-2xl pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, color-mix(in srgb, var(--primary) 16%, transparent), color-mix(in srgb, var(--accent) 8%, transparent) 52%, transparent 74%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <motion.div
+        className="
+          relative w-full overflow-hidden
+          bg-[color:color-mix(in_srgb,var(--card)_86%,transparent)]
+          border border-[color:color-mix(in_srgb,var(--primary)_22%,var(--border))]
+          rounded-2xl lg:rounded-[1.75rem]
+          shadow-[0_12px_36px_-14px_color-mix(in_srgb,var(--primary)_42%,transparent)]
+          text-left lg:text-center
+          px-4 py-3 lg:px-6 lg:py-5
+          flex items-center gap-3 lg:flex-col lg:gap-0
+        "
+        initial={{ opacity: 0, y: 12, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.5 }}
+        role="status"
+        aria-label={`Seasonal event: ${event.name}. ${dates}. ${countdown}.`}
+      >
+        {/* Themed top accent (desktop spotlight only) */}
+        <div
+          className="hidden lg:block absolute top-0 inset-x-0 h-1"
+          style={{
+            background: 'linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--secondary), transparent)',
+            opacity: 0.7,
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Event icon */}
+        <motion.span
+          className="icon-badge shrink-0 w-11 h-11 lg:w-14 lg:h-14 text-[var(--primary)] lg:mb-3"
+          animate={{ y: [0, -4, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <EventIcon className="w-5 h-5 lg:w-7 lg:h-7" aria-hidden="true" />
+        </motion.span>
+
+        <div className="min-w-0 lg:min-w-full">
+          <p className="eyebrow-script text-base lg:text-xl text-[var(--secondary)] leading-none lg:mb-1">
+            Now celebrating
+          </p>
+          <h3 className="font-display font-bold text-base lg:text-2xl text-[var(--text)] leading-tight truncate lg:whitespace-normal">
+            {event.name}
+          </h3>
+          <p className="font-soft text-[11px] lg:text-sm text-[var(--text-muted)] lg:mt-1 lg:mb-4">
+            {event.tagline}
+          </p>
+
+          {/* Divider (desktop spotlight only) */}
+          <div className="hidden lg:block washi-tape-strip w-20 mx-auto mb-3" aria-hidden="true" />
+
+          {/* Dates + countdown */}
+          <div className="flex items-center gap-1.5 lg:justify-center text-[11px] lg:text-xs font-soft text-[var(--text-muted)]">
+            <CalendarDays className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-[var(--text-subtle)] shrink-0" aria-hidden="true" />
+            <span className="truncate">{dates}</span>
+            <span className="lg:hidden text-[var(--text-subtle)]">·</span>
+            <span className="lg:hidden font-accent text-[var(--primary)] truncate">{countdown}</span>
+          </div>
+          <p className="hidden lg:block mt-1 font-accent text-base text-[var(--primary)]">
+            {countdown}
+          </p>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -1113,10 +1214,6 @@ export function Home() {
     }
     return DEFAULT_WARM_MOTES;
   }, [isEventThemeActive, activeEvent]);
-
-  const tagline = (isEventThemeActive && activeEvent)
-    ? activeEvent.tagline
-    : defaultTagline;
 
   // Bespoke ambient layer — soft warm light pools that gently drift (no morphing
   // "blob" shapes) plus a few faint drifting stars, so the background reads as
@@ -1203,7 +1300,7 @@ export function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
           >
-            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--text)] drop-shadow-sm flex">
+            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--text)] drop-shadow-sm flex whitespace-nowrap">
               {Array.from("Mog").map((char, i) => (
                 <motion.span
                   key={`mog-${i}`}
@@ -1215,7 +1312,7 @@ export function Home() {
                 </motion.span>
               ))}
             </span>
-            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-highlight ml-4 sm:ml-12 lg:ml-24 flex">
+            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-highlight ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
               {Array.from("Tome").map((char, i) => (
                 <motion.span
                   key={`tome-${i}`}
@@ -1229,14 +1326,15 @@ export function Home() {
             </span>
           </motion.h1>
 
+          {/* Tagline — always shown on desktop; on mobile the event card replaces it */}
           <motion.div
-            className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24"
+            className={`${isEventThemeActive && activeEvent ? 'hidden lg:flex' : 'flex'} flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.6 }}
           >
             <p className="text-xl sm:text-2xl md:text-[1.75rem] text-[var(--text-subtle)] font-display italic tracking-wide">
-              {tagline.split('Kupo Life!').map((part, i, arr) => (
+              {defaultTagline.split('Kupo Life!').map((part, i, arr) => (
                 <span key={i}>
                   {part}
                   {i < arr.length - 1 && (
@@ -1247,9 +1345,14 @@ export function Home() {
                 </span>
               ))}
             </p>
-
-            {isEventThemeActive && activeEvent && <EventBanner event={activeEvent} />}
           </motion.div>
+
+          {/* Event spotlight (mobile only) — replaces the tagline so the fixed-height hero doesn't grow */}
+          {isEventThemeActive && activeEvent && (
+            <div className="lg:hidden w-full flex justify-center mt-2 mb-8">
+              <EventSpotlight event={activeEvent} />
+            </div>
+          )}
 
           <motion.div
             className="flex items-center justify-center lg:justify-start w-full lg:w-auto z-30 relative ml-0 sm:ml-8 lg:ml-20 mt-8"
@@ -1374,6 +1477,14 @@ export function Home() {
             />
             <WarmMotes motes={warmMotes} />
           </motion.div>
+
+          {/* Event spotlight (desktop only) — the moogle presents the active event,
+              filling the right column instead of crowding the text column */}
+          {isEventThemeActive && activeEvent && (
+            <div className="hidden lg:flex mt-4 w-full justify-center lg:mr-10 xl:mr-20">
+              <EventSpotlight event={activeEvent} />
+            </div>
+          )}
 
         </div>
       </div>

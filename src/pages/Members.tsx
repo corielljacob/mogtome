@@ -228,11 +228,11 @@ export function Members() {
         title="Our Family"
         subtitle="The wonderful members who make our FC special"
       >
-        {/* Member count badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-sm mb-3">
-          <Users className="w-4 h-4 text-[var(--secondary)]" />
-          <span className="font-soft font-semibold text-[var(--text)]">
-            {allMembers.length} <span className="text-[var(--text-muted)] font-normal">members</span>
+        {/* Member count */}
+        <div className="inline-flex items-center gap-1.5 mb-3 text-[var(--text-muted)]">
+          <Users className="w-4 h-4 text-[var(--secondary)]" aria-hidden="true" />
+          <span className="font-soft text-sm">
+            <span className="font-display font-bold text-[var(--text)]">{allMembers.length}</span> members
           </span>
         </div>
       </PageHeader>
@@ -463,9 +463,9 @@ export function Members() {
                 onClick={() => toggleRank(rank.name)}
                 className="
                   inline-flex items-center gap-1.5
-                  px-3 py-1.5 rounded-full text-sm font-soft font-medium
-                  bg-[var(--card)] border border-[var(--border)] 
-                  hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
+                  px-3 py-1.5 rounded-md text-sm font-soft font-medium
+                  bg-transparent border border-[var(--border)]
+                  hover:border-[var(--primary)]/40 hover:text-[var(--primary)]
                   text-[var(--text)] cursor-pointer transition-all touch-manipulation
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                 "

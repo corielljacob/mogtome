@@ -145,14 +145,14 @@ const TimelineEventCard = memo(function TimelineEventCard({
             <div className="flex items-center justify-between sm:justify-start gap-2 mb-2 sm:mb-1.5">
               <div className="flex items-center gap-2">
                 <span className={`
-                  px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-soft font-bold tracking-wide uppercase
-                  ${bgColor} ${color}
+                  inline-flex items-center px-2 py-0.5 rounded-md border border-current text-[11px] sm:text-xs font-soft font-bold tracking-wide uppercase
+                  ${color}
                 `}>
                   {label}
                 </span>
                 {isRealtime && (
                   <motion.span
-                    className="px-2 py-1 rounded-full text-[11px] sm:text-xs font-soft font-bold bg-[var(--primary)] text-white uppercase tracking-wide"
+                    className="inline-flex items-center px-2 py-0.5 rounded-md border border-[var(--primary)]/50 text-[11px] sm:text-xs font-soft font-bold text-[var(--primary)] uppercase tracking-wide"
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
