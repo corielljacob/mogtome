@@ -3,7 +3,7 @@ import { type ReactNode } from 'react';
 interface CardProps {
   children: ReactNode;
   className?: string;
-  variant?: 'default' | 'glass' | 'flat';
+  variant?: 'default' | 'flat';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
 }
@@ -21,7 +21,6 @@ export function Card({
 }: CardProps) {
   const variantClasses = {
     default: 'surface',
-    glass: 'surface surface-glass',
     flat: 'surface surface-flat',
   };
 

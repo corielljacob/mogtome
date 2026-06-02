@@ -92,6 +92,14 @@ const DEFAULT_WARM_MOTES = [
   { left: '40%', size: 2.5, color: 'rgba(251,113,133,0.22)', duration: 11, delay: 3.5, drift: -10 },
 ];
 
+// Faint stars that drift in the hero's deep background — hand-placed, not random
+const COZY_STARS = [
+  { left: '12%', top: '22%', size: 30, op: 0.07, drift: -14, spin: 12, dur: 13, delay: 0 },
+  { left: '82%', top: '18%', size: 22, op: 0.06, drift: -10, spin: -10, dur: 16, delay: 1.5 },
+  { left: '74%', top: '70%', size: 34, op: 0.06, drift: 12, spin: 8, dur: 15, delay: 0.8 },
+  { left: '18%', top: '74%', size: 24, op: 0.07, drift: 10, spin: -12, dur: 14, delay: 2.2 },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1110,47 +1118,47 @@ export function Home() {
     ? activeEvent.tagline
     : defaultTagline;
 
-  // Render whimsical background blob
-  const renderWhimsicalBlobs = () => (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <motion.div
-        className="absolute w-[45vw] h-[45vw] min-w-[320px] min-h-[320px] opacity-[0.12] filter blur-[80px]"
-        style={{
-          background: isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#a855f7' :
-                      isEventThemeActive && activeEvent?.id === 'starlight' ? '#fbbf24' : 'var(--primary)',
-          top: '-15%', left: '-8%'
-        }}
-        animate={{
-          rotate: [0, 120, 240, 360],
-          borderRadius: [
-            "40% 60% 70% 30% / 40% 50% 60% 50%",
-            "60% 40% 30% 70% / 50% 60% 40% 50%",
-            "50% 50% 40% 60% / 60% 40% 50% 50%",
-            "40% 60% 70% 30% / 40% 50% 60% 50%"
-          ]
-        }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-      />
-      <motion.div
-        className="absolute w-[40vw] h-[40vw] min-w-[280px] min-h-[280px] opacity-[0.10] filter blur-[70px]"
-        style={{
-          background: isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#f97316' :
-                      isEventThemeActive && activeEvent?.id === 'starlight' ? '#ef4444' : 'var(--secondary)',
-          bottom: '5%', right: '-8%'
-        }}
-        animate={{
-          rotate: [360, 240, 120, 0],
-          borderRadius: [
-            "60% 40% 30% 70% / 60% 30% 70% 40%",
-            "40% 60% 70% 30% / 50% 60% 40% 50%",
-            "50% 50% 60% 40% / 40% 50% 50% 60%",
-            "60% 40% 30% 70% / 60% 30% 70% 40%"
-          ]
-        }}
-        transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
-      />
-    </div>
-  );
+  // Bespoke ambient layer — soft warm light pools that gently drift (no morphing
+  // "blob" shapes) plus a few faint drifting stars, so the background reads as
+  // cozy lamplight in a nest rather than a generic SaaS gradient blob.
+  const renderCozyAtmosphere = () => {
+    const poolA = isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#a855f7'
+      : isEventThemeActive && activeEvent?.id === 'starlight' ? '#fbbf24'
+      : 'var(--primary)';
+    const poolB = isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? '#f97316'
+      : isEventThemeActive && activeEvent?.id === 'starlight' ? '#ef4444'
+      : 'var(--secondary)';
+    return (
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+        {/* Warm light pool — drifts in from the top-left like lamplight */}
+        <motion.div
+          className="absolute -top-[12%] -left-[10%] w-[55vw] h-[55vw] min-w-[360px] min-h-[360px] rounded-full blur-[100px]"
+          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 22%, transparent), transparent 70%)` }}
+          animate={{ x: [0, 26, 0], y: [0, 18, 0], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Warm light pool — drifts in from the bottom-right */}
+        <motion.div
+          className="absolute -bottom-[12%] -right-[10%] w-[50vw] h-[50vw] min-w-[320px] min-h-[320px] rounded-full blur-[90px]"
+          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 20%, transparent), transparent 70%)` }}
+          animate={{ x: [0, -22, 0], y: [0, -16, 0], opacity: [0.45, 0.72, 0.45] }}
+          transition={{ duration: 32, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* A few faint stars drifting in the deep background */}
+        {COZY_STARS.map((s, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{ left: s.left, top: s.top }}
+            animate={{ y: [0, s.drift, 0], rotate: [0, s.spin, 0], opacity: [s.op * 0.5, s.op, s.op * 0.5] }}
+            transition={{ duration: s.dur, repeat: Infinity, ease: 'easeInOut', delay: s.delay }}
+          >
+            <Star style={{ width: s.size, height: s.size, color: 'var(--accent)' }} strokeWidth={1.25} />
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="h-full w-full flex flex-col relative bg-[var(--bg)] selection:bg-[var(--primary)] selection:text-white overflow-hidden">
@@ -1165,7 +1173,7 @@ export function Home() {
         }}
         aria-hidden="true"
       />
-      {!IS_MOBILE_DEVICE && renderWhimsicalBlobs()}
+      {!IS_MOBILE_DEVICE && renderCozyAtmosphere()}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && <EventParticles particles={activeEvent.particles} />}
       {isEventThemeActive && activeEvent?.id === 'all-saints-wake' && <HalloweenOverlay />}

@@ -219,7 +219,7 @@ export function WelcomeDialog() {
                 >
                   {step === steps.length - 1 ? (
                     <>
-                      Let's Go!
+                      Let's go, kupo!
                       <Sparkles className="w-4 h-4" />
                     </>
                   ) : (

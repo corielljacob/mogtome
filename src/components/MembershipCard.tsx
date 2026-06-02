@@ -33,11 +33,6 @@ export function MembershipCard({
     ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
     : null;
 
-  const formattedDate = (() => {
-    // No memberSince prop used here — we use it from the parent
-    return 'Member';
-  })();
-
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
@@ -62,16 +57,16 @@ export function MembershipCard({
           hover:-translate-y-1 hover:shadow-[0_8px_28px_-6px_var(--shadow)]`}
         style={{
           background: `linear-gradient(135deg, 
-            hsl(340, 50%, 12%) 0%, 
-            hsl(330, 45%, 8%) 50%,
-            hsl(320, 40%, 10%) 100%)`,
+            color-mix(in srgb, var(--primary) 16%, var(--card)) 0%,
+            color-mix(in srgb, var(--secondary) 12%, var(--card)) 55%,
+            color-mix(in srgb, var(--accent) 10%, var(--card)) 100%)`,
         }}
       >
         {/* Subtle dot texture */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, var(--text-subtle) 1px, transparent 1px)`,
             backgroundSize: '16px 16px',
           }}
         />
@@ -96,7 +91,7 @@ export function MembershipCard({
                 >
                   <Star className="w-3.5 h-3.5 text-white fill-white/50" />
                 </div>
-                <span className="font-display font-bold text-white/90 text-sm tracking-wide">
+                <span className="font-display font-bold text-[var(--text)] text-sm tracking-wide">
                   MOGTOME
                 </span>
               </div>
@@ -129,17 +124,17 @@ export function MembershipCard({
 
             {/* Details */}
             <div className="flex-1 min-w-0 pb-0.5">
-              <h3 className={`font-display font-bold text-white ${nameSize} truncate leading-tight`}>
+              <h3 className={`font-display font-bold text-[var(--text)] ${nameSize} truncate leading-tight`}>
                 {name}
               </h3>
               <div className="flex items-center gap-2 mt-1">
-                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${theme.bg}`}>
-                  <RankIcon className={`w-3 h-3 ${theme.accent}`} />
-                  <span className={`font-soft font-semibold text-[10px] ${theme.accent} uppercase tracking-wide`}>
+                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r ${theme.gradient}`}>
+                  <RankIcon className="w-3 h-3 text-white" />
+                  <span className="font-soft font-semibold text-[10px] text-white uppercase tracking-wide">
                     {rank}
                   </span>
                 </div>
-                <span className="text-white/40 text-[10px]">•</span>
+                <span className="text-[var(--text-subtle)] text-[10px]">•</span>
                 <span className="font-accent text-[11px] text-[var(--primary)]">Kupo Life!</span>
               </div>
             </div>
@@ -150,7 +145,7 @@ export function MembershipCard({
                 href={lodestoneUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[10px] text-white/40 hover:text-[var(--primary)] transition-colors flex-shrink-0 pb-0.5"
+                className="flex items-center gap-1 text-[10px] text-[var(--text-subtle)] hover:text-[var(--primary)] transition-colors flex-shrink-0 pb-0.5"
               >
                 <ExternalLink className="w-2.5 h-2.5" />
                 <span>Lodestone</span>

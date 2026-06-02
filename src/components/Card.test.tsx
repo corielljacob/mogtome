@@ -16,13 +16,6 @@ describe('Card', () => {
     expect(card.tagName).toBe('DIV');
   });
 
-  it('renders with glass variant', () => {
-    const { container } = render(<Card variant="glass">Glass Card</Card>);
-    const card = container.firstChild as HTMLElement;
-    expect(card).toBeInTheDocument();
-    expect(screen.getByText('Glass Card')).toBeInTheDocument();
-  });
-
   it('renders with flat variant', () => {
     const { container } = render(<Card variant="flat">Flat Card</Card>);
     const card = container.firstChild as HTMLElement;

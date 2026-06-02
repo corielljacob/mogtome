@@ -112,7 +112,7 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = [
     id: 'midnight',
     name: 'Midnight Realm',
     description: 'Deep indigos and purples',
-    preview: { primary: '#6366F1', secondary: '#8B5CF6', accent: '#A5B4FC' },
+    preview: { primary: '#4B43C4', secondary: '#6D3FC4', accent: '#8E97F5' },
   },
   {
     id: 'sunset',

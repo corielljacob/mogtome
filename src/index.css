@@ -417,25 +417,25 @@
 
 /* Midnight Realm - Deep indigos and purples */
 .theme-midnight {
-  --primary: #4F46E5;
-  --secondary: #7C3AED;
-  --accent: #818CF8;
-  --shadow: rgba(79, 70, 229, 0.18);
-  --gradient-1: rgba(124, 58, 237, 0.15);
-  --gradient-2: rgba(79, 70, 229, 0.18);
-  --gradient-3: rgba(129, 140, 248, 0.1);
-  --gradient-4: rgba(124, 58, 237, 0.12);
+  --primary: #4B43C4;
+  --secondary: #6D3FC4;
+  --accent: #8E97F5;
+  --shadow: rgba(75, 67, 196, 0.18);
+  --gradient-1: rgba(109, 63, 196, 0.15);
+  --gradient-2: rgba(75, 67, 196, 0.18);
+  --gradient-3: rgba(142, 151, 245, 0.1);
+  --gradient-4: rgba(109, 63, 196, 0.12);
 }
 
 .dark.theme-midnight {
-  --primary: #818CF8;
-  --secondary: #A78BFA;
-  --accent: #A5B4FC;
-  --shadow: rgba(129, 140, 248, 0.22);
-  --gradient-1: rgba(167, 139, 250, 0.12);
-  --gradient-2: rgba(129, 140, 248, 0.14);
-  --gradient-3: rgba(167, 139, 250, 0.1);
-  --gradient-4: rgba(129, 140, 248, 0.08);
+  --primary: #8E93F2;
+  --secondary: #B197F5;
+  --accent: #AEB6FA;
+  --shadow: rgba(142, 147, 242, 0.22);
+  --gradient-1: rgba(177, 151, 245, 0.12);
+  --gradient-2: rgba(142, 147, 242, 0.14);
+  --gradient-3: rgba(177, 151, 245, 0.1);
+  --gradient-4: rgba(142, 147, 242, 0.08);
 }
 
 /* Costa del Sol - Warm oranges and corals */

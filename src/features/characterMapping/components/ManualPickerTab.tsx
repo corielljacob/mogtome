@@ -93,8 +93,8 @@ export function ManualPickerTab({
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
                 <p className="text-sm text-[var(--text-muted)]">
                   {characterSearch
-                    ? 'No characters match your search'
-                    : 'No unmapped characters'}
+                    ? 'No characters match, kupo~'
+                    : 'Every character is linked, kupo!'}
                 </p>
               </div>
             ) : (
@@ -160,8 +160,8 @@ export function ManualPickerTab({
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
                 <p className="text-sm text-[var(--text-muted)]">
                   {discordSearch
-                    ? 'No users match your search'
-                    : 'No unmapped Discord users'}
+                    ? 'No accounts match, kupo~'
+                    : 'Every account is linked, kupo!'}
                 </p>
               </div>
             ) : (

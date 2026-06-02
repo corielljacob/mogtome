@@ -36,8 +36,8 @@ export function AutoMatchesTab({
     return (
       <EmptyState
         icon={<HelpCircle className="w-7 h-7 text-[var(--primary)]" />}
-        title="No matches found"
-        subtitle="The matching engine couldn't find any likely pairs. Use the Manual tab to link accounts by hand."
+        title="No matches yet, kupo"
+        subtitle="The moogles couldn't sniff out any likely pairs. Pop over to the Manual tab to link accounts by hand, kupo~"
       />
     );
   }

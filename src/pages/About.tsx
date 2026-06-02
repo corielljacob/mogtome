@@ -161,11 +161,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
         aria-hidden="true"
       />
       
-      <SpotlightCard
-        spotlightColor="rgba(255, 255, 255, 0.06)"
-        spotlightSize={500}
-        className="rounded-xl"
-      >
+      <SpotlightCard className="rounded-xl">
         <div 
           className="
             relative flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8
@@ -364,11 +360,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
   const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
   return (
-    <SpotlightCard
-      spotlightColor={`${rankColor.glow.replace('0.4', '0.08')}`}
-      spotlightSize={400}
-      className="rounded-lg"
-    >
+    <SpotlightCard className="rounded-lg">
       <motion.article 
         className="group/card relative touch-manipulation h-full"
         initial={{ opacity: 0, y: 16 }}
