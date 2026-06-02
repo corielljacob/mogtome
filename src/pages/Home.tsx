@@ -727,54 +727,21 @@ function StarlightOverlay() {
     return flakes;
   }, []);
 
-  // Christmas string lights — colored bulbs draped across the top
-  // Each segment sags between anchor points to create a natural catenary
+  // Christmas string lights — colored bulbs draped in clean U-swoops across the top
   const STRING_LIGHT_COLORS = ['#EF4444', '#22C55E', '#FBBF24', '#3B82F6', '#EF4444', '#22C55E', '#FBBF24', '#3B82F6'];
 
-  const stringLightBulbs = useMemo(() => {
-    // Define the draped wire shape — anchor points with sag between them
-    const anchors = [
-      { x: 0, y: 6 },
-      { x: 6, y: 18 },
-      { x: 12, y: 8 },
-      { x: 18, y: 22 },
-      { x: 25, y: 10 },
-      { x: 32, y: 24 },
-      { x: 38, y: 8 },
-      { x: 45, y: 20 },
-      { x: 52, y: 6 },
-      { x: 58, y: 22 },
-      { x: 65, y: 10 },
-      { x: 72, y: 26 },
-      { x: 78, y: 8 },
-      { x: 85, y: 20 },
-      { x: 92, y: 10 },
-      { x: 100, y: 16 },
-    ];
-
-    return anchors.map((pt, i) => ({
-      x: pt.x,
-      y: pt.y,
+  const { wirePath, stringLightBulbs } = useMemo(() => {
+    // 8 gentle swoops across the top; bulbs ride along the draped wire
+    const garland = buildDrapedGarland(8, 5, 13, 17);
+    const bulbs = garland.points.map((p, i) => ({
+      x: p.x / 10, // 0–100 (the bulb renderer multiplies x by 10)
+      y: p.y,
       color: STRING_LIGHT_COLORS[i % STRING_LIGHT_COLORS.length],
-      delay: i * 0.25,
+      delay: i * 0.22,
       size: 8 + (i % 3) * 2, // 8–12px bulbs
     }));
+    return { wirePath: garland.wirePath, stringLightBulbs: bulbs };
   }, []);
-
-  // Build the SVG wire path from anchors (smooth catenary)
-  const wirePath = useMemo(() => {
-    const pts = stringLightBulbs.map(b => ({ x: b.x * 10, y: b.y })); // scale x to 0-1000
-    let d = `M ${pts[0].x} ${pts[0].y}`;
-    for (let i = 1; i < pts.length; i++) {
-      const prev = pts[i - 1];
-      const curr = pts[i];
-      const cpx = (prev.x + curr.x) / 2;
-      // Sag the control point lower for a natural drape
-      const cpy = Math.max(prev.y, curr.y) + 8;
-      d += ` Q ${cpx} ${cpy}, ${curr.x} ${curr.y}`;
-    }
-    return d;
-  }, [stringLightBulbs]);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -1079,90 +1046,116 @@ function eventCountdownLabel(daysLeft: number): string {
 }
 
 /**
- * EventSpotlight — themed centerpiece for the active seasonal event.
- *
- * One adaptive card: a compact horizontal strip below `lg` (so the fixed-height
- * hero never overflows on phones), and a bold vertical spotlight at `lg`+ where
- * the left column has room. Colors come from the active event theme tokens.
+ * Builds a draped "UUUU" garland: a wire that sags in repeated U-swoops between
+ * evenly spaced pegs, plus evenly spaced points along the wire to hang bulbs or
+ * pennants from. Coordinates use a 0–1000 (x) × 0–100 (y) viewBox — render the
+ * wire with preserveAspectRatio="none" and vector-effect="non-scaling-stroke".
  */
-function EventSpotlight({ event }: { event: SeasonalEvent }) {
+function buildDrapedGarland(swoops: number, pegY: number, sagDepth: number, count: number) {
+  const W = 1000;
+  const segW = W / swoops;
+  const ctrlY = pegY + 2 * sagDepth; // quadratic control point so each dip reaches pegY + sagDepth
+  let wirePath = `M 0 ${pegY}`;
+  for (let i = 0; i < swoops; i++) {
+    const midX = i * segW + segW / 2;
+    wirePath += ` Q ${midX} ${ctrlY} ${(i + 1) * segW} ${pegY}`;
+  }
+  const points: Array<{ x: number; y: number }> = [];
+  for (let k = 0; k < count; k++) {
+    const x = ((k + 0.5) / count) * W;
+    const i = Math.min(swoops - 1, Math.floor(x / segW));
+    const t = (x - i * segW) / segW;
+    const y = (1 - t) * (1 - t) * pegY + 2 * (1 - t) * t * ctrlY + t * t * pegY;
+    points.push({ x, y });
+  }
+  return { wirePath, points };
+}
+
+/**
+ * EventBunting — a festive pennant garland strung across the FULL viewport during
+ * a seasonal event (mirrors how StarlightOverlay drapes its string lights), with
+ * the event name, dates, and countdown centered below. Rendered as a fixed
+ * overlay so it spans the whole width — sidebar included.
+ */
+function EventBunting({ event }: { event: SeasonalEvent }) {
   const EventIcon = event.icon;
   const daysLeft = getEventDaysLeft(event.dateRange);
   const dates = formatEventDates(event.dateRange);
   const countdown = eventCountdownLabel(daysLeft);
 
+  const FLAG_COLORS = ['var(--primary)', 'var(--secondary)', 'var(--accent)'];
+  const FLAG_COUNT = 28;
+
+  // Starlight already drapes its own string lights across the top — show only the label there.
+  const hasTopGarland = event.id === 'starlight';
+
+  const garland = buildDrapedGarland(6, 12, 30, FLAG_COUNT);
+
   return (
-    <div className="relative w-full max-w-sm">
-      {/* Ambient themed aura — lets the card sit in the scene like the moogle's own glow (desktop) */}
-      <div
-        className="hidden lg:block absolute -inset-5 rounded-[2.75rem] blur-2xl pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, color-mix(in srgb, var(--primary) 16%, transparent), color-mix(in srgb, var(--accent) 8%, transparent) 52%, transparent 74%)',
-        }}
-        aria-hidden="true"
-      />
-
-      <motion.div
-        className="
-          relative w-full overflow-hidden
-          bg-[color:color-mix(in_srgb,var(--card)_86%,transparent)]
-          border border-[color:color-mix(in_srgb,var(--primary)_22%,var(--border))]
-          rounded-2xl lg:rounded-[1.75rem]
-          shadow-[0_12px_36px_-14px_color-mix(in_srgb,var(--primary)_42%,transparent)]
-          text-left lg:text-center
-          px-4 py-3 lg:px-6 lg:py-5
-          flex items-center gap-3 lg:flex-col lg:gap-0
-        "
-        initial={{ opacity: 0, y: 12, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.5 }}
-        role="status"
-        aria-label={`Seasonal event: ${event.name}. ${dates}. ${countdown}.`}
-      >
-        {/* Themed top accent (desktop spotlight only) */}
-        <div
-          className="hidden lg:block absolute top-0 inset-x-0 h-1"
-          style={{
-            background: 'linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--secondary), transparent)',
-            opacity: 0.7,
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Event icon */}
-        <motion.span
-          className="icon-badge shrink-0 w-11 h-11 lg:w-14 lg:h-14 text-[var(--primary)] lg:mb-3"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <EventIcon className="w-5 h-5 lg:w-7 lg:h-7" aria-hidden="true" />
-        </motion.span>
-
-        <div className="min-w-0 lg:min-w-full">
-          <p className="eyebrow-script text-base lg:text-xl text-[var(--secondary)] leading-none lg:mb-1">
-            Now celebrating
-          </p>
-          <h3 className="font-display font-bold text-base lg:text-2xl text-[var(--text)] leading-tight truncate lg:whitespace-normal">
-            {event.name}
-          </h3>
-          <p className="font-soft text-[11px] lg:text-sm text-[var(--text-muted)] lg:mt-1 lg:mb-4">
-            {event.tagline}
-          </p>
-
-          {/* Divider (desktop spotlight only) */}
-          <div className="hidden lg:block washi-tape-strip w-20 mx-auto mb-3" aria-hidden="true" />
-
-          {/* Dates + countdown */}
-          <div className="flex items-center gap-1.5 lg:justify-center text-[11px] lg:text-xs font-soft text-[var(--text-muted)]">
-            <CalendarDays className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-[var(--text-subtle)] shrink-0" aria-hidden="true" />
-            <span className="truncate">{dates}</span>
-            <span className="lg:hidden text-[var(--text-subtle)]">·</span>
-            <span className="lg:hidden font-accent text-[var(--primary)] truncate">{countdown}</span>
-          </div>
-          <p className="hidden lg:block mt-1 font-accent text-base text-[var(--primary)]">
-            {countdown}
-          </p>
+    <div
+      className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 z-0 pointer-events-none flex flex-col items-center select-none"
+      role="status"
+      aria-label={`Now celebrating ${event.name}. ${dates}. ${countdown}.`}
+    >
+      {/* Pennant garland — draped in U-swoops across the full viewport (desktop).
+          Skipped when the event already drapes its own top garland (Starlight). */}
+      {!hasTopGarland && (
+        <div className="relative w-full hidden md:block h-[90px]" aria-hidden="true">
+          {/* draped cord */}
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none">
+            <path
+              d={garland.wirePath}
+              fill="none"
+              style={{ stroke: 'color-mix(in srgb, var(--text) 30%, transparent)' }}
+              strokeWidth={2}
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+          {/* pennants hanging straight down from the cord */}
+          {garland.points.map((p, i) => (
+            <motion.span
+              key={i}
+              className="absolute block origin-top"
+              style={{
+                left: `${(p.x / 1000) * 100}%`,
+                top: `${(p.y / 100) * 90}px`,
+                marginLeft: '-9px',
+                width: 0,
+                height: 0,
+                borderLeft: '9px solid transparent',
+                borderRight: '9px solid transparent',
+                borderTop: `18px solid ${FLAG_COLORS[i % FLAG_COLORS.length]}`,
+                opacity: 0.9,
+              }}
+              animate={{ rotate: [0, 5, 0, -5, 0] }}
+              transition={{ duration: 4 + (i % 3), repeat: Infinity, ease: 'easeInOut', delay: (i % 5) * 0.25 }}
+            />
+          ))}
         </div>
+      )}
+
+      {/* Event label, centered below the garland */}
+      <motion.div
+        className={`text-center px-4 ${hasTopGarland ? 'mt-16 sm:mt-24' : 'mt-2 md:mt-3'}`}
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <p className="eyebrow-script text-base sm:text-lg text-[var(--secondary)] leading-none">
+          Now celebrating
+        </p>
+        <h2 className="font-display font-bold text-lg sm:text-2xl text-[var(--text)] mt-0.5 flex items-center justify-center gap-2">
+          <EventIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary)]" aria-hidden="true" />
+          {event.name}
+        </h2>
+        <p className="text-xs sm:text-sm font-soft text-[var(--text-muted)] mt-1 flex items-center justify-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1">
+            <CalendarDays className="w-3.5 h-3.5 text-[var(--text-subtle)]" aria-hidden="true" />
+            {dates}
+          </span>
+          <span className="text-[var(--text-subtle)]">·</span>
+          <span className="font-accent text-sm sm:text-base text-[var(--primary)]">{countdown}</span>
+        </p>
       </motion.div>
     </div>
   );
@@ -1276,10 +1269,14 @@ export function Home() {
       {isEventThemeActive && activeEvent?.id === 'all-saints-wake' && <HalloweenOverlay />}
       {isEventThemeActive && activeEvent?.id === 'starlight' && <StarlightOverlay />}
       <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
+      {isEventThemeActive && activeEvent && <EventBunting event={activeEvent} />}
 
       {/* ── Main Layout ── */}
       {/* Mobile: pad for fixed top/bottom bars. Desktop: no padding needed (sidebar handles nav) */}
-      <div className="flex-1 min-h-0 relative z-10 flex flex-col lg:flex-row items-center justify-center p-4 sm:p-8 lg:py-8 lg:px-12 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4">
+      <div className="flex-1 min-h-0 relative z-10 flex flex-col p-4 sm:p-8 lg:py-8 lg:px-12 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4">
+
+        {/* ── Hero: text column + moogle column ── */}
+        <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row items-center justify-center">
         
         {/* ── Left Side: Whimsical Text & CTA ── */}
           <div className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left z-20">
@@ -1326,9 +1323,9 @@ export function Home() {
             </span>
           </motion.h1>
 
-          {/* Tagline — always shown on desktop; on mobile the event card replaces it */}
+          {/* Tagline */}
           <motion.div
-            className={`${isEventThemeActive && activeEvent ? 'hidden lg:flex' : 'flex'} flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24`}
+            className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.6 }}
@@ -1346,13 +1343,6 @@ export function Home() {
               ))}
             </p>
           </motion.div>
-
-          {/* Event spotlight (mobile only) — replaces the tagline so the fixed-height hero doesn't grow */}
-          {isEventThemeActive && activeEvent && (
-            <div className="lg:hidden w-full flex justify-center mt-2 mb-8">
-              <EventSpotlight event={activeEvent} />
-            </div>
-          )}
 
           <motion.div
             className="flex items-center justify-center lg:justify-start w-full lg:w-auto z-30 relative ml-0 sm:ml-8 lg:ml-20 mt-8"
@@ -1478,14 +1468,7 @@ export function Home() {
             <WarmMotes motes={warmMotes} />
           </motion.div>
 
-          {/* Event spotlight (desktop only) — the moogle presents the active event,
-              filling the right column instead of crowding the text column */}
-          {isEventThemeActive && activeEvent && (
-            <div className="hidden lg:flex mt-4 w-full justify-center lg:mr-10 xl:mr-20">
-              <EventSpotlight event={activeEvent} />
-            </div>
-          )}
-
+        </div>
         </div>
       </div>
 
