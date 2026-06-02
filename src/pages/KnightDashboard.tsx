@@ -1,101 +1,204 @@
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
-import { Shield, Sparkles, MessageCircle, Lightbulb } from 'lucide-react';
-import { PendingSubmissions, ContentCard, CharacterMapping } from '../components';
+import { FileText, Link2, Sparkles, Lightbulb, Loader2, Inbox } from 'lucide-react';
+
+import {
+  PageLayout,
+  PageHeader,
+  SectionLabel,
+  PendingSubmissions,
+  CharacterMapping,
+} from '../components';
+import { useAuth } from '../contexts/AuthContext';
+import { useCharacterMapping } from '../features/characterMapping';
+import { biographyApi } from '../api/biography';
 
 /**
- * Knight Dashboard - Only accessible to users with knighthood
- * 
- * This dashboard is reserved for Moogle Knights and those with 
- * temporary knighthood permissions. Uses a card-grid layout for
- * multiple dashboard functions.
+ * Knight Dashboard — knight-only command center.
+ *
+ * Leads with a live "Needs Attention" overview (what a knight should act on),
+ * then the actual tools stacked full-width. Reuses the shared page kit so it
+ * matches the rest of the site.
  */
-export function KnightDashboard() {
+
+// ─── Small count badge for section labels ────────────────────────────────────
+function CountBadge({ n }: { n: number }) {
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
-      
-      <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Page Header */}
-          <motion.div
-            className="mb-6 sm:mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+    <span className="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] font-number text-xs font-bold">
+      {n}
+    </span>
+  );
+}
+
+// ─── A single "needs attention" stat tile — jumps to its section on click ─────
+interface StatTileProps {
+  icon: React.ReactNode;
+  count: number;
+  label: string;
+  hint: string;
+  targetId: string;
+  isLoading: boolean;
+  delay: number;
+}
+
+function StatTile({ icon, count, label, hint, targetId, isLoading, delay }: StatTileProps) {
+  const isClear = !isLoading && count === 0;
+
+  const handleClick = () => {
+    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  return (
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay }}
+      className="surface hover-lift p-4 sm:p-5 flex items-center gap-4 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+      aria-label={`${count} ${label} — ${hint}. Jump to section.`}
+    >
+      <span className="icon-badge w-11 h-11 shrink-0 text-[var(--primary)]">
+        {icon}
+      </span>
+      <span className="min-w-0">
+        {isLoading ? (
+          <Loader2 className="w-6 h-6 text-[var(--text-subtle)] animate-spin" aria-hidden="true" />
+        ) : (
+          <span
+            className={`font-number text-3xl font-bold leading-none ${isClear ? 'text-[var(--text-subtle)]' : 'text-[var(--text)]'}`}
           >
-            <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[var(--primary)]/15 to-[var(--secondary)]/15 flex items-center justify-center shadow-md">
-                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary)]" />
-              </div>
-              <div>
-                <h1 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--text)]">
-                  Knight Dashboard
-                </h1>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                  Manage the realm, kupo~
-                </p>
-              </div>
-            </div>
-            
-            {/* Decorative divider */}
-            <div className="flex items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
-              <div className="flex-1 border-t border-[var(--border)]" />
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--primary)]" aria-hidden="true" />
-              <div className="flex-1 border-t border-[var(--border)]" />
-            </div>
-          </motion.div>
+            {count}
+          </span>
+        )}
+        <span className="block font-soft font-semibold text-sm text-[var(--text)] mt-1.5">
+          {label}
+        </span>
+        <span className="block text-xs text-[var(--text-muted)]">
+          {isClear ? 'all clear, kupo!' : hint}
+        </span>
+      </span>
+    </motion.button>
+  );
+}
 
-          {/* Dashboard Grid */}
-          <motion.div
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            {/* Pending Biography Submissions */}
-            <div className="lg:col-span-1">
-              <PendingSubmissions />
-            </div>
+export function KnightDashboard() {
+  const { user } = useAuth();
+  const firstName = user?.memberName?.split(' ')[0] ?? 'Knight';
 
-            {/* Feature Request Card */}
-            <div className="lg:col-span-1">
-              <ContentCard className="h-full flex flex-col">
-                <div className="flex items-start gap-2.5 sm:gap-3 mb-4">
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400/15 to-orange-400/15 flex items-center justify-center flex-shrink-0">
-                    <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
-                      Have an Idea?
-                    </h2>
-                    <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-                      Help shape the dashboard
-                    </p>
-                  </div>
-                </div>
+  // Pending biography submissions — shares the ['biography-submissions'] cache
+  // with <PendingSubmissions />, so this doesn't add a network request.
+  const {
+    data: pendingBios,
+    isLoading: isLoadingBios,
+    isError: isErrorBios,
+  } = useQuery({
+    queryKey: ['biography-submissions'],
+    queryFn: () => biographyApi.getPendingSubmissions(),
+    staleTime: 1000 * 30,
+  });
+  const pendingCount = pendingBios?.length ?? 0;
 
-                <div className="flex-1 flex flex-col items-center justify-center text-center py-6 sm:py-8">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-amber-400/10 to-orange-400/10 flex items-center justify-center mb-4">
-                    <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8 text-amber-500" />
-                  </div>
-                  <p className="text-sm sm:text-base text-[var(--text)] font-soft font-medium mb-2">
-                    Want a new dashboard feature?
-                  </p>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xs">
-                    Discuss it with <span className="text-[var(--primary)] font-semibold">Plane</span> and help us make the Knight Dashboard even better!
-                  </p>
-                </div>
-              </ContentCard>
-            </div>
+  // Character mapping counts — shares cache with the <CharacterMapping /> tool.
+  const {
+    allCharacters,
+    totalMatches,
+    isLoading: isLoadingMapping,
+    isError: isErrorMapping,
+  } = useCharacterMapping();
+  const unmappedCount = allCharacters.length;
+  const autoMatchCount = totalMatches;
 
-            {/* Character Mapping */}
-            <div className="lg:col-span-1">
-              <CharacterMapping />
-            </div>
-          </motion.div>
-        </div>
+  const hasError = isErrorBios || isErrorMapping;
+  const isLoading = isLoadingBios || isLoadingMapping;
+  const allClear =
+    !isLoading && !hasError && pendingCount === 0 && unmappedCount === 0 && autoMatchCount === 0;
+
+  return (
+    <PageLayout maxWidth="max-w-4xl">
+      <PageHeader
+        opener="~ Tend to the realm ~"
+        title="Knight Dashboard"
+        subtitle={`Welcome back, ${firstName}`}
+      />
+
+      {/* ── Needs Attention overview ── */}
+      <section className="mb-12">
+        <SectionLabel
+          label="Needs Attention"
+          icon={<Inbox className="w-4 h-4" aria-hidden="true" />}
+        />
+
+        {allClear ? (
+          <div className="surface p-6 sm:p-8 text-center">
+            <p className="font-accent text-2xl sm:text-3xl text-[var(--primary)]">
+              All caught up, kupo! ✦
+            </p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">
+              Nothing needs a knight&apos;s attention right now.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <StatTile
+              icon={<FileText className="w-5 h-5" aria-hidden="true" />}
+              count={pendingCount}
+              label="Biographies"
+              hint="awaiting review"
+              targetId="submissions"
+              isLoading={isLoadingBios}
+              delay={0.05}
+            />
+            <StatTile
+              icon={<Link2 className="w-5 h-5" aria-hidden="true" />}
+              count={unmappedCount}
+              label="Characters"
+              hint="left to link"
+              targetId="mapping"
+              isLoading={isLoadingMapping}
+              delay={0.1}
+            />
+            <StatTile
+              icon={<Sparkles className="w-5 h-5" aria-hidden="true" />}
+              count={autoMatchCount}
+              label="Auto-matches"
+              hint="ready to confirm"
+              targetId="mapping"
+              isLoading={isLoadingMapping}
+              delay={0.15}
+            />
+          </div>
+        )}
+      </section>
+
+      {/* ── Biography Submissions ── */}
+      <section id="submissions" className="mb-12 scroll-mt-24">
+        <SectionLabel
+          label="Biography Submissions"
+          icon={<FileText className="w-4 h-4" aria-hidden="true" />}
+          badge={pendingCount > 0 ? <CountBadge n={pendingCount} /> : undefined}
+        />
+        <PendingSubmissions />
+      </section>
+
+      {/* ── Character Mapping ── */}
+      <section id="mapping" className="mb-12 scroll-mt-24">
+        <SectionLabel
+          label="Character Mapping"
+          icon={<Link2 className="w-4 h-4" aria-hidden="true" />}
+          badge={unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined}
+        />
+        <CharacterMapping />
+      </section>
+
+      {/* ── Cozy footer note (demoted "Have an Idea?") ── */}
+      <div className="text-center pb-2">
+        <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
+          <Lightbulb className="w-4 h-4 text-[var(--accent)]" aria-hidden="true" />
+          Have an idea for the dashboard? Ping{' '}
+          <span className="text-[var(--primary)] font-semibold">Plane</span>, kupo~
+        </p>
       </div>
-    </div>
+    </PageLayout>
   );
 }
