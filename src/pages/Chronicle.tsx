@@ -1,22 +1,14 @@
 import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredValue } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Wifi, 
-  WifiOff, 
-  ChevronDown,
-  Sparkles,
-  Loader2,
-  Search,
-  X,
-} from 'lucide-react';
+import { Wifi, Loader2, Search, X } from 'lucide-react';
 
 // Shared components
-import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState } from '../components';
+import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState, Tag } from '../components';
 import { useEventsHub, type ConnectionStatus } from '../hooks';
 
 // Utils & Constants
-import { formatRelativeTime, formatFullDate } from '../utils';
+import { formatRelativeTime } from '../utils';
 import { getEventTypeConfig, EVENT_TYPE_CONFIG } from '../constants';
 
 // API
@@ -38,7 +30,6 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
 import flyingMoogles from '../assets/moogles/moogles flying.webp';
 import moogleMail from '../assets/moogles/moogle mail.webp';
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,7 +39,7 @@ const PLACEHOLDER_CREATION_TIME = '1970-01-01T00:00:00Z';
 
 /** Check if an event has a valid (non-placeholder) ID */
 function hasValidId(event: ChronicleEvent): boolean {
-  return event.id.timestamp !== PLACEHOLDER_TIMESTAMP || 
+  return event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
          event.id.creationTime !== PLACEHOLDER_CREATION_TIME;
 }
 
@@ -66,127 +57,140 @@ function getEventKey(event: ChronicleEvent, index: number): string {
   return `${getEventSignature(event)}-${index}`;
 }
 
+// ── Day grouping ──────────────────────────────────────────────────────────────
+
+function startOfDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+/** Stable key for the calendar day an event belongs to. */
+function getDayKey(dateString: string): string {
+  const d = new Date(dateString);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+/** Friendly label for a day: Today / Yesterday / weekday / full date. */
+function getDayLabel(dateString: string): string {
+  const d = new Date(dateString);
+  const now = new Date();
+  const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
+  if (diffDays <= 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
+  const opts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('en-US', opts);
+}
+
+interface EntryItem {
+  event: ChronicleEvent;
+  isRealtime: boolean;
+  isUnseen: boolean;
+}
+
+interface DayGroup {
+  key: string;
+  label: string;
+  items: EntryItem[];
+}
+
+/** Bucket an ordered (newest-first) list of entries into day groups. */
+function buildDayGroups(items: EntryItem[]): DayGroup[] {
+  const groups: DayGroup[] = [];
+  const index = new Map<string, DayGroup>();
+  for (const item of items) {
+    const key = getDayKey(item.event.createdAt);
+    let group = index.get(key);
+    if (!group) {
+      group = { key, label: getDayLabel(item.event.createdAt), items: [] };
+      index.set(key, group);
+      groups.push(group);
+    }
+    group.items.push(item);
+  }
+  return groups;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Connection status indicator - memoized since status changes infrequently */
-const ConnectionIndicator = memo(function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
-  const statusConfig: Record<ConnectionStatus, { color: string; label: string; Icon: typeof Wifi; ariaLabel: string }> = {
-    connected: { color: 'text-green-500 bg-green-500/10 border-green-500/20', label: 'Live', Icon: Wifi, ariaLabel: 'Real-time connection active' },
-    connecting: { color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20', label: 'Connecting...', Icon: Wifi, ariaLabel: 'Connecting to real-time updates' },
-    reconnecting: { color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20', label: 'Reconnecting...', Icon: Wifi, ariaLabel: 'Reconnecting to real-time updates' },
-    disconnected: { color: 'text-[var(--text-muted)] bg-[var(--card)] border-[var(--border)]', label: 'Offline', Icon: WifiOff, ariaLabel: 'Disconnected from real-time updates' },
-    error: { color: 'text-red-500 bg-red-500/10 border-red-500/20', label: 'Error', Icon: WifiOff, ariaLabel: 'Error connecting to real-time updates' },
+/** Quiet, theme-tinted "live" indicator (replaces the old status pill). */
+const LiveStatus = memo(function LiveStatus({ status }: { status: ConnectionStatus }) {
+  const config: Record<ConnectionStatus, { tone: string; label: string; pulse: boolean }> = {
+    connected: { tone: 'var(--primary)', label: 'live', pulse: true },
+    connecting: { tone: 'var(--accent)', label: 'connecting', pulse: true },
+    reconnecting: { tone: 'var(--accent)', label: 'reconnecting', pulse: true },
+    disconnected: { tone: 'var(--text-subtle)', label: 'offline', pulse: false },
+    error: { tone: 'var(--text-subtle)', label: 'offline', pulse: false },
   };
-
-  const { color, label, Icon, ariaLabel } = statusConfig[status];
+  const { tone, label, pulse } = config[status];
 
   return (
-    <div 
-      className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border ${color} ${
-        status === 'connecting' || status === 'reconnecting' ? 'animate-pulse' : ''
-      }`}
+    <span
+      className="inline-flex items-center gap-2 text-xs font-soft text-[var(--text-muted)]"
       role="status"
       aria-live="polite"
-      aria-label={ariaLabel}
+      aria-label={`Live updates: ${label}`}
     >
-      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-      <span className="text-xs sm:text-sm font-soft font-medium">{label}</span>
-      {status === 'connected' && (
-        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-ping-slow" aria-hidden="true" />
-      )}
-    </div>
+      <span className="relative flex w-2 h-2" aria-hidden="true">
+        {pulse && (
+          <span
+            className="absolute inline-flex w-full h-full rounded-full opacity-60 animate-ping"
+            style={{ background: tone }}
+          />
+        )}
+        <span className="relative inline-flex w-2 h-2 rounded-full" style={{ background: tone }} />
+      </span>
+      {label}
+    </span>
   );
 });
 
-/** Single timeline event card - memoized for performance */
-const TimelineEventCard = memo(function TimelineEventCard({ 
-  event, 
-  isRealtime = false 
-}: { 
-  event: ChronicleEvent; 
-  isRealtime?: boolean 
-}) {
-  const { Icon, color, bgColor, label } = getEventTypeConfig(event.type);
-  
+/** A single journal entry sitting on the day's timeline thread. */
+const JournalEntry = memo(function JournalEntry({ item, isLast }: { item: EntryItem; isLast: boolean }) {
+  const { event, isRealtime, isUnseen } = item;
+  const { Icon, hex, label } = getEventTypeConfig(event.type);
+
   return (
-    <motion.div
-      layout
-      initial={isRealtime ? { opacity: 0, y: -20, scale: 0.95 } : false}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={isRealtime ? { type: "spring", stiffness: 300, damping: 25 } : { duration: 0.3 }}
-      whileHover={{ y: -2, scale: 1.005 }}
-      className={`
-        relative flex gap-3 sm:gap-4 p-4 sm:p-5 md:p-6
-        bg-[var(--card)]/90
-        border border-[var(--border)] rounded-lg
-        shadow-sm hover:shadow-lg hover:shadow-[var(--primary)]/5 hover:border-[var(--primary)]/30
-        transition-all duration-300 touch-manipulation group
-        ${isRealtime ? 'ring-2 ring-[var(--primary)]/30 ring-offset-2 ring-offset-[var(--bg)]' : ''}
-      `}
+    <motion.li
+      className="relative flex gap-3 sm:gap-4"
+      initial={isRealtime && isUnseen ? { opacity: 0, y: -8 } : false}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 26 }}
     >
-      {/* Event type icon - larger on mobile for better visual hierarchy */}
-      <div className={`
-        flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg
-        flex items-center justify-center
-        transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3
-        ${bgColor} ${color}
-      `}>
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+      {/* Timeline node + connecting thread */}
+      <div className="relative flex flex-col items-center">
+        <span
+          className="icon-badge w-9 h-9 shrink-0 z-10"
+          style={{
+            color: hex,
+            background: `color-mix(in srgb, ${hex} 10%, var(--bg))`,
+            borderColor: `color-mix(in srgb, ${hex} 28%, var(--border))`,
+          }}
+        >
+          <Icon className="w-4 h-4" aria-hidden="true" />
+        </span>
+        {!isLast && <span className="w-px flex-1 bg-[var(--border)] mt-1" aria-hidden="true" />}
       </div>
 
-      {/* Event content */}
-      <div className="flex-1 min-w-0">
-        {/* Mobile: stacked layout for better readability */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
-          <div className="flex-1 min-w-0">
-            {/* Event type badge + timestamp on mobile */}
-            <div className="flex items-center justify-between sm:justify-start gap-2 mb-2 sm:mb-1.5">
-              <div className="flex items-center gap-2">
-                <span className={`
-                  inline-flex items-center px-2 py-0.5 rounded-md border border-current text-[11px] sm:text-xs font-soft font-bold tracking-wide uppercase
-                  ${color}
-                `}>
-                  {label}
-                </span>
-                {isRealtime && (
-                  <motion.span
-                    className="inline-flex items-center px-2 py-0.5 rounded-md border border-[var(--primary)]/50 text-[11px] sm:text-xs font-soft font-bold text-[var(--primary)] uppercase tracking-wide"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    New!
-                  </motion.span>
-                )}
-              </div>
-              {/* Mobile timestamp - inline with badge */}
-              <span className="text-[11px] sm:hidden font-soft font-medium text-[var(--primary)]">
-                {formatRelativeTime(event.createdAt)}
-              </span>
-            </div>
-
-            {/* Event text - larger on mobile */}
-            <p className="text-[var(--text)] font-soft text-sm sm:text-base leading-relaxed group-hover:text-[var(--text)]/90 transition-colors">
-              {event.text}
-            </p>
-          </div>
-
-          {/* Desktop timestamp */}
-          <div className="flex-shrink-0 text-right hidden sm:block">
-            <p className="text-xs font-soft font-bold text-[var(--primary)]">
-              {formatRelativeTime(event.createdAt)}
-            </p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5 font-medium">
-              {formatFullDate(event.createdAt)}
-            </p>
-          </div>
+      {/* Entry content */}
+      <div className={`flex-1 min-w-0 ${isLast ? 'pb-1' : 'pb-6'}`}>
+        <div className="flex items-center gap-2 flex-wrap mb-1.5">
+          <Tag color={hex}>{label}</Tag>
+          {isUnseen && <Tag color="var(--primary)" dot>just in</Tag>}
+          <time
+            className="ml-auto shrink-0 text-xs text-[var(--text-subtle)] font-soft"
+            dateTime={event.createdAt}
+          >
+            {formatRelativeTime(event.createdAt)}
+          </time>
         </div>
+        <p className="text-[var(--text)] font-soft text-sm sm:text-base leading-relaxed">
+          {event.text}
+        </p>
       </div>
-
-      {/* Timeline connector line (for visual continuity) - hidden on mobile */}
-      <div className="absolute left-7 sm:left-8 md:left-9 top-full w-0.5 h-4 bg-gradient-to-b from-[var(--border)] to-transparent hidden sm:block opacity-50" />
-    </motion.div>
+    </motion.li>
   );
 });
 
@@ -195,7 +199,6 @@ const TimelineEventCard = memo(function TimelineEventCard({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Chronicle() {
-  const [showRealtimeEvents, setShowRealtimeEvents] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(null);
   const deferredSearchQuery = useDeferredValue(searchInput);
@@ -277,8 +280,8 @@ export function Chronicle() {
   }, [data]);
 
   // When searching or filtering, display ONLY the API results.
-  // When on the default view (no search, no filter), deduplicate against
-  // realtime events so items don't appear twice.
+  // On the default view, deduplicate against realtime events so items
+  // don't appear twice.
   const displayedEvents = useMemo(() => {
     if (hasActiveQuery) return apiEvents;
     const rtSignatures = new Set(realtimeEvents.map(getEventSignature));
@@ -288,6 +291,16 @@ export function Chronicle() {
   // Realtime events are only shown on the default (unfiltered) view.
   const visibleRealtimeEvents = hasActiveQuery ? [] : realtimeEvents;
   const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
+
+  // Merge realtime (newest) + historical into one ordered list, then bucket
+  // into day groups. Live items sit at the top of "Today" with a gentle marker.
+  const dayGroups = useMemo(() => {
+    const items: EntryItem[] = [
+      ...visibleRealtimeEvents.map((event, i) => ({ event, isRealtime: true, isUnseen: i < unseenCount })),
+      ...displayedEvents.map((event) => ({ event, isRealtime: false, isUnseen: false })),
+    ];
+    return buildDayGroups(items);
+  }, [visibleRealtimeEvents, displayedEvents, unseenCount]);
 
   // True while the search input is ahead of the deferred value
   const isTransitioning = searchInput !== deferredSearchQuery;
@@ -309,306 +322,241 @@ export function Chronicle() {
   }, []);
 
   return (
-    <PageLayout moogles={{ primary: flyingMoogles, secondary: moogleMail }} maxWidth="max-w-4xl">
-          <PageHeader
-            opener="~ The story of our adventures ~"
-            title="The Chronicle"
-            subtitle="Every tale from our FC, unfolding in real-time"
-          />
+    <PageLayout moogles={{ primary: flyingMoogles, secondary: moogleMail }} maxWidth="max-w-3xl">
+      <PageHeader
+        opener="~ a little logbook of our days ~"
+        title="The Chronicle"
+        subtitle="what the FC has been up to lately"
+      />
 
-          {/* Search bar */}
-          <motion.section
-            className="mb-4 sm:mb-6"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            <div className="bg-[var(--card)]/80 border border-[var(--border)] rounded-lg shadow-lg shadow-[var(--primary)]/5 p-3 sm:p-5">
-              <div className="relative group">
-                <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] group-focus-within:text-[var(--primary)] transition-colors"
+      {/* Search & filters */}
+      <motion.section
+        className="surface p-3 sm:p-5 mb-5"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="relative group">
+          <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] group-focus-within:text-[var(--primary)] transition-colors"
+            aria-hidden="true"
+          />
+          <input
+            ref={searchInputRef}
+            id="chronicle-search"
+            type="search"
+            inputMode="search"
+            enterKeyHint="search"
+            placeholder="Search the chronicle..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="
+              w-full pl-11 pr-10 py-3
+              bg-[var(--bg)]/60 hover:bg-[var(--bg)]
+              rounded-xl border border-[var(--border)]
+              focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
+              font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
+              focus:outline-none transition-all duration-300 touch-manipulation
+            "
+            style={{ fontSize: '16px' }}
+          />
+          {searchInput && (
+            <button
+              onClick={handleClearSearch}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-[var(--text-subtle)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer touch-manipulation"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Filter chips — hairline toggles tinted per event type */}
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by event type">
+          {EVENT_FILTERS.map(({ value, label }) => {
+            const config = EVENT_TYPE_CONFIG[value];
+            const isActive = activeFilter === value;
+            return (
+              <button
+                key={value}
+                onClick={() => handleToggleFilter(value)}
+                aria-pressed={isActive}
+                className="
+                  inline-flex items-center gap-1.5
+                  px-3 py-1.5 rounded-md border text-sm font-soft font-medium
+                  cursor-pointer transition-colors duration-200 touch-manipulation
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+                "
+                style={isActive
+                  ? {
+                      color: config.hex,
+                      borderColor: `color-mix(in srgb, ${config.hex} 45%, transparent)`,
+                      background: `color-mix(in srgb, ${config.hex} 12%, transparent)`,
+                    }
+                  : {
+                      color: 'var(--text-muted)',
+                      borderColor: 'var(--border)',
+                    }}
+              >
+                <config.Icon
+                  className="w-3.5 h-3.5"
+                  style={{ color: config.hex }}
                   aria-hidden="true"
                 />
-                <input
-                  ref={searchInputRef}
-                  id="chronicle-search"
-                  type="search"
-                  inputMode="search"
-                  enterKeyHint="search"
-                  placeholder="Search the chronicles..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="
-                    w-full pl-11 pr-10 py-3.5
-                    bg-[var(--bg)]/50 hover:bg-[var(--bg)]
-                    rounded-xl
-                    border border-[var(--border)]
-                    focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
-                    font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
-                    focus:outline-none transition-all duration-300
-                    touch-manipulation
-                  "
-                  style={{ fontSize: '16px' }}
-                />
-                {searchInput && (
-                  <button
-                    onClick={handleClearSearch}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 sm:p-1.5 rounded-lg bg-[var(--primary)]/10 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
-                    aria-label="Clear search"
-                  >
-                    <X className="w-4 h-4 text-[var(--primary)]" />
-                  </button>
-                )}
-              </div>
+                <span>{label}</span>
+              </button>
+            );
+          })}
+          {hasActiveFilter && (
+            <button
+              onClick={() => setActiveFilter(null)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-soft font-medium text-[var(--text-subtle)] hover:text-[var(--primary)] cursor-pointer transition-colors touch-manipulation"
+              aria-label="Clear filter"
+            >
+              <X className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          )}
+        </div>
 
-              {/* Filter chips */}
-              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by event type">
-                {EVENT_FILTERS.map(({ value, label }) => {
-                  const config = EVENT_TYPE_CONFIG[value];
-                  const isActive = activeFilter === value;
-                  return (
-                    <motion.button
-                      key={value}
-                      onClick={() => handleToggleFilter(value)}
-                      aria-pressed={isActive}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`
-                        inline-flex items-center gap-1.5
-                        px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-sm font-soft font-semibold
-                        cursor-pointer transition-colors duration-200 touch-manipulation
-                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                        ${isActive
-                          ? `${config.bgColor} ${config.color} border border-current/20 shadow-md shadow-current/10`
-                          : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5'
-                        }
-                      `}
-                    >
-                      <config.Icon className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>{label}</span>
-                    </motion.button>
-                  );
-                })}
-                {/* Clear filter button */}
-                {hasActiveFilter && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={() => setActiveFilter(null)}
-                    className="
-                      inline-flex items-center gap-1.5
-                      px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-sm font-soft font-medium
-                      text-[var(--text-muted)] hover:text-[var(--primary)]
-                      bg-[var(--bg)] border border-[var(--border)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
-                      cursor-pointer transition-all touch-manipulation
-                    "
-                    aria-label="Clear filter"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    Clear
-                  </motion.button>
-                )}
-              </div>
+        {/* Search/filter results count */}
+        {hasActiveQuery && !isLoading && (
+          <p className="mt-3 px-1 font-soft text-sm text-[var(--text-muted)]" aria-live="polite">
+            {isTransitioning ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                Looking...
+              </span>
+            ) : (
+              <>
+                Found <span className="font-bold text-[var(--primary)]">{displayedEvents.length}</span> entr{displayedEvents.length !== 1 ? 'ies' : 'y'}
+              </>
+            )}
+          </p>
+        )}
+      </motion.section>
 
-              {/* Search/filter results count */}
-              {(isSearching || hasActiveFilter) && !isLoading && (
-                <p className="mt-2.5 px-1 font-soft text-sm text-[var(--text-muted)]" aria-live="polite">
-                  {isTransitioning ? (
-                    <span className="inline-flex items-center gap-1.5">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
-                      Loading...
-                    </span>
-                  ) : (
-                    <>
-                      Found <span className="font-bold text-[var(--primary)]">{displayedEvents.length}</span> event{displayedEvents.length !== 1 ? 's' : ''}
-                    </>
-                  )}
-                </p>
-              )}
-            </div>
-          </motion.section>
+      {/* Quiet status row: live indicator + reconnect / mark-as-read */}
+      <div className="flex items-center justify-between gap-3 mb-6 px-1 min-h-6">
+        <LiveStatus status={status} />
+        <div className="flex items-center gap-4">
+          {(status === 'disconnected' || status === 'error') && (
+            <button
+              onClick={reconnect}
+              className="inline-flex items-center gap-1.5 text-xs font-soft font-medium text-[var(--primary)] hover:underline cursor-pointer touch-manipulation"
+            >
+              <Wifi className="w-3.5 h-3.5" aria-hidden="true" />
+              reconnect
+            </button>
+          )}
+          {!hasActiveQuery && unseenCount > 0 && (
+            <button
+              onClick={markAllAsSeen}
+              className="text-xs font-soft font-medium text-[var(--text-muted)] hover:text-[var(--primary)] cursor-pointer touch-manipulation"
+            >
+              mark all read
+            </button>
+          )}
+        </div>
+      </div>
 
-          {/* Controls bar - mobile-optimized layout */}
+      {/* Timeline */}
+      <AnimatePresence mode="wait">
+        {isLoading && apiEvents.length === 0 ? (
+          <motion.div key="loading" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <LoadingState message="Gathering the chronicles, kupo..." imageSrc={flyingMoogles} />
+          </motion.div>
+        ) : isError ? (
+          <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <ErrorState message="The chronicle tome got lost, kupo..." onRetry={() => refetch()} />
+          </motion.div>
+        ) : totalCount === 0 ? (
+          <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            {hasActiveQuery ? (
+              <EmptyState
+                title="Nothing here"
+                message={isSearching ? 'Kupo? Nothing matches that search...' : 'No entries of that kind yet, kupo...'}
+                imageSrc={moogleMail}
+                onClear={handleClearAll}
+                clearLabel={isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
+              />
+            ) : (
+              <EmptyState
+                title="No entries yet"
+                message="The chronicle awaits its first entry, kupo~"
+                imageSrc={moogleMail}
+              />
+            )}
+          </motion.div>
+        ) : (
           <motion.div
-            className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            key={`content-${activeFilter ?? 'all'}-${deferredSearchQuery.trim()}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`space-y-6 sm:space-y-8 transition-opacity duration-200 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}
+            role="feed"
+            aria-label="Chronicle timeline"
           >
-            {/* Top row on mobile: connection status + reconnect */}
-            <div className="flex items-center justify-between sm:justify-start gap-3">
-              <ConnectionIndicator status={status} />
-              
-              {/* Reconnect button (only if disconnected/error) */}
-              {(status === 'disconnected' || status === 'error') && (
-                <motion.button
-                  onClick={reconnect}
-                  className="flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-semibold bg-[var(--primary)] text-white active:bg-[var(--primary)]/80 sm:hover:bg-[var(--primary)]/90 transition-all cursor-pointer touch-manipulation"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Wifi className="w-4 h-4" />
-                  Reconnect
-                </motion.button>
-              )}
-            </div>
+            {dayGroups.map((group) => (
+              <section
+                key={group.key}
+                className="surface p-4 sm:p-6"
+                aria-label={`Entries from ${group.label}`}
+              >
+                {/* Day header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)] whitespace-nowrap">
+                    {group.label}
+                  </h2>
+                  <span className="divider flex-1" aria-hidden="true" />
+                  <Tag>{group.items.length}</Tag>
+                </div>
 
-            {/* Bottom row on mobile: live events controls (hidden when searching/filtering) */}
-            {!isSearching && !hasActiveFilter && (realtimeEvents.length > 0 || unseenCount > 0) && (
-              <div className="flex items-center gap-2 sm:gap-3">
-                {/* Toggle realtime events visibility */}
-                {realtimeEvents.length > 0 && (
-                  <button
-                    onClick={() => setShowRealtimeEvents(!showRealtimeEvents)}
-                    className={`
-                      flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-medium
-                      transition-all cursor-pointer touch-manipulation active:scale-[0.98]
-                      ${showRealtimeEvents 
-                        ? 'bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20' 
-                        : 'bg-[var(--card)] text-[var(--text-muted)] border border-[var(--border)]'
-                      }
-                    `}
-                  >
-                    <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                    {unseenCount > 0 ? `${unseenCount} new` : `${realtimeEvents.length} live`}
-                    <ChevronDown className={`w-4 h-4 sm:w-3.5 sm:h-3.5 transition-transform ${showRealtimeEvents ? 'rotate-180' : ''}`} />
-                  </button>
-                )}
+                {/* Entries on a connecting thread */}
+                <ol>
+                  {group.items.map((item, i) => (
+                    <JournalEntry
+                      key={`${item.isRealtime ? 'rt' : 'h'}-${getEventKey(item.event, i)}`}
+                      item={item}
+                      isLast={i === group.items.length - 1}
+                    />
+                  ))}
+                </ol>
+              </section>
+            ))}
 
-                {/* Mark as read button - only show when there are unseen events */}
-                {unseenCount > 0 && (
-                  <button
-                    onClick={markAllAsSeen}
-                    className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] sm:hover:text-[var(--primary)] bg-[var(--card)] border border-[var(--border)] sm:hover:border-[var(--primary)]/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
+            {/* Infinity scroll sentinel + loading indicator */}
+            {hasNextPage && (
+              <div
+                ref={sentinelRef}
+                className="flex items-center justify-center py-8"
+                aria-hidden={!isFetchingNextPage}
+              >
+                {isFetchingNextPage ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2.5 text-[var(--text-muted)]"
+                    role="status"
                   >
-                    Mark as read
-                  </button>
+                    <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" aria-hidden="true" />
+                    <span className="font-soft text-sm font-medium">Turning the page...</span>
+                  </motion.div>
+                ) : (
+                  <span className="text-xs text-[var(--text-muted)]/50">&#8203;</span>
                 )}
               </div>
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Events timeline */}
-          <AnimatePresence mode="wait">
-            {isLoading && apiEvents.length === 0 ? (
-              <motion.div key="loading" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <LoadingState message="Gathering the chronicles, kupo..." imageSrc={flyingMoogles} />
-              </motion.div>
-            ) : isError ? (
-              <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <ErrorState message="The chronicle tome got lost, kupo..." onRetry={() => refetch()} />
-              </motion.div>
-            ) : totalCount === 0 ? (
-              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                {(isSearching || hasActiveFilter) ? (
-                  <EmptyState
-                    title="No events found"
-                    message={isSearching ? 'Kupo? Nothing matches that search...' : 'No events of that type yet, kupo...'}
-                    imageSrc={moogleMail}
-                    onClear={handleClearAll}
-                    clearLabel={isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
-                  />
-                ) : (
-                  <EmptyState
-                    title="No events yet"
-                    message="The chronicle awaits its first entry, kupo~"
-                    imageSrc={moogleMail}
-                  />
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                key={`content-${activeFilter ?? 'all'}-${deferredSearchQuery.trim()}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className={`space-y-4 transition-opacity duration-200 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}
-                role="feed"
-                aria-label="Chronicle events timeline"
-              >
-                {/* Realtime events section (hidden when searching) */}
-                <AnimatePresence mode="wait">
-                {showRealtimeEvents && visibleRealtimeEvents.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-4"
-                    aria-live="polite"
-                    aria-label={`${unseenCount} new live updates`}
-                  >
-                    <div className="flex items-center gap-3 px-2">
-                      <motion.div
-                        className="w-2 h-2 rounded-full bg-[var(--primary)]"
-                        animate={{ scale: [1, 1.5, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        aria-hidden="true"
-                      />
-                      <span className="text-sm font-soft font-semibold text-[var(--primary)]">
-                        Live Updates
-                      </span>
-                      <div className="flex-1 border-t border-dashed border-[var(--primary)]/30" aria-hidden="true" />
-                    </div>
-                    
-                    {visibleRealtimeEvents.map((event, index) => (
-                      <TimelineEventCard
-                        key={`rt-${getEventKey(event, index)}`}
-                        event={event}
-                        isRealtime={index < unseenCount}
-                      />
-                    ))}
-
-                    <div className="flex items-center gap-3 px-2 pt-2">
-                      <div className="flex-1 border-t border-dashed border-[var(--border)]" />
-                      <span className="text-xs font-soft text-[var(--text-muted)]">
-                        Earlier events
-                      </span>
-                      <div className="flex-1 border-t border-dashed border-[var(--border)]" />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Historical events */}
-              {displayedEvents.map((event, index) => (
-                <TimelineEventCard 
-                  key={`hist-${getEventKey(event, index)}`} 
-                  event={event} 
-                />
-              ))}
-
-              {/* Infinity scroll sentinel + loading indicator */}
-              {hasNextPage && (
-                <div
-                  ref={sentinelRef}
-                  className="flex items-center justify-center py-8"
-                  aria-hidden={!isFetchingNextPage}
-                >
-                  {isFetchingNextPage ? (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center gap-2.5 text-[var(--text-muted)]"
-                      role="status"
-                    >
-                      <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" aria-hidden="true" />
-                      <span className="font-soft text-sm font-medium">Loading more events...</span>
-                    </motion.div>
-                  ) : (
-                    <span className="text-xs text-[var(--text-muted)]/50">&#8203;</span>
-                  )}
-                </div>
-              )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
-            <PageFooter message="Every moment tells a story, kupo!" closing="~ to be continued ~" />
-          )}
+      {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
+        <PageFooter message="Every moment tells a story, kupo!" closing="~ to be continued ~" />
+      )}
     </PageLayout>
   );
 }

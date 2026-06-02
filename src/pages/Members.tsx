@@ -225,8 +225,9 @@ export function Members() {
   return (
     <PageLayout moogles={{ primary: wizardMoogle, secondary: musicMoogle }}>
       <PageHeader
+        opener="~ the whole moogle pile ~"
         title="Our Family"
-        subtitle="The wonderful members who make our FC special"
+        subtitle="everyone who calls Kupo Life home"
       >
         {/* Member count */}
         <div className="inline-flex items-center gap-1.5 mb-3 text-[var(--text-muted)]">
@@ -247,7 +248,7 @@ export function Members() {
         transition={{ duration: 0.3, delay: 0.1 }}
       >
         {/* Main search bar - always visible */}
-        <div className="bg-[var(--card)]/80 border border-[var(--border)] rounded-lg shadow-lg shadow-[var(--primary)]/5 overflow-hidden">
+        <div className="surface overflow-hidden">
           
           {/* Search input row */}
           <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
