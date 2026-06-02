@@ -264,7 +264,7 @@ export function PendingSubmissions() {
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex items-start gap-2.5 sm:gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--primary)]/15 to-[var(--secondary)]/15 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
             <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]" aria-hidden="true" />
           </div>
           <div>

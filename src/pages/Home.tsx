@@ -260,7 +260,7 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           aria-hidden="true"
         >
-          <div className="w-full h-full rounded-full bg-gradient-radial from-orange-400/25 to-transparent blur-2xl" />
+          <div className="w-full h-full rounded-full bg-radial from-orange-400/25 to-transparent blur-2xl" />
         </motion.div>
       </>
     );
@@ -296,7 +296,7 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           aria-hidden="true"
         >
-          <div className="w-full h-full rounded-full bg-gradient-radial from-amber-300/25 to-transparent blur-2xl" />
+          <div className="w-full h-full rounded-full bg-radial from-amber-300/25 to-transparent blur-2xl" />
         </motion.div>
       </>
     );
@@ -1153,7 +1153,7 @@ export function Home() {
   );
 
   return (
-    <div className="h-full w-full flex flex-col relative bg-[var(--background)] selection:bg-[var(--primary)] selection:text-white overflow-hidden">
+    <div className="h-full w-full flex flex-col relative bg-[var(--bg)] selection:bg-[var(--primary)] selection:text-white overflow-hidden">
       
       {/* ── Background Atmospherics ── */}
       <div
@@ -1256,7 +1256,7 @@ export function Home() {
                 <Button
                   size="lg"
                   onClick={login}
-                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden w-full sm:w-auto focus-visible:ring-offset-[var(--background)]"
+                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden w-full sm:w-auto focus-visible:ring-offset-[var(--bg)]"
                 >
                   {/* Subtle shine effect */}
                   <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-150%] skew-x-[-45deg] group-hover:animate-shine pointer-events-none" aria-hidden="true" />
@@ -1303,7 +1303,7 @@ export function Home() {
           >
             <div
               className="
-                relative bg-[var(--card)]/95 backdrop-blur-md
+                relative bg-[var(--card)]/95
                 px-5 sm:px-7 py-3 sm:py-4
                 rounded-[2rem] rounded-br-md
                 shadow-xl border-2 border-[var(--border)]/60

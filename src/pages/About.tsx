@@ -260,7 +260,7 @@ const FeaturedLeaderCard = memo(function FeaturedLeaderCard({ member, isCurrentU
                   absolute bottom-2 right-2 sm:hidden
                   flex items-center justify-center
                   w-7 h-7 rounded-full
-                  bg-black/40 backdrop-blur-sm
+                  bg-black/40
                 "
                 aria-hidden="true"
               >
@@ -451,7 +451,7 @@ const OfficerCard = memo(function OfficerCard({ member, index = 0, isCurrentUser
                   absolute bottom-1.5 right-1.5 sm:hidden
                   flex items-center justify-center
                   w-6 h-6 rounded-full
-                  bg-black/40 backdrop-blur-sm
+                  bg-black/40
                 "
                 aria-hidden="true"
               >

@@ -414,9 +414,9 @@ export function PaginatedMemberGrid({
                 aria-label="Go to next page"
                 className="
                   flex-1 flex items-center justify-center gap-2 py-4 rounded-lg
-                  bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]
+                  bg-[var(--primary)]
                   text-white font-soft font-semibold text-base
-                  shadow-lg shadow-[var(--primary)]/25
+                  shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
                   active:scale-[0.97] active:shadow-sm
                   disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
                   focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
@@ -542,7 +542,7 @@ export function PaginatedMemberGrid({
                           disabled:cursor-wait
                           focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none focus-visible:ring-offset-2
                           ${currentPage === page
-                            ? 'bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white shadow-lg shadow-[var(--primary)]/30'
+                            ? 'bg-[var(--primary)] text-white shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]'
                             : 'bg-[var(--card)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]'
                           }
                         `}

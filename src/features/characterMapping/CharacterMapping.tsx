@@ -125,9 +125,9 @@ export function CharacterMapping() {
       <ContentCard className="h-full flex flex-col group-hover:border-[var(--primary)]/25 transition-colors">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-400/15 to-cyan-400/15 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
               <Link2
-                className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]"
                 aria-hidden="true"
               />
             </div>
@@ -206,7 +206,7 @@ export function CharacterMapping() {
           <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/[0.04] via-transparent to-[var(--secondary)]/[0.03] pointer-events-none" />
 
           {/* Header */}
-          <div className="relative z-10 flex-shrink-0 border-b border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-lg">
+          <div className="relative z-10 flex-shrink-0 border-b border-[var(--border)]/50 bg-[var(--bg)]/80">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <button
@@ -222,9 +222,9 @@ export function CharacterMapping() {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400/15 to-cyan-400/15 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
                     <Link2
-                      className="w-4 h-4 text-blue-500"
+                      className="w-4 h-4 text-[var(--primary)]"
                       aria-hidden="true"
                     />
                   </div>
@@ -374,7 +374,7 @@ export function CharacterMapping() {
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-lg"
+                className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/50 bg-[var(--bg)]/80"
               >
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-2">
@@ -418,14 +418,12 @@ export function CharacterMapping() {
                         className="
                           w-full flex items-center justify-center gap-2
                           px-4 py-3.5 sm:py-3 rounded-xl
-                          bg-gradient-to-r from-blue-500 to-cyan-500
-                          active:from-blue-600 active:to-cyan-600
-                          sm:hover:from-blue-600 sm:hover:to-cyan-600
+                          bg-[var(--primary)] sm:hover:brightness-95 active:brightness-90
                           text-white font-soft font-semibold text-sm
                           transition-all cursor-pointer touch-manipulation
                           disabled:opacity-50 disabled:cursor-not-allowed
-                          focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none
-                          shadow-lg shadow-blue-500/25
+                          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+                          shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
                         "
                       >
                         {isMapping ? (

@@ -57,8 +57,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className="absolute inset-0 bg-gradient-radial from-[var(--primary)]/20 to-transparent blur-2xl scale-[1.5]" />
-                <motion.img 
+                <motion.img
                   src={wizardMoogle} 
                   alt="A moogle wizard guarding the page" 
                   className="relative w-32 md:w-40 mx-auto drop-shadow-lg"
@@ -81,8 +80,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.2, type: "spring" }}
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/25">
-                  <Shield className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-[var(--primary)]" />
                 </div>
               </motion.div>
 

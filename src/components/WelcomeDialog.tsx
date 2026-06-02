@@ -118,7 +118,7 @@ export function WelcomeDialog() {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -138,7 +138,8 @@ export function WelcomeDialog() {
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
-            {/* Decorative header border */}\n            <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--primary)]/20 pointer-events-none" />
+            {/* Decorative header border */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--primary)]/20 pointer-events-none" />
 
             {/* Floating sparkles decoration - hidden on very small screens */}
             <div className="absolute top-3 sm:top-4 left-4 sm:left-6 opacity-60 hidden xs:block">
