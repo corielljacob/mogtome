@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, X } from 'lucide-react';
 import { MembershipCard } from '../components/MembershipCard';
@@ -18,21 +18,22 @@ const MOCK_USER = {
 // ANIMATION COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Decorative sparkle field — generated once at module load (purely cosmetic, so
+// per-mount randomness isn't needed and Math.random stays out of render).
+const DEBUG_SPARKLES = Array.from({ length: 24 }, (_, i) => ({
+  id: i,
+  x: 10 + Math.random() * 80,
+  y: 20 + Math.random() * 60,
+  delay: Math.random() * 0.8,
+  duration: 1.5 + Math.random() * 1,
+  size: 3 + Math.random() * 5,
+  rise: -20 - Math.random() * 30, // upward drift for the float animation
+  color: i % 3 === 0 ? 'var(--primary)' : i % 3 === 1 ? 'var(--secondary)' : 'var(--accent)',
+}));
+
 // Elegant floating sparkles
 const Sparkles = memo(function Sparkles() {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 24 }, (_, i) => ({
-        id: i,
-        x: 10 + Math.random() * 80,
-        y: 20 + Math.random() * 60,
-        delay: Math.random() * 0.8,
-        duration: 1.5 + Math.random() * 1,
-        size: 3 + Math.random() * 5,
-        color: i % 3 === 0 ? 'var(--primary)' : i % 3 === 1 ? 'var(--secondary)' : 'var(--accent)',
-      })),
-    []
-  );
+  const particles = DEBUG_SPARKLES;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -49,10 +50,10 @@ const Sparkles = memo(function Sparkles() {
             boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
           }}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 1, 0],
             scale: [0, 1.2, 1, 0],
-            y: [0, -20 - Math.random() * 30],
+            y: [0, p.rise],
           }}
           transition={{ 
             duration: p.duration, 

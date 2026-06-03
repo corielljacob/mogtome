@@ -7,12 +7,6 @@
 /* Custom breakpoint for extra-small screens (pagination mobile indicator) */
 @custom-variant xs (@media (min-width: 480px));
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * COZY • CUTE • COMFORTING — design tokens
- * Rounder than Tailwind's defaults so every `rounded-*` reads soft and pillowy,
- * one consistent radius scale across cards, inputs, nav and badges.
- * Full house style: docs/DESIGN.md
- * ───────────────────────────────────────────────────────────────────────────── */
 @theme {
   --radius-sm: 0.375rem;  /* 6px  — hairline chips */
   --radius-md: 0.625rem;  /* 10px — tags, inline controls */

@@ -10,9 +10,8 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "baseUrl": ".",
     "paths": {
-      "lucide-react": ["src/icons/cozyIcons.tsx"]
+      "lucide-react": ["./src/icons/cozyIcons.tsx"]
     },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

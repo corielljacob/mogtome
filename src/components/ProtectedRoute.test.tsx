@@ -92,7 +92,7 @@ describe('ProtectedRoute', () => {
     );
     
     await waitFor(() => {
-      expect(screen.getByText(/reserved for Kupo Life! FC members/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kupo Life! FC members/i)).toBeInTheDocument();
     });
   });
 

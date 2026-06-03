@@ -12,7 +12,9 @@ describe('Button', () => {
   it('applies primary variant by default', () => {
     render(<Button>Primary Button</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-[var(--primary)]');
+    // Primary uses the candy "gel" treatment, tinted via the --gel-color custom prop.
+    expect(button).toHaveClass('gel');
+    expect(button.style.getPropertyValue('--gel-color')).toBe('var(--primary)');
   });
 
   it('applies secondary variant when specified', () => {

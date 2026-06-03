@@ -1,3 +1,8 @@
+/* eslint-disable no-misleading-character-class --
+ * The regexes below are an intentional, curated blocklist for stripping emoji
+ * and decorative symbols out of FFXIV + Discord display names. The multi-codepoint
+ * sequences (ZWJ, variation selectors, surrogate pairs) are deliberate, and the
+ * normalization behaviour is locked down by the matching unit tests. */
 import type { UnmappedCharacter, UnmappedDiscordUser } from '../api/characterMapping';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

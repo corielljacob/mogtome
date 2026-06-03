@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, AlertTriangle } from 'lucide-react';
@@ -19,12 +19,12 @@ export function MissingUserDataDialog() {
     }
   }, [searchParams]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
     // Remove the query param from URL
     searchParams.delete('missingUserData');
     setSearchParams(searchParams, { replace: true });
-  };
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (isOpen) {

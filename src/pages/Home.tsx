@@ -463,6 +463,15 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
  * PERFORMANCE: On mobile, shows only static fog + 1 ghost (instead of ~12 animated elements)
  */
 function HalloweenOverlay() {
+  // Ghost silhouettes that drift slowly across the screen
+  const ghosts = useMemo(() => [
+    { left: '5%', delay: 0, duration: 22, yStart: '60%', yEnd: '20%', drift: 80, size: 32, opacity: 0.08 },
+    { left: '70%', delay: 6, duration: 26, yStart: '75%', yEnd: '15%', drift: -60, size: 28, opacity: 0.06 },
+    { left: '35%', delay: 12, duration: 20, yStart: '80%', yEnd: '25%', drift: 50, size: 24, opacity: 0.07 },
+    { left: '85%', delay: 3, duration: 24, yStart: '55%', yEnd: '10%', drift: -70, size: 30, opacity: 0.05 },
+    { left: '20%', delay: 9, duration: 28, yStart: '70%', yEnd: '5%', drift: 40, size: 26, opacity: 0.06 },
+  ], []);
+
   // PERFORMANCE: Minimal version for mobile
   if (IS_MOBILE_DEVICE) {
     return (
@@ -491,14 +500,6 @@ function HalloweenOverlay() {
       </div>
     );
   }
-  // Ghost silhouettes that drift slowly across the screen
-  const ghosts = useMemo(() => [
-    { left: '5%', delay: 0, duration: 22, yStart: '60%', yEnd: '20%', drift: 80, size: 32, opacity: 0.08 },
-    { left: '70%', delay: 6, duration: 26, yStart: '75%', yEnd: '15%', drift: -60, size: 28, opacity: 0.06 },
-    { left: '35%', delay: 12, duration: 20, yStart: '80%', yEnd: '25%', drift: 50, size: 24, opacity: 0.07 },
-    { left: '85%', delay: 3, duration: 24, yStart: '55%', yEnd: '10%', drift: -70, size: 30, opacity: 0.05 },
-    { left: '20%', delay: 9, duration: 28, yStart: '70%', yEnd: '5%', drift: 40, size: 26, opacity: 0.06 },
-  ], []);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -609,43 +610,6 @@ function HalloweenOverlay() {
  * PERFORMANCE: On mobile, shows 6 CSS snowflakes + static glow (instead of 60+ animated elements)
  */
 function StarlightOverlay() {
-  // PERFORMANCE: Minimal version for mobile — CSS-only, no Framer Motion
-  if (IS_MOBILE_DEVICE) {
-    return (
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {/* 6 simple CSS snowflakes instead of 35 Framer Motion snowflakes */}
-        {[12, 28, 45, 62, 78, 90].map((left, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white/60 animate-float-moogle-subtle"
-            style={{
-              left: `${left}%`,
-              top: `${5 + i * 12}%`,
-              width: 4 + (i % 3),
-              height: 4 + (i % 3),
-              animationDuration: `${4 + i}s`,
-              animationDelay: `${i * 0.5}s`,
-              opacity: 0.2,
-            }}
-          />
-        ))}
-        {/* Static warm glow from below */}
-        <div
-          className="absolute bottom-0 inset-x-0 h-[30%] opacity-80"
-          style={{
-            background: 'linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)',
-          }}
-        />
-        {/* Snow accumulation */}
-        <div
-          className="absolute bottom-0 inset-x-0 h-[3%]"
-          style={{
-            background: 'linear-gradient(to top, rgba(255,255,255,0.06), transparent)',
-          }}
-        />
-      </div>
-    );
-  }
   // Generate snowflake particles with deterministic positions
   const snowflakes = useMemo(() => {
     const flakes: Array<{
@@ -688,6 +652,44 @@ function StarlightOverlay() {
     }));
     return { wirePath: garland.wirePath, stringLightBulbs: bulbs };
   }, []);
+
+  // PERFORMANCE: Minimal version for mobile — CSS-only, no Framer Motion
+  if (IS_MOBILE_DEVICE) {
+    return (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {/* 6 simple CSS snowflakes instead of 35 Framer Motion snowflakes */}
+        {[12, 28, 45, 62, 78, 90].map((left, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white/60 animate-float-moogle-subtle"
+            style={{
+              left: `${left}%`,
+              top: `${5 + i * 12}%`,
+              width: 4 + (i % 3),
+              height: 4 + (i % 3),
+              animationDuration: `${4 + i}s`,
+              animationDelay: `${i * 0.5}s`,
+              opacity: 0.2,
+            }}
+          />
+        ))}
+        {/* Static warm glow from below */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-[30%] opacity-80"
+          style={{
+            background: 'linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)',
+          }}
+        />
+        {/* Snow accumulation */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-[3%]"
+          style={{
+            background: 'linear-gradient(to top, rgba(255,255,255,0.06), transparent)',
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -886,8 +888,6 @@ function StarlightOverlay() {
 
 /** Floating icon particles scattered across the viewport for events */
 function EventParticles({ particles }: { particles: EventParticle[] }) {
-  // PERFORMANCE: Skip event particles on mobile — too many animated elements
-  if (IS_MOBILE_DEVICE) return null;
   // Generate stable positions for each particle
   const items = useMemo(() => {
     const result: Array<{
@@ -927,6 +927,9 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
 
     return result;
   }, [particles]);
+
+  // PERFORMANCE: Skip event particles on mobile — too many animated elements
+  if (IS_MOBILE_DEVICE) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">

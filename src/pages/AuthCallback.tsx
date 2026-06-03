@@ -15,37 +15,49 @@ type CallbackStatus = 'processing' | 'success' | 'error';
 // ANIMATION COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Decorative particle fields — generated once at module load. These are purely
+// cosmetic, so they don't need per-mount randomness (and keeping Math.random out
+// of render keeps the components pure).
+const CELEBRATION_PARTICLES = Array.from({ length: 32 }, (_, i) => {
+  const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+  const distance = 80 + Math.random() * 120;
+  const size = 2 + Math.random() * 4;
+  const colors = ['var(--primary)', 'var(--secondary)', 'var(--accent)', 'var(--primary)', 'var(--secondary)'];
+  return {
+    id: i,
+    // Start near center
+    startX: 50 + (Math.random() - 0.5) * 20,
+    startY: 50 + (Math.random() - 0.5) * 20,
+    // Burst outward
+    endX: 50 + Math.cos(angle) * distance,
+    endY: 50 + Math.sin(angle) * distance * 0.6, // Flatten vertically
+    delay: 0.02 * i + Math.random() * 0.15,
+    duration: 0.8 + Math.random() * 0.4,
+    size,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * 360,
+  };
+});
+
+const AMBIENT_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
+  id: i,
+  x: 15 + Math.random() * 70,
+  y: 20 + Math.random() * 60,
+  delay: i * 0.1,
+  size: 4 + Math.random() * 6,
+  duration: 2 + Math.random() * 1.5,
+  rise: -30 - Math.random() * 20, // upward drift distance for the float animation
+  color: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)',
+}));
+
 // Premium sparkle burst that emanates from the card
 const CelebrationSparkles = memo(function CelebrationSparkles({ 
   isActive 
 }: { 
   isActive: boolean 
 }) {
-  // Create particles that burst outward from center
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 32 }, (_, i) => {
-        const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-        const distance = 80 + Math.random() * 120;
-        const size = 2 + Math.random() * 4;
-        const colors = ['var(--primary)', 'var(--secondary)', 'var(--accent)', 'var(--primary)', 'var(--secondary)'];
-        return {
-          id: i,
-          // Start near center
-          startX: 50 + (Math.random() - 0.5) * 20,
-          startY: 50 + (Math.random() - 0.5) * 20,
-          // Burst outward
-          endX: 50 + Math.cos(angle) * distance,
-          endY: 50 + Math.sin(angle) * distance * 0.6, // Flatten vertically
-          delay: 0.02 * i + Math.random() * 0.15,
-          duration: 0.8 + Math.random() * 0.4,
-          size,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-        };
-      }),
-    []
-  );
+  // Particles that burst outward from center (generated once at module load)
+  const particles = CELEBRATION_PARTICLES;
 
   if (!isActive) return null;
 
@@ -103,19 +115,7 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
 
 // Ambient floating particles (subtle, always visible during reveal)
 const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean }) {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 12 }, (_, i) => ({
-        id: i,
-        x: 15 + Math.random() * 70,
-        y: 20 + Math.random() * 60,
-        delay: i * 0.1,
-        size: 4 + Math.random() * 6,
-        duration: 2 + Math.random() * 1.5,
-        color: i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)',
-      })),
-    []
-  );
+  const particles = AMBIENT_PARTICLES;
 
   if (!isActive) return null;
 
@@ -134,10 +134,10 @@ const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean 
             boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
           }}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 0.6, 0.4, 0],
             scale: [0, 1, 1.2, 0],
-            y: [0, -30 - Math.random() * 20],
+            y: [0, p.rise],
           }}
           transition={{ 
             duration: p.duration, 

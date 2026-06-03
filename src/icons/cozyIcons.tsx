@@ -8,7 +8,7 @@
  */
 
 import { Icon as IconifyIcon } from '@iconify/react';
-import type { ReactElement, SVGAttributes } from 'react';
+import type { ComponentProps, ReactElement, SVGAttributes } from 'react';
 
 /* ── Public types (consumed by the rest of the app) ────────────────────────── */
 
@@ -34,6 +34,11 @@ function adapt(displayName: string, iconName: string): LucideIcon {
     const w = size ?? width;
     const h = size ?? height;
 
+    // `rest` is SVG-typed; Iconify re-types a few shared props (`mode`, `onLoad`,
+    // `rotate`, …) more narrowly, so forward it through the component's own props
+    // type. These are pass-through DOM attributes the wrappers don't otherwise use.
+    const passthrough = rest as Omit<ComponentProps<typeof IconifyIcon>, 'icon'>;
+
     return (
       <IconifyIcon
         icon={iconName}
@@ -43,7 +48,7 @@ function adapt(displayName: string, iconName: string): LucideIcon {
         {...(h != null ? { height: h } : {})}
         aria-hidden={title ? undefined : true}
         {...(title ? { 'aria-label': title } : {})}
-        {...rest}
+        {...passthrough}
       />
     );
   };

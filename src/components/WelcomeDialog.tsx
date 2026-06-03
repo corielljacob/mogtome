@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Sparkles, Heart, PartyPopper, ArrowRight } from 'lucide-react';
 import { Button } from './Button';
@@ -25,10 +25,10 @@ export function WelcomeDialog() {
     }
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     localStorage.setItem(STORAGE_KEY, 'true');
     setIsOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {

@@ -3,7 +3,7 @@ import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
 /**
  * FloatingPom - Moogle pom-pom decoration for the logo.
- * Shared between Sidebar and Navbar.
+ * Shared between ScrapbookNav and Navbar.
  * 
  * PERFORMANCE: Memoized to prevent re-renders.
  */
@@ -29,7 +29,7 @@ export const FloatingPom = memo(function FloatingPom({ isHovered }: { isHovered:
 
 /**
  * LogoIcon - MogTome logo mark with moogle and floating pom.
- * Shared between Sidebar and Navbar.
+ * Shared between ScrapbookNav and Navbar.
  * 
  * PERFORMANCE: Memoized to prevent re-renders.
  */
