@@ -206,7 +206,7 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           <Link
             to="/"
-            className="pointer-events-auto flex items-center gap-2 p-2 rounded-3xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"
+            className="pointer-events-auto flex items-center gap-2 p-2 rounded-2xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"
             aria-label="MogTome - Go to home page"
           >
             <LogoIcon hovered={false} />

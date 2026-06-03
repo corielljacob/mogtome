@@ -367,7 +367,7 @@ export function ScrapbookNav() {
               aria-modal="true"
               aria-label="More navigation"
             >
-              <div className="surface rounded-t-3xl px-4 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+              <div className="surface rounded-t-2xl px-4 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
                 {/* drag handle */}
                 <div
                   className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[color:color-mix(in_srgb,var(--text-subtle)_40%,transparent)]"
