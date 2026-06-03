@@ -3,6 +3,7 @@ export {
   formatRelativeTime,
   formatFullDate,
   formatLastUpdated,
+  formatMemberSince,
 } from "./dateFormatters";
 
 // Motion/Animation performance utilities

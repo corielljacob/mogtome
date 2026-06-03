@@ -3,6 +3,7 @@ import {
   formatRelativeTime,
   formatFullDate,
   formatLastUpdated,
+  formatMemberSince,
 } from "./dateFormatters";
 
 describe("dateFormatters", () => {
@@ -95,6 +96,24 @@ describe("dateFormatters", () => {
     it("handles edge case at exactly 60 seconds", () => {
       const now = new Date("2026-01-15T12:00:00Z").getTime();
       expect(formatLastUpdated(now - 60000)).toBe("1m ago");
+    });
+  });
+
+  describe("formatMemberSince", () => {
+    it("formats a full month/day/year date", () => {
+      const result = formatMemberSince("2026-06-03T12:00:00Z");
+      expect(result).toContain("June");
+      expect(result).toContain("2026");
+    });
+
+    it("accepts a Date object", () => {
+      const result = formatMemberSince(new Date("2025-12-25T12:00:00Z"));
+      expect(result).toContain("December");
+      expect(result).toContain("2025");
+    });
+
+    it("returns empty string for invalid input", () => {
+      expect(formatMemberSince("not-a-date")).toBe("");
     });
   });
 

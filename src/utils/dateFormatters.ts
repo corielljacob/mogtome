@@ -34,6 +34,20 @@ export function formatFullDate(dateString: string): string {
 }
 
 /**
+ * Format a date as a full month/day/year date (e.g., "June 3, 2026").
+ * Returns "" for missing/invalid dates so callers can fall back gracefully.
+ */
+export function formatMemberSince(date: Date | string): string {
+  const d = date instanceof Date ? date : new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+/**
  * Format a timestamp as "last updated" text (e.g., "just now", "2m ago").
  * Uses shorter format for UI indicators.
  */

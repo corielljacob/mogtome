@@ -71,6 +71,9 @@ export { MissingUserDataDialog } from "./MissingUserDataDialog";
 // Biography
 export { PendingSubmissions } from "./PendingSubmissions";
 
+// Profile (the shell; sections are internal to the feature folder)
+export { ProfileView } from "./profile/ProfileView";
+
 // Character Mapping
 export { CharacterMapping } from "../features/characterMapping";
 

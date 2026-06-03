@@ -1,11 +1,15 @@
-import { useRef, useState, useCallback } from "react";
+import type { CSSProperties } from "react";
 import { Star, ExternalLink } from "lucide-react";
 
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
-import { rankThemes, defaultTheme } from "./membershipCardThemes";
+import { getRankColor } from "../constants";
+import { formatMemberSince } from "../utils";
+import { KawaiiStar, KawaiiHeart, KawaiiSparkle } from "./kawaiiMotifs";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MEMBERSHIP CARD — Warm illustrated badge, no 3D effects
+// MEMBERSHIP CARD — a kawaii FC member card: matte candy paper, sticker rank
+// badge, scattered motifs and a peeking moogle. Theme-tinted via color-mix, so
+// it adapts to every palette + dark mode. No gloss, no 3D.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MembershipCardProps {
@@ -13,6 +17,7 @@ export interface MembershipCardProps {
   rank: string;
   avatarUrl: string;
   characterId?: string;
+  /** MogTome first-login date (NOT the FC join date); shown as "MogTome member since …" */
   memberSince?: Date | string;
   compact?: boolean;
 }
@@ -22,108 +27,128 @@ export function MembershipCard({
   rank,
   avatarUrl,
   characterId,
+  memberSince,
   compact = false,
 }: MembershipCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const theme = rankThemes[rank] || defaultTheme;
-  const RankIcon = theme.icon;
+  const rankColor = getRankColor(rank);
+  const RankIcon = rankColor.icon;
   const lodestoneUrl = characterId
     ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
     : null;
+  const since = memberSince ? formatMemberSince(memberSince) : null;
 
-  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
-
-  const sizeClasses = compact
-    ? "max-w-[340px] sm:max-w-[360px]"
-    : "max-w-[360px]";
-  const paddingClass = compact ? "p-4 sm:p-5" : "p-5";
-  const avatarSize = compact ? "w-12 h-12 sm:w-14 sm:h-14" : "w-14 h-14";
-  const nameSize = compact ? "text-sm sm:text-base" : "text-base";
-  const moogleSize = compact ? "w-10 h-10 sm:w-12 sm:h-12" : "w-12 h-12";
+  const sizeClass = compact ? "max-w-[340px] sm:max-w-[360px]" : "max-w-[360px]";
+  const padding = compact ? "p-4 sm:p-[1.15rem]" : "p-5";
+  const avatarSize = compact ? "w-14 h-14 sm:w-16 sm:h-16" : "w-16 h-16";
+  const nameSize = compact ? "text-base" : "text-base sm:text-lg";
+  const moogleSize = compact ? "w-14 sm:w-16" : "w-16";
 
   return (
     <div className={compact ? "" : "py-4"}>
       <div
-        ref={cardRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className={`relative w-full ${sizeClasses} mx-auto aspect-[1.6/1] rounded-2xl overflow-hidden
-          border-2 border-[var(--border)]
-          shadow-[var(--panel-shadow)]
+        className={`group relative w-full ${sizeClass} mx-auto aspect-[1.6/1] overflow-hidden
+          rounded-[1.75rem] border-2
           transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-          hover:-translate-y-1 hover:shadow-[var(--panel-shadow-strong)]`}
-        style={{
-          background: `linear-gradient(135deg, 
-            color-mix(in srgb, var(--primary) 16%, var(--card)) 0%,
-            color-mix(in srgb, var(--secondary) 12%, var(--card)) 55%,
-            color-mix(in srgb, var(--accent) 10%, var(--card)) 100%)`,
-        }}
+          hover:-translate-y-1`}
+        style={
+          {
+            borderColor: "color-mix(in srgb, var(--primary) 22%, var(--card))",
+            background: `linear-gradient(140deg,
+              color-mix(in srgb, var(--primary) 18%, var(--card)) 0%,
+              color-mix(in srgb, var(--secondary) 13%, var(--card)) 52%,
+              color-mix(in srgb, var(--accent) 15%, var(--card)) 100%)`,
+            boxShadow: "var(--panel-shadow)",
+          } as CSSProperties
+        }
       >
-        {/* Subtle dot texture */}
+        {/* Candy polka-dot texture */}
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.5] pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, var(--text-subtle) 1px, transparent 1px)`,
-            backgroundSize: "16px 16px",
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--primary) 22%, transparent) 1.5px, transparent 1.6px)",
+            backgroundSize: "15px 15px",
           }}
+          aria-hidden="true"
         />
 
-        {/* Warm accent border glow */}
+        {/* Rank-tinted glow, warms on hover */}
         <div
-          className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
-          style={{
-            boxShadow: `inset 0 0 30px -10px ${theme.glow}`,
-            opacity: isHovered ? 0.6 : 0.25,
-          }}
+          className="absolute inset-0 rounded-[1.75rem] pointer-events-none opacity-30 group-hover:opacity-60 transition-opacity duration-300"
+          style={{ boxShadow: `inset 0 0 34px -10px ${rankColor.glow}` }}
+          aria-hidden="true"
         />
 
-        {/* Card content */}
-        <div className={`relative h-full ${paddingClass} flex flex-col`}>
-          {/* Top: Branding */}
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-1.5">
-                <div
-                  className={`w-6 h-6 rounded-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}
-                >
-                  <Star className="w-3.5 h-3.5 text-white fill-white/50" />
-                </div>
-                <span className="font-display font-bold text-[var(--text)] text-sm tracking-wide">
-                  MOGTOME
-                </span>
+        {/* Scattered sticker motifs */}
+        <KawaiiStar className="absolute top-9 right-3 w-3.5 h-3.5 text-[var(--accent)] opacity-50 rotate-12" />
+        <KawaiiHeart className="absolute bottom-3 right-4 w-3 h-3 text-[var(--primary)] opacity-40 -rotate-6" />
+
+        {/* Content */}
+        <div className={`relative h-full ${padding} flex flex-col`}>
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <span
+                className="flex items-center justify-center w-7 h-7 rounded-xl shrink-0"
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, var(--primary) 80%, var(--card))",
+                  border:
+                    "2px solid color-mix(in srgb, var(--primary) 90%, #fff)",
+                }}
+                aria-hidden="true"
+              >
+                <Star className="w-3.5 h-3.5 text-white fill-white/70" />
+              </span>
+              <div className="leading-none">
+                <p className="font-display font-bold text-[var(--text)] text-sm tracking-wide">
+                  Kupo Life
+                </p>
+                <p className="font-accent text-[var(--primary)] text-lg leading-tight">
+                  ~ member card ~
+                </p>
               </div>
-              <p className="font-accent text-[var(--primary)] text-lg -mt-0.5 ml-7">
-                Membership
-              </p>
             </div>
 
-            {/* Moogle — gentle float via CSS */}
-            <div className="relative animate-float-gentle">
-              <img
-                src={lilGuyMoogle}
-                alt=""
-                className={`${moogleSize} object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]`}
-              />
-            </div>
+            {/* Peeking moogle */}
+            <img
+              src={lilGuyMoogle}
+              alt=""
+              aria-hidden="true"
+              className={`${moogleSize} object-contain -mt-1 -mr-1 rotate-[6deg] animate-float-gentle drop-shadow-[0_4px_8px_rgba(0,0,0,0.18)] select-none`}
+            />
           </div>
 
           <div className="flex-1" />
 
-          {/* Bottom: Member info */}
+          {/* Member */}
           <div className="flex items-end gap-3">
-            {/* Avatar */}
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
+              {/* Candy ring */}
               <div
-                className={`absolute -inset-0.5 rounded-xl bg-gradient-to-br ${theme.gradient} opacity-60`}
+                className="absolute -inset-1 rounded-2xl"
+                style={{
+                  background: `linear-gradient(135deg, ${rankColor.hex}, color-mix(in srgb, var(--accent) 70%, var(--card)))`,
+                  opacity: 0.7,
+                }}
+                aria-hidden="true"
               />
               <img
                 src={avatarUrl}
                 alt=""
-                className={`relative ${avatarSize} rounded-lg object-cover`}
+                className={`relative ${avatarSize} rounded-2xl object-cover border-2 border-[color:color-mix(in_srgb,var(--card)_85%,#fff)]`}
               />
+              {/* Rank sticker badge */}
+              <span
+                className="absolute -bottom-1.5 -right-1.5 flex items-center justify-center w-6 h-6 rounded-full"
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${rankColor.hex} 26%, var(--card))`,
+                  border: `2px solid color-mix(in srgb, ${rankColor.hex} 42%, var(--card))`,
+                }}
+                aria-hidden="true"
+              >
+                <RankIcon className="w-3 h-3" style={{ color: rankColor.hex }} />
+              </span>
             </div>
 
             {/* Details */}
@@ -133,35 +158,42 @@ export function MembershipCard({
               >
                 {name}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <div
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r ${theme.gradient}`}
+              <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-soft font-semibold"
+                  style={{
+                    color: rankColor.hex,
+                    backgroundColor: `color-mix(in srgb, ${rankColor.hex} 16%, var(--card))`,
+                    border: `1.5px solid color-mix(in srgb, ${rankColor.hex} 32%, var(--card))`,
+                  }}
                 >
-                  <RankIcon className="w-3 h-3 text-white" />
-                  <span className="font-soft font-semibold text-[10px] text-white uppercase tracking-wide">
-                    {rank}
-                  </span>
-                </div>
-                <span className="text-[var(--text-subtle)] text-[10px]">•</span>
-                <span className="font-accent text-[11px] text-[var(--primary)]">
-                  Kupo Life!
+                  <RankIcon className="w-2.5 h-2.5" aria-hidden="true" />
+                  {rank}
                 </span>
+                {lodestoneUrl && (
+                  <a
+                    href={lodestoneUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[10px] text-[var(--text-subtle)] hover:text-[var(--primary)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded"
+                  >
+                    <ExternalLink className="w-2.5 h-2.5" aria-hidden="true" />
+                    Lodestone
+                  </a>
+                )}
               </div>
             </div>
 
-            {/* Lodestone link */}
-            {lodestoneUrl && (
-              <a
-                href={lodestoneUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[10px] text-[var(--text-subtle)] hover:text-[var(--primary)] transition-colors flex-shrink-0 pb-0.5"
-              >
-                <ExternalLink className="w-2.5 h-2.5" />
-                <span>Lodestone</span>
-              </a>
-            )}
+            {/* Sparkle flourish */}
+            <KawaiiSparkle className="w-4 h-4 text-[var(--accent)] opacity-70 shrink-0 mb-1" />
           </div>
+
+          {/* MogTome member-since stamp */}
+          {since && (
+            <p className="mt-3 text-center font-accent text-base text-[var(--text-subtle)] leading-none">
+              MogTome member since {since}
+            </p>
+          )}
         </div>
       </div>
     </div>

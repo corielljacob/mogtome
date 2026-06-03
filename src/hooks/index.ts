@@ -1,4 +1,5 @@
 export { useMembers, useMemberByCharacterId } from "./useMembers";
+export { useProfile, type UseProfileResult } from "./useProfile";
 export { useEventsHub } from "./useEventsHub";
 export { useReducedMotion, getReducedMotionProps } from "./useReducedMotion";
 export {

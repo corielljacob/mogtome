@@ -137,6 +137,44 @@ export interface User {
   discordId: string;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile
+// Normalized profile model + viewer permissions. One shape drives the Profile
+// view whether it's rendering your own profile ("me") or — later — someone
+// else's (by characterId), so the presentation layer never reads auth directly.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Everything the Profile view needs to render an identity, source-agnostic. */
+export interface ProfileData {
+  /** Lodestone character id (absent for accounts not yet mapped to a character) */
+  characterId?: string;
+  name: string;
+  rank: string;
+  avatarUrl: string;
+  biography?: string;
+  /** When this member first signed in to MogTome (own profile only; not the FC join date) */
+  memberSince?: Date;
+  discordId?: string;
+  /** True when this member appears in the staff/leadership list (only staff carry bios today) */
+  isStaff: boolean;
+  /** Pre-built Lodestone URL, centralized here instead of recomputed per component */
+  lodestoneUrl?: string;
+}
+
+/** Who is looking, and what they're allowed to do on this profile. */
+export interface ProfileViewer {
+  /** The viewer is looking at their own profile */
+  isOwnProfile: boolean;
+  isAuthenticated: boolean;
+  /** May edit the biography (own profile, while authenticated) */
+  canEditBio: boolean;
+  /** May set the biography directly without review (permanent knights) */
+  canSetBioDirectly: boolean;
+}
+
+/** Which profile to load: the signed-in user, or a specific character. */
+export type ProfileTarget = "me" | { characterId: string };
+
 // Common paginated response wrapper
 export interface PaginatedResponse<T> {
   items: T[];
