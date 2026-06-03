@@ -1,9 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Stars } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import type { User } from '../contexts/AuthContext';
 
 import wavingMoogle from '../assets/moogles/4478593_moogle-moogle-ff-hd-png-download.webp';
 
@@ -25,12 +24,10 @@ export function Logout() {
   const [farewell] = useState(getRandomFarewell);
   const [phase, setPhase] = useState<'showing' | 'fading'>('showing');
   
-  // Capture user info before logout clears it
-  const userRef = useRef<User | null>(null);
-  if (userRef.current === null && user) {
-    userRef.current = user;
-  }
-  const displayUser = userRef.current;
+  // Capture the user once on mount so the farewell keeps their name after
+  // logout() clears the auth state (logout runs in the effect below, after
+  // this first render where `user` is still populated).
+  const [displayUser] = useState(user);
 
   useEffect(() => {
     // Perform logout

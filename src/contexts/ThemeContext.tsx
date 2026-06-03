@@ -153,9 +153,9 @@ function getSystemPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
-function resolveIsDarkMode(mode: ColorMode): boolean {
+function resolveIsDarkMode(mode: ColorMode, systemPrefersDark: boolean): boolean {
   if (mode === 'system') {
-    return getSystemPrefersDark();
+    return systemPrefersDark;
   }
   return mode === 'dark';
 }
@@ -187,7 +187,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return defaultSettings;
   });
 
-  const [isDarkMode, setIsDarkMode] = useState(() => resolveIsDarkMode(settings.colorMode));
+  // Only the OS colour-scheme preference is reactive state; isDarkMode is derived
+  // from it plus the chosen colorMode (no syncing effect needed).
+  const [systemPrefersDark, setSystemPrefersDark] = useState(getSystemPrefersDark);
+  const isDarkMode = resolveIsDarkMode(settings.colorMode, systemPrefersDark);
 
   // ── Dev-only Event Override ────────────────────────────────────────────────
   const [eventOverride, setEventOverrideState] = useState<EventOverride>(() => {
@@ -250,13 +253,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Apply theme classes to document
   useEffect(() => {
     const root = document.documentElement;
-    
-    // Resolve dark mode
-    const dark = resolveIsDarkMode(settings.colorMode);
-    setIsDarkMode(dark);
-    
-    // Apply dark class
-    root.classList.toggle('dark', dark);
+
+    // Apply dark class (isDarkMode is derived above)
+    root.classList.toggle('dark', isDarkMode);
     
     // Remove all theme classes, then add selected
     THEME_DEFINITIONS.forEach(t => {
@@ -275,7 +274,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Update background color for flash prevention
     // Small delay to let CSS variables update first
     requestAnimationFrame(() => {
-      const bgColor = getComputedStyle(root).getPropertyValue('--bg').trim() || (dark ? '#1A1722' : '#FFF9F5');
+      const bgColor = getComputedStyle(root).getPropertyValue('--bg').trim() || (isDarkMode ? '#1A1722' : '#FFF9F5');
       root.style.backgroundColor = bgColor;
     });
     
@@ -287,22 +286,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {
       // Storage might be full or disabled
     }
-  }, [settings, activeEvent]);
+  }, [settings, activeEvent, isDarkMode]);
 
-  // Listen for system theme changes when in system mode
+  // Track the OS colour-scheme preference. isDarkMode derives from it (in 'system'
+  // mode), and the effect above re-applies the `dark` class when it changes.
   useEffect(() => {
-    if (settings.colorMode !== 'system') return;
-    
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = () => {
-      const dark = mediaQuery.matches;
-      setIsDarkMode(dark);
-      document.documentElement.classList.toggle('dark', dark);
-    };
-    
+    const handler = () => setSystemPrefersDark(mediaQuery.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
-  }, [settings.colorMode]);
+  }, []);
 
   const setColorTheme = useCallback((theme: ColorTheme) => {
     setSettings(prev => ({ ...prev, colorTheme: theme }));

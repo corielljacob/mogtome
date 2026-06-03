@@ -523,23 +523,14 @@ export function Profile() {
   const existingBiography = currentUserStaff?.biography || '';
   const characterId = currentUserStaff?.characterId;
 
-  // Memoize callback for edit button - resets preview when cancelling
+  // Seed (or reset) the editor from the saved biography each time it's toggled:
+  // opening starts from the saved bio, cancelling discards in-progress edits.
+  // The displayed bio falls back to `existingBiography` when the preview is empty,
+  // so no syncing effect is needed while the bio loads.
   const handleEditClick = useCallback(() => {
-    setIsEditingBio(prev => {
-      if (prev) {
-        // Closing editor (cancel) - reset preview to existing biography
-        setPreviewBiography(existingBiography);
-      }
-      return !prev;
-    });
+    setPreviewBiography(existingBiography);
+    setIsEditingBio(prev => !prev);
   }, [existingBiography]);
-
-  // Update preview biography when existing bio loads
-  useEffect(() => {
-    if (existingBiography && !previewBiography) {
-      setPreviewBiography(existingBiography);
-    }
-  }, [existingBiography, previewBiography]);
 
   // Show login prompt if not authenticated
   if (!isLoading && !isAuthenticated) {

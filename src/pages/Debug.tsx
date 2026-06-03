@@ -101,21 +101,20 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
   const [phase, setPhase] = useState(0); // 0: initial, 1: card visible, 2: shine, 3: sparkles, 4: complete
   const [runCount, setRunCount] = useState(0);
 
-  // Orchestrated timeline
+  // Orchestrated timeline (phase is reset to 0 by the replay handler / initial state)
   useEffect(() => {
-    setPhase(0);
-    
     const timers = [
       setTimeout(() => setPhase(1), 300),   // Card starts appearing
       setTimeout(() => setPhase(2), 900),   // Shine sweeps
       setTimeout(() => setPhase(3), 1400),  // Sparkles appear
       setTimeout(() => setPhase(4), 2000),  // Button appears
     ];
-    
+
     return () => timers.forEach(clearTimeout);
   }, [runCount]);
 
   const replay = useCallback(() => {
+    setPhase(0);            // restart the timeline from the beginning
     setRunCount(c => c + 1);
   }, []);
 

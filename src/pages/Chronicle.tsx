@@ -288,8 +288,12 @@ export function Chronicle() {
     return apiEvents.filter((e) => !rtSignatures.has(getEventSignature(e)));
   }, [apiEvents, hasActiveQuery, realtimeEvents]);
 
-  // Realtime events are only shown on the default (unfiltered) view.
-  const visibleRealtimeEvents = hasActiveQuery ? [] : realtimeEvents;
+  // Realtime events are only shown on the default (unfiltered) view. Memoized so
+  // the reference stays stable for the dayGroups dependency list below.
+  const visibleRealtimeEvents = useMemo(
+    () => (hasActiveQuery ? [] : realtimeEvents),
+    [hasActiveQuery, realtimeEvents]
+  );
   const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
 
   // Merge realtime (newest) + historical into one ordered list, then bucket

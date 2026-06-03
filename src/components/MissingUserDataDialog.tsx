@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, AlertTriangle } from 'lucide-react';
@@ -8,20 +8,15 @@ import deadMoogle from '../assets/moogles/dead moogle.webp';
 
 export function MissingUserDataDialog() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
+  // Derive open state directly from the URL — the dialog shows whenever the
+  // `missingUserData` flag is present, so there's no state to sync.
+  const isOpen = searchParams.get('missingUserData') === 'true';
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    // Check if missingUserData param is in URL
-    if (searchParams.get('missingUserData') === 'true') {
-      setIsOpen(true);
-    }
-  }, [searchParams]);
-
   const handleClose = useCallback(() => {
-    setIsOpen(false);
-    // Remove the query param from URL
+    // Drop the query param; isOpen re-derives to false and AnimatePresence
+    // plays the exit animation.
     searchParams.delete('missingUserData');
     setSearchParams(searchParams, { replace: true });
   }, [searchParams, setSearchParams]);

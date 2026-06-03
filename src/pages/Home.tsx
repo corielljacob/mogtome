@@ -603,6 +603,9 @@ function HalloweenOverlay() {
   );
 }
 
+// Christmas string lights — colored bulbs draped in clean U-swoops across the top
+const STRING_LIGHT_COLORS = ['#EF4444', '#22C55E', '#FBBF24', '#3B82F6', '#EF4444', '#22C55E', '#FBBF24', '#3B82F6'];
+
 /**
  * Starlight Celebration — Gentle snowfall, twinkling christmas lights,
  * warm golden fireplace glow, and festive sparkles.
@@ -636,9 +639,6 @@ function StarlightOverlay() {
     }
     return flakes;
   }, []);
-
-  // Christmas string lights — colored bulbs draped in clean U-swoops across the top
-  const STRING_LIGHT_COLORS = ['#EF4444', '#22C55E', '#FBBF24', '#3B82F6', '#EF4444', '#22C55E', '#FBBF24', '#3B82F6'];
 
   const { wirePath, stringLightBulbs } = useMemo(() => {
     // 8 gentle swoops across the top; bulbs ride along the draped wire
