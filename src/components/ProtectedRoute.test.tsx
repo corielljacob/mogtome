@@ -101,21 +101,6 @@ describe("ProtectedRoute", () => {
     });
   });
 
-  it("shows feature hints when not authenticated", async () => {
-    render(
-      <AuthProvider>
-        <ProtectedRoute>
-          <div>Protected Content</div>
-        </ProtectedRoute>
-      </AuthProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Live Chronicle")).toBeInTheDocument();
-      expect(screen.getByText("Member Features")).toBeInTheDocument();
-    });
-  });
-
   it("shows moogle wizard image", async () => {
     render(
       <AuthProvider>

@@ -1244,7 +1244,11 @@
   position: relative;
   isolation: isolate;
   border-radius: var(--radius-2xl);
-  background: var(--card);
+  background-color: var(--card);
+  /* Faint paper grain so cards aren't perfectly flat — soft-light blended with
+     the card colour, so it adapts to light/dark cards. Reset in high-contrast. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23cg)' opacity='0.6'/%3E%3C/svg%3E");
+  background-blend-mode: soft-light;
   border: 2px solid color-mix(in srgb, var(--primary) 16%, var(--card));
   box-shadow:
     0 2px 0 0 color-mix(in srgb, var(--primary) 10%, transparent),

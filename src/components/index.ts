@@ -66,7 +66,6 @@ export {
 } from "./PageShell";
 
 // Dialogs
-export { WelcomeDialog } from "./WelcomeDialog";
 export { MissingUserDataDialog } from "./MissingUserDataDialog";
 
 // Biography

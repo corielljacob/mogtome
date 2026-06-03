@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
-import { LogIn, Scroll, Shield, Sparkles } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { DiscordIcon } from "./DiscordIcon";
+import { KawaiiSparkle, KawaiiBow } from "./kawaiiMotifs";
 
 // Assets
 import wizardMoogle from "../assets/moogles/wizard moogle.webp";
@@ -29,137 +30,61 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Show login prompt if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        {/* Background gradient */}
-        <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
+      <div className="relative min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top)+1rem)] md:pt-10 pb-[calc(5rem+env(safe-area-inset-bottom)+1rem)] md:pb-10">
+        <motion.div
+          className="relative w-full max-w-md"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+        >
+          {/* Puffy candy card */}
+          <div className="surface p-7 sm:p-9 text-center">
+            {/* Floating moogle guard */}
+            <motion.img
+              src={wizardMoogle}
+              alt="A moogle wizard guarding the page"
+              className="w-28 sm:w-36 mx-auto mb-3 drop-shadow-lg select-none"
+              animate={{ y: [0, -6, 0], rotate: [0, 2, -2, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
 
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
-          <motion.div
-            className="max-w-md w-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Card container */}
-            <div className="bg-[var(--card)] rounded-lg p-8 md:p-10 border border-[var(--border)] shadow-sm text-center">
-              {/* Moogle mascot */}
-              <motion.div
-                className="relative mb-6"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                <motion.img
-                  src={wizardMoogle}
-                  alt="A moogle wizard guarding the page"
-                  className="relative w-32 md:w-40 mx-auto drop-shadow-lg"
-                  animate={{
-                    y: [0, -6, 0],
-                    rotate: [0, 2, -2, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              </motion.div>
-
-              {/* Shield icon */}
-              <motion.div
-                className="flex justify-center mb-4"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.2, type: "spring" }}
-              >
-                <div className="w-12 h-12 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-[var(--primary)]" />
-                </div>
-              </motion.div>
-
-              {/* Title */}
-              <motion.h1
-                className="text-2xl md:text-3xl font-display font-bold text-[var(--text)] mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                Members Only, Kupo!
-              </motion.h1>
-
-              {/* Description */}
-              <motion.p
-                className="text-[var(--text-muted)] font-soft mb-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                This corner of the nest is just for Kupo Life! FC members. Sign
-                in with Discord to join the rest of us, kupo!
-              </motion.p>
-
-              {/* Discord login button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.4 }}
-              >
-                <motion.button
-                  onClick={login}
-                  className="
-                    group w-full flex items-center justify-center gap-3
-                    px-6 py-4 rounded-lg
-                    bg-[#5865F2] text-white
-                    font-soft font-semibold text-lg
-                    shadow-[2px_2px_0_rgba(88,101,242,0.35)]
-                    hover:bg-[#4752C4] hover:shadow-[3px_3px_0_rgba(88,101,242,0.4)]
-                    focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-                    transition-all duration-150 cursor-pointer
-                  "
-                  whileHover={{ scale: 1.01, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <DiscordIcon className="w-6 h-6" />
-                  <span>Login with Discord</span>
-                  <LogIn className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                </motion.button>
-              </motion.div>
-
-              {/* Feature hints */}
-              <motion.div
-                className="mt-6 pt-6 border-t border-[var(--primary)]/10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                <p className="text-xs text-[var(--text-subtle)] font-soft mb-3">
-                  A few things waiting inside, kupo:
-                </p>
-                <div className="flex items-center justify-center gap-4 text-sm text-[var(--text-muted)] font-soft">
-                  <span className="flex items-center gap-1.5">
-                    <Scroll className="w-4 h-4 text-[var(--primary)]" />
-                    Live Chronicle
-                  </span>
-                  <span className="text-[var(--border)]">•</span>
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[var(--secondary)]" />
-                    Member Features
-                  </span>
-                </div>
-              </motion.div>
+            {/* Kawaii accent */}
+            <div
+              className="flex items-center justify-center gap-1.5 mb-2"
+              aria-hidden="true"
+            >
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
             </div>
 
-            {/* Footer note */}
-            <motion.p
-              className="text-center mt-6 text-sm text-[var(--text-muted)] font-accent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
+            <h1 className="editorial-title text-2xl sm:text-3xl font-display font-bold text-[var(--text)] mb-2">
+              <span className="text-highlight">Members Only, Kupo!</span>
+            </h1>
+
+            <p className="font-soft text-[var(--text-muted)] leading-relaxed mb-7">
+              This cozy little corner is just for Kupo Life! FC members. Our
+              wizard moogle's keeping watch, but sign in with Discord and he'll
+              wave you right in, kupo~
+            </p>
+
+            {/* Discord login — candy button in Discord blurple */}
+            <button
+              onClick={login}
+              className="gel hover-bounce w-full flex items-center justify-center gap-2.5 px-6 py-3.5 font-display font-bold text-base sm:text-lg text-white cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
+              style={{ "--gel-color": "#5865f2" } as React.CSSProperties}
             >
-              ~ The moogle will let you pass once verified ~
-            </motion.p>
-          </motion.div>
-        </div>
+              <DiscordIcon className="w-6 h-6" />
+              <span>Login with Discord</span>
+              <LogIn className="w-5 h-5 opacity-80" aria-hidden="true" />
+            </button>
+          </div>
+
+          {/* Footer note */}
+          <p className="eyebrow-script text-xl text-center mt-5 text-[var(--text-muted)]">
+            ~ the moogle will let you pass once verified ~
+          </p>
+        </motion.div>
       </div>
     );
   }

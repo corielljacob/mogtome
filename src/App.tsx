@@ -8,7 +8,6 @@ import {
   ScrapbookNav,
   ProtectedRoute,
   KnightRoute,
-  WelcomeDialog,
   MissingUserDataDialog,
 } from "./components";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -110,9 +109,6 @@ function AppContent() {
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div className="h-full bg-[var(--bg)] page-bg transition-colors duration-300 flex">
-        {/* First-visit welcome dialog */}
-        <WelcomeDialog />
-
         {/* Missing user data warning dialog */}
         <MissingUserDataDialog />
 
