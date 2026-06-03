@@ -1,6 +1,6 @@
 import { lazy, Suspense, Component } from "react";
 import type { ReactNode, ErrorInfo } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
 import {
@@ -100,6 +100,8 @@ function PageLoader() {
 // Inner app content that has access to accessibility context
 function AppContent() {
   const { settings } = useAccessibility();
+  // Washi paper backdrop on every page except Home (which has its own bg).
+  const isHome = useLocation().pathname === "/";
 
   return (
     <MotionConfig
@@ -125,7 +127,7 @@ function AppContent() {
         {/* Main content area — pad left on desktop to clear the edge tabs */}
         <div
           id={APP_SCROLL_ID}
-          className="flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16"
+          className={`flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16 ${isHome ? "" : "page-pattern"}`}
         >
           {/* Mobile top bar + desktop user controls */}
           <Navbar />

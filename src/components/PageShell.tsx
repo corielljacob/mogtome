@@ -31,41 +31,11 @@ export function PageLayout({
   maxWidth = "max-w-7xl",
   className = "",
 }: PageLayoutProps) {
+  // The page backdrop (warm washi paper) lives on the #app-scroll container in
+  // App.tsx, so it scrolls natively with the content and sits behind the nav.
+
   return (
     <div className="min-h-full relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Page backdrop — FIXED so it sits behind the whole app (nav region too),
-          not just the scrolling content. */}
-      <div
-        className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_10%,transparent)_0%,_transparent_32%),linear-gradient(180deg,_color-mix(in_srgb,var(--card)_12%,transparent)_0%,_transparent_36%)]"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
-        aria-hidden="true"
-      >
-        <div
-          className="absolute -top-40 -left-32 w-[42rem] h-[42rem] rounded-full opacity-60"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--primary) 17%, transparent) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute top-1/4 -right-40 w-[46rem] h-[46rem] rounded-full opacity-55"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--secondary) 16%, transparent) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute -bottom-48 left-1/5 w-[40rem] h-[40rem] rounded-full opacity-50"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 70%)",
-          }}
-        />
-      </div>
-
       {/* Floating background decorations */}
       {moogles && (
         <SimpleFloatingMoogles

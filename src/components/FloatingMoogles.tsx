@@ -79,9 +79,9 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
           {
             transform: "rotate(-5deg)",
             animationDuration: "6s",
-            opacity: 0.06, // Initial opacity before animation starts
-            "--float-opacity-min": 0.06,
-            "--float-opacity-max": 0.12,
+            opacity: 0.2, // Initial opacity before animation starts
+            "--float-opacity-min": 0.2,
+            "--float-opacity-max": 0.34,
           } as React.CSSProperties
         }
       />
@@ -96,9 +96,9 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
             transform: "rotate(8deg)",
             animationDelay: "1.5s",
             animationDuration: "5s",
-            opacity: 0.06, // Initial opacity before animation starts
-            "--float-opacity-min": 0.06,
-            "--float-opacity-max": 0.12,
+            opacity: 0.2, // Initial opacity before animation starts
+            "--float-opacity-min": 0.2,
+            "--float-opacity-max": 0.34,
           } as React.CSSProperties
         }
       />

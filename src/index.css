@@ -8,13 +8,13 @@
 @custom-variant xs (@media (min-width: 480px));
 
 @theme {
-  --radius-sm: 0.375rem;  /* 6px  — hairline chips */
-  --radius-md: 0.625rem;  /* 10px — tags, inline controls */
-  --radius-lg: 0.875rem;  /* 14px — small interactive bits, menu items */
-  --radius-xl: 1.125rem;  /* 18px — inputs, dropdowns */
-  --radius-2xl: 1.5rem;   /* 24px — the default card radius (matches .surface) */
-  --radius-3xl: 2rem;     /* 32px — hero / large surfaces */
-  --radius-4xl: 2.5rem;   /* 40px — extra-large flourishes */
+  --radius-sm: 0.375rem; /* 6px  — hairline chips */
+  --radius-md: 0.625rem; /* 10px — tags, inline controls */
+  --radius-lg: 0.875rem; /* 14px — small interactive bits, menu items */
+  --radius-xl: 1.125rem; /* 18px — inputs, dropdowns */
+  --radius-2xl: 1.5rem; /* 24px — the default card radius (matches .surface) */
+  --radius-3xl: 2rem; /* 32px — hero / large surfaces */
+  --radius-4xl: 2.5rem; /* 40px — extra-large flourishes */
 }
 
 /* Base Styles */
@@ -26,9 +26,9 @@
     background-color: var(--bg);
     transition: background-color 0.3s ease;
   }
-  
+
   body {
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: "Manrope", system-ui, sans-serif;
     height: 100%;
     margin: 0;
     padding: 0;
@@ -44,8 +44,13 @@
   #root {
     height: 100%;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: 0;
@@ -60,24 +65,28 @@
 
   /* Prevent iOS Safari zoom on input focus (requires font-size >= 16px) */
   @media screen and (max-width: 768px) {
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       font-size: 16px !important;
     }
   }
 
   /* Improve touch targets - minimum 44x44px for accessibility */
   @media (pointer: coarse) {
-    button, 
-    a, 
+    button,
+    a,
     [role="button"],
     input[type="checkbox"],
     input[type="radio"] {
       min-height: 44px;
       min-width: 44px;
     }
-    
+
     /* Allow smaller inline buttons/links that are part of text */
-    .inline, p a, span a {
+    .inline,
+    p a,
+    span a {
       min-height: auto;
       min-width: auto;
     }
@@ -104,7 +113,9 @@
   }
 
   /* Prevent text selection on interactive elements for better UX */
-  button, a, [role="button"] {
+  button,
+  a,
+  [role="button"] {
     -webkit-user-select: none;
     user-select: none;
   }
@@ -117,7 +128,11 @@
 
   /* MOBILE PERFORMANCE: Optimize touch interactions */
   /* touch-action prevents browser delays on touch gestures */
-  button, a, [role="button"], [role="tab"], [role="menuitem"] {
+  button,
+  a,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"] {
     touch-action: manipulation; /* Disables double-tap zoom for faster response */
   }
 
@@ -181,7 +196,7 @@
     [role="button"]:not([disabled]):active {
       transform: scale(0.97);
     }
-    
+
     /* Cards and links get a subtle opacity change */
     a:active,
     article:active {
@@ -213,18 +228,18 @@
       width: 8px;
       height: 8px;
     }
-    
+
     ::-webkit-scrollbar-track {
       background: transparent;
     }
-    
+
     ::-webkit-scrollbar-thumb {
       background-color: var(--border);
       border-radius: 4px;
       border: 2px solid transparent;
       background-clip: content-box;
     }
-    
+
     ::-webkit-scrollbar-thumb:hover {
       background-color: var(--text-subtle);
     }
@@ -236,13 +251,26 @@
   }
 
   /* Prevent text selection on UI elements for app-like feel */
-  nav, header, footer, button, [role="button"], [role="tab"] {
+  nav,
+  header,
+  footer,
+  button,
+  [role="button"],
+  [role="tab"] {
     -webkit-user-select: none;
     user-select: none;
   }
 
   /* Allow text selection in content areas */
-  article, main, p, h1, h2, h3, h4, h5, h6 {
+  article,
+  main,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     -webkit-user-select: text;
     user-select: text;
   }
@@ -252,9 +280,10 @@
 :root {
   color-scheme: light;
   /* Cozy type system — storybook rounded display, clean body, handwritten accent */
-  --font-display: 'Zen Maru Gothic', 'Fredoka', 'Manrope', system-ui, sans-serif;
-  --font-body: 'Manrope', system-ui, sans-serif;
-  --font-script: 'Caveat', cursive;
+  --font-display:
+    "Zen Maru Gothic", "Fredoka", "Manrope", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-script: "Caveat", cursive;
   /* Pop-kawaii "Pom-Pom" palette (default). Candy-bright pastels on a milk-pink
      cream; --primary stays saturated enough for white-on-primary buttons. */
   --bg: #fff6f4;
@@ -271,15 +300,19 @@
   --shadow: rgba(31, 26, 46, 0.06);
   --glass: #ffffff;
   /* Soft "die-cut sticker" float — surfaces lift gently off the page */
-  --panel-shadow: 0 2px 4px -1px rgba(31, 26, 46, 0.05), 0 10px 22px -8px rgba(31, 26, 46, 0.11);
-  --panel-shadow-strong: 0 4px 8px -2px rgba(31, 26, 46, 0.07), 0 18px 34px -10px rgba(31, 26, 46, 0.16);
+  --panel-shadow:
+    0 2px 4px -1px rgba(31, 26, 46, 0.05),
+    0 10px 22px -8px rgba(31, 26, 46, 0.11);
+  --panel-shadow-strong:
+    0 4px 8px -2px rgba(31, 26, 46, 0.07),
+    0 18px 34px -10px rgba(31, 26, 46, 0.16);
   --panel-inset: none;
   /* Gradient colors for background mesh */
   --gradient-1: rgba(90, 138, 127, 0.08);
   --gradient-2: rgba(217, 160, 78, 0.08);
   --gradient-3: rgba(199, 93, 115, 0.06);
   --gradient-4: rgba(152, 144, 163, 0.06);
-  
+
   /* Noise Texture - base64 SVG */
   --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
 }
@@ -297,11 +330,13 @@
   --success: #7fc493;
   --warning: #f0b840;
   --border: rgba(238, 233, 243, 0.07);
-  --shadow: rgba(0, 0, 0, 0.40);
+  --shadow: rgba(0, 0, 0, 0.4);
   --glass: #1c1a2b;
   /* Soft "die-cut sticker" float (dark) */
-  --panel-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.24), 0 10px 22px -8px rgba(0, 0, 0, 0.36);
-  --panel-shadow-strong: 0 4px 8px -2px rgba(0, 0, 0, 0.30), 0 18px 34px -10px rgba(0, 0, 0, 0.46);
+  --panel-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.24), 0 10px 22px -8px rgba(0, 0, 0, 0.36);
+  --panel-shadow-strong:
+    0 4px 8px -2px rgba(0, 0, 0, 0.3), 0 18px 34px -10px rgba(0, 0, 0, 0.46);
   --panel-inset: none;
   /* Gradient colors for background mesh */
   --gradient-1: rgba(126, 196, 184, 0.06);
@@ -320,9 +355,9 @@
 
 /* Crystal Tower - Cool blues and cyans */
 .theme-crystal {
-  --primary: #245F9E;
-  --secondary: #2BA6BE;
-  --accent: #D2A24A;
+  --primary: #245f9e;
+  --secondary: #2ba6be;
+  --accent: #d2a24a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -331,9 +366,9 @@
 }
 
 .dark.theme-crystal {
-  --primary: #5E9FDA;
-  --secondary: #45C6DC;
-  --accent: #E6C46E;
+  --primary: #5e9fda;
+  --secondary: #45c6dc;
+  --accent: #e6c46e;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -343,9 +378,9 @@
 
 /* Chocobo Gold - Warm yellows and golds */
 .theme-chocobo {
-  --primary: #B5800F;
-  --secondary: #D9682B;
-  --accent: #F2C24C;
+  --primary: #b5800f;
+  --secondary: #d9682b;
+  --accent: #f2c24c;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -354,9 +389,9 @@
 }
 
 .dark.theme-chocobo {
-  --primary: #EEB534;
-  --secondary: #F0824A;
-  --accent: #F8D778;
+  --primary: #eeb534;
+  --secondary: #f0824a;
+  --accent: #f8d778;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -366,9 +401,9 @@
 
 /* Tonberry Lantern - Deep teals and greens */
 .theme-tonberry {
-  --primary: #3C7A4A;
-  --secondary: #2C6657;
-  --accent: #D89A3A;
+  --primary: #3c7a4a;
+  --secondary: #2c6657;
+  --accent: #d89a3a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -377,9 +412,9 @@
 }
 
 .dark.theme-tonberry {
-  --primary: #5FAE6E;
-  --secondary: #4DA38A;
-  --accent: #ECB85A;
+  --primary: #5fae6e;
+  --secondary: #4da38a;
+  --accent: #ecb85a;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -389,9 +424,9 @@
 
 /* Cactuar Fresh - Bright greens and limes */
 .theme-cactuar {
-  --primary: #33944E;
-  --secondary: #7DA82F;
-  --accent: #E6C257;
+  --primary: #33944e;
+  --secondary: #7da82f;
+  --accent: #e6c257;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -400,9 +435,9 @@
 }
 
 .dark.theme-cactuar {
-  --primary: #5FC97A;
-  --secondary: #A6CF50;
-  --accent: #F2DA7E;
+  --primary: #5fc97a;
+  --secondary: #a6cf50;
+  --accent: #f2da7e;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -412,9 +447,9 @@
 
 /* Moogle Cloud - Soft pinks and lavenders */
 .theme-moogle-cloud {
-  --primary: #D9527F;
-  --secondary: #8E72C2;
-  --accent: #F2A6C6;
+  --primary: #d9527f;
+  --secondary: #8e72c2;
+  --accent: #f2a6c6;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -423,9 +458,9 @@
 }
 
 .dark.theme-moogle-cloud {
-  --primary: #F07DA6;
-  --secondary: #B49AE6;
-  --accent: #F8C2DA;
+  --primary: #f07da6;
+  --secondary: #b49ae6;
+  --accent: #f8c2da;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -435,9 +470,9 @@
 
 /* Midnight Realm - Deep indigos and purples */
 .theme-midnight {
-  --primary: #3F3AA8;
-  --secondary: #6A3CB0;
-  --accent: #8E9AF0;
+  --primary: #3f3aa8;
+  --secondary: #6a3cb0;
+  --accent: #8e9af0;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -446,9 +481,9 @@
 }
 
 .dark.theme-midnight {
-  --primary: #8A8FF0;
-  --secondary: #AE8AF0;
-  --accent: #B9C6FF;
+  --primary: #8a8ff0;
+  --secondary: #ae8af0;
+  --accent: #b9c6ff;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -458,9 +493,9 @@
 
 /* Costa del Sol - Warm oranges and corals */
 .theme-sunset {
-  --primary: #DE5F28;
-  --secondary: #D84F6A;
-  --accent: #F2B061;
+  --primary: #de5f28;
+  --secondary: #d84f6a;
+  --accent: #f2b061;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -469,16 +504,15 @@
 }
 
 .dark.theme-sunset {
-  --primary: #F58A50;
-  --secondary: #F0788E;
-  --accent: #F8C888;
+  --primary: #f58a50;
+  --secondary: #f0788e;
+  --accent: #f8c888;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
   --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * SEASONAL EVENT THEMES
@@ -489,9 +523,9 @@
 
 /* ── Heavensturn (January) — Red & Gold New Year ───────────────────────────── */
 .event-heavensturn {
-  --primary: #C0392B;
-  --secondary: #C8902C;
-  --accent: #E6B84C;
+  --primary: #c0392b;
+  --secondary: #c8902c;
+  --accent: #e6b84c;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -500,9 +534,9 @@
 }
 
 .dark.event-heavensturn {
-  --primary: #E8645A;
-  --secondary: #E6B24A;
-  --accent: #F2D27A;
+  --primary: #e8645a;
+  --secondary: #e6b24a;
+  --accent: #f2d27a;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -512,10 +546,10 @@
 
 /* ── Valentione's Day (February) — Rose & Crimson Romance ──────────────────── */
 .event-valentiones {
-  --bg: #FFF5F7;
-  --primary: #D6325C;
-  --secondary: #D14F8C;
-  --accent: #F08AA0;
+  --bg: #fff5f7;
+  --primary: #d6325c;
+  --secondary: #d14f8c;
+  --accent: #f08aa0;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -524,10 +558,10 @@
 }
 
 .dark.event-valentiones {
-  --bg: #1C1520;
-  --primary: #F07090;
-  --secondary: #EC7FB0;
-  --accent: #F8B0C4;
+  --bg: #1c1520;
+  --primary: #f07090;
+  --secondary: #ec7fb0;
+  --accent: #f8b0c4;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -537,10 +571,10 @@
 
 /* ── Little Ladies' Day (March) — Cherry Blossom Pink ──────────────────────── */
 .event-little-ladies {
-  --bg: #FDF2F8;
-  --primary: #E06699;
-  --secondary: #EE9CC0;
-  --accent: #F7D9E6;
+  --bg: #fdf2f8;
+  --primary: #e06699;
+  --secondary: #ee9cc0;
+  --accent: #f7d9e6;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 16%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 14%, transparent);
@@ -549,10 +583,10 @@
 }
 
 .dark.event-little-ladies {
-  --bg: #1A1520;
-  --primary: #F08BB4;
-  --secondary: #F4ADCB;
-  --accent: #FBD7E6;
+  --bg: #1a1520;
+  --primary: #f08bb4;
+  --secondary: #f4adcb;
+  --accent: #fbd7e6;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 12%, transparent);
@@ -562,10 +596,10 @@
 
 /* ── Hatching-tide (April) — Pastel Easter Carnival ────────────────────────── */
 .event-hatching-tide {
-  --bg: #FEFDF5;
-  --primary: #9B7BE0;
-  --secondary: #52C99A;
-  --accent: #F2C94C;
+  --bg: #fefdf5;
+  --primary: #9b7be0;
+  --secondary: #52c99a;
+  --accent: #f2c94c;
   --shadow: color-mix(in srgb, var(--primary) 16%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 14%, transparent);
@@ -575,9 +609,9 @@
 
 .dark.event-hatching-tide {
   --bg: #181820;
-  --primary: #B49AEC;
-  --secondary: #7DDCB4;
-  --accent: #F7DE7E;
+  --primary: #b49aec;
+  --secondary: #7ddcb4;
+  --accent: #f7de7e;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
@@ -587,10 +621,10 @@
 
 /* ── Make It Rain Campaign (June) — Gold Saucer Glamour ────────────────────── */
 .event-make-it-rain {
-  --bg: #FFFBEB;
-  --primary: #C8911A;
-  --secondary: #7B45C9;
-  --accent: #F2CE4A;
+  --bg: #fffbeb;
+  --primary: #c8911a;
+  --secondary: #7b45c9;
+  --accent: #f2ce4a;
   --shadow: color-mix(in srgb, var(--primary) 20%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 16%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -599,10 +633,10 @@
 }
 
 .dark.event-make-it-rain {
-  --bg: #1A1810;
-  --primary: #F0C234;
-  --secondary: #A87FE6;
-  --accent: #F8DE7A;
+  --bg: #1a1810;
+  --primary: #f0c234;
+  --secondary: #a87fe6;
+  --accent: #f8de7a;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
@@ -612,10 +646,10 @@
 
 /* ── Moonfire Faire (August) — Summer Blaze & Ocean ────────────────────────── */
 .event-moonfire-faire {
-  --bg: #FFFAF5;
-  --primary: #E8602A;
-  --secondary: #1F95C9;
-  --accent: #F2D27A;
+  --bg: #fffaf5;
+  --primary: #e8602a;
+  --secondary: #1f95c9;
+  --accent: #f2d27a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -624,10 +658,10 @@
 }
 
 .dark.event-moonfire-faire {
-  --bg: #1A1614;
-  --primary: #F5874A;
-  --secondary: #3FB4E0;
-  --accent: #F8DE96;
+  --bg: #1a1614;
+  --primary: #f5874a;
+  --secondary: #3fb4e0;
+  --accent: #f8de96;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
@@ -637,9 +671,9 @@
 
 /* ── The Rising (August) — Meteor Red & Crystal Blue ───────────────────────── */
 .event-the-rising {
-  --primary: #C73A35;
-  --secondary: #2E63C4;
-  --accent: #E0A340;
+  --primary: #c73a35;
+  --secondary: #2e63c4;
+  --accent: #e0a340;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -648,9 +682,9 @@
 }
 
 .dark.event-the-rising {
-  --primary: #EC6A5C;
-  --secondary: #5A8FE6;
-  --accent: #F2C566;
+  --primary: #ec6a5c;
+  --secondary: #5a8fe6;
+  --accent: #f2c566;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);
@@ -661,14 +695,14 @@
 /* ── All Saints' Wake (October) — Haunted Purple, Pumpkin & Eerie Green ────── */
 /* This is a flagship event — the theme is intentionally dramatic */
 .event-all-saints-wake {
-  --bg: #F8F3F0;
+  --bg: #f8f3f0;
   --card: rgba(255, 255, 255, 0.88);
-  --text: #2D1B3D;
-  --text-muted: #4A3660;
-  --text-subtle: #6B5580;
-  --primary: #D94F0F;
-  --secondary: #6D28D9;
-  --accent: #16A34A;
+  --text: #2d1b3d;
+  --text-muted: #4a3660;
+  --text-subtle: #6b5580;
+  --primary: #d94f0f;
+  --secondary: #6d28d9;
+  --accent: #16a34a;
   --shadow: rgba(109, 40, 217, 0.22);
   --border: rgba(109, 40, 217, 0.12);
   --glass: rgba(255, 255, 255, 0.85);
@@ -679,15 +713,15 @@
 }
 
 .dark.event-all-saints-wake {
-  --bg: #0C0814;
+  --bg: #0c0814;
   --card: rgba(16, 10, 26, 0.96);
-  --text: #EDE6F5;
-  --text-muted: #C4B4D8;
-  --text-subtle: #8A7AA0;
-  --primary: #FB923C;
-  --secondary: #A78BFA;
-  --accent: #4ADE80;
-  --shadow: rgba(167, 139, 250, 0.30);
+  --text: #ede6f5;
+  --text-muted: #c4b4d8;
+  --text-subtle: #8a7aa0;
+  --primary: #fb923c;
+  --secondary: #a78bfa;
+  --accent: #4ade80;
+  --shadow: rgba(167, 139, 250, 0.3);
   --border: rgba(167, 139, 250, 0.12);
   --glass: rgba(16, 10, 26, 0.94);
   --gradient-1: rgba(167, 139, 250, 0.18);
@@ -699,41 +733,40 @@
 /* ── Starlight Celebration (December) — Festive Red, Evergreen & Gold ──────── */
 /* This is a flagship event — the theme is intentionally dramatic */
 .event-starlight {
-  --bg: #FFFBF5;
-  --card: rgba(255, 255, 255, 0.90);
-  --text: #3D2020;
-  --text-muted: #5C3838;
+  --bg: #fffbf5;
+  --card: rgba(255, 255, 255, 0.9);
+  --text: #3d2020;
+  --text-muted: #5c3838;
   --text-subtle: #846060;
-  --primary: #BE1A1A;
-  --secondary: #15803D;
-  --accent: #D97706;
-  --shadow: rgba(190, 26, 26, 0.20);
-  --border: rgba(190, 26, 26, 0.10);
+  --primary: #be1a1a;
+  --secondary: #15803d;
+  --accent: #d97706;
+  --shadow: rgba(190, 26, 26, 0.2);
+  --border: rgba(190, 26, 26, 0.1);
   --glass: rgba(255, 255, 255, 0.88);
   --gradient-1: rgba(190, 26, 26, 0.16);
   --gradient-2: rgba(21, 128, 61, 0.14);
   --gradient-3: rgba(217, 119, 6, 0.12);
-  --gradient-4: rgba(190, 26, 26, 0.10);
+  --gradient-4: rgba(190, 26, 26, 0.1);
 }
 
 .dark.event-starlight {
-  --bg: #0F0A14;
+  --bg: #0f0a14;
   --card: rgba(18, 12, 24, 0.96);
-  --text: #F5EDE8;
-  --text-muted: #D4C4BC;
-  --text-subtle: #A09088;
-  --primary: #F87171;
-  --secondary: #4ADE80;
-  --accent: #FDE68A;
+  --text: #f5ede8;
+  --text-muted: #d4c4bc;
+  --text-subtle: #a09088;
+  --primary: #f87171;
+  --secondary: #4ade80;
+  --accent: #fde68a;
   --shadow: rgba(248, 113, 113, 0.25);
-  --border: rgba(248, 113, 113, 0.10);
+  --border: rgba(248, 113, 113, 0.1);
   --glass: rgba(18, 12, 24, 0.94);
   --gradient-1: rgba(248, 113, 113, 0.16);
   --gradient-2: rgba(74, 222, 128, 0.12);
-  --gradient-3: rgba(253, 230, 138, 0.10);
+  --gradient-3: rgba(253, 230, 138, 0.1);
   --gradient-4: rgba(248, 113, 113, 0.08);
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * ACCESSIBILITY MODES
@@ -750,13 +783,13 @@
 
 /* Base high contrast settings (shared across all themes) */
 :root.high-contrast {
-  --bg: #FFFFFF;
-  --card: #FFFFFF;
+  --bg: #ffffff;
+  --card: #ffffff;
   --text: #000000;
-  --text-muted: #1A1A1A;
+  --text-muted: #1a1a1a;
   --text-subtle: #333333;
   --success: #006600;
-  --warning: #CC6600;
+  --warning: #cc6600;
   --border: rgba(0, 0, 0, 0.3);
   --shadow: rgba(0, 0, 0, 0.3);
   --glass: rgba(255, 255, 255, 1);
@@ -769,12 +802,12 @@
 
 :root.dark.high-contrast {
   --bg: #000000;
-  --card: #0A0A0A;
-  --text: #FFFFFF;
-  --text-muted: #E5E5E5;
-  --text-subtle: #CCCCCC;
-  --success: #66FF66;
-  --warning: #FFCC00;
+  --card: #0a0a0a;
+  --text: #ffffff;
+  --text-muted: #e5e5e5;
+  --text-subtle: #cccccc;
+  --success: #66ff66;
+  --warning: #ffcc00;
   --border: rgba(255, 255, 255, 0.4);
   --shadow: rgba(255, 255, 255, 0.2);
   --glass: rgba(10, 10, 10, 1);
@@ -787,115 +820,115 @@
 /* Pom-Pom Classic - High Contrast (default red/purple) */
 :root.high-contrast,
 :root.theme-pom-pom.high-contrast {
-  --primary: #B80000;
-  --secondary: #4A0080;
-  --accent: #CC3333;
+  --primary: #b80000;
+  --secondary: #4a0080;
+  --accent: #cc3333;
 }
 
 :root.dark.high-contrast,
 :root.dark.theme-pom-pom.high-contrast {
-  --primary: #FF7777;
-  --secondary: #DD99FF;
-  --accent: #FF9999;
+  --primary: #ff7777;
+  --secondary: #dd99ff;
+  --accent: #ff9999;
 }
 
 /* Crystal Tower - High Contrast (blues/cyans) */
 :root.theme-crystal.high-contrast {
-  --primary: #0047AB;
+  --primary: #0047ab;
   --secondary: #006080;
-  --accent: #2563EB;
+  --accent: #2563eb;
 }
 
 :root.dark.theme-crystal.high-contrast {
-  --primary: #93C5FD;
-  --secondary: #67E8F9;
-  --accent: #BFDBFE;
+  --primary: #93c5fd;
+  --secondary: #67e8f9;
+  --accent: #bfdbfe;
 }
 
 /* Chocobo Gold - High Contrast (yellows/golds) */
 :root.theme-chocobo.high-contrast {
-  --primary: #92600A;
-  --secondary: #B84000;
-  --accent: #A16207;
+  --primary: #92600a;
+  --secondary: #b84000;
+  --accent: #a16207;
 }
 
 :root.dark.theme-chocobo.high-contrast {
-  --primary: #FDE047;
-  --secondary: #FDBA74;
-  --accent: #FEF08A;
+  --primary: #fde047;
+  --secondary: #fdba74;
+  --accent: #fef08a;
 }
 
 /* Tonberry Lantern - High Contrast (teals/greens) */
 :root.theme-tonberry.high-contrast {
-  --primary: #065F5E;
-  --secondary: #04543F;
-  --accent: #0D9488;
+  --primary: #065f5e;
+  --secondary: #04543f;
+  --accent: #0d9488;
 }
 
 :root.dark.theme-tonberry.high-contrast {
-  --primary: #5EEAD4;
-  --secondary: #6EE7B7;
-  --accent: #99F6E4;
+  --primary: #5eead4;
+  --secondary: #6ee7b7;
+  --accent: #99f6e4;
 }
 
 /* Cactuar Fresh - High Contrast (greens/limes) */
 :root.theme-cactuar.high-contrast {
   --primary: #166534;
-  --secondary: #3F6212;
-  --accent: #15803D;
+  --secondary: #3f6212;
+  --accent: #15803d;
 }
 
 :root.dark.theme-cactuar.high-contrast {
-  --primary: #86EFAC;
-  --secondary: #BEF264;
-  --accent: #BBF7D0;
+  --primary: #86efac;
+  --secondary: #bef264;
+  --accent: #bbf7d0;
 }
 
 /* Moogle Cloud - High Contrast (pinks/purples) */
 :root.theme-moogle-cloud.high-contrast {
-  --primary: #9D174D;
-  --secondary: #6B21A8;
-  --accent: #BE185D;
+  --primary: #9d174d;
+  --secondary: #6b21a8;
+  --accent: #be185d;
 }
 
 :root.dark.theme-moogle-cloud.high-contrast {
-  --primary: #F9A8D4;
-  --secondary: #D8B4FE;
-  --accent: #FBCFE8;
+  --primary: #f9a8d4;
+  --secondary: #d8b4fe;
+  --accent: #fbcfe8;
 }
 
 /* Midnight Realm - High Contrast (indigos/purples) */
 :root.theme-midnight.high-contrast {
-  --primary: #3730A3;
-  --secondary: #5B21B6;
-  --accent: #4338CA;
+  --primary: #3730a3;
+  --secondary: #5b21b6;
+  --accent: #4338ca;
 }
 
 :root.dark.theme-midnight.high-contrast {
-  --primary: #A5B4FC;
-  --secondary: #C4B5FD;
-  --accent: #C7D2FE;
+  --primary: #a5b4fc;
+  --secondary: #c4b5fd;
+  --accent: #c7d2fe;
 }
 
 /* Costa del Sol - High Contrast (oranges/reds) */
 :root.theme-sunset.high-contrast {
-  --primary: #9A3412;
-  --secondary: #991B1B;
-  --accent: #C2410C;
+  --primary: #9a3412;
+  --secondary: #991b1b;
+  --accent: #c2410c;
 }
 
 :root.dark.theme-sunset.high-contrast {
-  --primary: #FDBA74;
-  --secondary: #FCA5A5;
-  --accent: #FED7AA;
+  --primary: #fdba74;
+  --secondary: #fca5a5;
+  --accent: #fed7aa;
 }
 
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
 :root.dark.extra-dark {
   --bg: #000000;
-  --card: #0A0A0A;
-  --text: #E8E8E8;
-  --text-muted: #B0B0B0;
+  --card: #0a0a0a;
+  --text: #e8e8e8;
+  --text-muted: #b0b0b0;
   --text-subtle: #808080;
   --border: rgba(255, 255, 255, 0.08);
   --glass: rgba(5, 5, 5, 0.98);
@@ -905,9 +938,9 @@
 :root.dark.extra-dark.high-contrast {
   --bg: #000000;
   --card: #000000;
-  --text: #FFFFFF;
-  --text-muted: #F0F0F0;
-  --text-subtle: #DDDDDD;
+  --text: #ffffff;
+  --text-muted: #f0f0f0;
+  --text-subtle: #dddddd;
   --border: rgba(255, 255, 255, 0.5);
 }
 
@@ -916,17 +949,29 @@
   font-size: 118%;
 }
 
-.large-text h1 { font-size: 2.75rem; }
-.large-text h2 { font-size: 2rem; }
-.large-text h3 { font-size: 1.5rem; }
+.large-text h1 {
+  font-size: 2.75rem;
+}
+.large-text h2 {
+  font-size: 2rem;
+}
+.large-text h3 {
+  font-size: 1.5rem;
+}
 
 @media (min-width: 768px) {
   .large-text {
     font-size: 120%;
   }
-  .large-text h1 { font-size: 3.5rem; }
-  .large-text h2 { font-size: 2.5rem; }
-  .large-text h3 { font-size: 1.75rem; }
+  .large-text h1 {
+    font-size: 3.5rem;
+  }
+  .large-text h2 {
+    font-size: 2.5rem;
+  }
+  .large-text h3 {
+    font-size: 1.75rem;
+  }
 }
 
 /* Enhanced Focus Mode - more visible focus indicators */
@@ -938,7 +983,8 @@
 
 /* Dyslexia-friendly Font Mode */
 .dyslexia-font {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Manrope', system-ui, sans-serif !important;
+  font-family:
+    "OpenDyslexic", "Comic Sans MS", "Manrope", system-ui, sans-serif !important;
   letter-spacing: 0.05em;
   word-spacing: 0.1em;
   line-height: 1.8;
@@ -950,7 +996,8 @@
 .dyslexia-font h4,
 .dyslexia-font h5,
 .dyslexia-font h6 {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Fraunces', Georgia, serif !important;
+  font-family:
+    "OpenDyslexic", "Comic Sans MS", "Fraunces", Georgia, serif !important;
   letter-spacing: 0.02em;
 }
 
@@ -964,11 +1011,11 @@
   animation-duration: 0.001ms !important;
   animation-delay: 0ms !important;
   animation-iteration-count: 1 !important;
-  
+
   /* Disable CSS transitions */
   transition-duration: 0.001ms !important;
   transition-delay: 0ms !important;
-  
+
   /* Disable scroll behavior */
   scroll-behavior: auto !important;
 }
@@ -1009,53 +1056,53 @@
 
 /* Protanopia (Red-Blind) - Uses blue/yellow palette */
 :root.colorblind-protanopia {
-  --primary: #0077BB;      /* Blue instead of red */
-  --secondary: #EE7733;    /* Orange instead of purple */
-  --accent: #33BBEE;       /* Cyan */
-  --success: #009988;      /* Teal instead of green */
-  --warning: #EE7733;      /* Orange */
+  --primary: #0077bb; /* Blue instead of red */
+  --secondary: #ee7733; /* Orange instead of purple */
+  --accent: #33bbee; /* Cyan */
+  --success: #009988; /* Teal instead of green */
+  --warning: #ee7733; /* Orange */
 }
 
 :root.dark.colorblind-protanopia {
-  --primary: #66CCEE;      /* Light blue */
-  --secondary: #FFAA55;    /* Light orange */
-  --accent: #99DDFF;       /* Light cyan */
-  --success: #44BB99;      /* Light teal */
-  --warning: #FFCC44;      /* Yellow */
+  --primary: #66ccee; /* Light blue */
+  --secondary: #ffaa55; /* Light orange */
+  --accent: #99ddff; /* Light cyan */
+  --success: #44bb99; /* Light teal */
+  --warning: #ffcc44; /* Yellow */
 }
 
 /* Deuteranopia (Green-Blind) - Uses blue/yellow palette (similar to protanopia) */
 :root.colorblind-deuteranopia {
-  --primary: #0077BB;      /* Blue instead of red */
-  --secondary: #CC6677;    /* Rose/mauve */
-  --accent: #44AA99;       /* Teal */
-  --success: #117733;      /* Dark green (still distinguishable) */
-  --warning: #DDCC77;      /* Yellow/gold */
+  --primary: #0077bb; /* Blue instead of red */
+  --secondary: #cc6677; /* Rose/mauve */
+  --accent: #44aa99; /* Teal */
+  --success: #117733; /* Dark green (still distinguishable) */
+  --warning: #ddcc77; /* Yellow/gold */
 }
 
 :root.dark.colorblind-deuteranopia {
-  --primary: #88CCEE;      /* Light blue */
-  --secondary: #CC6677;    /* Rose */
-  --accent: #44BB99;       /* Light teal */
-  --success: #66BB55;      /* Light green */
-  --warning: #FFDD55;      /* Bright yellow */
+  --primary: #88ccee; /* Light blue */
+  --secondary: #cc6677; /* Rose */
+  --accent: #44bb99; /* Light teal */
+  --success: #66bb55; /* Light green */
+  --warning: #ffdd55; /* Bright yellow */
 }
 
 /* Tritanopia (Blue-Blind) - Uses red/green palette */
 :root.colorblind-tritanopia {
-  --primary: #CC3311;      /* Red-orange */
-  --secondary: #EE3377;    /* Magenta/pink */
-  --accent: #EE7744;       /* Orange */
-  --success: #009988;      /* Teal (distinguishable from red) */
-  --warning: #EE7744;      /* Orange */
+  --primary: #cc3311; /* Red-orange */
+  --secondary: #ee3377; /* Magenta/pink */
+  --accent: #ee7744; /* Orange */
+  --success: #009988; /* Teal (distinguishable from red) */
+  --warning: #ee7744; /* Orange */
 }
 
 :root.dark.colorblind-tritanopia {
-  --primary: #EE6677;      /* Salmon/pink */
-  --secondary: #EE99AA;    /* Light pink */
-  --accent: #FFAA77;       /* Peach */
-  --success: #44BB99;      /* Light teal */
-  --warning: #FFBB66;      /* Light orange */
+  --primary: #ee6677; /* Salmon/pink */
+  --secondary: #ee99aa; /* Light pink */
+  --accent: #ffaa77; /* Peach */
+  --success: #44bb99; /* Light teal */
+  --warning: #ffbb66; /* Light orange */
 }
 
 /* Monochromacy (Complete Color Blindness) - Grayscale with high contrast */
@@ -1065,19 +1112,19 @@
   --accent: #505050;
   --success: #333333;
   --warning: #555555;
-  --text: #1A1A1A;
+  --text: #1a1a1a;
   --text-muted: #404040;
   --text-subtle: #606060;
 }
 
 :root.dark.colorblind-monochromacy {
-  --primary: #D0D0D0;
-  --secondary: #A0A0A0;
-  --accent: #B0B0B0;
-  --success: #C0C0C0;
-  --warning: #B0B0B0;
-  --text: #F0F0F0;
-  --text-muted: #C0C0C0;
+  --primary: #d0d0d0;
+  --secondary: #a0a0a0;
+  --accent: #b0b0b0;
+  --success: #c0c0c0;
+  --warning: #b0b0b0;
+  --text: #f0f0f0;
+  --text-muted: #c0c0c0;
   --text-subtle: #909090;
 }
 
@@ -1089,7 +1136,7 @@
  * The overlay is pointer-events:none so it doesn't block interactions.
  */
 .colorblind-monochromacy::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   z-index: 99999;
@@ -1107,15 +1154,30 @@
 }
 
 /* Typography */
-.font-inter { font-family: var(--font-body); }
-.font-display { font-family: var(--font-display); }
-.font-number { font-family: var(--font-display); font-variant-numeric: lining-nums tabular-nums; }
-.font-accent { font-family: var(--font-script); }
-.font-soft { font-family: var(--font-body); }
-.font-title { font-family: var(--font-display); }
+.font-inter {
+  font-family: var(--font-body);
+}
+.font-display {
+  font-family: var(--font-display);
+}
+.font-number {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.font-accent {
+  font-family: var(--font-script);
+}
+.font-soft {
+  font-family: var(--font-body);
+}
+.font-title {
+  font-family: var(--font-display);
+}
 /* Latin rounded display — for the giant home title; Latin metrics keep hover
    hitboxes aligned (Zen Maru's CJK ascent pushed them too high). */
-.font-title-latin { font-family: 'Fredoka', 'Manrope', system-ui, sans-serif; }
+.font-title-latin {
+  font-family: "Fredoka", "Manrope", system-ui, sans-serif;
+}
 
 .editorial-title {
   font-family: var(--font-display);
@@ -1125,7 +1187,7 @@
 }
 
 .eyebrow-script {
-  font-family: 'Caveat', cursive;
+  font-family: "Caveat", cursive;
   letter-spacing: 0.04em;
 }
 
@@ -1138,14 +1200,18 @@
 
 /* Elegant text underline highlight — gradient marker stroke */
 .text-highlight::after {
-  content: '';
+  content: "";
   position: absolute;
   left: -0.15em;
   right: -0.15em;
   bottom: 0.02em;
   height: 0.35em;
   border-radius: 0.2em;
-  background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--primary) 35%, transparent));
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    color-mix(in srgb, var(--primary) 35%, transparent)
+  );
   opacity: 0.45;
   z-index: -1;
   transform: rotate(-0.5deg);
@@ -1162,7 +1228,11 @@
 .washi-tape-strip {
   height: 1px;
   border: none;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 20%, transparent), color-mix(in srgb, var(--primary) 8%, transparent));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 20%, transparent),
+    color-mix(in srgb, var(--primary) 8%, transparent)
+  );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1182,7 +1252,10 @@
     0 2px 6px -3px var(--shadow);
 }
 .surface::before,
-.surface::after { content: none; display: none; }
+.surface::after {
+  content: none;
+  display: none;
+}
 
 .dark .surface {
   /* No candy "lip" in dark mode — it reads as a bright glow. Just a faint candy
@@ -1200,22 +1273,26 @@
   color: #fff;
   border-radius: 9999px;
   background: var(--gel-color, var(--primary));
-  border: 2px solid color-mix(in srgb, var(--gel-color, var(--primary)) 64%, black);
+  border: 2px solid
+    color-mix(in srgb, var(--gel-color, var(--primary)) 64%, black);
   box-shadow:
     0 3px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
-    0 7px 14px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
+    0 7px 14px -5px
+      color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
 }
 .gel:hover:not(:disabled) {
   filter: brightness(1.04) saturate(1.05);
   box-shadow:
     0 3px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
-    0 9px 18px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 52%, transparent);
+    0 9px 18px -5px
+      color-mix(in srgb, var(--gel-color, var(--primary)) 52%, transparent);
 }
 .gel:active:not(:disabled) {
   /* sink the candy onto a shorter lip */
   box-shadow:
     0 1px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
-    0 3px 8px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
+    0 3px 8px -5px
+      color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
 }
 
 /* High-contrast / dyslexia modes: flatten decoration to solid for legibility */
@@ -1234,10 +1311,22 @@
 /* Sticker-book polka dots — soft two-tone background pattern (theme-tinted) */
 .kawaii-dots {
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--primary) 13%, transparent) 2.5px, transparent 3px),
-    radial-gradient(circle, color-mix(in srgb, var(--secondary) 11%, transparent) 2.5px, transparent 3px);
-  background-size: 38px 38px, 38px 38px;
-  background-position: 0 0, 19px 19px;
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--primary) 13%, transparent) 2.5px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--secondary) 11%, transparent) 2.5px,
+      transparent 3px
+    );
+  background-size:
+    38px 38px,
+    38px 38px;
+  background-position:
+    0 0,
+    19px 19px;
 }
 
 /* Dashed "cut-here" sticker border */
@@ -1246,37 +1335,47 @@
   border-radius: var(--radius-2xl);
 }
 
-:root.high-contrast .kawaii-dots { background-image: none; }
+:root.high-contrast .kawaii-dots {
+  background-image: none;
+}
 
 /* Brighter polka dots on dark backgrounds (incl. event themes) */
 .dark .kawaii-dots {
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--primary) 24%, transparent) 2.5px, transparent 3px),
-    radial-gradient(circle, color-mix(in srgb, var(--secondary) 20%, transparent) 2.5px, transparent 3px);
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--primary) 24%, transparent) 2.5px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--secondary) 20%, transparent) 2.5px,
+      transparent 3px
+    );
 }
 
-/* ─── Kawaii wallpaper ─────────────────────────────────────────────────────────
- * A classic Japanese sticker-sheet backdrop: a seamless star + sparkle tile,
- * gradient-tinted in the theme candy colours via a CSS mask (so it themes). Sits
- * in the SCROLLING layer (absolute, not fixed) so it travels with the page rather
- * than feeling like a detached void. Hidden in high-contrast for a clean a11y bg.
+/* ─── Page pattern (gingham check) ─────────────────────────────────────────────
+ * A soft gingham check for the page background. Placed on the scroll container
+ * (#app-scroll) so it scrolls natively with the content. Two perpendicular
+ * translucent stripe sets overlap into the classic 3-tone check, tinted from the
+ * theme so it recolours per palette. Hidden in high-contrast for a clean a11y bg.
  * ─────────────────────────────────────────────────────────────────────────────── */
-.kawaii-wallpaper {
-  --wp-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76'%3E%3Cg fill='%23000'%3E%3Cpath transform='translate(13 13) scale(0.9)' d='M11.48 3.5a.56.56 0 0 1 1.04 0l2.13 5.11c.08.2.27.33.47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 0 0-.19.56l1.29 5.38c.11.49-.42.88-.84.61l-4.73-2.88a.56.56 0 0 0-.58 0l-4.73 2.88c-.42.27-.95-.12-.84-.61l1.29-5.38a.56.56 0 0 0-.19-.56l-4.2-3.6c-.38-.33-.18-.95.32-.99l5.52-.44c.2-.02.39-.15.47-.35L11.48 3.5Z'/%3E%3Cpath transform='translate(43 41) scale(0.8)' d='M12 2.5c.4 0 .74.28.83.66l.86 3.6c.2.83.84 1.47 1.67 1.67l3.6.86a.86.86 0 0 1 0 1.66l-3.6.86c-.83.2-1.47.84-1.67 1.67l-.86 3.6a.86.86 0 0 1-1.66 0l-.86-3.6a2.14 2.14 0 0 0-1.67-1.67l-3.6-.86a.86.86 0 0 1 0-1.66l3.6-.86c.83-.2 1.47-.84 1.67-1.67l.86-3.6c.09-.38.43-.66.83-.66Z'/%3E%3C/g%3E%3C/svg%3E");
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary) 17%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 14%, transparent) 50%,
-    color-mix(in srgb, var(--secondary) 17%, transparent) 100%
-  );
-  -webkit-mask-image: var(--wp-tile);
-  mask-image: var(--wp-tile);
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-  -webkit-mask-size: 76px 76px;
-  mask-size: 76px 76px;
+.page-pattern {
+  --gp: color-mix(in srgb, var(--primary) 9%, transparent);
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(90deg, var(--gp) 0 16px, transparent 16px 32px),
+    repeating-linear-gradient(0deg, var(--gp) 0 16px, transparent 16px 32px);
+  /* "local" so the check scrolls natively with the content (no JS, no lag). */
+  background-attachment: local;
 }
-:root.high-contrast .kawaii-wallpaper { display: none; }
+/* Dark mode: keep the check very gentle on the deep base. */
+.dark .page-pattern {
+  --gp: color-mix(in srgb, var(--primary) 4%, transparent);
+}
+:root.high-contrast .page-pattern {
+  background-image: none;
+}
 
 /* ─── Cork bulletin board ──────────────────────────────────────────────────────
  * Light: a warm cream speckled cork (cards pop as white polaroids on cream).
@@ -1299,8 +1398,14 @@
     radial-gradient(circle, var(--cork-dot-a) 0 2px, transparent 3.1px),
     radial-gradient(circle, var(--cork-dot-b) 0 1.7px, transparent 2.7px),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='cork'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='5' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncG type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncB type='linear' slope='1.5' intercept='-0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23cork)' opacity='0.2'/%3E%3C/svg%3E");
-  background-size: 52px 52px, 52px 52px, 300px 300px;
-  background-position: 0 0, 26px 26px, 0 0;
+  background-size:
+    52px 52px,
+    52px 52px,
+    300px 300px;
+  background-position:
+    0 0,
+    26px 26px,
+    0 0;
   background-repeat: repeat, repeat, repeat;
   background-blend-mode: normal, normal, soft-light;
   box-shadow:
@@ -1336,7 +1441,11 @@
   height: 0.9rem;
   border-radius: 9999px;
   background:
-    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.85) 0 12%, transparent 40%),
+    radial-gradient(
+      circle at 34% 30%,
+      rgba(255, 255, 255, 0.85) 0 12%,
+      transparent 40%
+    ),
     var(--pin, var(--primary));
   box-shadow:
     0 0 0 1.5px color-mix(in srgb, var(--pin, var(--primary)) 60%, black),
@@ -1383,13 +1492,17 @@
   pointer-events: none;
 }
 @media (min-width: 640px) {
-  .journal::before { left: 2.5rem; }
+  .journal::before {
+    left: 2.5rem;
+  }
 }
 :root.high-contrast .journal {
   background-image: none;
   border-color: var(--border);
 }
-:root.high-contrast .journal::before { display: none; }
+:root.high-contrast .journal::before {
+  display: none;
+}
 
 /* Sticker text — chunky cream outline + soft drop, for big display headings.
    Color the fill with a normal text color class; the outline sits behind it. */
@@ -1417,7 +1530,9 @@
 }
 
 .hover-lift {
-  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 300ms ease;
 }
 
 .hover-lift:hover {
@@ -1454,7 +1569,9 @@
 
 /* Springy lift for interactive cards & nav — bouncier cousin of .hover-lift */
 .hover-bounce {
-  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 280ms ease;
+  transition:
+    transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 280ms ease;
 }
 .hover-bounce:hover {
   transform: translateY(-3px) scale(1.012) rotate(-0.4deg);
@@ -1472,35 +1589,68 @@
   align-items: center;
   gap: 0.3rem;
   border-radius: var(--radius-md);
-  box-shadow: 0 0 0 2px var(--card), 0 2px 6px -1px var(--shadow);
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 2px 6px -1px var(--shadow);
   transform: rotate(-2deg);
 }
-.sticker-r { transform: rotate(2deg); } /* alternate tilt for variety */
+.sticker-r {
+  transform: rotate(2deg);
+} /* alternate tilt for variety */
 
 /* Gentle attention wobble */
 @keyframes wobble {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
 }
-.animate-wobble { animation: wobble 0.5s ease-in-out; }
-.hover-wobble:hover { animation: wobble 0.5s ease-in-out; }
+.animate-wobble {
+  animation: wobble 0.5s ease-in-out;
+}
+.hover-wobble:hover {
+  animation: wobble 0.5s ease-in-out;
+}
 
 /* Pop-in entrance with a little overshoot */
 @keyframes pop-in {
-  0% { opacity: 0; transform: scale(0.8); }
-  70% { transform: scale(1.04); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
-.animate-pop-in { animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.animate-pop-in {
+  animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
 /* Squishy press for buttons */
 @keyframes boop {
-  0% { transform: scale(1); }
-  40% { transform: scale(0.94); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-.animate-boop { animation: boop 0.28s ease-out; }
+.animate-boop {
+  animation: boop 0.28s ease-out;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .hover-bounce,
@@ -1526,33 +1676,54 @@
    Tint via --bubble-tint (defaults to the theme primary). */
 .bubble {
   border-radius: 9999px;
-  background:
-    radial-gradient(circle at 32% 28%,
-      rgba(255, 255, 255, 0.92),
-      rgba(255, 255, 255, 0.12) 42%,
-      color-mix(in srgb, var(--bubble-tint, var(--primary)) 30%, transparent) 78%,
-      color-mix(in srgb, var(--bubble-tint, var(--primary)) 10%, transparent) 100%);
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.12) 42%,
+    color-mix(in srgb, var(--bubble-tint, var(--primary)) 30%, transparent) 78%,
+    color-mix(in srgb, var(--bubble-tint, var(--primary)) 10%, transparent) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.45);
   box-shadow:
     inset 0 0 6px -1px rgba(255, 255, 255, 0.55),
-    0 2px 8px -3px color-mix(in srgb, var(--bubble-tint, var(--primary)) 40%, transparent);
+    0 2px 8px -3px
+      color-mix(in srgb, var(--bubble-tint, var(--primary)) 40%, transparent);
 }
 
 /* Slow drift upward with a gentle sway — for ambient background bubbles */
 @keyframes bubble-rise {
-  0%   { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; }
-  12%  { opacity: var(--bubble-opacity, 0.45); }
-  50%  { transform: translateY(-50vh) translateX(12px) scale(1); }
-  88%  { opacity: var(--bubble-opacity, 0.45); }
-  100% { transform: translateY(-100vh) translateX(-8px) scale(1.05); opacity: 0; }
+  0% {
+    transform: translateY(0) translateX(0) scale(0.9);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--bubble-opacity, 0.45);
+  }
+  50% {
+    transform: translateY(-50vh) translateX(12px) scale(1);
+  }
+  88% {
+    opacity: var(--bubble-opacity, 0.45);
+  }
+  100% {
+    transform: translateY(-100vh) translateX(-8px) scale(1.05);
+    opacity: 0;
+  }
 }
-.animate-bubble-rise { animation: bubble-rise linear infinite; }
+.animate-bubble-rise {
+  animation: bubble-rise linear infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-bubble-rise { animation: none; opacity: 0; }
+  .animate-bubble-rise {
+    animation: none;
+    opacity: 0;
+  }
   /* arbitrary animate-[wiggle…] / animate-[float-gentle…] on mascots/decorations */
   [class*="wiggle"],
-  [class*="float-gentle"] { animation: none; }
+  [class*="float-gentle"] {
+    animation: none;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1574,13 +1745,18 @@
 }
 
 .washi-tape::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--accent),
+    var(--secondary)
+  );
   opacity: 0.5;
   z-index: 2;
   border-radius: 1.25rem 1.25rem 0 0;
@@ -1588,13 +1764,18 @@
 
 /* Dual gradient accent — top + bottom */
 .washi-tape-dual::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--secondary), var(--accent), var(--primary));
+  background: linear-gradient(
+    90deg,
+    var(--secondary),
+    var(--accent),
+    var(--primary)
+  );
   opacity: 0.3;
   z-index: 2;
   border-radius: 0 0 1.25rem 1.25rem;
@@ -1602,14 +1783,13 @@
 
 /* Subtle ruled lines for input fields */
 .notebook-lines {
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 27px,
-      color-mix(in srgb, var(--border) 50%, transparent) 27px,
-      color-mix(in srgb, var(--border) 50%, transparent) 28px
-    );
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 27px,
+    color-mix(in srgb, var(--border) 50%, transparent) 27px,
+    color-mix(in srgb, var(--border) 50%, transparent) 28px
+  );
   background-position: 0 8px;
 }
 
@@ -1619,38 +1799,63 @@
 }
 
 .watercolor-wash::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -30% -20%;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center,
+  background: radial-gradient(
+    ellipse at center,
     color-mix(in srgb, var(--primary) 6%, transparent),
     color-mix(in srgb, var(--accent) 3%, transparent) 50%,
-    transparent 70%);
+    transparent 70%
+  );
   filter: blur(40px);
   opacity: 0.6;
   animation: watercolor-breathe 12s ease-in-out infinite alternate;
 }
 
 @keyframes watercolor-breathe {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.08); opacity: 0.4; }
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.4;
+  }
 }
 
 /* Button press microinteraction */
 @keyframes stamp-press {
-  0% { transform: scale(1); }
-  40% { transform: scale(0.94); }
-  70% { transform: scale(1.02); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Decorative burst on actions */
 @keyframes ink-splash {
-  0% { transform: scale(0); opacity: 0.6; }
-  50% { transform: scale(1.2); opacity: 0.3; }
-  100% { transform: scale(1.8); opacity: 0; }
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 /* Active nav indicator — glowing dot */
@@ -1659,7 +1864,7 @@
 }
 
 .bookmark-ribbon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: -2px;
@@ -1671,7 +1876,9 @@
   border-radius: 0 4px 4px 0;
   opacity: 0.85;
   z-index: 3;
-  transition: height 200ms ease, opacity 200ms ease;
+  transition:
+    height 200ms ease,
+    opacity 200ms ease;
 }
 
 /* Corner accent — subtle rounded corners highlighting */
@@ -1681,7 +1888,7 @@
 
 .tape-corners::before,
 .tape-corners::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 14px;
   height: 14px;
@@ -1712,13 +1919,17 @@
 }
 
 .sticker-peel::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   right: 0;
   width: 12px;
   height: 12px;
-  background: linear-gradient(135deg, transparent 50%, color-mix(in srgb, var(--shadow) 30%, transparent) 50%);
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    color-mix(in srgb, var(--shadow) 30%, transparent) 50%
+  );
   border-radius: 0 0 1.25rem 0;
   z-index: 2;
 }
@@ -1729,7 +1940,7 @@
 }
 
 .ink-blot::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 4px;
   height: 4px;
@@ -1802,17 +2013,21 @@
 
 /* Mesh gradients */
 .page-bg::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--card) 30%, transparent) 0%, transparent 40%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--card) 30%, transparent) 0%,
+    transparent 40%
+  );
   transition: opacity 0.3s ease;
 }
 
 /* Noise overlay */
 .page-bg::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -1829,7 +2044,7 @@
     border-radius: var(--radius-2xl);
     box-shadow: var(--panel-shadow);
   }
-  
+
   /* glass-card: styled via border/shadow only — backdrop-blur removed for performance
      since glass cards don't overlap scrollable content */
 
@@ -1841,8 +2056,12 @@
 
 /* Shimmer Animation */
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 
 .animate-shimmer {
@@ -1863,15 +2082,27 @@
 
 /* Playful wiggle for loading states */
 @keyframes wiggle {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  25% { transform: translateX(4px) rotate(1.5deg); }
-  75% { transform: translateX(-4px) rotate(-1.5deg); }
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(4px) rotate(1.5deg);
+  }
+  75% {
+    transform: translateX(-4px) rotate(-1.5deg);
+  }
 }
 
 /* Gentle float for decorative elements (simpler than moogle float) */
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .animate-float-gentle {
@@ -1888,17 +2119,23 @@
 
 /* Mobile-optimized: transform only, no opacity animation */
 @keyframes float-moogle-simple {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 /* Desktop: full animation with opacity */
 @keyframes float-moogle {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: var(--float-opacity-min, 0.15);
     transform: translateY(0);
   }
-  50% { 
+  50% {
     opacity: var(--float-opacity-max, 0.25);
     transform: translateY(-15px);
   }
@@ -1920,17 +2157,23 @@
 
 /* Mobile-optimized subtle variant */
 @keyframes float-moogle-subtle-simple {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Desktop: full subtle animation with opacity */
 @keyframes float-moogle-subtle {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: var(--float-opacity-min, 0.06);
     transform: translateY(0);
   }
-  50% { 
+  50% {
     opacity: var(--float-opacity-max, 0.12);
     transform: translateY(-12px);
   }
@@ -1952,17 +2195,23 @@
 
 /* Mobile-optimized sparkle: simpler animation */
 @keyframes float-sparkle-simple {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-8px) scale(1.1); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+  }
 }
 
 /* Desktop: full sparkle animation */
 @keyframes float-sparkle {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.4;
     transform: translateY(0) scale(0.9) rotate(0deg);
   }
-  50% { 
+  50% {
     opacity: 0.8;
     transform: translateY(-10px) scale(1.1) rotate(10deg);
   }
@@ -1984,9 +2233,18 @@
 
 /* Slow ping animation for status indicators */
 @keyframes ping-slow {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .animate-ping-slow {
@@ -2005,12 +2263,12 @@
     animation: none;
     opacity: var(--float-opacity-max, 0.2);
   }
-  
+
   /* Disable craft animations for reduced motion */
   .watercolor-wash::before {
     animation: none;
   }
-  
+
   /* Keep visibility for status indicators */
   .animate-ping-slow {
     opacity: 1;
