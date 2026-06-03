@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredValue } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredValue, type CSSProperties } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'motion/react';
 import { Wifi, Loader2, Search, X } from 'lucide-react';
 
 // Shared components
-import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState, Tag } from '../components';
+import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState, Tag, KawaiiStar, KawaiiSparkle } from '../components';
 import { useEventsHub, type ConnectionStatus } from '../hooks';
 
 // Utils & Constants
@@ -343,7 +343,7 @@ export function Chronicle() {
         <div className="relative group">
           <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] group-focus-within:text-[var(--primary)] transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--primary)]/70 pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -352,26 +352,26 @@ export function Chronicle() {
             type="search"
             inputMode="search"
             enterKeyHint="search"
-            placeholder="Search the chronicle..."
+            placeholder="Search the chronicle, kupo~"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="
-              w-full pl-11 pr-10 py-3
-              bg-[var(--bg)]/60 hover:bg-[var(--bg)]
-              rounded-xl border border-[var(--border)]
+              w-full pl-11 pr-11 py-3
+              bg-[var(--bg)] rounded-2xl
+              border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]
               focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
               font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
-              focus:outline-none transition-all duration-300 touch-manipulation
+              focus:outline-none transition-all touch-manipulation
             "
             style={{ fontSize: '16px' }}
           />
           {searchInput && (
             <button
               onClick={handleClearSearch}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-[var(--text-subtle)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer touch-manipulation"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary)]/12 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
               aria-label="Clear search"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-[var(--primary)]" />
             </button>
           )}
         </div>
@@ -386,26 +386,20 @@ export function Chronicle() {
                 key={value}
                 onClick={() => handleToggleFilter(value)}
                 aria-pressed={isActive}
-                className="
+                className={`
                   inline-flex items-center gap-1.5
-                  px-3 py-1.5 rounded-md border text-sm font-soft font-medium
+                  px-3.5 py-1.5 rounded-full text-sm font-display font-bold
                   cursor-pointer transition-colors duration-200 touch-manipulation
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                "
+                  ${isActive ? 'gel text-white' : 'bg-[var(--card)] border-2 text-[var(--text)]'}
+                `}
                 style={isActive
-                  ? {
-                      color: config.hex,
-                      borderColor: `color-mix(in srgb, ${config.hex} 45%, transparent)`,
-                      background: `color-mix(in srgb, ${config.hex} 12%, transparent)`,
-                    }
-                  : {
-                      color: 'var(--text-muted)',
-                      borderColor: 'var(--border)',
-                    }}
+                  ? ({ '--gel-color': config.hex } as CSSProperties)
+                  : ({ borderColor: `color-mix(in srgb, ${config.hex} 32%, var(--card))` } as CSSProperties)}
               >
                 <config.Icon
                   className="w-3.5 h-3.5"
-                  style={{ color: config.hex }}
+                  style={{ color: isActive ? '#fff' : config.hex }}
                   aria-hidden="true"
                 />
                 <span>{label}</span>
@@ -415,10 +409,10 @@ export function Chronicle() {
           {hasActiveFilter && (
             <button
               onClick={() => setActiveFilter(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-soft font-medium text-[var(--text-subtle)] hover:text-[var(--primary)] cursor-pointer transition-colors touch-manipulation"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-display font-bold text-[var(--text-muted)] hover:text-[var(--primary)] active:text-[var(--primary)] cursor-pointer transition-colors touch-manipulation"
               aria-label="Clear filter"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
               Clear
             </button>
           )}
@@ -510,13 +504,31 @@ export function Chronicle() {
                 className="surface p-4 sm:p-6"
                 aria-label={`Entries from ${group.label}`}
               >
-                {/* Day header */}
+                {/* Day header — sticker tab */}
                 <div className="flex items-center gap-3 mb-4">
-                  <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)] whitespace-nowrap">
-                    {group.label}
-                  </h2>
-                  <span className="divider flex-1" aria-hidden="true" />
-                  <Tag>{group.items.length}</Tag>
+                  <div
+                    className="sticker px-3 py-1.5"
+                    style={{
+                      backgroundColor: 'color-mix(in srgb, var(--primary) 14%, var(--card))',
+                      border: '2px solid color-mix(in srgb, var(--primary) 30%, var(--card))',
+                    }}
+                  >
+                    <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+                    <h2 className="font-display font-bold text-sm sm:text-base text-[var(--text)] leading-none whitespace-nowrap">
+                      {group.label}
+                    </h2>
+                    <span
+                      className="text-xs font-display font-bold px-1.5 py-0.5 rounded-full leading-none"
+                      style={{
+                        backgroundColor: 'color-mix(in srgb, var(--primary) 20%, var(--card))',
+                        color: 'var(--primary)',
+                      }}
+                    >
+                      {group.items.length}
+                    </span>
+                  </div>
+                  <div className="flex-1 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_22%,transparent)]" aria-hidden="true" />
+                  <KawaiiStar className="w-4 h-4 text-[var(--accent)]" />
                 </div>
 
                 {/* Entries on a connecting thread */}
