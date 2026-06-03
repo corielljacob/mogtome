@@ -34,8 +34,6 @@ export default defineConfig({
           'query': ['@tanstack/react-query'],
           // Framer Motion - large animation library
           'motion': ['motion'],
-          // Virtualization
-          'virtual': ['@tanstack/react-virtual'],
         },
       },
     },

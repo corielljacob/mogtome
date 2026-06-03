@@ -24,6 +24,12 @@ const baseUserPayload = {
   memberPortraitUrl: 'https://example.com/portrait.jpg',
 };
 
+const knightUserPayload = {
+  memberName: 'Test User',
+  memberRank: 'Moogle Knight',
+  memberPortraitUrl: 'https://example.com/portrait.jpg',
+};
+
 describe('KnightRoute', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -118,7 +124,7 @@ describe('KnightRoute', () => {
 
   it('renders content for user with temporary knighthood', async () => {
     const token = createMockJwt({
-      ...baseUserPayload,
+      ...knightUserPayload,
       hasKnighthood: false,
       hasTemporaryKnighthood: true,
     });
@@ -211,7 +217,7 @@ describe('KnightRoute', () => {
 
   it('renders complex children when authorized', async () => {
     const token = createMockJwt({
-      ...baseUserPayload,
+      ...knightUserPayload,
       hasKnighthood: true,
       hasTemporaryKnighthood: false,
     });

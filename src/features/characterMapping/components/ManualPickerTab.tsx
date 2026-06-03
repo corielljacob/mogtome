@@ -1,14 +1,9 @@
-import { useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  User,
-  MessageSquare,
-  Inbox,
-} from 'lucide-react';
+import { Inbox, MessageSquare } from 'lucide-react';
 import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
 import { CharacterItem } from './CharacterItem';
 import { DiscordUserItem } from './DiscordUserItem';
 import { SearchInput } from './SearchInput';
+import FfxivIcon from '../../../assets/icons/ffxiv.png';
 
 interface ManualPickerTabProps {
   // Selection state
@@ -30,9 +25,6 @@ interface ManualPickerTabProps {
   onSelectDiscordUser: (user: UnmappedDiscordUser) => void;
 }
 
-const ITEM_HEIGHT = 64; // p-3 (24px padding) + 40px content
-const ITEM_GAP = 8; // space-y-2
-
 export function ManualPickerTab({
   selectedCharacter,
   selectedDiscordUser,
@@ -45,23 +37,6 @@ export function ManualPickerTab({
   onSelectCharacter,
   onSelectDiscordUser,
 }: ManualPickerTabProps) {
-  const characterScrollRef = useRef<HTMLDivElement>(null);
-  const discordScrollRef = useRef<HTMLDivElement>(null);
-
-  const characterVirtualizer = useVirtualizer({
-    count: sortedCharacters.length,
-    getScrollElement: () => characterScrollRef.current,
-    estimateSize: () => ITEM_HEIGHT + ITEM_GAP,
-    overscan: 10,
-  });
-
-  const discordVirtualizer = useVirtualizer({
-    count: sortedDiscordUsers.length,
-    getScrollElement: () => discordScrollRef.current,
-    estimateSize: () => ITEM_HEIGHT + ITEM_GAP,
-    overscan: 10,
-  });
-
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Two column picker */}
@@ -69,7 +44,7 @@ export function ManualPickerTab({
         {/* Characters column */}
         <div className="flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-            <User className="w-4 h-4 text-[var(--primary)]" />
+            <img src={FfxivIcon} alt="" className="w-5 h-5" />
             <h3 className="font-soft font-semibold text-sm text-[var(--text)]">
               Characters
             </h3>
@@ -84,10 +59,7 @@ export function ManualPickerTab({
             placeholder="Search characters..."
           />
 
-          <div
-            ref={characterScrollRef}
-            className="flex-1 overflow-y-auto pr-1 min-h-0"
-          >
+          <div className="flex-1 overflow-y-auto pr-1 min-h-0">
             {sortedCharacters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
@@ -98,36 +70,17 @@ export function ManualPickerTab({
                 </p>
               </div>
             ) : (
-              <div
-                style={{
-                  height: `${characterVirtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
-                }}
-              >
-                {characterVirtualizer.getVirtualItems().map((virtualItem) => {
-                  const character = sortedCharacters[virtualItem.index];
-                  return (
-                    <div
-                      key={character.characterId}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        transform: `translateY(${virtualItem.start}px)`,
-                      }}
-                    >
-                      <CharacterItem
-                        character={character}
-                        isSelected={
-                          selectedCharacter?.characterId === character.characterId
-                        }
-                        onClick={() => onSelectCharacter(character)}
-                      />
-                    </div>
-                  );
-                })}
+              <div className="space-y-2">
+                {sortedCharacters.map((character) => (
+                  <CharacterItem
+                    key={character.characterId}
+                    character={character}
+                    isSelected={
+                      selectedCharacter?.characterId === character.characterId
+                    }
+                    onClick={() => onSelectCharacter(character)}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -151,10 +104,7 @@ export function ManualPickerTab({
             placeholder="Search Discord users..."
           />
 
-          <div
-            ref={discordScrollRef}
-            className="flex-1 overflow-y-auto pr-1 min-h-0"
-          >
+          <div className="flex-1 overflow-y-auto pr-1 min-h-0">
             {sortedDiscordUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
@@ -165,36 +115,17 @@ export function ManualPickerTab({
                 </p>
               </div>
             ) : (
-              <div
-                style={{
-                  height: `${discordVirtualizer.getTotalSize()}px`,
-                  width: '100%',
-                  position: 'relative',
-                }}
-              >
-                {discordVirtualizer.getVirtualItems().map((virtualItem) => {
-                  const user = sortedDiscordUsers[virtualItem.index];
-                  return (
-                    <div
-                      key={user.discordId}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        transform: `translateY(${virtualItem.start}px)`,
-                      }}
-                    >
-                      <DiscordUserItem
-                        user={user}
-                        isSelected={
-                          selectedDiscordUser?.discordId === user.discordId
-                        }
-                        onClick={() => onSelectDiscordUser(user)}
-                      />
-                    </div>
-                  );
-                })}
+              <div className="space-y-2">
+                {sortedDiscordUsers.map((user) => (
+                  <DiscordUserItem
+                    key={user.discordId}
+                    user={user}
+                    isSelected={
+                      selectedDiscordUser?.discordId === user.discordId
+                    }
+                    onClick={() => onSelectDiscordUser(user)}
+                  />
+                ))}
               </div>
             )}
           </div>
