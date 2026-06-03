@@ -523,9 +523,9 @@
 
 /* ── Heavensturn (January) — Red & Gold New Year ───────────────────────────── */
 .event-heavensturn {
-  --primary: #c0392b;
-  --secondary: #c8902c;
-  --accent: #e6b84c;
+  --primary: #e0503f;
+  --secondary: #e8a634;
+  --accent: #f5cf5c;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -534,9 +534,9 @@
 }
 
 .dark.event-heavensturn {
-  --primary: #e8645a;
-  --secondary: #e6b24a;
-  --accent: #f2d27a;
+  --primary: #f0756a;
+  --secondary: #f3c356;
+  --accent: #f8dd8a;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -622,9 +622,9 @@
 /* ── Make It Rain Campaign (June) — Gold Saucer Glamour ────────────────────── */
 .event-make-it-rain {
   --bg: #fffbeb;
-  --primary: #c8911a;
-  --secondary: #7b45c9;
-  --accent: #f2ce4a;
+  --primary: #d18e1e;
+  --secondary: #9b6fd6;
+  --accent: #f5cf52;
   --shadow: color-mix(in srgb, var(--primary) 20%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 16%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -634,8 +634,8 @@
 
 .dark.event-make-it-rain {
   --bg: #1a1810;
-  --primary: #f0c234;
-  --secondary: #a87fe6;
+  --primary: #f0c63e;
+  --secondary: #b491ec;
   --accent: #f8de7a;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
@@ -647,9 +647,9 @@
 /* ── Moonfire Faire (August) — Summer Blaze & Ocean ────────────────────────── */
 .event-moonfire-faire {
   --bg: #fffaf5;
-  --primary: #e8602a;
-  --secondary: #1f95c9;
-  --accent: #f2d27a;
+  --primary: #e8682e;
+  --secondary: #2fa3d4;
+  --accent: #f5d27a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -660,7 +660,7 @@
 .dark.event-moonfire-faire {
   --bg: #1a1614;
   --primary: #f5874a;
-  --secondary: #3fb4e0;
+  --secondary: #4fbce6;
   --accent: #f8de96;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
@@ -671,9 +671,9 @@
 
 /* ── The Rising (August) — Meteor Red & Crystal Blue ───────────────────────── */
 .event-the-rising {
-  --primary: #c73a35;
-  --secondary: #2e63c4;
-  --accent: #e0a340;
+  --primary: #e0503f;
+  --secondary: #3f7fd6;
+  --accent: #f0b94a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -682,9 +682,9 @@
 }
 
 .dark.event-the-rising {
-  --primary: #ec6a5c;
-  --secondary: #5a8fe6;
-  --accent: #f2c566;
+  --primary: #f0756a;
+  --secondary: #6ba0ec;
+  --accent: #f5cd6e;
   --shadow: color-mix(in srgb, var(--primary) 22%, transparent);
   --gradient-1: color-mix(in srgb, var(--primary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--secondary) 10%, transparent);

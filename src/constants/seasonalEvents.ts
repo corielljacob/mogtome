@@ -129,7 +129,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
       "Held in celebration of the New Year, inspired by the Chinese Zodiac animal of the coming year.",
     icon: Sparkles,
     dateRange: { startMonth: 1, startDay: 1, endMonth: 1, endDay: 15 },
-    preview: { primary: "#C0392B", secondary: "#C8902C", accent: "#E6B84C" },
+    preview: { primary: "#E0503F", secondary: "#E8A634", accent: "#F5CF5C" },
     kupoQuotes: [
       "Happy New Year, kupo!",
       "May fortune smile on you, kupo~",
@@ -418,7 +418,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
       "Increases MGP earned through activities within the Gold Saucer.",
     icon: Coins,
     dateRange: { startMonth: 5, startDay: 29, endMonth: 6, endDay: 24 },
-    preview: { primary: "#C8911A", secondary: "#7B45C9", accent: "#F2CE4A" },
+    preview: { primary: "#D18E1E", secondary: "#9B6FD6", accent: "#F5CF52" },
     kupoQuotes: [
       "Jackpot, kupo!",
       "Lady luck smiles on you, kupo~",
@@ -495,7 +495,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
       "A celebration of all things Summer, usually involves activities at Costa Del Sol.",
     icon: Sun,
     dateRange: { startMonth: 8, startDay: 1, endMonth: 8, endDay: 18 },
-    preview: { primary: "#E8602A", secondary: "#1F95C9", accent: "#F2D27A" },
+    preview: { primary: "#E8682E", secondary: "#2FA3D4", accent: "#F5D27A" },
     kupoQuotes: [
       "Summer vibes, kupo!",
       "Beach day, kupo~!",
@@ -572,7 +572,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
       "Held to celebrate the anniversary of A Realm Reborn, usually during the last week of August.",
     icon: Flame,
     dateRange: { startMonth: 8, startDay: 22, endMonth: 8, endDay: 31 },
-    preview: { primary: "#C73A35", secondary: "#2E63C4", accent: "#E0A340" },
+    preview: { primary: "#E0503F", secondary: "#3F7FD6", accent: "#F0B94A" },
     kupoQuotes: [
       "The realm is reborn, kupo!",
       "Remember, reflect, rejoice, kupo~",
