@@ -3,11 +3,14 @@
  * and decorative symbols out of FFXIV + Discord display names. The multi-codepoint
  * sequences (ZWJ, variation selectors, surrogate pairs) are deliberate, and the
  * normalization behaviour is locked down by the matching unit tests. */
-import type { UnmappedCharacter, UnmappedDiscordUser } from '../api/characterMapping';
+import type {
+  UnmappedCharacter,
+  UnmappedDiscordUser,
+} from "../api/characterMapping";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type MatchConfidence = 'exact' | 'high' | 'medium' | 'low';
+export type MatchConfidence = "exact" | "high" | "medium" | "low";
 
 export interface MatchPair {
   character: UnmappedCharacter;
@@ -36,9 +39,12 @@ const EMOJI_RE =
 /** Strip emojis, decorative Unicode, and common decorative punctuation */
 function stripDecorative(s: string): string {
   return s
-    .replace(EMOJI_RE, '')
-    .replace(/[★☆♡♥❤✦✧✩✪✫✬✭✮✯✰⭐❇✨💫🌟🌸🌹🌺🌻🌼🌷🍀🍃🔥💀💖💗💘💝💞💟♠♣♦♧♤♢⚔️🗡️🛡️⚜️✿❀❁❂❃。°•.:*~`]/g, '')
-    .replace(/[|()[\]{}<>]/g, '')
+    .replace(EMOJI_RE, "")
+    .replace(
+      /[★☆♡♥❤✦✧✩✪✫✬✭✮✯✰⭐❇✨💫🌟🌸🌹🌺🌻🌼🌷🍀🍃🔥💀💖💗💘💝💞💟♠♣♦♧♤♢⚔️🗡️🛡️⚜️✿❀❁❂❃。°•.:*~`]/g,
+      "",
+    )
+    .replace(/[|()[\]{}<>]/g, "")
     .trim();
 }
 
@@ -46,7 +52,7 @@ function stripDecorative(s: string): string {
 export function normalizeName(raw: string): string {
   let n = stripDecorative(raw);
   // Collapse multiple spaces / special whitespace
-  n = n.replace(/\s+/g, ' ').trim().toLowerCase();
+  n = n.replace(/\s+/g, " ").trim().toLowerCase();
   return n;
 }
 
@@ -86,9 +92,12 @@ function diceCoefficient(a: string, b: string): number {
  * Check if all tokens of `subset` appear somewhere inside `superset` tokens.
  * Returns 1 if every token is found, otherwise fraction of tokens found.
  */
-function tokenContainment(subsetTokens: string[], supersetTokens: string[]): number {
+function tokenContainment(
+  subsetTokens: string[],
+  supersetTokens: string[],
+): number {
   if (subsetTokens.length === 0) return 0;
-  const joined = supersetTokens.join(' ');
+  const joined = supersetTokens.join(" ");
   let found = 0;
   for (const t of subsetTokens) {
     if (joined.includes(t)) found++;
@@ -98,7 +107,7 @@ function tokenContainment(subsetTokens: string[], supersetTokens: string[]): num
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
-const EXACT_THRESHOLD = 0.92;    // score >= this → exact
+const EXACT_THRESHOLD = 0.92; // score >= this → exact
 const SUGGESTED_THRESHOLD = 0.35; // score >= this → suggested
 
 /**
@@ -118,8 +127,8 @@ export function scoreMatch(characterName: string, discordNick: string): number {
   const dTokens = tokenize(dNorm);
 
   // FFXIV names are always "First Last"
-  const cFirst = cTokens[0] ?? '';
-  const cLast = cTokens[1] ?? '';
+  const cFirst = cTokens[0] ?? "";
+  const cLast = cTokens[1] ?? "";
 
   // 2. Discord nick is just the first name
   if (dTokens.length === 1 && dTokens[0] === cFirst && cFirst.length >= 3) {
@@ -172,7 +181,10 @@ export function computeMatches(
 
   for (let ci = 0; ci < characters.length; ci++) {
     for (let di = 0; di < discordUsers.length; di++) {
-      const s = scoreMatch(characters[ci].name, discordUsers[di].serverNickName);
+      const s = scoreMatch(
+        characters[ci].name,
+        discordUsers[di].serverNickName,
+      );
       if (s >= SUGGESTED_THRESHOLD) {
         scores.push({ charIdx: ci, discIdx: di, score: s });
       }
@@ -191,9 +203,13 @@ export function computeMatches(
     if (usedChars.has(charIdx) || usedDisc.has(discIdx)) continue;
 
     const confidence: MatchConfidence =
-      score >= EXACT_THRESHOLD ? 'exact' :
-      score >= 0.7            ? 'high'  :
-      score >= 0.5            ? 'medium' : 'low';
+      score >= EXACT_THRESHOLD
+        ? "exact"
+        : score >= 0.7
+          ? "high"
+          : score >= 0.5
+            ? "medium"
+            : "low";
 
     const pair: MatchPair = {
       character: characters[charIdx],
@@ -202,7 +218,7 @@ export function computeMatches(
       score,
     };
 
-    if (confidence === 'exact') {
+    if (confidence === "exact") {
       exactMatches.push(pair);
       usedChars.add(charIdx);
       usedDisc.add(discIdx);
@@ -218,7 +234,12 @@ export function computeMatches(
   const unmatchedCharacters = characters.filter((_, i) => !usedChars.has(i));
   const unmatchedDiscordUsers = discordUsers.filter((_, i) => !usedDisc.has(i));
 
-  return { exactMatches, suggestedMatches, unmatchedCharacters, unmatchedDiscordUsers };
+  return {
+    exactMatches,
+    suggestedMatches,
+    unmatchedCharacters,
+    unmatchedDiscordUsers,
+  };
 }
 
 /**
@@ -233,9 +254,13 @@ export function rankMatchesForCharacter(
     .map((u) => {
       const score = scoreMatch(character.name, u.serverNickName);
       const confidence: MatchConfidence =
-        score >= EXACT_THRESHOLD ? 'exact' :
-        score >= 0.7            ? 'high'  :
-        score >= 0.5            ? 'medium' : 'low';
+        score >= EXACT_THRESHOLD
+          ? "exact"
+          : score >= 0.7
+            ? "high"
+            : score >= 0.5
+              ? "medium"
+              : "low";
       return { ...u, confidence, score };
     })
     .filter((u) => u.score >= SUGGESTED_THRESHOLD)
@@ -250,9 +275,13 @@ export function rankMatchesForDiscordUser(
     .map((c) => {
       const score = scoreMatch(c.name, discordUser.serverNickName);
       const confidence: MatchConfidence =
-        score >= EXACT_THRESHOLD ? 'exact' :
-        score >= 0.7            ? 'high'  :
-        score >= 0.5            ? 'medium' : 'low';
+        score >= EXACT_THRESHOLD
+          ? "exact"
+          : score >= 0.7
+            ? "high"
+            : score >= 0.5
+              ? "medium"
+              : "low";
       return { ...c, confidence, score };
     })
     .filter((c) => c.score >= SUGGESTED_THRESHOLD)

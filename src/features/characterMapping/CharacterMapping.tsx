@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Link2,
   Loader2,
@@ -13,15 +13,15 @@ import {
   Sparkles,
   ArrowLeft,
   ChevronRight,
-} from 'lucide-react';
-import { ContentCard } from '../../components/ContentCard';
-import { useCharacterMapping, useManualPicker } from './hooks';
-import { EmptyState, AutoMatchesTab, ManualPickerTab } from './components';
-import type { TabId } from './types';
+} from "lucide-react";
+import { ContentCard } from "../../components/ContentCard";
+import { useCharacterMapping, useManualPicker } from "./hooks";
+import { EmptyState, AutoMatchesTab, ManualPickerTab } from "./components";
+import type { TabId } from "./types";
 
 export function CharacterMapping() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>('matches');
+  const [activeTab, setActiveTab] = useState<TabId>("matches");
 
   // -- Custom hooks -----------------------------------------------------------
 
@@ -67,7 +67,7 @@ export function CharacterMapping() {
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
@@ -77,10 +77,10 @@ export function CharacterMapping() {
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === "Escape") setIsOpen(false);
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [isOpen]);
 
   // -- Handlers ---------------------------------------------------------------
@@ -88,7 +88,10 @@ export function CharacterMapping() {
   const handleManualConfirm = useCallback(async () => {
     if (!selectedCharacter || !selectedDiscordUser) return;
     try {
-      await mapManually(selectedCharacter.characterId, selectedDiscordUser.discordId);
+      await mapManually(
+        selectedCharacter.characterId,
+        selectedDiscordUser.discordId,
+      );
       resetPicker();
     } catch {
       // Error is surfaced via mappingError from the hook
@@ -101,7 +104,7 @@ export function CharacterMapping() {
   }, [resetPicker, refresh]);
 
   const handleSwitchToManual = useCallback(() => {
-    setActiveTab('manual');
+    setActiveTab("manual");
   }, []);
 
   const hasAnyUnmapped = allCharacters.length > 0 || allDiscordUsers.length > 0;
@@ -112,7 +115,7 @@ export function CharacterMapping() {
     <div
       onClick={() => setIsOpen(true)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           setIsOpen(true);
         }
@@ -252,7 +255,7 @@ export function CharacterMapping() {
                 aria-label="Refresh unmapped lists"
               >
                 <RefreshCw
-                  className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`}
+                  className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
                 />
               </button>
             </div>
@@ -294,15 +297,15 @@ export function CharacterMapping() {
                   {/* Tab bar */}
                   <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
                     <button
-                      onClick={() => setActiveTab('matches')}
+                      onClick={() => setActiveTab("matches")}
                       className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
                         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                         ${
-                          activeTab === 'matches'
-                            ? 'bg-[var(--card)] text-[var(--text)] shadow-sm'
-                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                          activeTab === "matches"
+                            ? "bg-[var(--card)] text-[var(--text)] shadow-sm"
+                            : "text-[var(--text-muted)] hover:text-[var(--text)]"
                         }
                       `}
                     >
@@ -315,15 +318,15 @@ export function CharacterMapping() {
                       )}
                     </button>
                     <button
-                      onClick={() => setActiveTab('manual')}
+                      onClick={() => setActiveTab("manual")}
                       className={`
                         flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                         text-sm font-soft font-medium transition-all cursor-pointer
                         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                         ${
-                          activeTab === 'manual'
-                            ? 'bg-[var(--card)] text-[var(--text)] shadow-sm'
-                            : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                          activeTab === "manual"
+                            ? "bg-[var(--card)] text-[var(--text)] shadow-sm"
+                            : "text-[var(--text-muted)] hover:text-[var(--text)]"
                         }
                       `}
                     >
@@ -333,7 +336,7 @@ export function CharacterMapping() {
                   </div>
 
                   {/* Tab content */}
-                  {activeTab === 'matches' && (
+                  {activeTab === "matches" && (
                     <AutoMatchesTab
                       visibleExactMatches={visibleExactMatches}
                       visibleSuggestedMatches={visibleSuggestedMatches}
@@ -347,7 +350,7 @@ export function CharacterMapping() {
                     />
                   )}
 
-                  {activeTab === 'manual' && (
+                  {activeTab === "manual" && (
                     <ManualPickerTab
                       selectedCharacter={selectedCharacter}
                       selectedDiscordUser={selectedDiscordUser}
@@ -370,10 +373,10 @@ export function CharacterMapping() {
           <AnimatePresence>
             {(selectedCharacter || selectedDiscordUser) && (
               <motion.div
-                initial={{ y: '100%' }}
+                initial={{ y: "100%" }}
                 animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/50 bg-[var(--bg)]/80"
               >
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3">
@@ -383,19 +386,21 @@ export function CharacterMapping() {
                       <p className="text-sm text-[var(--text)] truncate">
                         {selectedCharacter && selectedDiscordUser ? (
                           <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{' '}
-                            <strong>{selectedDiscordUser.serverNickName}</strong>
+                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
+                            <strong>
+                              {selectedDiscordUser.serverNickName}
+                            </strong>
                           </>
                         ) : selectedCharacter ? (
                           <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{' '}
+                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
                             Pick a Discord account
                           </>
                         ) : (
                           <>
                             <strong>
                               {selectedDiscordUser!.serverNickName}
-                            </strong>{' '}
+                            </strong>{" "}
                             &rarr; Pick a character
                           </>
                         )}
@@ -434,7 +439,7 @@ export function CharacterMapping() {
                         ) : (
                           <>
                             <Link2 className="w-5 h-5" />
-                            Link {selectedCharacter?.name} to{' '}
+                            Link {selectedCharacter?.name} to{" "}
                             {selectedDiscordUser?.serverNickName}
                           </>
                         )}

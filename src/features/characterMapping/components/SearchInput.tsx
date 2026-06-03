@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
 interface SearchInputProps {
   value: string;
@@ -6,7 +6,11 @@ interface SearchInputProps {
   placeholder: string;
 }
 
-export function SearchInput({ value, onChange, placeholder }: SearchInputProps) {
+export function SearchInput({
+  value,
+  onChange,
+  placeholder,
+}: SearchInputProps) {
   return (
     <div className="relative mb-3 flex-shrink-0">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />

@@ -1,8 +1,8 @@
-import { motion } from 'motion/react';
-import { Loader2, Check, X, ArrowDown } from 'lucide-react';
-import type { MatchPair } from '../types';
-import { ConfidenceBadge } from './ConfidenceBadge';
-import { DiscordIcon } from "../../../../src/components/DiscordIcon"
+import { motion } from "motion/react";
+import { Loader2, Check, X, ArrowDown } from "lucide-react";
+import type { MatchPair } from "../types";
+import { ConfidenceBadge } from "./ConfidenceBadge";
+import { DiscordIcon } from "../../../../src/components/DiscordIcon";
 import FfxivIcon from "../../../assets/icons/ffxiv.png";
 
 interface MatchPairCardProps {

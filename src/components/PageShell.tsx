@@ -1,15 +1,15 @@
-import type { ReactNode } from 'react';
-import { Heart, RefreshCw, Sparkles, X } from 'lucide-react';
-import { StoryDivider } from './StoryDivider';
-import { FloatingSparkles } from './FloatingSparkles';
-import { FloatingBubbles } from './FloatingBubbles';
-import { SimpleFloatingMoogles } from './FloatingMoogles';
-import { ContentCard } from './ContentCard';
-import { KawaiiSparkle, KawaiiBow, KawaiiStar } from './kawaiiMotifs';
+import type { ReactNode } from "react";
+import { Heart, RefreshCw, Sparkles, X } from "lucide-react";
+import { StoryDivider } from "./StoryDivider";
+import { FloatingSparkles } from "./FloatingSparkles";
+import { FloatingBubbles } from "./FloatingBubbles";
+import { SimpleFloatingMoogles } from "./FloatingMoogles";
+import { ContentCard } from "./ContentCard";
+import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "./kawaiiMotifs";
 
-import pushingMoogles from '../assets/moogles/moogles pushing.webp';
-import deadMoogle from '../assets/moogles/dead moogle.webp';
-import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
+import pushingMoogles from "../assets/moogles/moogles pushing.webp";
+import deadMoogle from "../assets/moogles/dead moogle.webp";
+import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PageLayout - Consistent page wrapper with background decorations
@@ -25,29 +25,61 @@ interface PageLayoutProps {
   className?: string;
 }
 
-export function PageLayout({ 
-  children, 
+export function PageLayout({
+  children,
   moogles,
-  maxWidth = 'max-w-7xl',
-  className = '',
+  maxWidth = "max-w-7xl",
+  className = "",
 }: PageLayoutProps) {
   return (
     <div className="min-h-full relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Background gradient overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_10%,transparent)_0%,_transparent_32%),linear-gradient(180deg,_color-mix(in_srgb,var(--card)_12%,transparent)_0%,_transparent_36%)]" />
-      
-      {/* Sticker-book polka-dot backdrop */}
-      <div className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-70" aria-hidden="true" />
+      {/* Page backdrop — FIXED so it sits behind the whole app (nav region too),
+          not just the scrolling content. */}
+      <div
+        className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_10%,transparent)_0%,_transparent_32%),linear-gradient(180deg,_color-mix(in_srgb,var(--card)_12%,transparent)_0%,_transparent_36%)]"
+        aria-hidden="true"
+      />
+      <div
+        className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
+        <div
+          className="absolute -top-40 -left-32 w-[42rem] h-[42rem] rounded-full opacity-60"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--primary) 17%, transparent) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute top-1/4 -right-40 w-[46rem] h-[46rem] rounded-full opacity-55"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--secondary) 16%, transparent) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute -bottom-48 left-1/5 w-[40rem] h-[40rem] rounded-full opacity-50"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 70%)",
+          }}
+        />
+      </div>
 
       {/* Floating background decorations */}
-      {moogles && <SimpleFloatingMoogles primarySrc={moogles.primary} secondarySrc={moogles.secondary} />}
+      {moogles && (
+        <SimpleFloatingMoogles
+          primarySrc={moogles.primary}
+          secondarySrc={moogles.secondary}
+        />
+      )}
       <FloatingSparkles />
       <FloatingBubbles />
 
-      <div className={`relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10 ${className}`}>
-        <div className={`${maxWidth} mx-auto`}>
-          {children}
-        </div>
+      <div
+        className={`relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10 ${className}`}
+      >
+        <div className={`${maxWidth} mx-auto`}>{children}</div>
       </div>
     </div>
   );
@@ -67,23 +99,21 @@ interface PageHeaderProps {
   /** Show a Heart icon next to the subtitle */
   showHeart?: boolean;
   /** Size of the story divider */
-  dividerSize?: 'sm' | 'md' | 'lg';
+  dividerSize?: "sm" | "md" | "lg";
   /** Extra content after the subtitle (e.g. member count badge) */
   children?: ReactNode;
 }
 
-export function PageHeader({ 
-  opener, 
-  title, 
-  subtitle, 
+export function PageHeader({
+  opener,
+  title,
+  subtitle,
   showHeart = true,
-  dividerSize = 'sm',
+  dividerSize = "sm",
   children,
 }: PageHeaderProps) {
   return (
-    <header
-      className="relative text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]"
-    >
+    <header className="relative text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]">
       {/* Corner-peeking moogle (desktop) */}
       <img
         src={lilGuyMoogle}
@@ -93,24 +123,23 @@ export function PageHeader({
       />
 
       {/* Kawaii bow + sparkles accent */}
-      <div className="flex items-center justify-center gap-1.5 mb-2" aria-hidden="true">
+      <div
+        className="flex items-center justify-center gap-1.5 mb-2"
+        aria-hidden="true"
+      >
         <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
         <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
         <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
       </div>
 
       {opener && (
-        <p
-          className="eyebrow-script text-xl sm:text-2xl md:text-3xl text-[var(--secondary)]/90 mb-3 sm:mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]"
-        >
+        <p className="eyebrow-script text-xl sm:text-2xl md:text-3xl text-[var(--secondary)]/90 mb-3 sm:mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]">
           {opener}
         </p>
       )}
 
       <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3 sm:mb-4 text-[var(--text)]">
-        <span className="text-highlight">
-          {title}
-        </span>
+        <span className="text-highlight">{title}</span>
       </h1>
 
       {subtitle && (
@@ -140,11 +169,13 @@ interface PageFooterProps {
   closing?: string;
 }
 
-export function PageFooter({ message, closing = '~ fin ~' }: PageFooterProps) {
+export function PageFooter({ message, closing = "~ fin ~" }: PageFooterProps) {
   return (
-    <footer 
-      className="text-center mt-16 pt-8" 
-      style={{ paddingBottom: 'calc(2rem + var(--safe-area-inset-bottom, 0px))' }}
+    <footer
+      className="text-center mt-16 pt-8"
+      style={{
+        paddingBottom: "calc(2rem + var(--safe-area-inset-bottom, 0px))",
+      }}
     >
       <StoryDivider className="mx-auto mb-6" size="sm" />
       <p className="eyebrow-script text-2xl text-[var(--text-muted)] flex items-center justify-center gap-2">
@@ -183,7 +214,10 @@ export function SectionLabel({ label, badge, icon }: SectionLabelProps) {
       </h2>
       {badge}
       <div className="divider flex-1" aria-hidden="true" />
-      <KawaiiStar className="w-4 h-4 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+      <KawaiiStar
+        className="w-4 h-4 shrink-0 text-[var(--accent)]"
+        aria-hidden="true"
+      />
     </div>
   );
 }
@@ -201,14 +235,21 @@ interface LoadingStateProps {
 
 export function LoadingState({ message, imageSrc }: LoadingStateProps) {
   return (
-    <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
+    <ContentCard
+      className="text-center py-16"
+      aria-busy={true}
+      aria-live="polite"
+    >
       <img
         src={imageSrc || pushingMoogles}
         alt=""
         className="w-40 md:w-52 mx-auto mb-2 animate-[wiggle_0.7s_ease-in-out_infinite]"
         aria-hidden="true"
       />
-      <p className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-1 select-none" aria-hidden="true">
+      <p
+        className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-1 select-none"
+        aria-hidden="true"
+      >
         (๑•̀ㅂ•́)و
       </p>
       <p
@@ -241,7 +282,10 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
         className="w-40 h-40 mx-auto mb-2 object-contain animate-[float-gentle_3.5s_ease-in-out_infinite]"
         aria-hidden="true"
       />
-      <p className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-2 select-none" aria-hidden="true">
+      <p
+        className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-2 select-none"
+        aria-hidden="true"
+      >
         (╥﹏╥)
       </p>
       <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">
@@ -290,7 +334,13 @@ interface EmptyStateProps {
   clearLabel?: string;
 }
 
-export function EmptyState({ title, message, imageSrc, onClear, clearLabel = 'Clear filters' }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  message,
+  imageSrc,
+  onClear,
+  clearLabel = "Clear filters",
+}: EmptyStateProps) {
   return (
     <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
       <img
@@ -299,10 +349,15 @@ export function EmptyState({ title, message, imageSrc, onClear, clearLabel = 'Cl
         className="w-40 h-40 mx-auto mb-2 object-contain animate-[float-gentle_3.5s_ease-in-out_infinite]"
         aria-hidden="true"
       />
-      <p className="font-display text-2xl sm:text-3xl text-[var(--secondary)] mb-2 select-none" aria-hidden="true">
+      <p
+        className="font-display text-2xl sm:text-3xl text-[var(--secondary)] mb-2 select-none"
+        aria-hidden="true"
+      >
         (・_・;)
       </p>
-      <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">{title}</p>
+      <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">
+        {title}
+      </p>
       <p className="font-accent text-2xl text-[var(--text-muted)] mb-5">
         {message}
       </p>

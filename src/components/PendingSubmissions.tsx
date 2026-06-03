@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  FileText, 
-  Check, 
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  FileText,
+  Check,
   X,
-  Loader2, 
-  AlertCircle, 
+  Loader2,
+  AlertCircle,
   RefreshCw,
   Inbox,
   Clock,
   User,
-} from 'lucide-react';
-import { biographyApi } from '../api/biography';
-import { membersApi } from '../api/members';
-import type { BiographySubmission, StaffMember } from '../types';
-import { ContentCard } from './ContentCard';
-import { Tag } from './Tag';
+} from "lucide-react";
+import { biographyApi } from "../api/biography";
+import { membersApi } from "../api/members";
+import type { BiographySubmission, StaffMember } from "../types";
+import { ContentCard } from "./ContentCard";
+import { Tag } from "./Tag";
 
 interface SubmissionCardProps {
   submission: BiographySubmission;
@@ -27,24 +27,32 @@ interface SubmissionCardProps {
   isRejecting: boolean;
 }
 
-function SubmissionCard({ submission, submitter, onApprove, onReject, isApproving, isRejecting }: SubmissionCardProps) {
+function SubmissionCard({
+  submission,
+  submitter,
+  onApprove,
+  onReject,
+  isApproving,
+  isRejecting,
+}: SubmissionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   // Format the submission date
   const submittedDate = new Date(submission.submittedAt);
-  const formattedDate = submittedDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+  const formattedDate = submittedDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
-  const formattedTime = submittedDate.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
+  const formattedTime = submittedDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
   });
 
-  const biographyPreview = submission.biography.length > 100 
-    ? `${submission.biography.slice(0, 100)}...` 
-    : submission.biography;
+  const biographyPreview =
+    submission.biography.length > 100
+      ? `${submission.biography.slice(0, 100)}...`
+      : submission.biography;
 
   return (
     <motion.div
@@ -64,36 +72,44 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
         <div className="flex items-center gap-3 sm:gap-2.5 min-w-0">
           {submitter ? (
-            <img 
-              src={submitter.avatarLink} 
-              alt="" 
+            <img
+              src={submitter.avatarLink}
+              alt=""
               className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg object-cover flex-shrink-0"
             />
           ) : (
             <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg bg-[var(--secondary)]/10 flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--secondary)]" aria-hidden="true" />
+              <User
+                className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--secondary)]"
+                aria-hidden="true"
+              />
             </div>
           )}
           <div className="min-w-0">
             <p className="font-soft font-semibold text-sm text-[var(--text)] truncate">
-              {submitter?.name || `Discord ID: ${submission.submittedByDiscordId}`}
+              {submitter?.name ||
+                `Discord ID: ${submission.submittedByDiscordId}`}
             </p>
             <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
               {submitter && (
                 <>
-                  <span className="text-[var(--primary)]">{submitter.freeCompanyRank}</span>
+                  <span className="text-[var(--primary)]">
+                    {submitter.freeCompanyRank}
+                  </span>
                   <span>•</span>
                 </>
               )}
               <Clock className="w-3 h-3" aria-hidden="true" />
-              <span>{formattedDate} at {formattedTime}</span>
+              <span>
+                {formattedDate} at {formattedTime}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Status tag */}
         <Tag
-          color={submission.status === 'Pending' ? 'var(--warning)' : undefined}
+          color={submission.status === "Pending" ? "var(--warning)" : undefined}
           className="flex-shrink-0"
         >
           {submission.status}
@@ -111,7 +127,7 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
           </p>
           {submission.biography.length > 100 && (
             <span className="text-sm sm:text-xs text-[var(--primary)] mt-2 inline-block font-medium">
-              {isExpanded ? 'Show less' : 'Show more'}
+              {isExpanded ? "Show less" : "Show more"}
             </span>
           )}
         </button>
@@ -135,7 +151,10 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
         >
           {isApproving ? (
             <>
-              <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin" aria-hidden="true" />
+              <Loader2
+                className="w-5 h-5 sm:w-4 sm:h-4 animate-spin"
+                aria-hidden="true"
+              />
               <span className="sm:inline">Approving...</span>
             </>
           ) : (
@@ -161,7 +180,10 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
         >
           {isRejecting ? (
             <>
-              <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin" aria-hidden="true" />
+              <Loader2
+                className="w-5 h-5 sm:w-4 sm:h-4 animate-spin"
+                aria-hidden="true"
+              />
               <span className="sm:inline">Rejecting...</span>
             </>
           ) : (
@@ -178,7 +200,7 @@ function SubmissionCard({ submission, submitter, onApprove, onReject, isApprovin
 
 /**
  * PendingSubmissions - Knight Dashboard component for reviewing biography submissions
- * 
+ *
  * Fetches pending submissions and allows Knights to approve them.
  */
 export function PendingSubmissions() {
@@ -187,20 +209,20 @@ export function PendingSubmissions() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   // Fetch pending submissions
-  const { 
-    data: submissions = [], 
-    isLoading: isLoadingSubmissions, 
-    isError, 
-    refetch 
+  const {
+    data: submissions = [],
+    isLoading: isLoadingSubmissions,
+    isError,
+    refetch,
   } = useQuery({
-    queryKey: ['biography-submissions'],
+    queryKey: ["biography-submissions"],
     queryFn: () => biographyApi.getPendingSubmissions(),
     staleTime: 1000 * 30, // 30 seconds
   });
 
   // Fetch staff to look up submitter info by Discord ID
   const { data: staffData } = useQuery({
-    queryKey: ['staff'],
+    queryKey: ["staff"],
     queryFn: () => membersApi.getStaff(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -209,25 +231,26 @@ export function PendingSubmissions() {
   const staffByDiscordId = new Map(
     (staffData?.staff || [])
       .filter((m) => m.discordId)
-      .map((m) => [m.discordId!, m])
+      .map((m) => [m.discordId!, m]),
   );
 
   // Filter to only show pending submissions
-  const pendingSubmissions = submissions.filter(s => s.status === 'Pending');
-  
+  const pendingSubmissions = submissions.filter((s) => s.status === "Pending");
+
   const isLoading = isLoadingSubmissions;
 
   // Mutation for approving submissions
   const approveMutation = useMutation({
-    mutationFn: (submissionId: string) => biographyApi.approveSubmission(submissionId),
+    mutationFn: (submissionId: string) =>
+      biographyApi.approveSubmission(submissionId),
     onMutate: (submissionId) => {
       setApprovingId(submissionId);
     },
     onSuccess: () => {
       // Invalidate and refetch submissions
-      queryClient.invalidateQueries({ queryKey: ['biography-submissions'] });
+      queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
       // Also invalidate staff data since approved bios appear there
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
     },
     onSettled: () => {
       setApprovingId(null);
@@ -236,13 +259,14 @@ export function PendingSubmissions() {
 
   // Mutation for rejecting submissions
   const rejectMutation = useMutation({
-    mutationFn: (submissionId: string) => biographyApi.rejectSubmission(submissionId),
+    mutationFn: (submissionId: string) =>
+      biographyApi.rejectSubmission(submissionId),
     onMutate: (submissionId) => {
       setRejectingId(submissionId);
     },
     onSuccess: () => {
       // Invalidate and refetch submissions
-      queryClient.invalidateQueries({ queryKey: ['biography-submissions'] });
+      queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
     },
     onSettled: () => {
       setRejectingId(null);
@@ -263,7 +287,10 @@ export function PendingSubmissions() {
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex items-start gap-2.5 sm:gap-3">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]" aria-hidden="true" />
+            <FileText
+              className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]"
+              aria-hidden="true"
+            />
           </div>
           <div>
             <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
@@ -289,7 +316,9 @@ export function PendingSubmissions() {
           "
           aria-label="Refresh submissions"
         >
-          <RefreshCw className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
+          />
         </button>
       </div>
 
@@ -340,7 +369,9 @@ export function PendingSubmissions() {
         <div className="flex flex-col">
           {/* Count badge */}
           <div className="flex items-center gap-2 mb-4 flex-shrink-0">
-            <Tag color="var(--warning)">{pendingSubmissions.length} pending</Tag>
+            <Tag color="var(--warning)">
+              {pendingSubmissions.length} pending
+            </Tag>
           </div>
 
           {/* Scrollable submission cards container */}
@@ -350,7 +381,9 @@ export function PendingSubmissions() {
                 <SubmissionCard
                   key={submission.submissionId}
                   submission={submission}
-                  submitter={staffByDiscordId.get(submission.submittedByDiscordId)}
+                  submitter={staffByDiscordId.get(
+                    submission.submittedByDiscordId,
+                  )}
                   onApprove={handleApprove}
                   onReject={handleReject}
                   isApproving={approvingId === submission.submissionId}
@@ -367,9 +400,13 @@ export function PendingSubmissions() {
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-3 flex-shrink-0"
             >
-              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle
+                className="w-4 h-4 text-red-500 flex-shrink-0"
+                aria-hidden="true"
+              />
               <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">
-                Failed to {approveMutation.isError ? 'approve' : 'reject'} submission. Please try again.
+                Failed to {approveMutation.isError ? "approve" : "reject"}{" "}
+                submission. Please try again.
               </p>
             </motion.div>
           )}

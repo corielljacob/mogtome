@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 /**
  * Styled content wrapper card.
@@ -14,20 +14,20 @@ export interface ContentCardProps {
   /** ARIA role for the card */
   role?: string;
   /** Whether the card content is loading */
-  'aria-busy'?: boolean;
+  "aria-busy"?: boolean;
   /** ARIA live region behavior */
-  'aria-live'?: 'polite' | 'assertive' | 'off';
+  "aria-live"?: "polite" | "assertive" | "off";
 }
 
-export function ContentCard({ 
-  children, 
-  className = '', 
-  role, 
-  'aria-busy': ariaBusy,
-  'aria-live': ariaLive,
+export function ContentCard({
+  children,
+  className = "",
+  role,
+  "aria-busy": ariaBusy,
+  "aria-live": ariaLive,
 }: ContentCardProps) {
   return (
-    <div 
+    <div
       className={`
         relative isolate surface
         p-4 sm:p-6 md:p-8

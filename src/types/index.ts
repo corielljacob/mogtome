@@ -34,27 +34,27 @@ export interface StaffResponse {
 
 // FC ranks plus presentation metadata
 export const FC_RANKS = [
-  { name: 'Moogle Guardian', color: 'rank-guardian', order: 0 },
-  { name: 'Moogle Knight', color: 'rank-knight', order: 1 },
-  { name: 'Paissa Trainer', color: 'rank-paissa', order: 2 },
-  { name: 'Coeurl Hunter', color: 'rank-hunter', order: 3 },
-  { name: 'Mandragora', color: 'rank-mandragora', order: 4 },
-  { name: 'Apkallu Seeker', color: 'rank-seeker', order: 5 },
-  { name: 'Kupo Shelf', color: 'rank-shelf', order: 6 },
-  { name: 'Bom Boko', color: 'rank-bom-boko', order: 7 },
+  { name: "Moogle Guardian", color: "rank-guardian", order: 0 },
+  { name: "Moogle Knight", color: "rank-knight", order: 1 },
+  { name: "Paissa Trainer", color: "rank-paissa", order: 2 },
+  { name: "Coeurl Hunter", color: "rank-hunter", order: 3 },
+  { name: "Mandragora", color: "rank-mandragora", order: 4 },
+  { name: "Apkallu Seeker", color: "rank-seeker", order: 5 },
+  { name: "Kupo Shelf", color: "rank-shelf", order: 6 },
+  { name: "Bom Boko", color: "rank-bom-boko", order: 7 },
 ] as const;
 
-export type FCRankName = typeof FC_RANKS[number]['name'];
+export type FCRankName = (typeof FC_RANKS)[number]["name"];
 
 // Timeline event taxonomy
-export type TimelineEventType = 
-  | 'member_joined'
-  | 'member_left'
-  | 'name_change'
-  | 'rank_change'
-  | 'fc_announcement'
-  | 'achievement'
-  | 'other';
+export type TimelineEventType =
+  | "member_joined"
+  | "member_left"
+  | "name_change"
+  | "rank_change"
+  | "fc_announcement"
+  | "achievement"
+  | "other";
 
 export interface TimelineEvent {
   id: string;
@@ -95,11 +95,11 @@ export interface ChronicleEventsResponse {
 
 /** Available event type filters matching the API's filter enum */
 export type ChronicleEventFilter =
-  | 'MemberJoined'
-  | 'MemberRejoined'
-  | 'Announcement'
-  | 'RankPromoted'
-  | 'NameChanged';
+  | "MemberJoined"
+  | "MemberRejoined"
+  | "Announcement"
+  | "RankPromoted"
+  | "NameChanged";
 
 // Params for fetching chronicle events
 export interface GetChronicleEventsParams {

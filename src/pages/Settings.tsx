@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type CSSProperties } from 'react';
+import { useState, type ReactNode, type CSSProperties } from "react";
 import {
   Sun,
   Moon,
@@ -12,23 +12,43 @@ import {
   Eye,
   User,
   Check,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
-import { useTheme, THEME_DEFINITIONS, type ColorMode, type EventOverride } from '../contexts/ThemeContext';
-import { SEASONAL_EVENTS } from '../constants/seasonalEvents';
-import { PageLayout, KawaiiSparkle, KawaiiBow, KawaiiHeart } from '../components';
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  useAccessibility,
+  COLORBLIND_MODES,
+  type ColorblindMode,
+  type ToggleableSettingKey,
+} from "../contexts/AccessibilityContext";
+import {
+  useTheme,
+  THEME_DEFINITIONS,
+  type ColorMode,
+  type EventOverride,
+} from "../contexts/ThemeContext";
+import { SEASONAL_EVENTS } from "../constants/seasonalEvents";
+import {
+  PageLayout,
+  KawaiiSparkle,
+  KawaiiBow,
+  KawaiiHeart,
+} from "../components";
 
-import gamingMoogle from '../assets/moogles/gaming moogle.webp';
-import musicMoogle from '../assets/moogles/moogle playing music.webp';
-import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
+import gamingMoogle from "../assets/moogles/gaming moogle.webp";
+import musicMoogle from "../assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared candy pieces
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ToggleSwitch({ enabled, onChange, disabled = false, label }: {
+function ToggleSwitch({
+  enabled,
+  onChange,
+  disabled = false,
+  label,
+}: {
   enabled: boolean;
   onChange: () => void;
   disabled?: boolean;
@@ -43,28 +63,39 @@ function ToggleSwitch({ enabled, onChange, disabled = false, label }: {
       aria-label={label}
       className={`relative w-[50px] h-[28px] rounded-full shrink-0 cursor-pointer transition-colors duration-200
         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-        ${enabled ? 'bg-[var(--primary)]' : 'bg-[color:color-mix(in_srgb,var(--text-subtle)_28%,transparent)]'}`}
-      style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.18)' }}
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+        ${enabled ? "bg-[var(--primary)]" : "bg-[color:color-mix(in_srgb,var(--text-subtle)_28%,transparent)]"}`}
+      style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.18)" }}
     >
       <span
-        className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full bg-white shadow-md transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${enabled ? 'translate-x-[22px]' : 'translate-x-0'}`}
+        className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full bg-white shadow-md transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${enabled ? "translate-x-[22px]" : "translate-x-0"}`}
       />
     </button>
   );
 }
 
-function SettingRow({ label, description, children, disabled = false }: {
+function SettingRow({
+  label,
+  description,
+  children,
+  disabled = false,
+}: {
   label: string;
   description: string;
   children: ReactNode;
   disabled?: boolean;
 }) {
   return (
-    <div className={`flex items-center justify-between gap-4 py-3 ${disabled ? 'opacity-50' : ''}`}>
+    <div
+      className={`flex items-center justify-between gap-4 py-3 ${disabled ? "opacity-50" : ""}`}
+    >
       <div className="min-w-0">
-        <p className="font-display font-bold text-sm text-[var(--text)]">{label}</p>
-        <p className="font-soft text-xs text-[var(--text-muted)] leading-relaxed">{description}</p>
+        <p className="font-display font-bold text-sm text-[var(--text)]">
+          {label}
+        </p>
+        <p className="font-soft text-xs text-[var(--text-muted)] leading-relaxed">
+          {description}
+        </p>
       </div>
       <div className="shrink-0">{children}</div>
     </div>
@@ -72,7 +103,13 @@ function SettingRow({ label, description, children, disabled = false }: {
 }
 
 /** Kawaii collapsible sub-section with a dashed divider above it. */
-function Collapsible({ icon: Icon, label, value, accent = 'var(--primary)', children }: {
+function Collapsible({
+  icon: Icon,
+  label,
+  value,
+  accent = "var(--primary)",
+  children,
+}: {
   icon: LucideIcon;
   label: string;
   value?: string;
@@ -87,18 +124,42 @@ function Collapsible({ icon: Icon, label, value, accent = 'var(--primary)', chil
         aria-expanded={open}
         className="w-full flex items-center gap-2 cursor-pointer rounded-xl py-0.5 text-left focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
       >
-        <Icon className="w-4 h-4 shrink-0" style={{ color: accent }} aria-hidden="true" />
-        <span className="font-display font-bold text-sm text-[var(--text)]">{label}</span>
-        {value && <span className="font-soft text-xs text-[var(--primary)] truncate">{value}</span>}
-        <ChevronDown className={`w-4 h-4 ml-auto shrink-0 text-[var(--text-muted)] transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+        <Icon
+          className="w-4 h-4 shrink-0"
+          style={{ color: accent }}
+          aria-hidden="true"
+        />
+        <span className="font-display font-bold text-sm text-[var(--text)]">
+          {label}
+        </span>
+        {value && (
+          <span className="font-soft text-xs text-[var(--primary)] truncate">
+            {value}
+          </span>
+        )}
+        <ChevronDown
+          className={`w-4 h-4 ml-auto shrink-0 text-[var(--text-muted)] transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
       </button>
-      {open && <div className="mt-3 animate-[fadeSlideIn_0.25s_ease-out]">{children}</div>}
+      {open && (
+        <div className="mt-3 animate-[fadeSlideIn_0.25s_ease-out]">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
 
 /** A pinned paper section card with a sticker-style header. */
-function SettingsCard({ icon: Icon, title, accent, pinColor, tilt = 0, children }: {
+function SettingsCard({
+  icon: Icon,
+  title,
+  accent,
+  pinColor,
+  tilt = 0,
+  children,
+}: {
   icon: LucideIcon;
   title: string;
   accent: string;
@@ -107,17 +168,33 @@ function SettingsCard({ icon: Icon, title, accent, pinColor, tilt = 0, children 
   children: ReactNode;
 }) {
   return (
-    <section className="paper relative" style={tilt ? { transform: `rotate(${tilt}deg)` } : undefined}>
-      <span className="pushpin absolute -top-2 left-8 z-10" style={{ '--pin': pinColor } as CSSProperties} aria-hidden="true" />
+    <section
+      className="paper relative"
+      style={tilt ? { transform: `rotate(${tilt}deg)` } : undefined}
+    >
+      <span
+        className="pushpin absolute -top-2 left-8 z-10"
+        style={{ "--pin": pinColor } as CSSProperties}
+        aria-hidden="true"
+      />
       <div className="surface p-5 sm:p-6">
         <div className="flex items-center gap-2.5 mb-4">
           <span
             className="flex items-center justify-center w-9 h-9 rounded-full shrink-0"
-            style={{ backgroundColor: `color-mix(in srgb, ${accent} 18%, var(--card))`, border: `2px solid color-mix(in srgb, ${accent} 32%, var(--card))` }}
+            style={{
+              backgroundColor: `color-mix(in srgb, ${accent} 18%, var(--card))`,
+              border: `2px solid color-mix(in srgb, ${accent} 32%, var(--card))`,
+            }}
           >
-            <Icon className="w-5 h-5" style={{ color: accent }} aria-hidden="true" />
+            <Icon
+              className="w-5 h-5"
+              style={{ color: accent }}
+              aria-hidden="true"
+            />
           </span>
-          <h2 className="font-display font-bold text-lg text-[var(--text)]">{title}</h2>
+          <h2 className="font-display font-bold text-lg text-[var(--text)]">
+            {title}
+          </h2>
         </div>
         {children}
       </div>
@@ -132,16 +209,26 @@ function SettingsCard({ icon: Icon, title, accent, pinColor, tilt = 0, children 
 function ThemeSection() {
   const { settings, setColorMode, setColorTheme } = useTheme();
   const modeOptions: { value: ColorMode; label: string; icon: LucideIcon }[] = [
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'system', label: 'System', icon: Monitor },
+    { value: "light", label: "Light", icon: Sun },
+    { value: "dark", label: "Dark", icon: Moon },
+    { value: "system", label: "System", icon: Monitor },
   ];
-  const currentTheme = THEME_DEFINITIONS.find(t => t.id === settings.colorTheme);
+  const currentTheme = THEME_DEFINITIONS.find(
+    (t) => t.id === settings.colorTheme,
+  );
 
   return (
-    <SettingsCard icon={Palette} title="Appearance" accent="var(--primary)" pinColor="var(--secondary)" tilt={-0.5}>
+    <SettingsCard
+      icon={Palette}
+      title="Appearance"
+      accent="var(--primary)"
+      pinColor="var(--secondary)"
+      tilt={-0.5}
+    >
       <fieldset aria-label="Color mode">
-        <legend className="font-soft text-xs text-[var(--text-muted)] mb-2">Mode</legend>
+        <legend className="font-soft text-xs text-[var(--text-muted)] mb-2">
+          Mode
+        </legend>
         <div className="grid grid-cols-3 gap-2">
           {modeOptions.map(({ value, label, icon: Icon }) => {
             const sel = settings.colorMode === value;
@@ -152,10 +239,19 @@ function ThemeSection() {
                 aria-pressed={sel}
                 className={`flex flex-col items-center gap-1 py-2.5 rounded-2xl border-2 font-display font-bold text-xs cursor-pointer transition-all
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${sel
-                    ? 'bg-[var(--primary)] text-white border-transparent'
-                    : 'bg-[var(--bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-[color:color-mix(in_srgb,var(--primary)_35%,var(--border))] hover:text-[var(--text)]'}`}
-                style={sel ? { boxShadow: '0 3px 0 0 color-mix(in srgb, var(--primary) 55%, #000)' } : undefined}
+                  ${
+                    sel
+                      ? "bg-[var(--primary)] text-white border-transparent"
+                      : "bg-[var(--bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-[color:color-mix(in_srgb,var(--primary)_35%,var(--border))] hover:text-[var(--text)]"
+                  }`}
+                style={
+                  sel
+                    ? {
+                        boxShadow:
+                          "0 3px 0 0 color-mix(in srgb, var(--primary) 55%, #000)",
+                      }
+                    : undefined
+                }
               >
                 <Icon className="w-4 h-4" aria-hidden="true" />
                 {label}
@@ -165,8 +261,17 @@ function ThemeSection() {
         </div>
       </fieldset>
 
-      <Collapsible icon={Palette} label="Color Theme" value={currentTheme?.name} accent="var(--secondary)">
-        <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Color theme options">
+      <Collapsible
+        icon={Palette}
+        label="Color Theme"
+        value={currentTheme?.name}
+        accent="var(--secondary)"
+      >
+        <div
+          className="grid grid-cols-2 gap-2"
+          role="radiogroup"
+          aria-label="Color theme options"
+        >
           {THEME_DEFINITIONS.map((theme) => {
             const sel = settings.colorTheme === theme.id;
             return (
@@ -177,17 +282,37 @@ function ThemeSection() {
                 aria-checked={sel}
                 className={`flex items-center gap-2.5 p-2.5 rounded-2xl border-2 text-left cursor-pointer transition-all
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${sel
-                    ? 'border-[var(--primary)] bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]'
-                    : 'border-[var(--border)] hover:border-[color:color-mix(in_srgb,var(--primary)_30%,var(--border))]'}`}
+                  ${
+                    sel
+                      ? "border-[var(--primary)] bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]"
+                      : "border-[var(--border)] hover:border-[color:color-mix(in_srgb,var(--primary)_30%,var(--border))]"
+                  }`}
               >
                 <span className="flex items-center gap-0.5 shrink-0">
-                  <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: theme.preview.primary }} />
-                  <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: theme.preview.secondary }} />
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.preview.accent }} />
+                  <span
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: theme.preview.primary }}
+                  />
+                  <span
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: theme.preview.secondary }}
+                  />
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: theme.preview.accent }}
+                  />
                 </span>
-                <span className={`font-soft text-sm flex-1 truncate ${sel ? 'text-[var(--primary)] font-bold' : 'text-[var(--text)]'}`}>{theme.name}</span>
-                {sel && <Check className="w-4 h-4 text-[var(--primary)] shrink-0" aria-hidden="true" />}
+                <span
+                  className={`font-soft text-sm flex-1 truncate ${sel ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
+                >
+                  {theme.name}
+                </span>
+                {sel && (
+                  <Check
+                    className="w-4 h-4 text-[var(--primary)] shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
               </button>
             );
           })}
@@ -202,33 +327,74 @@ function ThemeSection() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Dev-only event override options for the switcher */
-const EVENT_OVERRIDE_OPTIONS: { value: EventOverride; label: string; Icon: LucideIcon }[] = [
-  { value: 'auto', label: 'Auto (Real Date)', Icon: CalendarDays },
-  { value: 'none', label: 'No Event', Icon: Ban },
-  ...SEASONAL_EVENTS.map(e => ({ value: e.id as EventOverride, label: e.name, Icon: e.icon })),
+const EVENT_OVERRIDE_OPTIONS: {
+  value: EventOverride;
+  label: string;
+  Icon: LucideIcon;
+}[] = [
+  { value: "auto", label: "Auto (Real Date)", Icon: CalendarDays },
+  { value: "none", label: "No Event", Icon: Ban },
+  ...SEASONAL_EVENTS.map((e) => ({
+    value: e.id as EventOverride,
+    label: e.name,
+    Icon: e.icon,
+  })),
 ];
 
-function formatDateRange(startMonth: number, startDay: number, endMonth: number, endDay: number): string {
-  const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  if (startMonth === endMonth) return `${months[startMonth]} ${startDay}–${endDay}`;
+function formatDateRange(
+  startMonth: number,
+  startDay: number,
+  endMonth: number,
+  endDay: number,
+): string {
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  if (startMonth === endMonth)
+    return `${months[startMonth]} ${startDay}–${endDay}`;
   return `${months[startMonth]} ${startDay} – ${months[endMonth]} ${endDay}`;
 }
 
 function SeasonalEventSection() {
   const {
-    activeEvent, nextEvent, isEventThemeActive, settings,
-    setEventThemingDisabled, eventOverride, setEventOverride,
+    activeEvent,
+    nextEvent,
+    isEventThemeActive,
+    settings,
+    setEventThemingDisabled,
+    eventOverride,
+    setEventOverride,
   } = useTheme();
 
   return (
-    <SettingsCard icon={CalendarDays} title="Seasonal Events" accent="var(--accent)" pinColor="var(--primary)" tilt={0.5}>
+    <SettingsCard
+      icon={CalendarDays}
+      title="Seasonal Events"
+      accent="var(--accent)"
+      pinColor="var(--primary)"
+      tilt={0.5}
+    >
       {/* Dev override switcher */}
       {import.meta.env.DEV && (
         <div className="mb-4 p-3 rounded-2xl border-2 border-dashed border-amber-500/40 bg-amber-500/5">
           <p className="font-display font-bold text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-2">
             Dev: Event Override
-            {eventOverride !== 'auto' && (
-              <span className="ml-1.5 font-soft normal-case tracking-normal text-amber-500">({eventOverride})</span>
+            {eventOverride !== "auto" && (
+              <span className="ml-1.5 font-soft normal-case tracking-normal text-amber-500">
+                ({eventOverride})
+              </span>
             )}
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -240,7 +406,7 @@ function SeasonalEventSection() {
                   onClick={() => setEventOverride(value)}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-soft cursor-pointer transition-colors
                     focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none
-                    ${sel ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold' : 'text-[var(--text-muted)] hover:bg-[var(--bg)]'}`}
+                    ${sel ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold" : "text-[var(--text-muted)] hover:bg-[var(--bg)]"}`}
                 >
                   <Icon className="w-3 h-3" aria-hidden="true" />
                   <span>{label}</span>
@@ -254,30 +420,56 @@ function SeasonalEventSection() {
       {/* Active / next event note */}
       {activeEvent ? (
         <div className="mb-3 flex items-start gap-2.5 p-3 rounded-2xl bg-[color:color-mix(in_srgb,var(--primary)_9%,var(--card))]">
-          <activeEvent.icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--primary)]" aria-hidden="true" />
+          <activeEvent.icon
+            className="w-4 h-4 mt-0.5 shrink-0 text-[var(--primary)]"
+            aria-hidden="true"
+          />
           <p className="font-soft text-sm text-[var(--text-muted)]">
-            <strong className="text-[var(--primary)] font-bold">{activeEvent.name}</strong> is here, kupo — {activeEvent.description}
+            <strong className="text-[var(--primary)] font-bold">
+              {activeEvent.name}
+            </strong>{" "}
+            is here, kupo — {activeEvent.description}
           </p>
         </div>
       ) : nextEvent ? (
         <p className="mb-3 font-soft text-sm text-[var(--text-muted)]">
-          Next up: <strong className="text-[var(--text)] font-semibold">{nextEvent.name}</strong>{' '}
-          ({formatDateRange(nextEvent.dateRange.startMonth, nextEvent.dateRange.startDay, nextEvent.dateRange.endMonth, nextEvent.dateRange.endDay)})
+          Next up:{" "}
+          <strong className="text-[var(--text)] font-semibold">
+            {nextEvent.name}
+          </strong>{" "}
+          (
+          {formatDateRange(
+            nextEvent.dateRange.startMonth,
+            nextEvent.dateRange.startDay,
+            nextEvent.dateRange.endMonth,
+            nextEvent.dateRange.endDay,
+          )}
+          )
         </p>
       ) : null}
 
       <SettingRow
         label="Event Themes"
-        description={isEventThemeActive ? 'A seasonal theme is dressing up the site' : 'Automatically dress up the site for events'}
+        description={
+          isEventThemeActive
+            ? "A seasonal theme is dressing up the site"
+            : "Automatically dress up the site for events"
+        }
       >
         <ToggleSwitch
           label="Event themes"
           enabled={!settings.eventThemingDisabled}
-          onChange={() => setEventThemingDisabled(!settings.eventThemingDisabled)}
+          onChange={() =>
+            setEventThemingDisabled(!settings.eventThemingDisabled)
+          }
         />
       </SettingRow>
 
-      <Collapsible icon={CalendarDays} label="Event Calendar" accent="var(--accent)">
+      <Collapsible
+        icon={CalendarDays}
+        label="Event Calendar"
+        accent="var(--accent)"
+      >
         <ul className="space-y-1">
           {SEASONAL_EVENTS.map((event) => {
             const isActive = activeEvent?.id === event.id;
@@ -285,17 +477,38 @@ function SeasonalEventSection() {
             return (
               <li
                 key={event.id}
-                className={`flex items-center gap-2.5 py-1.5 px-2.5 rounded-xl text-sm ${isActive ? 'bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]' : ''}`}
+                className={`flex items-center gap-2.5 py-1.5 px-2.5 rounded-xl text-sm ${isActive ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]" : ""}`}
               >
-                <EventIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`} aria-hidden="true" />
-                <span className={`font-soft ${isActive ? 'text-[var(--primary)] font-bold' : 'text-[var(--text)]'}`}>{event.name}</span>
+                <EventIcon
+                  className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                  aria-hidden="true"
+                />
+                <span
+                  className={`font-soft ${isActive ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
+                >
+                  {event.name}
+                </span>
                 <span className="font-soft text-xs text-[var(--text-muted)] ml-auto">
-                  {formatDateRange(event.dateRange.startMonth, event.dateRange.startDay, event.dateRange.endMonth, event.dateRange.endDay)}
+                  {formatDateRange(
+                    event.dateRange.startMonth,
+                    event.dateRange.startDay,
+                    event.dateRange.endMonth,
+                    event.dateRange.endDay,
+                  )}
                 </span>
                 <span className="flex items-center gap-0.5 shrink-0">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: event.preview.primary }} />
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: event.preview.secondary }} />
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: event.preview.accent }} />
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.primary }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.secondary }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.accent }}
+                  />
                 </span>
               </li>
             );
@@ -318,12 +531,37 @@ interface AccessibilityOption {
 }
 
 const ACCESSIBILITY_OPTIONS: AccessibilityOption[] = [
-  { key: 'highContrast', label: 'High Contrast', description: 'Increases color contrast for better visibility' },
-  { key: 'extraDark', label: 'Extra Dark', description: 'Deeper blacks for OLED screens', requiresDark: true },
-  { key: 'largeText', label: 'Large Text', description: 'Increases font size across the site' },
-  { key: 'reducedMotion', label: 'Reduce Motion', description: 'Minimizes animations and transitions' },
-  { key: 'enhancedFocus', label: 'Enhanced Focus', description: 'More visible focus indicators' },
-  { key: 'dyslexiaFont', label: 'Dyslexia-Friendly', description: 'Easier-to-read font spacing' },
+  {
+    key: "highContrast",
+    label: "High Contrast",
+    description: "Increases color contrast for better visibility",
+  },
+  {
+    key: "extraDark",
+    label: "Extra Dark",
+    description: "Deeper blacks for OLED screens",
+    requiresDark: true,
+  },
+  {
+    key: "largeText",
+    label: "Large Text",
+    description: "Increases font size across the site",
+  },
+  {
+    key: "reducedMotion",
+    label: "Reduce Motion",
+    description: "Minimizes animations and transitions",
+  },
+  {
+    key: "enhancedFocus",
+    label: "Enhanced Focus",
+    description: "More visible focus indicators",
+  },
+  {
+    key: "dyslexiaFont",
+    label: "Dyslexia-Friendly",
+    description: "Easier-to-read font spacing",
+  },
 ];
 
 function AccessibilitySection() {
@@ -331,53 +569,84 @@ function AccessibilitySection() {
   const { isDarkMode } = useTheme();
 
   return (
-    <SettingsCard icon={Accessibility} title="Accessibility" accent="var(--secondary)" pinColor="var(--accent)" tilt={-0.4}>
+    <SettingsCard
+      icon={Accessibility}
+      title="Accessibility"
+      accent="var(--secondary)"
+      pinColor="var(--accent)"
+      tilt={-0.4}
+    >
       <div className="divide-y divide-[color:color-mix(in_srgb,var(--text-subtle)_16%,transparent)]">
-        {ACCESSIBILITY_OPTIONS.map(({ key, label, description, requiresDark }) => {
-          const isDisabled = requiresDark && !isDarkMode;
-          return (
-            <SettingRow
-              key={key}
-              label={label}
-              description={isDisabled ? `${description} (needs dark mode)` : description}
-              disabled={isDisabled}
-            >
-              <ToggleSwitch
+        {ACCESSIBILITY_OPTIONS.map(
+          ({ key, label, description, requiresDark }) => {
+            const isDisabled = requiresDark && !isDarkMode;
+            return (
+              <SettingRow
+                key={key}
                 label={label}
-                enabled={settings[key]}
-                onChange={() => toggleSetting(key)}
+                description={
+                  isDisabled ? `${description} (needs dark mode)` : description
+                }
                 disabled={isDisabled}
-              />
-            </SettingRow>
-          );
-        })}
+              >
+                <ToggleSwitch
+                  label={label}
+                  enabled={settings[key]}
+                  onChange={() => toggleSetting(key)}
+                  disabled={isDisabled}
+                />
+              </SettingRow>
+            );
+          },
+        )}
       </div>
 
       <Collapsible
         icon={Eye}
         label="Colorblind Mode"
         accent="var(--secondary)"
-        value={settings.colorblindMode !== 'none' ? COLORBLIND_MODES.find(m => m.value === settings.colorblindMode)?.label : undefined}
+        value={
+          settings.colorblindMode !== "none"
+            ? COLORBLIND_MODES.find((m) => m.value === settings.colorblindMode)
+                ?.label
+            : undefined
+        }
       >
-        <div className="space-y-1" role="radiogroup" aria-label="Colorblind mode options">
+        <div
+          className="space-y-1"
+          role="radiogroup"
+          aria-label="Colorblind mode options"
+        >
           {COLORBLIND_MODES.map(({ value, label, description }) => {
             const sel = settings.colorblindMode === value;
             return (
               <button
                 key={value}
-                onClick={() => updateSetting('colorblindMode', value as ColorblindMode)}
+                onClick={() =>
+                  updateSetting("colorblindMode", value as ColorblindMode)
+                }
                 role="radio"
                 aria-checked={sel}
                 className={`w-full flex items-center gap-2.5 py-2 px-2.5 rounded-xl text-left cursor-pointer transition-colors
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${sel ? 'bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]' : 'hover:bg-[var(--bg)]'}`}
+                  ${sel ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]" : "hover:bg-[var(--bg)]"}`}
               >
-                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[color:color-mix(in_srgb,var(--text-muted)_45%,transparent)]'}`}>
-                  {sel && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                <span
+                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[color:color-mix(in_srgb,var(--text-muted)_45%,transparent)]"}`}
+                >
+                  {sel && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                  )}
                 </span>
                 <span className="min-w-0">
-                  <span className={`font-soft text-sm ${sel ? 'text-[var(--primary)] font-bold' : 'text-[var(--text)]'}`}>{label}</span>
-                  <span className="font-soft text-xs text-[var(--text-muted)] ml-1">— {description}</span>
+                  <span
+                    className={`font-soft text-sm ${sel ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
+                  >
+                    {label}
+                  </span>
+                  <span className="font-soft text-xs text-[var(--text-muted)] ml-1">
+                    — {description}
+                  </span>
                 </span>
               </button>
             );
@@ -396,7 +665,13 @@ function AccountSection() {
   const { user, logout, isLoading, isAuthenticated } = useAuth();
 
   return (
-    <SettingsCard icon={User} title="Account" accent="var(--primary)" pinColor="var(--secondary)" tilt={0.5}>
+    <SettingsCard
+      icon={User}
+      title="Account"
+      accent="var(--primary)"
+      pinColor="var(--secondary)"
+      tilt={0.5}
+    >
       {isLoading ? (
         <p className="font-soft text-sm text-[var(--text-muted)]">Loading…</p>
       ) : !isAuthenticated || !user ? (
@@ -408,19 +683,27 @@ function AccountSection() {
           <div className="flex items-center gap-3.5 mb-4">
             <div className="paper shrink-0 -rotate-3">
               <div className="surface p-1.5">
-                <img src={user.memberPortraitUrl} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                <img
+                  src={user.memberPortraitUrl}
+                  alt=""
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
               </div>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-display font-bold text-base text-[var(--text)] truncate">{user.memberName}</p>
-              <p className="font-soft text-sm text-[var(--text-muted)]">{user.memberRank}</p>
+              <p className="font-display font-bold text-base text-[var(--text)] truncate">
+                {user.memberName}
+              </p>
+              <p className="font-soft text-sm text-[var(--text-muted)]">
+                {user.memberRank}
+              </p>
             </div>
           </div>
 
           <button
             onClick={logout}
             className="gel hover-bounce inline-flex items-center gap-2 px-4 py-2 font-display font-bold text-sm text-white cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
-            style={{ '--gel-color': '#e8607a' } as CSSProperties}
+            style={{ "--gel-color": "#e8607a" } as CSSProperties}
           >
             <LogOut className="w-4 h-4" aria-hidden="true" />
             Sign Out
@@ -437,13 +720,31 @@ function AccountSection() {
 
 export function Settings() {
   return (
-    <PageLayout moogles={{ primary: gamingMoogle, secondary: musicMoogle }} maxWidth="max-w-2xl">
+    <PageLayout
+      moogles={{ primary: gamingMoogle, secondary: musicMoogle }}
+      maxWidth="max-w-2xl"
+    >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
         {/* Corner pins */}
-        <span className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20" aria-hidden="true" />
-        <span className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
-        <span className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20" style={{ '--pin': 'var(--accent)' } as CSSProperties} aria-hidden="true" />
-        <span className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
+        <span
+          className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
+          style={{ "--pin": "var(--accent)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
+        />
 
         {/* Corner-peek moogle */}
         <img
@@ -455,14 +756,22 @@ export function Settings() {
 
         {/* Pinned title sign */}
         <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-          <span className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10" aria-hidden="true" />
+          <span
+            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
+            aria-hidden="true"
+          />
           <div className="surface paper -rotate-1 px-8 sm:px-12 py-5 sm:py-6">
-            <div className="flex items-center justify-center gap-1.5 mb-1.5" aria-hidden="true">
+            <div
+              className="flex items-center justify-center gap-1.5 mb-1.5"
+              aria-hidden="true"
+            >
               <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
               <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
               <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
             </div>
-            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">~ make it yours, kupo ~</p>
+            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
+              ~ make it yours, kupo ~
+            </p>
             <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
               <span className="text-highlight">Settings</span>
             </h1>

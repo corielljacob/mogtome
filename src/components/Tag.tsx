@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode } from "react";
 
 interface TagProps {
   children: ReactNode;
@@ -22,11 +22,17 @@ interface TagProps {
  * NOT a filled rounded-full pill — that "badge" look reads generic. Used for
  * ranks, statuses, counts, and small labels across the app.
  */
-export function Tag({ children, color, icon, dot = false, className = '' }: TagProps) {
-  const tone = color ?? 'var(--text-muted)';
+export function Tag({
+  children,
+  color,
+  icon,
+  dot = false,
+  className = "",
+}: TagProps) {
+  const tone = color ?? "var(--text-muted)";
   const borderColor = color
     ? `color-mix(in srgb, ${color} 45%, transparent)`
-    : 'var(--border)';
+    : "var(--border)";
 
   return (
     <span

@@ -1,9 +1,9 @@
-import { Inbox, MessageSquare } from 'lucide-react';
-import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
-import { CharacterItem } from './CharacterItem';
-import { DiscordUserItem } from './DiscordUserItem';
-import { SearchInput } from './SearchInput';
-import FfxivIcon from '../../../assets/icons/ffxiv.png';
+import { Inbox, MessageSquare } from "lucide-react";
+import type { UnmappedCharacter, UnmappedDiscordUser } from "../types";
+import { CharacterItem } from "./CharacterItem";
+import { DiscordUserItem } from "./DiscordUserItem";
+import { SearchInput } from "./SearchInput";
+import FfxivIcon from "../../../assets/icons/ffxiv.png";
 
 interface ManualPickerTabProps {
   // Selection state
@@ -65,8 +65,8 @@ export function ManualPickerTab({
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
                 <p className="text-sm text-[var(--text-muted)]">
                   {characterSearch
-                    ? 'No characters match, kupo~'
-                    : 'Every character is linked, kupo!'}
+                    ? "No characters match, kupo~"
+                    : "Every character is linked, kupo!"}
                 </p>
               </div>
             ) : (
@@ -110,8 +110,8 @@ export function ManualPickerTab({
                 <Inbox className="w-8 h-8 text-[var(--text-muted)] mb-2" />
                 <p className="text-sm text-[var(--text-muted)]">
                   {discordSearch
-                    ? 'No accounts match, kupo~'
-                    : 'Every account is linked, kupo!'}
+                    ? "No accounts match, kupo~"
+                    : "Every account is linked, kupo!"}
                 </p>
               </div>
             ) : (

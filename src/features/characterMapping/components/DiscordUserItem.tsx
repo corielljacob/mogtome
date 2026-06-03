@@ -1,8 +1,8 @@
-import { memo } from 'react';
-import { Check } from 'lucide-react';
-import type { UnmappedDiscordUser, MatchInfo } from '../types';
-import { ConfidenceBadge } from './ConfidenceBadge';
-import { DiscordIcon } from "../../../../src/components/DiscordIcon"
+import { memo } from "react";
+import { Check } from "lucide-react";
+import type { UnmappedDiscordUser, MatchInfo } from "../types";
+import { ConfidenceBadge } from "./ConfidenceBadge";
+import { DiscordIcon } from "../../../../src/components/DiscordIcon";
 
 interface DiscordUserItemProps {
   user: UnmappedDiscordUser;
@@ -30,10 +30,10 @@ export const DiscordUserItem = memo(function DiscordUserItem({
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
           isSelected
-            ? 'bg-[var(--primary)]/15 border-[var(--primary)]/40'
+            ? "bg-[var(--primary)]/15 border-[var(--primary)]/40"
             : matchInfo
-              ? 'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50'
-              : 'bg-[var(--bg)]/50 border-[var(--border)] hover:border-[var(--primary)]/30'
+              ? "bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50"
+              : "bg-[var(--bg)]/50 border-[var(--border)] hover:border-[var(--primary)]/30"
         }
       `}
     >

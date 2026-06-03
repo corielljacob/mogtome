@@ -1,71 +1,67 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '../test/test-utils';
-import { ContentCard } from './ContentCard';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "../test/test-utils";
+import { ContentCard } from "./ContentCard";
 
-describe('ContentCard', () => {
-  it('renders children correctly', () => {
+describe("ContentCard", () => {
+  it("renders children correctly", () => {
     render(
       <ContentCard>
         <p>Card content</p>
-      </ContentCard>
+      </ContentCard>,
     );
-    
-    expect(screen.getByText('Card content')).toBeInTheDocument();
+
+    expect(screen.getByText("Card content")).toBeInTheDocument();
   });
 
-  it('applies default styling', () => {
-    const { container } = render(
-      <ContentCard>Content</ContentCard>
-    );
+  it("applies default styling", () => {
+    const { container } = render(<ContentCard>Content</ContentCard>);
 
     // The cozy card base: a single `.surface` class provides background,
     // border, radius and soft shadow (see docs/DESIGN.md).
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('surface');
-    expect(card).toHaveClass('isolate');
+    expect(card).toHaveClass("surface");
+    expect(card).toHaveClass("isolate");
   });
 
-  it('applies custom className', () => {
+  it("applies custom className", () => {
     const { container } = render(
-      <ContentCard className="custom-class">Content</ContentCard>
+      <ContentCard className="custom-class">Content</ContentCard>,
     );
-    
-    expect(container.firstChild).toHaveClass('custom-class');
+
+    expect(container.firstChild).toHaveClass("custom-class");
   });
 
-  it('supports ARIA role', () => {
-    render(
-      <ContentCard role="alert">Alert content</ContentCard>
-    );
-    
-    expect(screen.getByRole('alert')).toBeInTheDocument();
+  it("supports ARIA role", () => {
+    render(<ContentCard role="alert">Alert content</ContentCard>);
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
-  it('supports aria-busy attribute', () => {
+  it("supports aria-busy attribute", () => {
     const { container } = render(
-      <ContentCard aria-busy={true}>Loading content</ContentCard>
+      <ContentCard aria-busy={true}>Loading content</ContentCard>,
     );
-    
-    expect(container.firstChild).toHaveAttribute('aria-busy', 'true');
+
+    expect(container.firstChild).toHaveAttribute("aria-busy", "true");
   });
 
-  it('supports aria-live attribute for polite announcements', () => {
+  it("supports aria-live attribute for polite announcements", () => {
     const { container } = render(
-      <ContentCard aria-live="polite">Dynamic content</ContentCard>
+      <ContentCard aria-live="polite">Dynamic content</ContentCard>,
     );
-    
-    expect(container.firstChild).toHaveAttribute('aria-live', 'polite');
+
+    expect(container.firstChild).toHaveAttribute("aria-live", "polite");
   });
 
-  it('supports aria-live attribute for assertive announcements', () => {
+  it("supports aria-live attribute for assertive announcements", () => {
     const { container } = render(
-      <ContentCard aria-live="assertive">Urgent content</ContentCard>
+      <ContentCard aria-live="assertive">Urgent content</ContentCard>,
     );
-    
-    expect(container.firstChild).toHaveAttribute('aria-live', 'assertive');
+
+    expect(container.firstChild).toHaveAttribute("aria-live", "assertive");
   });
 
-  it('renders complex nested content', () => {
+  it("renders complex nested content", () => {
     render(
       <ContentCard>
         <header>
@@ -78,12 +74,12 @@ describe('ContentCard', () => {
         <footer>
           <button>Action</button>
         </footer>
-      </ContentCard>
+      </ContentCard>,
     );
-    
-    expect(screen.getByRole('heading', { name: 'Title' })).toBeInTheDocument();
-    expect(screen.getByText('Paragraph 1')).toBeInTheDocument();
-    expect(screen.getByText('Paragraph 2')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { name: "Title" })).toBeInTheDocument();
+    expect(screen.getByText("Paragraph 1")).toBeInTheDocument();
+    expect(screen.getByText("Paragraph 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Action" })).toBeInTheDocument();
   });
 });

@@ -1,11 +1,23 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Colorblind mode options */
-export type ColorblindMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'monochromacy';
+export type ColorblindMode =
+  | "none"
+  | "protanopia"
+  | "deuteranopia"
+  | "tritanopia"
+  | "monochromacy";
 
 export interface AccessibilitySettings {
   /** High contrast mode - increases color contrast for better visibility */
@@ -25,11 +37,17 @@ export interface AccessibilitySettings {
 }
 
 /** Keys that are boolean toggles */
-export type ToggleableSettingKey = Exclude<keyof AccessibilitySettings, 'colorblindMode'>;
+export type ToggleableSettingKey = Exclude<
+  keyof AccessibilitySettings,
+  "colorblindMode"
+>;
 
 interface AccessibilityContextType {
   settings: AccessibilitySettings;
-  updateSetting: <K extends keyof AccessibilitySettings>(key: K, value: AccessibilitySettings[K]) => void;
+  updateSetting: <K extends keyof AccessibilitySettings>(
+    key: K,
+    value: AccessibilitySettings[K],
+  ) => void;
   toggleSetting: (key: ToggleableSettingKey) => void;
   resetSettings: () => void;
 }
@@ -38,7 +56,7 @@ interface AccessibilityContextType {
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'mogtome-accessibility';
+const STORAGE_KEY = "mogtome-accessibility";
 
 const defaultSettings: AccessibilitySettings = {
   highContrast: false,
@@ -47,23 +65,45 @@ const defaultSettings: AccessibilitySettings = {
   reducedMotion: false,
   enhancedFocus: false,
   dyslexiaFont: false,
-  colorblindMode: 'none',
+  colorblindMode: "none",
 };
 
 /** All available colorblind modes */
-export const COLORBLIND_MODES: { value: ColorblindMode; label: string; description: string }[] = [
-  { value: 'none', label: 'None', description: 'Default colors' },
-  { value: 'protanopia', label: 'Protanopia', description: 'Red-blind friendly (blue/yellow palette)' },
-  { value: 'deuteranopia', label: 'Deuteranopia', description: 'Green-blind friendly (blue/yellow palette)' },
-  { value: 'tritanopia', label: 'Tritanopia', description: 'Blue-blind friendly (red/green palette)' },
-  { value: 'monochromacy', label: 'Monochromacy', description: 'Grayscale for complete color blindness' },
+export const COLORBLIND_MODES: {
+  value: ColorblindMode;
+  label: string;
+  description: string;
+}[] = [
+  { value: "none", label: "None", description: "Default colors" },
+  {
+    value: "protanopia",
+    label: "Protanopia",
+    description: "Red-blind friendly (blue/yellow palette)",
+  },
+  {
+    value: "deuteranopia",
+    label: "Deuteranopia",
+    description: "Green-blind friendly (blue/yellow palette)",
+  },
+  {
+    value: "tritanopia",
+    label: "Tritanopia",
+    description: "Blue-blind friendly (red/green palette)",
+  },
+  {
+    value: "monochromacy",
+    label: "Monochromacy",
+    description: "Grayscale for complete color blindness",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Context
 // ─────────────────────────────────────────────────────────────────────────────
 
-const AccessibilityContext = createContext<AccessibilityContextType | null>(null);
+const AccessibilityContext = createContext<AccessibilityContextType | null>(
+  null,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Provider
@@ -72,8 +112,8 @@ const AccessibilityContext = createContext<AccessibilityContextType | null>(null
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AccessibilitySettings>(() => {
     // Load from localStorage on initial render
-    if (typeof window === 'undefined') return defaultSettings;
-    
+    if (typeof window === "undefined") return defaultSettings;
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -84,10 +124,12 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     } catch {
       // Invalid JSON, use defaults
     }
-    
+
     // Check system preference for reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     return {
       ...defaultSettings,
       reducedMotion: prefersReducedMotion,
@@ -98,43 +140,50 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     const body = document.body;
-    
+
     // High contrast mode
-    root.classList.toggle('high-contrast', settings.highContrast);
-    
+    root.classList.toggle("high-contrast", settings.highContrast);
+
     // Extra dark mode (only applies when dark mode is active)
-    root.classList.toggle('extra-dark', settings.extraDark);
-    
+    root.classList.toggle("extra-dark", settings.extraDark);
+
     // Large text mode
-    root.classList.toggle('large-text', settings.largeText);
-    
+    root.classList.toggle("large-text", settings.largeText);
+
     // Reduced motion
-    root.classList.toggle('reduce-motion', settings.reducedMotion);
-    
+    root.classList.toggle("reduce-motion", settings.reducedMotion);
+
     // When reduced motion is enabled, force stop all CSS animations immediately
     // by triggering a style recalculation
     if (settings.reducedMotion) {
       // Get all animated elements and force them to their final state
-      const animatedElements = document.querySelectorAll('[class*="animate-"], .animate-spin, .animate-pulse, .animate-bounce, .animate-ping');
+      const animatedElements = document.querySelectorAll(
+        '[class*="animate-"], .animate-spin, .animate-pulse, .animate-bounce, .animate-ping',
+      );
       animatedElements.forEach((el) => {
         const htmlEl = el as HTMLElement;
         // Force a reflow to immediately apply the animation: none style
-        htmlEl.style.animation = 'none';
+        htmlEl.style.animation = "none";
       });
     }
-    
+
     // Enhanced focus
-    root.classList.toggle('enhanced-focus', settings.enhancedFocus);
-    
+    root.classList.toggle("enhanced-focus", settings.enhancedFocus);
+
     // Dyslexia-friendly font
-    body.classList.toggle('dyslexia-font', settings.dyslexiaFont);
-    
+    body.classList.toggle("dyslexia-font", settings.dyslexiaFont);
+
     // Colorblind mode - remove all, then add selected
-    root.classList.remove('colorblind-protanopia', 'colorblind-deuteranopia', 'colorblind-tritanopia', 'colorblind-monochromacy');
-    if (settings.colorblindMode !== 'none') {
+    root.classList.remove(
+      "colorblind-protanopia",
+      "colorblind-deuteranopia",
+      "colorblind-tritanopia",
+      "colorblind-monochromacy",
+    );
+    if (settings.colorblindMode !== "none") {
       root.classList.add(`colorblind-${settings.colorblindMode}`);
     }
-    
+
     // Persist to localStorage
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -145,29 +194,32 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
 
   // Listen for system reduced motion preference changes
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     const handleChange = (e: MediaQueryListEvent) => {
       // Only auto-update if user hasn't explicitly set a preference
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) {
-        setSettings(prev => ({ ...prev, reducedMotion: e.matches }));
+        setSettings((prev) => ({ ...prev, reducedMotion: e.matches }));
       }
     };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  const updateSetting = useCallback(<K extends keyof AccessibilitySettings>(
-    key: K, 
-    value: AccessibilitySettings[K]
-  ) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-  }, []);
+  const updateSetting = useCallback(
+    <K extends keyof AccessibilitySettings>(
+      key: K,
+      value: AccessibilitySettings[K],
+    ) => {
+      setSettings((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
 
   const toggleSetting = useCallback((key: ToggleableSettingKey) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
   const resetSettings = useCallback(() => {
@@ -180,7 +232,9 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AccessibilityContext.Provider value={{ settings, updateSetting, toggleSetting, resetSettings }}>
+    <AccessibilityContext.Provider
+      value={{ settings, updateSetting, toggleSetting, resetSettings }}
+    >
       {children}
     </AccessibilityContext.Provider>
   );
@@ -193,7 +247,9 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
 export function useAccessibility() {
   const context = useContext(AccessibilityContext);
   if (!context) {
-    throw new Error('useAccessibility must be used within an AccessibilityProvider');
+    throw new Error(
+      "useAccessibility must be used within an AccessibilityProvider",
+    );
   }
   return context;
 }

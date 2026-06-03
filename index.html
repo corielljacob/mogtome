@@ -3,70 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="MogTome - Your cozy FFXIV Free Company hub"
+    />
     <!-- Theme color for browser chrome - matches page background -->
-    <meta name="theme-color" content="#FFF6F4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#16131F" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#FFF6F4"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#16131F"
+      media="(prefers-color-scheme: dark)"
+    />
     <!-- PWA: Transparent status bar when added to home screen -->
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <title>MogTome</title>
     <style>
       /* Prevent FOUC - initial background before CSS loads */
-      html, body { margin: 0; padding: 0; min-height: 100%; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+      }
     </style>
-    
+
     <!-- Performance: DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://na.finalfantasyxiv.com" />
-    
+
     <!-- Performance: Preconnect to Google Fonts (early connection) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
+
     <!-- Cozy type pairing: storybook rounded display, clean sans body, handwritten accent -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <script>
       // Apply theme before React loads to prevent flash
-      (function() {
+      (function () {
         // Read theme settings from localStorage
         var themeSettings = null;
         try {
-          var stored = localStorage.getItem('mogtome-theme');
+          var stored = localStorage.getItem("mogtome-theme");
           if (stored) {
             themeSettings = JSON.parse(stored);
           }
         } catch (e) {}
-        
+
         // Fallback to old theme key for migration
         if (!themeSettings) {
-          var oldTheme = localStorage.getItem('theme');
-          if (oldTheme === 'light' || oldTheme === 'dark') {
-            themeSettings = { colorMode: oldTheme, colorTheme: 'pom-pom' };
+          var oldTheme = localStorage.getItem("theme");
+          if (oldTheme === "light" || oldTheme === "dark") {
+            themeSettings = { colorMode: oldTheme, colorTheme: "pom-pom" };
           }
         }
-        
+
         // Determine dark mode
-        var colorMode = themeSettings?.colorMode || 'system';
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var isDark = colorMode === 'dark' || (colorMode === 'system' && prefersDark);
-        
+        var colorMode = themeSettings?.colorMode || "system";
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        var isDark =
+          colorMode === "dark" || (colorMode === "system" && prefersDark);
+
         // Apply dark class
         if (isDark) {
-          document.documentElement.classList.add('dark');
+          document.documentElement.classList.add("dark");
         }
-        
+
         // Apply color theme class
-        var colorTheme = themeSettings?.colorTheme || 'pom-pom';
-        if (colorTheme && colorTheme !== 'pom-pom') {
-          document.documentElement.classList.add('theme-' + colorTheme);
+        var colorTheme = themeSettings?.colorTheme || "pom-pom";
+        if (colorTheme && colorTheme !== "pom-pom") {
+          document.documentElement.classList.add("theme-" + colorTheme);
         }
-        
+
         // Set background color that will be enhanced by CSS gradients
-        var bgColor = isDark ? '#16131F' : '#FFF6F4';
+        var bgColor = isDark ? "#16131F" : "#FFF6F4";
         document.documentElement.style.backgroundColor = bgColor;
         document.body.style.backgroundColor = bgColor;
       })();

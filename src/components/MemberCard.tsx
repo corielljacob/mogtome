@@ -1,7 +1,7 @@
-import { useState, memo, useCallback, type CSSProperties } from 'react';
-import type { FreeCompanyMember } from '../types';
-import { ExternalLink } from 'lucide-react';
-import { getRankColor } from '../constants';
+import { useState, memo, useCallback, type CSSProperties } from "react";
+import type { FreeCompanyMember } from "../types";
+import { ExternalLink } from "lucide-react";
+import { getRankColor } from "../constants";
 
 interface MemberCardProps {
   member: FreeCompanyMember;
@@ -9,13 +9,13 @@ interface MemberCardProps {
 }
 
 const WASHI_TAPE_COLORS = [
-  '#fbd5d5', // soft red
-  '#fef08a', // soft yellow
-  '#bbf7d0', // soft green
-  '#bfdbfe', // soft blue
-  '#e9d5ff', // soft purple
-  '#fbcfe8', // soft pink
-  '#fed7aa', // soft orange
+  "#fbd5d5", // soft red
+  "#fef08a", // soft yellow
+  "#bbf7d0", // soft green
+  "#bfdbfe", // soft blue
+  "#e9d5ff", // soft purple
+  "#fbcfe8", // soft pink
+  "#fed7aa", // soft orange
 ];
 
 /**
@@ -24,7 +24,10 @@ const WASHI_TAPE_COLORS = [
  * PERFORMANCE: Uses CSS animations for entry (compositor thread).
  * Gentle tilt on hover via CSS transforms for scrapbook feel.
  */
-export const MemberCard = memo(function MemberCard({ member, index = 0 }: MemberCardProps) {
+export const MemberCard = memo(function MemberCard({
+  member,
+  index = 0,
+}: MemberCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -37,7 +40,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   // Gentle pseudo-random properties (deterministic from index)
   const baseTilt = ((index * 7 + 3) % 5) - 2; // -2 to 2 degrees
   const hoverTilt = ((index * 13 + 7) % 7) - 3; // -3 to 3 degrees
-  const hoverY = -((index * 5 + 3) % 8 + 12); // -12px to -19px (more whimsy float!)
+  const hoverY = -(((index * 5 + 3) % 8) + 12); // -12px to -19px (more whimsy float!)
   const hoverX = ((index * 11 + 2) % 7) - 3; // -3px to 3px
   const tapeColor = WASHI_TAPE_COLORS[index % WASHI_TAPE_COLORS.length];
 
@@ -47,22 +50,28 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
     <article
       className="paper group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation cursor-pointer
         active:scale-[0.97] active:duration-100"
-      style={{
-        animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.4)}s both`,
-        '--card-glow': rankColor.glow,
-        '--card-hex': rankColor.hex,
-      } as CSSProperties}
+      style={
+        {
+          animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.4)}s both`,
+          "--card-glow": rankColor.glow,
+          "--card-hex": rankColor.hex,
+        } as CSSProperties
+      }
       aria-label={`${member.name}, ${member.freeCompanyRank}`}
     >
       {/* 
         Applying hover motion securely inside the animated parent. 
         This prevents `fadeSlideIn` animation transforms from stomping over our hover translations!
       */}
-      <div 
+      <div
         className="w-full transition-[transform,box-shadow,z-index] duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-0 group-hover:z-20 group-hover:shadow-[var(--panel-shadow-strong)]"
         style={{
-           transform: `translate(0px, 0px) rotate(${baseTilt}deg)`,
-           ...(isHovered ? { transform: `translate(${hoverX}px, ${hoverY}px) rotate(${hoverTilt}deg)` } : {})
+          transform: `translate(0px, 0px) rotate(${baseTilt}deg)`,
+          ...(isHovered
+            ? {
+                transform: `translate(${hoverX}px, ${hoverY}px) rotate(${hoverTilt}deg)`,
+              }
+            : {}),
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -75,85 +84,84 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             overflow-visible
           "
         >
-
-        {/* ── Avatar ──────────────────────────────────────────────── */}
-        <a
-          href={lodestoneUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="
+          {/* ── Avatar ──────────────────────────────────────────────── */}
+          <a
+            href={lodestoneUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
             block relative overflow-hidden aspect-square rounded-lg shadow-inner
             bg-[var(--bg)]
             focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--primary)]
             focus:outline-none
           "
-          aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
-        >
-          {/* Loading shimmer */}
-          {!imageLoaded && (
-            <div
-              className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--card)] to-[var(--bg)] animate-shimmer"
-              aria-hidden="true"
-            />
-          )}
+            aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
+          >
+            {/* Loading shimmer */}
+            {!imageLoaded && (
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--card)] to-[var(--bg)] animate-shimmer"
+                aria-hidden="true"
+              />
+            )}
 
-          {/* Avatar image */}
-          <img
-            src={member.avatarLink}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onLoad={handleImageLoad}
-            className={`
+            {/* Avatar image */}
+            <img
+              src={member.avatarLink}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              onLoad={handleImageLoad}
+              className={`
               block w-full h-full object-cover rounded-lg
               transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
               group-hover:scale-[1.06]
-              ${imageLoaded ? 'opacity-100' : 'opacity-0'}
+              ${imageLoaded ? "opacity-100" : "opacity-0"}
             `}
-          />
+            />
 
-          {/* Rank sticker badge — top-left */}
-          <div className="absolute top-1.5 left-1.5 pointer-events-none z-10">
-            <div
-              className="flex items-center justify-center size-6 sm:size-5 rounded-full shadow-sm"
-              style={{
-                backgroundColor: `color-mix(in srgb, ${rankColor.hex} 20%, var(--card))`,
-                border: `2px solid color-mix(in srgb, ${rankColor.hex} 30%, var(--card))`,
-              }}
-            >
-              {member.freeCompanyRankIcon ? (
-                <img
-                  src={member.freeCompanyRankIcon}
-                  alt=""
-                  className="w-3.5 h-3.5 sm:w-3 sm:h-3"
-                  aria-hidden="true"
-                />
-              ) : (
-                <RankIcon
-                  className="w-3.5 h-3.5 sm:w-3 sm:h-3"
-                  style={{ color: rankColor.hex }}
-                  aria-hidden="true"
-                />
-              )}
+            {/* Rank sticker badge — top-left */}
+            <div className="absolute top-1.5 left-1.5 pointer-events-none z-10">
+              <div
+                className="flex items-center justify-center size-6 sm:size-5 rounded-full shadow-sm"
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${rankColor.hex} 20%, var(--card))`,
+                  border: `2px solid color-mix(in srgb, ${rankColor.hex} 30%, var(--card))`,
+                }}
+              >
+                {member.freeCompanyRankIcon ? (
+                  <img
+                    src={member.freeCompanyRankIcon}
+                    alt=""
+                    className="w-3.5 h-3.5 sm:w-3 sm:h-3"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <RankIcon
+                    className="w-3.5 h-3.5 sm:w-3 sm:h-3"
+                    style={{ color: rankColor.hex }}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Mobile tap indicator */}
-          <div
-            className="
+            {/* Mobile tap indicator */}
+            <div
+              className="
               absolute bottom-2 right-2 sm:hidden
               flex items-center justify-center
               size-6 rounded-full
               bg-black/25
             "
-            aria-hidden="true"
-          >
-            <ExternalLink className="w-3 h-3 text-white/80" />
-          </div>
+              aria-hidden="true"
+            >
+              <ExternalLink className="w-3 h-3 text-white/80" />
+            </div>
 
-          {/* Desktop hover overlay */}
-          <div
-            className="
+            {/* Desktop hover overlay */}
+            <div
+              className="
               absolute -inset-px hidden sm:flex
               items-center justify-center
               rounded-lg
@@ -161,11 +169,14 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               transition-opacity duration-300
               pointer-events-none
             "
-            style={{ background: 'color-mix(in srgb, var(--card-hex) 45%, rgba(0,0,0,0.34))' }}
-            aria-hidden="true"
-          >
-            <span
-              className="
+              style={{
+                background:
+                  "color-mix(in srgb, var(--card-hex) 45%, rgba(0,0,0,0.34))",
+              }}
+              aria-hidden="true"
+            >
+              <span
+                className="
                 flex items-center gap-1.5 px-3 py-1.5
                 bg-[var(--card)] rounded-full
                 text-xs font-soft font-bold text-[var(--text)]
@@ -173,26 +184,29 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
                 scale-90 group-hover:scale-100
                 transition-transform duration-300 ease-out
               "
-            >
-              <ExternalLink className="w-3 h-3" style={{ color: rankColor.hex }} />
-              Lodestone
-            </span>
-          </div>
-        </a>
+              >
+                <ExternalLink
+                  className="w-3 h-3"
+                  style={{ color: rankColor.hex }}
+                />
+                Lodestone
+              </span>
+            </div>
+          </a>
 
-        {/* ── Member info ─────────────────────────────────────────── */}
-        <div className="pt-4 text-center space-y-0.5">
-          <h3 className="font-accent font-bold text-lg sm:text-xl text-[var(--text)] truncate leading-snug">
-            {member.name}
-          </h3>
-          <p
-            className="text-[10px] sm:text-[11px] font-soft font-medium uppercase tracking-wider truncate"
-            style={{ color: rankColor.hex }}
-          >
-            {member.freeCompanyRank}
-          </p>
+          {/* ── Member info ─────────────────────────────────────────── */}
+          <div className="pt-4 text-center space-y-0.5">
+            <h3 className="font-accent font-bold text-lg sm:text-xl text-[var(--text)] truncate leading-snug">
+              {member.name}
+            </h3>
+            <p
+              className="text-[10px] sm:text-[11px] font-soft font-medium uppercase tracking-wider truncate"
+              style={{ color: rankColor.hex }}
+            >
+              {member.freeCompanyRank}
+            </p>
+          </div>
         </div>
-      </div>
         {/* Whimsy Washi Tape — z-10 ensures it renders above card surface */}
         <svg
           className="absolute -top-3 inset-x-0 mx-auto w-12 sm:w-16 h-5 sm:h-6 z-10 pointer-events-none overflow-visible"
@@ -202,9 +216,22 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           aria-hidden="true"
         >
           <defs>
-            <pattern id={`washi-${index}`} patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+            <pattern
+              id={`washi-${index}`}
+              patternUnits="userSpaceOnUse"
+              width="5"
+              height="5"
+              patternTransform="rotate(45)"
+            >
               <rect width="5" height="5" fill="transparent" />
-              <line x1="0" y1="0" x2="0" y2="5" stroke="rgba(255,255,255,0.22)" strokeWidth="2" />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="5"
+                stroke="rgba(255,255,255,0.22)"
+                strokeWidth="2"
+              />
             </pattern>
           </defs>
           {/* Tape body — subtle 2-arc wave (±1px) */}
@@ -224,7 +251,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             fill="rgba(255,255,255,0.15)"
           />
         </svg>
-     </div>
+      </div>
     </article>
   );
 });
@@ -287,9 +314,11 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
         surface hover-bounce
         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
       "
-      style={{
-        '--compact-glow': rankColor.glow,
-      } as CSSProperties}
+      style={
+        {
+          "--compact-glow": rankColor.glow,
+        } as CSSProperties
+      }
     >
       {/* Avatar */}
       <div className="relative shrink-0">
@@ -299,9 +328,11 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
             ring-1.5 ring-offset-2 ring-offset-[var(--card)]
             transition-[ring-color] duration-200
           "
-          style={{
-            '--tw-ring-color': `color-mix(in srgb, ${rankColor.hex} 40%, transparent)`,
-          } as CSSProperties}
+          style={
+            {
+              "--tw-ring-color": `color-mix(in srgb, ${rankColor.hex} 40%, transparent)`,
+            } as CSSProperties
+          }
         >
           <img
             src={member.avatarLink}
@@ -324,9 +355,16 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
           aria-hidden="true"
         >
           {member.freeCompanyRankIcon ? (
-            <img src={member.freeCompanyRankIcon} alt="" className="w-2.5 h-2.5" />
+            <img
+              src={member.freeCompanyRankIcon}
+              alt=""
+              className="w-2.5 h-2.5"
+            />
           ) : (
-            <RankIcon className="w-2.5 h-2.5" style={{ color: rankColor.hex }} />
+            <RankIcon
+              className="w-2.5 h-2.5"
+              style={{ color: rankColor.hex }}
+            />
           )}
         </div>
       </div>

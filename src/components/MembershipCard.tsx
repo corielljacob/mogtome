@@ -1,8 +1,8 @@
-import { useRef, useState, useCallback } from 'react';
-import { Star, ExternalLink } from 'lucide-react';
+import { useRef, useState, useCallback } from "react";
+import { Star, ExternalLink } from "lucide-react";
 
-import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
-import { rankThemes, defaultTheme } from './membershipCardThemes';
+import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import { rankThemes, defaultTheme } from "./membershipCardThemes";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MEMBERSHIP CARD — Warm illustrated badge, no 3D effects
@@ -37,15 +37,15 @@ export function MembershipCard({
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
   const sizeClasses = compact
-    ? 'max-w-[340px] sm:max-w-[360px]'
-    : 'max-w-[360px]';
-  const paddingClass = compact ? 'p-4 sm:p-5' : 'p-5';
-  const avatarSize = compact ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-14 h-14';
-  const nameSize = compact ? 'text-sm sm:text-base' : 'text-base';
-  const moogleSize = compact ? 'w-10 h-10 sm:w-12 sm:h-12' : 'w-12 h-12';
+    ? "max-w-[340px] sm:max-w-[360px]"
+    : "max-w-[360px]";
+  const paddingClass = compact ? "p-4 sm:p-5" : "p-5";
+  const avatarSize = compact ? "w-12 h-12 sm:w-14 sm:h-14" : "w-14 h-14";
+  const nameSize = compact ? "text-sm sm:text-base" : "text-base";
+  const moogleSize = compact ? "w-10 h-10 sm:w-12 sm:h-12" : "w-12 h-12";
 
   return (
-    <div className={compact ? '' : 'py-4'}>
+    <div className={compact ? "" : "py-4"}>
       <div
         ref={cardRef}
         onMouseEnter={handleMouseEnter}
@@ -67,7 +67,7 @@ export function MembershipCard({
           className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, var(--text-subtle) 1px, transparent 1px)`,
-            backgroundSize: '16px 16px',
+            backgroundSize: "16px 16px",
           }}
         />
 
@@ -119,23 +119,33 @@ export function MembershipCard({
               <div
                 className={`absolute -inset-0.5 rounded-xl bg-gradient-to-br ${theme.gradient} opacity-60`}
               />
-              <img src={avatarUrl} alt="" className={`relative ${avatarSize} rounded-lg object-cover`} />
+              <img
+                src={avatarUrl}
+                alt=""
+                className={`relative ${avatarSize} rounded-lg object-cover`}
+              />
             </div>
 
             {/* Details */}
             <div className="flex-1 min-w-0 pb-0.5">
-              <h3 className={`font-display font-bold text-[var(--text)] ${nameSize} truncate leading-tight`}>
+              <h3
+                className={`font-display font-bold text-[var(--text)] ${nameSize} truncate leading-tight`}
+              >
                 {name}
               </h3>
               <div className="flex items-center gap-2 mt-1">
-                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r ${theme.gradient}`}>
+                <div
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r ${theme.gradient}`}
+                >
                   <RankIcon className="w-3 h-3 text-white" />
                   <span className="font-soft font-semibold text-[10px] text-white uppercase tracking-wide">
                     {rank}
                   </span>
                 </div>
                 <span className="text-[var(--text-subtle)] text-[10px]">•</span>
-                <span className="font-accent text-[11px] text-[var(--primary)]">Kupo Life!</span>
+                <span className="font-accent text-[11px] text-[var(--primary)]">
+                  Kupo Life!
+                </span>
               </div>
             </div>
 

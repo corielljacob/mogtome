@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '../test/test-utils';
-import userEvent from '@testing-library/user-event';
-import { CharacterMapping } from '../features/characterMapping';
-import { characterMappingApi } from '../api/characterMapping';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "../test/test-utils";
+import userEvent from "@testing-library/user-event";
+import { CharacterMapping } from "../features/characterMapping";
+import { characterMappingApi } from "../api/characterMapping";
 
 // Mock the characterMappingApi
-vi.mock('../api/characterMapping', () => ({
+vi.mock("../api/characterMapping", () => ({
   characterMappingApi: {
     getUnmappedCharacters: vi.fn(),
     getUnmappedDiscordUsers: vi.fn(),
@@ -19,12 +19,12 @@ const mockCharacterMappingApi = characterMappingApi as {
   mapCharacter: ReturnType<typeof vi.fn>;
 };
 
-describe('CharacterMapping', () => {
+describe("CharacterMapping", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders loading state initially', async () => {
+  it("renders loading state initially", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockReturnValue(
       new Promise(() => {}),
@@ -36,14 +36,14 @@ describe('CharacterMapping', () => {
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
-    expect(
-      screen.getByText(/loading unmapped accounts/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/loading unmapped accounts/i)).toBeInTheDocument();
   });
 
-  it('renders the component header', async () => {
+  it("renders the component header", async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [],
@@ -56,14 +56,14 @@ describe('CharacterMapping', () => {
     render(<CharacterMapping />);
 
     await waitFor(() => {
-      expect(screen.getByText('Character Mapping')).toBeInTheDocument();
+      expect(screen.getByText("Character Mapping")).toBeInTheDocument();
     });
     expect(
-      screen.getByText('Link characters to Discord accounts'),
+      screen.getByText("Link characters to Discord accounts"),
     ).toBeInTheDocument();
   });
 
-  it('renders empty state when no unmapped accounts', async () => {
+  it("renders empty state when no unmapped accounts", async () => {
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [],
@@ -76,154 +76,156 @@ describe('CharacterMapping', () => {
     render(<CharacterMapping />);
 
     await waitFor(() => {
-      expect(screen.getByText('All accounts mapped!')).toBeInTheDocument();
+      expect(screen.getByText("All accounts mapped!")).toBeInTheDocument();
     });
   });
 
-  it('shows tab bar with Auto and Manual tabs', async () => {
+  it("shows tab bar with Auto and Manual tabs", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
         {
-          characterId: '1',
-          name: 'Test Character',
-          avatarLink: '',
-          freeCompanyRank: 'Knight',
+          characterId: "1",
+          name: "Test Character",
+          avatarLink: "",
+          freeCompanyRank: "Knight",
         },
       ],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
       suggestedDiscordUsers: [],
-      unmappedDiscordUsers: [
-        { discordId: '123', serverNickName: 'SomeUser' },
-      ],
+      unmappedDiscordUsers: [{ discordId: "123", serverNickName: "SomeUser" }],
     });
 
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Auto')).toBeInTheDocument();
-      expect(screen.getByText('Manual')).toBeInTheDocument();
+      expect(screen.getByText("Auto")).toBeInTheDocument();
+      expect(screen.getByText("Manual")).toBeInTheDocument();
     });
   });
 
-  it('renders character and Discord lists on the Manual tab', async () => {
+  it("renders character and Discord lists on the Manual tab", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
         {
-          characterId: '1',
-          name: 'Test Character',
-          avatarLink: 'https://example.com/avatar.png',
-          freeCompanyRank: 'Moogle Knight',
+          characterId: "1",
+          name: "Test Character",
+          avatarLink: "https://example.com/avatar.png",
+          freeCompanyRank: "Moogle Knight",
         },
       ],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
       suggestedDiscordUsers: [],
       unmappedDiscordUsers: [
-        { discordId: '123', serverNickName: 'TestDiscordUser' },
+        { discordId: "123", serverNickName: "TestDiscordUser" },
       ],
     });
 
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
     // Switch to manual tab
     await waitFor(() => {
-      expect(screen.getByText('Manual')).toBeInTheDocument();
+      expect(screen.getByText("Manual")).toBeInTheDocument();
     });
-    await user.click(screen.getByText('Manual'));
+    await user.click(screen.getByText("Manual"));
 
     await waitFor(() => {
-      expect(screen.getByText('Characters')).toBeInTheDocument();
-      expect(screen.getByText('Discord Accounts')).toBeInTheDocument();
+      expect(screen.getByText("Characters")).toBeInTheDocument();
+      expect(screen.getByText("Discord Accounts")).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Test Character')).toBeInTheDocument();
-    expect(screen.getByText('TestDiscordUser')).toBeInTheDocument();
+    expect(screen.getByText("Test Character")).toBeInTheDocument();
+    expect(screen.getByText("TestDiscordUser")).toBeInTheDocument();
   });
 
-  it('shows exact match pairs when names match', async () => {
+  it("shows exact match pairs when names match", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
         {
-          characterId: '1',
-          name: 'Miko Cocoa',
-          avatarLink: '',
-          freeCompanyRank: 'Knight',
+          characterId: "1",
+          name: "Miko Cocoa",
+          avatarLink: "",
+          freeCompanyRank: "Knight",
         },
       ],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
       suggestedDiscordUsers: [],
-      unmappedDiscordUsers: [
-        { discordId: '10', serverNickName: 'Miko Cocoa' },
-      ],
+      unmappedDiscordUsers: [{ discordId: "10", serverNickName: "Miko Cocoa" }],
     });
 
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
     // Auto tab is the default
     await waitFor(() => {
-      expect(screen.getByText('Exact Matches')).toBeInTheDocument();
+      expect(screen.getByText("Exact Matches")).toBeInTheDocument();
     });
-    expect(screen.getByText('Exact Match')).toBeInTheDocument();
+    expect(screen.getByText("Exact Match")).toBeInTheDocument();
   });
 
-  it('shows search inputs on the Manual tab', async () => {
+  it("shows search inputs on the Manual tab", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
       unmappedCharacters: [
         {
-          characterId: '1',
-          name: 'Test Char',
-          avatarLink: '',
-          freeCompanyRank: 'Knight',
+          characterId: "1",
+          name: "Test Char",
+          avatarLink: "",
+          freeCompanyRank: "Knight",
         },
       ],
     });
     mockCharacterMappingApi.getUnmappedDiscordUsers.mockResolvedValue({
       suggestedDiscordUsers: [],
-      unmappedDiscordUsers: [
-        { discordId: '1', serverNickName: 'TestUser' },
-      ],
+      unmappedDiscordUsers: [{ discordId: "1", serverNickName: "TestUser" }],
     });
 
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Manual')).toBeInTheDocument();
+      expect(screen.getByText("Manual")).toBeInTheDocument();
     });
-    await user.click(screen.getByText('Manual'));
+    await user.click(screen.getByText("Manual"));
 
     await waitFor(() => {
       expect(
-        screen.getByPlaceholderText('Search characters...'),
+        screen.getByPlaceholderText("Search characters..."),
       ).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText('Search Discord users...'),
+        screen.getByPlaceholderText("Search Discord users..."),
       ).toBeInTheDocument();
     });
   });
 
-  it('has a refresh button', async () => {
+  it("has a refresh button", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -237,11 +239,13 @@ describe('CharacterMapping', () => {
     render(<CharacterMapping />);
 
     // Open the overlay
-    await user.click(screen.getByRole('button', { name: /character mapping/i }));
+    await user.click(
+      screen.getByRole("button", { name: /character mapping/i }),
+    );
 
     await waitFor(() => {
       expect(
-        screen.getByLabelText('Refresh unmapped lists'),
+        screen.getByLabelText("Refresh unmapped lists"),
       ).toBeInTheDocument();
     });
   });

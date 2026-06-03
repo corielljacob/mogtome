@@ -1,5 +1,9 @@
 // Date utilities
-export { formatRelativeTime, formatFullDate, formatLastUpdated } from './dateFormatters';
+export {
+  formatRelativeTime,
+  formatFullDate,
+  formatLastUpdated,
+} from "./dateFormatters";
 
 // Motion/Animation performance utilities
 export {
@@ -10,4 +14,4 @@ export {
   getDelayMultiplier,
   shouldUseComplexAnimations,
   getLayoutProps,
-} from './motionConfig';
+} from "./motionConfig";

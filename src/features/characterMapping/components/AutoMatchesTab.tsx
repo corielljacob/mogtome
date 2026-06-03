@@ -1,11 +1,15 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
-import type { MatchPair, UnmappedCharacter, UnmappedDiscordUser } from '../types';
-import { MatchPairCard } from './MatchPairCard';
-import { EmptyState } from './EmptyState';
-import { Tag } from '../../../components/Tag';
-import { pairKey } from '../hooks';
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import type {
+  MatchPair,
+  UnmappedCharacter,
+  UnmappedDiscordUser,
+} from "../types";
+import { MatchPairCard } from "./MatchPairCard";
+import { EmptyState } from "./EmptyState";
+import { Tag } from "../../../components/Tag";
+import { pairKey } from "../hooks";
 
 interface AutoMatchesTabProps {
   visibleExactMatches: MatchPair[];
@@ -67,7 +71,7 @@ export function AutoMatchesTab({
             {exactExpanded && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden"
               >
@@ -108,7 +112,7 @@ export function AutoMatchesTab({
             {suggestedExpanded && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden"
               >
@@ -132,10 +136,10 @@ export function AutoMatchesTab({
         <div className="pt-2 border-t border-[var(--border)]">
           <p className="text-xs text-[var(--text-muted)] font-soft">
             {unmatchedCharacters.length} character
-            {unmatchedCharacters.length !== 1 ? 's' : ''} and{' '}
+            {unmatchedCharacters.length !== 1 ? "s" : ""} and{" "}
             {unmatchedDiscordUsers.length} Discord user
-            {unmatchedDiscordUsers.length !== 1 ? 's' : ''} couldn&apos;t be
-            auto-matched.{' '}
+            {unmatchedDiscordUsers.length !== 1 ? "s" : ""} couldn&apos;t be
+            auto-matched.{" "}
             <button
               onClick={onSwitchToManual}
               className="text-[var(--primary)] font-semibold hover:underline cursor-pointer"

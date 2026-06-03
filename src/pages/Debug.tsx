@@ -1,16 +1,17 @@
-import { useState, useEffect, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Play, RotateCcw, X } from 'lucide-react';
-import { MembershipCard } from '../components/MembershipCard';
-import { getTheme } from '../components/membershipCardThemes';
-import { ContentCard } from '../components';
+import { useState, useEffect, useCallback, memo } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Play, RotateCcw, X } from "lucide-react";
+import { MembershipCard } from "../components/MembershipCard";
+import { getTheme } from "../components/membershipCardThemes";
+import { ContentCard } from "../components";
 
 // Mock user data for testing
 const MOCK_USER = {
-  memberName: 'Agility Rabbit',
-  memberRank: 'Moogle Knight',
-  memberPortraitUrl: 'https://img2.finalfantasyxiv.com/f/c0c1a3a3f8e7b1a3c0c1a3a3f8e7b1a3_c0c1a3a3f8e7b1a3c0c1a3a3f8e7b1a3fc0.png',
-  memberId: '12345678',
+  memberName: "Agility Rabbit",
+  memberRank: "Moogle Knight",
+  memberPortraitUrl:
+    "https://img2.finalfantasyxiv.com/f/c0c1a3a3f8e7b1a3c0c1a3a3f8e7b1a3_c0c1a3a3f8e7b1a3c0c1a3a3f8e7b1a3fc0.png",
+  memberId: "12345678",
   createdAt: new Date().toISOString(),
 };
 
@@ -28,7 +29,12 @@ const DEBUG_SPARKLES = Array.from({ length: 24 }, (_, i) => ({
   duration: 1.5 + Math.random() * 1,
   size: 3 + Math.random() * 5,
   rise: -20 - Math.random() * 30, // upward drift for the float animation
-  color: i % 3 === 0 ? 'var(--primary)' : i % 3 === 1 ? 'var(--secondary)' : 'var(--accent)',
+  color:
+    i % 3 === 0
+      ? "var(--primary)"
+      : i % 3 === 1
+        ? "var(--secondary)"
+        : "var(--accent)",
 }));
 
 // Elegant floating sparkles
@@ -36,7 +42,10 @@ const Sparkles = memo(function Sparkles() {
   const particles = DEBUG_SPARKLES;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -55,9 +64,9 @@ const Sparkles = memo(function Sparkles() {
             scale: [0, 1.2, 1, 0],
             y: [0, p.rise],
           }}
-          transition={{ 
-            duration: p.duration, 
-            delay: p.delay, 
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
             ease: [0.23, 1, 0.32, 1],
           }}
         />
@@ -78,10 +87,11 @@ function CardShine({ delay = 0 }: { delay?: number }) {
       <motion.div
         className="absolute inset-y-0 w-[200%] -left-full"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 60%, transparent 100%)',
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 60%, transparent 100%)",
         }}
-        initial={{ x: '0%' }}
-        animate={{ x: '100%' }}
+        initial={{ x: "0%" }}
+        animate={{ x: "100%" }}
         transition={{
           delay: delay + 0.2,
           duration: 0.8,
@@ -104,21 +114,21 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
   // Orchestrated timeline (phase is reset to 0 by the replay handler / initial state)
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 300),   // Card starts appearing
-      setTimeout(() => setPhase(2), 900),   // Shine sweeps
-      setTimeout(() => setPhase(3), 1400),  // Sparkles appear
-      setTimeout(() => setPhase(4), 2000),  // Button appears
+      setTimeout(() => setPhase(1), 300), // Card starts appearing
+      setTimeout(() => setPhase(2), 900), // Shine sweeps
+      setTimeout(() => setPhase(3), 1400), // Sparkles appear
+      setTimeout(() => setPhase(4), 2000), // Button appears
     ];
 
     return () => timers.forEach(clearTimeout);
   }, [runCount]);
 
   const replay = useCallback(() => {
-    setPhase(0);            // restart the timeline from the beginning
-    setRunCount(c => c + 1);
+    setPhase(0); // restart the timeline from the beginning
+    setRunCount((c) => c + 1);
   }, []);
 
-  const firstName = MOCK_USER.memberName.split(' ')[0];
+  const firstName = MOCK_USER.memberName.split(" ")[0];
 
   return (
     <motion.div
@@ -158,14 +168,14 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
           {/* Welcome header - elegant fade with blur */}
           <motion.div
             className="mb-8"
-            initial={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ 
-              duration: 0.6, 
+            initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{
+              duration: 0.6,
               ease: [0.23, 1, 0.32, 1],
             }}
           >
-            <motion.p 
+            <motion.p
               className="text-[var(--text-muted)] font-soft text-sm mb-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -177,7 +187,11 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               className="font-accent text-2xl text-[var(--primary)]"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              transition={{
+                delay: 0.3,
+                duration: 0.5,
+                ease: [0.23, 1, 0.32, 1],
+              }}
             >
               Your card is ready
             </motion.p>
@@ -190,15 +204,19 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               className="absolute -inset-12 rounded-[2rem] pointer-events-none"
               style={{
                 background: `radial-gradient(ellipse at center, ${theme.glow} 0%, transparent 70%)`,
-                filter: 'blur(40px)',
+                filter: "blur(40px)",
               }}
               initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ 
+              animate={{
                 opacity: phase >= 1 ? [0.3, 0.5, 0.4] : 0,
                 scale: phase >= 1 ? 1 : 0.6,
               }}
-              transition={{ 
-                opacity: { duration: 2, repeat: Infinity, repeatType: 'reverse' },
+              transition={{
+                opacity: {
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                },
                 scale: { duration: 0.8, ease: [0.23, 1, 0.32, 1] },
               }}
             />
@@ -206,27 +224,27 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
             {/* The membership card with premium entrance */}
             <motion.div
               className="relative"
-              initial={{ 
-                opacity: 0, 
-                y: 60, 
+              initial={{
+                opacity: 0,
+                y: 60,
                 scale: 0.85,
                 rotateX: 25,
-                filter: 'blur(8px)',
+                filter: "blur(8px)",
               }}
-              animate={{ 
-                opacity: phase >= 1 ? 1 : 0, 
-                y: phase >= 1 ? 0 : 60, 
+              animate={{
+                opacity: phase >= 1 ? 1 : 0,
+                y: phase >= 1 ? 0 : 60,
                 scale: phase >= 1 ? 1 : 0.85,
                 rotateX: phase >= 1 ? 0 : 25,
-                filter: phase >= 1 ? 'blur(0px)' : 'blur(8px)',
+                filter: phase >= 1 ? "blur(0px)" : "blur(8px)",
               }}
-              transition={{ 
+              transition={{
                 duration: 0.7,
                 ease: [0.23, 1, 0.32, 1],
               }}
-              style={{ 
-                perspective: '1000px',
-                transformStyle: 'preserve-3d',
+              style={{
+                perspective: "1000px",
+                transformStyle: "preserve-3d",
               }}
             >
               <MembershipCard
@@ -237,15 +255,13 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
                 memberSince={MOCK_USER.createdAt}
                 compact
               />
-              
+
               {/* Shine sweep overlay */}
               {phase >= 2 && <CardShine delay={0} />}
             </motion.div>
-            
+
             {/* Sparkles */}
-            <AnimatePresence>
-              {phase >= 3 && <Sparkles />}
-            </AnimatePresence>
+            <AnimatePresence>{phase >= 3 && <Sparkles />}</AnimatePresence>
           </div>
 
           {/* Bottom section - message and button */}
@@ -254,8 +270,8 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               {phase >= 3 && (
                 <motion.p
                   className="font-accent text-base text-[var(--secondary)]"
-                  initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                 >
                   ✨ You're officially one of us, kupo! ✨
@@ -269,7 +285,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                transition={{ 
+                transition={{
                   duration: 0.4,
                   ease: [0.23, 1, 0.32, 1],
                 }}
@@ -317,7 +333,7 @@ export function Debug() {
           <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">
             First-Time Login Experience
           </h2>
-          
+
           <div className="space-y-4">
             <button
               onClick={() => setShowPreview(true)}
@@ -345,7 +361,7 @@ export function Debug() {
           <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">
             Membership Card Preview
           </h2>
-          
+
           <MembershipCard
             name={MOCK_USER.memberName}
             rank={MOCK_USER.memberRank}

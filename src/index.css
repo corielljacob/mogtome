@@ -1255,6 +1255,29 @@
     radial-gradient(circle, color-mix(in srgb, var(--secondary) 20%, transparent) 2.5px, transparent 3px);
 }
 
+/* ─── Kawaii wallpaper ─────────────────────────────────────────────────────────
+ * A classic Japanese sticker-sheet backdrop: a seamless star + sparkle tile,
+ * gradient-tinted in the theme candy colours via a CSS mask (so it themes). Sits
+ * in the SCROLLING layer (absolute, not fixed) so it travels with the page rather
+ * than feeling like a detached void. Hidden in high-contrast for a clean a11y bg.
+ * ─────────────────────────────────────────────────────────────────────────────── */
+.kawaii-wallpaper {
+  --wp-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76'%3E%3Cg fill='%23000'%3E%3Cpath transform='translate(13 13) scale(0.9)' d='M11.48 3.5a.56.56 0 0 1 1.04 0l2.13 5.11c.08.2.27.33.47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 0 0-.19.56l1.29 5.38c.11.49-.42.88-.84.61l-4.73-2.88a.56.56 0 0 0-.58 0l-4.73 2.88c-.42.27-.95-.12-.84-.61l1.29-5.38a.56.56 0 0 0-.19-.56l-4.2-3.6c-.38-.33-.18-.95.32-.99l5.52-.44c.2-.02.39-.15.47-.35L11.48 3.5Z'/%3E%3Cpath transform='translate(43 41) scale(0.8)' d='M12 2.5c.4 0 .74.28.83.66l.86 3.6c.2.83.84 1.47 1.67 1.67l3.6.86a.86.86 0 0 1 0 1.66l-3.6.86c-.83.2-1.47.84-1.67 1.67l-.86 3.6a.86.86 0 0 1-1.66 0l-.86-3.6a2.14 2.14 0 0 0-1.67-1.67l-3.6-.86a.86.86 0 0 1 0-1.66l3.6-.86c.83-.2 1.47-.84 1.67-1.67l.86-3.6c.09-.38.43-.66.83-.66Z'/%3E%3C/g%3E%3C/svg%3E");
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary) 17%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 50%,
+    color-mix(in srgb, var(--secondary) 17%, transparent) 100%
+  );
+  -webkit-mask-image: var(--wp-tile);
+  mask-image: var(--wp-tile);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: 76px 76px;
+  mask-size: 76px 76px;
+}
+:root.high-contrast .kawaii-wallpaper { display: none; }
+
 /* ─── Cork bulletin board ──────────────────────────────────────────────────────
  * Light: a warm cream speckled cork (cards pop as white polaroids on cream).
  * Dark: a board pitched between the page bg and the cards — darker than the cards
@@ -1263,8 +1286,8 @@
  * brown). Frame is the candy --primary border; pin cards with the .pushpin nub. */
 .corkboard {
   --cork-base: #f1e3cd;
-  --cork-dot-a: color-mix(in srgb, var(--primary) 18%, transparent);
-  --cork-dot-b: color-mix(in srgb, var(--secondary) 15%, transparent);
+  --cork-dot-a: color-mix(in srgb, var(--primary) 13%, transparent);
+  --cork-dot-b: color-mix(in srgb, var(--secondary) 10%, transparent);
   position: relative;
   border-radius: var(--radius-3xl);
   border: 6px solid color-mix(in srgb, var(--primary) 30%, var(--card));
@@ -1273,11 +1296,11 @@
      with just a faint SVG fractal-noise grain (soft-light) for a hint of cork —
      no blobby mottling/highlights. */
   background-image:
-    radial-gradient(circle, var(--cork-dot-a) 0 3px, transparent 3.7px),
-    radial-gradient(circle, var(--cork-dot-b) 0 2.6px, transparent 3.3px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='cork'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='5' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncG type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncB type='linear' slope='1.5' intercept='-0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23cork)' opacity='0.22'/%3E%3C/svg%3E");
-  background-size: 46px 46px, 46px 46px, 300px 300px;
-  background-position: 0 0, 23px 23px, 0 0;
+    radial-gradient(circle, var(--cork-dot-a) 0 2px, transparent 3.1px),
+    radial-gradient(circle, var(--cork-dot-b) 0 1.7px, transparent 2.7px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='cork'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='5' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncG type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncB type='linear' slope='1.5' intercept='-0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23cork)' opacity='0.2'/%3E%3C/svg%3E");
+  background-size: 52px 52px, 52px 52px, 300px 300px;
+  background-position: 0 0, 26px 26px, 0 0;
   background-repeat: repeat, repeat, repeat;
   background-blend-mode: normal, normal, soft-light;
   box-shadow:
@@ -1288,12 +1311,12 @@
     0 8px 18px -10px var(--shadow);
 }
 .dark .corkboard {
-  --cork-base: color-mix(in srgb, var(--bg) 52%, var(--card));
-  --cork-dot-a: color-mix(in srgb, var(--primary) 28%, transparent);
-  --cork-dot-b: color-mix(in srgb, var(--secondary) 24%, transparent);
+  --cork-base: color-mix(in srgb, var(--bg) 86%, #000);
+  --cork-dot-a: color-mix(in srgb, var(--primary) 15%, transparent);
+  --cork-dot-b: color-mix(in srgb, var(--secondary) 12%, transparent);
   border-color: color-mix(in srgb, var(--primary) 26%, var(--card));
-  /* Flatter in dark: brighter candy dots (vars above) on the flat base, with just
-     the faint inherited soft-light grain — no blobby mottling/highlights. */
+  /* Flatter in dark: gentle, low-opacity candy dots (vars above) on the flat base
+     so they don't read as gaudy, plus the faint inherited soft-light grain. */
   box-shadow:
     inset 0 2px 14px rgba(0, 0, 0, 0.3),
     0 18px 40px -18px rgba(0, 0, 0, 0.55),
@@ -1324,21 +1347,49 @@
   box-shadow: 0 0 0 1.5px var(--border);
 }
 
-/* "Paper" — pinned photos/notes on the cork board read as warm cream paper with
-   dark ink in dark mode (like real polaroids on cork), even though the rest of
-   dark mode stays dark. It only re-points the surface/text tokens locally, so any
-   .surface or text-[var(--text)] inside renders as paper; candy accents
-   (--primary etc.) and .gel buttons are untouched. No-op in light mode (cards are
-   already light) and skipped in high-contrast so the a11y palette wins. */
+/* "Paper" — cards pinned to the cork board. In dark mode they stay on-theme dark
+   (not cream): lifted just a touch off the page background so they read as raised
+   panels on the darkened cork. Derived from --bg (NOT --card): a color-mix that
+   references --card is self-referential and computes to invalid, which blanks the
+   surface to transparent. Candy accents (--primary etc.), .gel buttons and the
+   bright sticky notes are untouched. No-op in light mode (cards are already light)
+   and skipped in high-contrast so the a11y palette wins. */
 .dark:not(.high-contrast) .paper {
-  --card: #f6efe2;
-  --bg: #eadfcc;
-  --text: #2a2336;
-  --text-muted: #6c6376;
-  --text-subtle: #998fa3;
-  --border: #e4dcca;
-  --shadow: rgba(60, 40, 20, 0.28);
+  --card: color-mix(in srgb, var(--bg) 92%, #ffffff);
 }
+
+/* "Journal" — a warm logbook page for the Chronicle: clean paper with a coloured
+   margin stripe down the left (no horizontal rules — page-wide rules can't line
+   up with the variable-height entries, so they read as messy). Uses theme tokens,
+   so it's light paper in light mode and a dark notebook in dark mode. */
+.journal {
+  position: relative;
+  border-radius: var(--radius-3xl);
+  background-color: var(--card);
+  border: 2px solid color-mix(in srgb, var(--primary) 18%, var(--card));
+  box-shadow:
+    0 2px 0 0 color-mix(in srgb, var(--primary) 10%, transparent),
+    0 18px 40px -20px var(--shadow),
+    0 8px 18px -10px var(--shadow);
+}
+.journal::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 2rem;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--secondary) 42%, transparent);
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .journal::before { left: 2.5rem; }
+}
+:root.high-contrast .journal {
+  background-image: none;
+  border-color: var(--border);
+}
+:root.high-contrast .journal::before { display: none; }
 
 /* Sticker text — chunky cream outline + soft drop, for big display headings.
    Color the fill with a normal text color class; the outline sits behind it. */

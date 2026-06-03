@@ -1,12 +1,20 @@
-import { useState, useMemo, useRef, useEffect, useCallback, useTransition, type CSSProperties } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import type { FreeCompanyMember } from '../types';
-import { MemberCard } from './MemberCard';
-import { KawaiiStar } from './kawaiiMotifs';
-import { getRankColor } from '../constants';
-import { scrollAppToTop } from '../utils/scroll';
+import {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+  useTransition,
+  type CSSProperties,
+} from "react";
+import { useSearchParams } from "react-router-dom";
+import { motion } from "motion/react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import type { FreeCompanyMember } from "../types";
+import { MemberCard } from "./MemberCard";
+import { KawaiiStar } from "./kawaiiMotifs";
+import { getRankColor } from "../constants";
+import { scrollAppToTop } from "../utils/scroll";
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];
@@ -36,7 +44,9 @@ function getColumnCount(width: number): number {
   return 2;
 }
 
-function useResponsiveColumns(containerRef: React.RefObject<HTMLDivElement | null>) {
+function useResponsiveColumns(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+) {
   const [columnCount, setColumnCount] = useState(4);
 
   useEffect(() => {
@@ -58,7 +68,13 @@ function useResponsiveColumns(containerRef: React.RefObject<HTMLDivElement | nul
   return columnCount;
 }
 
-function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: number }) {
+function RankHeader({
+  rankName,
+  memberCount,
+}: {
+  rankName: string;
+  memberCount: number;
+}) {
   const rankColor = getRankColor(rankName);
   const RankIcon = rankColor.icon;
 
@@ -95,7 +111,9 @@ function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: 
       {/* Dashed "tacked string" divider */}
       <div
         className="flex-1 border-t-2 border-dashed"
-        style={{ borderColor: `color-mix(in srgb, ${rankColor.hex} 28%, transparent)` }}
+        style={{
+          borderColor: `color-mix(in srgb, ${rankColor.hex} 28%, transparent)`,
+        }}
         aria-hidden="true"
       />
       <KawaiiStar className="w-4 h-4 shrink-0" color={rankColor.hex} />
@@ -106,89 +124,95 @@ function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: 
 /**
  * PaginatedMemberGrid - Non-virtualized grid with pagination.
  * Better for biography editing mode where form state needs to persist.
- * 
+ *
  * FEATURES:
  * - URL-synced pagination (bookmarkable, shareable, back-button works)
  * - Smooth transitions between pages with loading indicator
  * - Keyboard navigation (← →)
  * - Accessible with ARIA labels
  */
-export function PaginatedMemberGrid({ 
-  members, 
+export function PaginatedMemberGrid({
+  members,
   membersByRank,
   showGrouped = false,
   pageSize = 24,
-  pageParam = 'page',
+  pageParam = "page",
 }: PaginatedMemberGridProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
   const columnCount = useResponsiveColumns(containerRef);
-  
+
   const totalPages = Math.ceil(members.length / pageSize);
-  
+
   // Read page from URL, defaulting to 1 (displayed as 1-indexed to users)
-  const urlPage = parseInt(searchParams.get(pageParam) || '1', 10);
+  const urlPage = parseInt(searchParams.get(pageParam) || "1", 10);
   // Convert to 0-indexed and clamp to valid range
   const currentPage = Math.max(0, Math.min(totalPages - 1, urlPage - 1));
-  
+
   // Update URL when page would be out of bounds (e.g., after filtering reduces results)
   useEffect(() => {
     // Determine the effective total pages (at least 1 if we have content? No, if 0 items, 0 pages)
     // If totalPages is 0, we can treat it as page 1 (index 0) for display purposes or just hide pagination
     // But here we want to ensure urlPage doesn't exceed totalPages when totalPages > 0
-    
+
     if (totalPages === 0) return; // Nothing to clamp if empty
 
     const maxPageIdx = totalPages - 1;
     const urlPageIdx = urlPage - 1;
-    
+
     // Clamp index to [0, maxPageIdx]
     const clampedPageIdx = Math.max(0, Math.min(maxPageIdx, urlPageIdx));
 
     if (clampedPageIdx !== urlPageIdx) {
       // console.log('Clamping page:', { urlPageIdx, clampedPageIdx, totalPages });
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (clampedPageIdx === 0) {
-          next.delete(pageParam);
-        } else {
-          next.set(pageParam, String(clampedPageIdx + 1));
-        }
-        return next;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (clampedPageIdx === 0) {
+            next.delete(pageParam);
+          } else {
+            next.set(pageParam, String(clampedPageIdx + 1));
+          }
+          return next;
+        },
+        { replace: true },
+      );
     }
   }, [urlPage, totalPages, pageParam, setSearchParams]);
-  
+
   // Reset to page 1 when members array changes (filtering/searching)
   // We track the first member's ID to detect actual content changes, not just count
   const prevFirstMemberId = useRef<string | undefined>(undefined);
   const prevMemberCount = useRef(members.length);
-  
+
   useEffect(() => {
     // Update refs on mount/update
     // But check for change first
-    
+
     const firstMemberId = members[0]?.characterId;
     const countChanged = members.length !== prevMemberCount.current;
     const contentChanged = firstMemberId !== prevFirstMemberId.current;
-    
+
     // console.log('Member content check:', { countChanged, contentChanged, currentPage, firstMemberId, prevId: prevFirstMemberId.current });
 
     // Reset to page 1 if content changed and we're not already on page 1
     if ((countChanged || contentChanged) && currentPage !== 0) {
       // console.log('Resetting to page 1 due to content change');
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        next.delete(pageParam);
-        return next;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          next.delete(pageParam);
+          return next;
+        },
+        { replace: true },
+      );
     }
-    
+
     prevFirstMemberId.current = firstMemberId;
     prevMemberCount.current = members.length;
   }, [members, currentPage, pageParam, setSearchParams]);
-  
+
   const paginatedMembers = useMemo(() => {
     const start = currentPage * pageSize;
     return members.slice(start, start + pageSize);
@@ -197,7 +221,7 @@ export function PaginatedMemberGrid({
   // For grouped view, we paginate by rank groups
   const paginatedByRank = useMemo(() => {
     if (!showGrouped || !membersByRank) return null;
-    
+
     // Flatten all members with their rank info for pagination
     const allWithRank: { member: FreeCompanyMember; rank: string }[] = [];
     for (const [rankName, rankMembers] of membersByRank) {
@@ -205,10 +229,10 @@ export function PaginatedMemberGrid({
         allWithRank.push({ member, rank: rankName });
       }
     }
-    
+
     const start = currentPage * pageSize;
     const paginated = allWithRank.slice(start, start + pageSize);
-    
+
     // Regroup paginated results
     const grouped = new Map<string, FreeCompanyMember[]>();
     for (const { member, rank } of paginated) {
@@ -216,7 +240,7 @@ export function PaginatedMemberGrid({
       existing.push(member);
       grouped.set(rank, existing);
     }
-    
+
     return grouped;
   }, [showGrouped, membersByRank, currentPage, pageSize]);
 
@@ -232,20 +256,23 @@ export function PaginatedMemberGrid({
   }, [currentPage]);
 
   // Navigate to a specific page (0-indexed internally, 1-indexed in URL)
-  const navigateToPage = useCallback((page: number) => {
-    scrollOnPageChange.current = true;
-    startTransition(() => {
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (page === 0) {
-          next.delete(pageParam); // Keep URL clean for page 1
-        } else {
-          next.set(pageParam, String(page + 1));
-        }
-        return next;
+  const navigateToPage = useCallback(
+    (page: number) => {
+      scrollOnPageChange.current = true;
+      startTransition(() => {
+        setSearchParams((prev) => {
+          const next = new URLSearchParams(prev);
+          if (page === 0) {
+            next.delete(pageParam); // Keep URL clean for page 1
+          } else {
+            next.set(pageParam, String(page + 1));
+          }
+          return next;
+        });
       });
-    });
-  }, [pageParam, setSearchParams]);
+    },
+    [pageParam, setSearchParams],
+  );
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 0) navigateToPage(currentPage - 1);
@@ -259,19 +286,23 @@ export function PaginatedMemberGrid({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle if not in an input field
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
-      if (e.key === 'ArrowLeft' && currentPage > 0) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+
+      if (e.key === "ArrowLeft" && currentPage > 0) {
         e.preventDefault();
         navigateToPage(currentPage - 1);
-      } else if (e.key === 'ArrowRight' && currentPage < totalPages - 1) {
+      } else if (e.key === "ArrowRight" && currentPage < totalPages - 1) {
         e.preventDefault();
         navigateToPage(currentPage + 1);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentPage, totalPages, navigateToPage]);
 
   return (
@@ -279,31 +310,44 @@ export function PaginatedMemberGrid({
       {/* Grouped view */}
       {showGrouped && paginatedByRank ? (
         <div className="space-y-2">
-          {Array.from(paginatedByRank.entries()).map(([rankName, rankMembers]) => (
-            <div key={rankName}>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <RankHeader rankName={rankName} memberCount={rankMembers.length} />
-              </motion.div>
-              <div 
-                className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
-                style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
-              >
-                {rankMembers.map((member, idx) => (
-                  <MemberCard key={member.characterId} member={member} index={idx} />
-                ))}
+          {Array.from(paginatedByRank.entries()).map(
+            ([rankName, rankMembers]) => (
+              <div key={rankName}>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RankHeader
+                    rankName={rankName}
+                    memberCount={rankMembers.length}
+                  />
+                </motion.div>
+                <div
+                  className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
+                  style={{
+                    gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {rankMembers.map((member, idx) => (
+                    <MemberCard
+                      key={member.characterId}
+                      member={member}
+                      index={idx}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       ) : (
         /* Flat view */
-        <div 
+        <div
           className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
-          style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+          }}
         >
           {paginatedMembers.map((member, idx) => (
             <MemberCard key={member.characterId} member={member} index={idx} />
@@ -328,7 +372,7 @@ export function PaginatedMemberGrid({
               focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
               cursor-pointer touch-manipulation
             "
-            style={{ '--gel-color': 'var(--secondary)' } as CSSProperties}
+            style={{ "--gel-color": "var(--secondary)" } as CSSProperties}
           >
             <ChevronLeft className="w-5 h-5" aria-hidden="true" />
             <span className="hidden sm:inline">Prev</span>
@@ -340,14 +384,19 @@ export function PaginatedMemberGrid({
             aria-live="polite"
           >
             {isPending && (
-              <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
+              <Loader2
+                className="w-4 h-4 text-[var(--primary)] animate-spin"
+                aria-hidden="true"
+              />
             )}
             <span
               className="font-display font-bold text-sm text-[var(--text)] whitespace-nowrap"
               aria-label={`Page ${currentPage + 1} of ${totalPages}`}
             >
               <span className="text-[var(--primary)]">{currentPage + 1}</span>
-              <span className="text-[var(--text-subtle)] font-soft px-0.5">/</span>
+              <span className="text-[var(--text-subtle)] font-soft px-0.5">
+                /
+              </span>
               {totalPages}
             </span>
           </div>

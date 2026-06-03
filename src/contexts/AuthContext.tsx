@@ -1,6 +1,13 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import type { ReactNode } from 'react';
-import { refreshAuthToken } from '../api/client';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
+import type { ReactNode } from "react";
+import { refreshAuthToken } from "../api/client";
 
 // User info extracted from JWT token
 export interface User {
@@ -45,8 +52,8 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const AUTH_TOKEN_KEY = 'mogtome_auth_token';
-const RETURN_URL_KEY = 'mogtome_return_url';
+const AUTH_TOKEN_KEY = "mogtome_auth_token";
+const RETURN_URL_KEY = "mogtome_return_url";
 
 // Helper to get/set the auth token in localStorage
 export const getAuthToken = (): string | null => {
@@ -79,19 +86,19 @@ export const clearReturnUrl = (): void => {
 // Decode JWT payload (without verification - server already verified it)
 function decodeJwtPayload(token: string): JwtPayload | null {
   try {
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) return null;
-    
+
     const payload = parts[1];
     // Base64url decode
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
     );
-    
+
     return JSON.parse(jsonPayload);
   } catch {
     return null;
@@ -106,7 +113,10 @@ function isTokenExpired(payload: JwtPayload): boolean {
 
 // Check if token will expire within the given threshold (in seconds)
 // Default threshold: 5 minutes before expiration
-function isTokenExpiringSoon(payload: JwtPayload, thresholdSeconds: number = 300): boolean {
+function isTokenExpiringSoon(
+  payload: JwtPayload,
+  thresholdSeconds: number = 300,
+): boolean {
   const now = Math.floor(Date.now() / 1000);
   return payload.exp - now < thresholdSeconds;
 }
@@ -121,7 +131,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading: true,
     isAuthenticated: false,
   });
-  
+
   // Track the refresh timer so we can clean it up
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track if a refresh is in progress to prevent duplicate calls
@@ -137,38 +147,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Schedule a proactive token refresh before it expires
   // Also stores the expected refresh time so we can detect missed timers
-  const scheduleTokenRefresh = useCallback((payload: JwtPayload) => {
-    clearRefreshTimer();
-    
-    const now = Math.floor(Date.now() / 1000);
-    const expiresIn = payload.exp - now;
-    
-    // Schedule refresh 5 minutes before expiration, or immediately if less than 5 min left
-    // Minimum delay of 10 seconds to prevent tight loops
-    const refreshInSeconds = Math.max(10, expiresIn - 300);
-    const refreshIn = refreshInSeconds * 1000;
-    
-    // Store when we expect the next refresh, so visibility change handler can detect missed timers
-    const expectedRefreshTime = Date.now() + refreshIn;
-    sessionStorage.setItem('mogtome_expected_refresh', expectedRefreshTime.toString());
-    
-    refreshTimerRef.current = setTimeout(async () => {
-      if (isRefreshingRef.current) return;
-      isRefreshingRef.current = true;
-      
-      try {
-        const newToken = await refreshAuthToken();
-        if (newToken) {
-          // Token refreshed successfully - refreshUser will be called by the event listener
-          window.dispatchEvent(new CustomEvent('auth-token-refreshed'));
+  const scheduleTokenRefresh = useCallback(
+    (payload: JwtPayload) => {
+      clearRefreshTimer();
+
+      const now = Math.floor(Date.now() / 1000);
+      const expiresIn = payload.exp - now;
+
+      // Schedule refresh 5 minutes before expiration, or immediately if less than 5 min left
+      // Minimum delay of 10 seconds to prevent tight loops
+      const refreshInSeconds = Math.max(10, expiresIn - 300);
+      const refreshIn = refreshInSeconds * 1000;
+
+      // Store when we expect the next refresh, so visibility change handler can detect missed timers
+      const expectedRefreshTime = Date.now() + refreshIn;
+      sessionStorage.setItem(
+        "mogtome_expected_refresh",
+        expectedRefreshTime.toString(),
+      );
+
+      refreshTimerRef.current = setTimeout(async () => {
+        if (isRefreshingRef.current) return;
+        isRefreshingRef.current = true;
+
+        try {
+          const newToken = await refreshAuthToken();
+          if (newToken) {
+            // Token refreshed successfully - refreshUser will be called by the event listener
+            window.dispatchEvent(new CustomEvent("auth-token-refreshed"));
+          }
+        } catch {
+          // Refresh failed silently - the user will be logged out when the token expires
+        } finally {
+          isRefreshingRef.current = false;
         }
-      } catch {
-        // Refresh failed silently - the user will be logged out when the token expires
-      } finally {
-        isRefreshingRef.current = false;
-      }
-    }, refreshIn);
-  }, [clearRefreshTimer]);
+      }, refreshIn);
+    },
+    [clearRefreshTimer],
+  );
 
   // Load user from stored JWT token
   const refreshUser = useCallback(async () => {
@@ -191,7 +207,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           isRefreshingRef.current = false;
         }
       }
-      
+
       clearRefreshTimer();
       setState({
         user: null,
@@ -202,11 +218,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     const payload = decodeJwtPayload(token);
-    
+
     if (!payload || isTokenExpired(payload)) {
       // Token invalid or expired - try to refresh it using the refresh token cookie
       clearAuthToken();
-      
+
       if (!isRefreshingRef.current) {
         isRefreshingRef.current = true;
         try {
@@ -223,7 +239,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           isRefreshingRef.current = false;
         }
       }
-      
+
       clearRefreshTimer();
       setState({
         user: null,
@@ -241,7 +257,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         refreshAuthToken()
           .then((newToken) => {
             if (newToken) {
-              window.dispatchEvent(new CustomEvent('auth-token-refreshed'));
+              window.dispatchEvent(new CustomEvent("auth-token-refreshed"));
             }
           })
           .finally(() => {
@@ -259,7 +275,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberName: payload.memberName,
         memberRank: payload.memberRank,
         memberPortraitUrl: payload.memberPortraitUrl,
-        hasKnighthood: payload.memberRank == 'Moogle Knight' || payload.memberRank == 'Moogle Guardian',
+        hasKnighthood:
+          payload.memberRank == "Moogle Knight" ||
+          payload.memberRank == "Moogle Guardian",
         hasTemporaryKnighthood: false,
         firstLoginDate: payload.firstMogTomeLoginDate,
         discordId: payload.discordId,
@@ -290,12 +308,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
     };
 
-    window.addEventListener('auth-token-refreshed', handleTokenRefreshed);
-    window.addEventListener('auth-token-expired', handleTokenExpired);
+    window.addEventListener("auth-token-refreshed", handleTokenRefreshed);
+    window.addEventListener("auth-token-expired", handleTokenExpired);
 
     return () => {
-      window.removeEventListener('auth-token-refreshed', handleTokenRefreshed);
-      window.removeEventListener('auth-token-expired', handleTokenExpired);
+      window.removeEventListener("auth-token-refreshed", handleTokenRefreshed);
+      window.removeEventListener("auth-token-expired", handleTokenExpired);
       clearRefreshTimer();
     };
   }, [refreshUser, clearRefreshTimer]);
@@ -306,7 +324,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // fire reliably in these cases, so we proactively check on visibility change.
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         // User returned to the tab - verify auth is still valid
         refreshUser();
       }
@@ -317,12 +335,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       refreshUser();
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('online', handleOnline);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleOnline);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('online', handleOnline);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("online", handleOnline);
     };
   }, [refreshUser]);
 
@@ -330,17 +348,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = useCallback(() => {
     // Save the current URL so we can redirect back after login
     // Only save if we're not already on the auth callback page
-    const currentPath = window.location.pathname + window.location.search + window.location.hash;
-    if (!currentPath.startsWith('/auth/')) {
+    const currentPath =
+      window.location.pathname + window.location.search + window.location.hash;
+    if (!currentPath.startsWith("/auth/")) {
       setReturnUrl(currentPath);
     }
-    
+
     // Redirect back to the auth callback on the current origin (localhost, mogtome.com, etc.)
     const redirectUrl = `${window.location.origin}/auth/callback`;
-    
-    const loginUrl = new URL('https://api.mogtome.com/auth/discord/login');
-    loginUrl.searchParams.set('redirect', redirectUrl);
-    
+
+    const loginUrl = new URL("https://api.mogtome.com/auth/discord/login");
+    loginUrl.searchParams.set("redirect", redirectUrl);
+
     window.location.href = loginUrl.toString();
   }, []);
 
@@ -367,7 +386,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

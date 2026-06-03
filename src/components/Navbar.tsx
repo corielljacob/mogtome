@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, type CSSProperties } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, ChevronDown, FileText } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { DiscordIcon } from './DiscordIcon';
-import { LogoIcon } from './LogoIcon';
+import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { LogOut, ChevronDown, FileText } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { DiscordIcon } from "./DiscordIcon";
+import { LogoIcon } from "./LogoIcon";
 
 // User menu dropdown for authenticated users
 function UserMenu() {
@@ -24,17 +24,17 @@ function UserMenu() {
     }
 
     function handleEscapeKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscapeKey);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [isOpen]);
 
@@ -51,7 +51,7 @@ function UserMenu() {
           group flex items-center gap-2 px-1.5 py-1 rounded-full hover-bounce
           cursor-pointer transition-[background-color] duration-200
           focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-          ${isOpen ? 'bg-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]' : 'hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)]'}
+          ${isOpen ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]" : "hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)]"}
         `}
         aria-expanded={isOpen}
         aria-haspopup="menu"
@@ -61,14 +61,17 @@ function UserMenu() {
           src={avatarUrl}
           alt=""
           className="w-8 h-8 rounded-full object-cover transition-all"
-          style={{ boxShadow: '0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--primary) 45%, var(--card))' }}
+          style={{
+            boxShadow:
+              "0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--primary) 45%, var(--card))",
+          }}
         />
         <span className="hidden lg:block font-display text-sm font-bold text-[var(--text)] max-w-[90px] truncate">
           {displayName}
         </span>
         <div
           className="transition-transform duration-200"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
           aria-hidden="true"
         >
           <ChevronDown className="w-4 h-4 text-[var(--primary)]" />
@@ -82,24 +85,28 @@ function UserMenu() {
             initial={{ opacity: 0, y: -6, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.96 }}
-            transition={{ duration: 0.12, ease: 'easeOut' }}
+            transition={{ duration: 0.12, ease: "easeOut" }}
             role="menu"
             aria-label="User menu"
           >
             <div
               className="rounded-2xl overflow-hidden"
               style={{
-                background: 'var(--card)',
-                border: '2px solid color-mix(in srgb, var(--primary) 28%, var(--card))',
-                boxShadow: '0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 22%, transparent), 0 10px 24px -8px var(--shadow)',
+                background: "var(--card)",
+                border:
+                  "2px solid color-mix(in srgb, var(--primary) 28%, var(--card))",
+                boxShadow:
+                  "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 22%, transparent), 0 10px 24px -8px var(--shadow)",
               }}
             >
               {/* User info header */}
               <div
                 className="px-3 py-2.5"
                 style={{
-                  background: 'color-mix(in srgb, var(--primary) 12%, var(--card))',
-                  borderBottom: '2px dashed color-mix(in srgb, var(--primary) 28%, transparent)',
+                  background:
+                    "color-mix(in srgb, var(--primary) 12%, var(--card))",
+                  borderBottom:
+                    "2px dashed color-mix(in srgb, var(--primary) 28%, transparent)",
                 }}
               >
                 <p className="font-display font-bold text-sm text-[var(--text)] truncate">
@@ -115,12 +122,19 @@ function UserMenu() {
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/profile');
+                    navigate("/profile");
                   }}
                   className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
                   role="menuitem"
                 >
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full shrink-0" style={{ background: 'color-mix(in srgb, var(--secondary) 16%, var(--card))', color: 'var(--secondary)' }}>
+                  <span
+                    className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
+                    style={{
+                      background:
+                        "color-mix(in srgb, var(--secondary) 16%, var(--card))",
+                      color: "var(--secondary)",
+                    }}
+                  >
                     <FileText className="w-4 h-4" aria-hidden="true" />
                   </span>
                   <span className="text-sm">My Profile</span>
@@ -128,12 +142,19 @@ function UserMenu() {
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/auth/logout');
+                    navigate("/auth/logout");
                   }}
                   className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
                   role="menuitem"
                 >
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full shrink-0" style={{ background: 'color-mix(in srgb, var(--primary) 16%, var(--card))', color: 'var(--primary)' }}>
+                  <span
+                    className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
+                    style={{
+                      background:
+                        "color-mix(in srgb, var(--primary) 16%, var(--card))",
+                      color: "var(--primary)",
+                    }}
+                  >
                     <LogOut className="w-4 h-4" aria-hidden="true" />
                   </span>
                   <span className="text-sm">Sign Out</span>
@@ -157,7 +178,7 @@ function LoginButton() {
     <button
       onClick={login}
       className="gel flex items-center gap-2 px-3.5 py-2.5 md:px-3 md:py-1.5 text-white font-display text-sm font-bold cursor-pointer hover-bounce focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
-      style={{ '--gel-color': '#5865F2' } as CSSProperties}
+      style={{ "--gel-color": "#5865F2" } as CSSProperties}
       aria-label="Login with Discord"
     >
       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/10 border border-white/12 md:h-6 md:w-6">
@@ -194,13 +215,29 @@ export function Navbar() {
           <div
             className="pointer-events-auto relative flex items-center gap-2 p-2 surface rounded-2xl"
             style={{
-              border: '2px solid color-mix(in srgb, var(--primary) 30%, var(--card))',
-              boxShadow: '0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 24%, transparent), 0 6px 16px -8px var(--shadow)',
+              border:
+                "2px solid color-mix(in srgb, var(--primary) 30%, var(--card))",
+              boxShadow:
+                "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 24%, transparent), 0 6px 16px -8px var(--shadow)",
             }}
           >
             {/* taped on with two washi strips */}
-            <span className="absolute -top-2 left-2 w-10 h-4 -rotate-[10deg] rounded-[2px] opacity-85 z-10" style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--primary) 48%, transparent) 0 5px, color-mix(in srgb, var(--primary) 26%, transparent) 5px 10px)' }} aria-hidden="true" />
-            <span className="absolute -top-2 right-2 w-10 h-4 rotate-[10deg] rounded-[2px] opacity-85 z-10" style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 48%, transparent) 0 5px, color-mix(in srgb, var(--secondary) 26%, transparent) 5px 10px)' }} aria-hidden="true" />
+            <span
+              className="absolute -top-2 left-2 w-10 h-4 -rotate-[10deg] rounded-[2px] opacity-85 z-10"
+              style={{
+                background:
+                  "repeating-linear-gradient(45deg, color-mix(in srgb, var(--primary) 48%, transparent) 0 5px, color-mix(in srgb, var(--primary) 26%, transparent) 5px 10px)",
+              }}
+              aria-hidden="true"
+            />
+            <span
+              className="absolute -top-2 right-2 w-10 h-4 rotate-[10deg] rounded-[2px] opacity-85 z-10"
+              style={{
+                background:
+                  "repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 48%, transparent) 0 5px, color-mix(in srgb, var(--secondary) 26%, transparent) 5px 10px)",
+              }}
+              aria-hidden="true"
+            />
             <LoginButton />
             <UserMenu />
           </div>
@@ -215,13 +252,29 @@ export function Navbar() {
         <div
           className="pointer-events-auto relative flex items-center gap-2 py-2.5 px-3 surface rounded-2xl"
           style={{
-            border: '2px solid color-mix(in srgb, var(--primary) 30%, var(--card))',
-            boxShadow: '0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 24%, transparent), 0 6px 16px -8px var(--shadow)',
+            border:
+              "2px solid color-mix(in srgb, var(--primary) 30%, var(--card))",
+            boxShadow:
+              "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 24%, transparent), 0 6px 16px -8px var(--shadow)",
           }}
         >
           {/* taped on with two washi strips */}
-          <span className="absolute -top-2.5 left-2 w-12 h-5 -rotate-[10deg] rounded-[2px] opacity-85 z-10" style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--primary) 48%, transparent) 0 6px, color-mix(in srgb, var(--primary) 26%, transparent) 6px 12px)' }} aria-hidden="true" />
-          <span className="absolute -top-2.5 right-2 w-12 h-5 rotate-[10deg] rounded-[2px] opacity-85 z-10" style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 48%, transparent) 0 6px, color-mix(in srgb, var(--secondary) 26%, transparent) 6px 12px)' }} aria-hidden="true" />
+          <span
+            className="absolute -top-2.5 left-2 w-12 h-5 -rotate-[10deg] rounded-[2px] opacity-85 z-10"
+            style={{
+              background:
+                "repeating-linear-gradient(45deg, color-mix(in srgb, var(--primary) 48%, transparent) 0 6px, color-mix(in srgb, var(--primary) 26%, transparent) 6px 12px)",
+            }}
+            aria-hidden="true"
+          />
+          <span
+            className="absolute -top-2.5 right-2 w-12 h-5 rotate-[10deg] rounded-[2px] opacity-85 z-10"
+            style={{
+              background:
+                "repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 48%, transparent) 0 6px, color-mix(in srgb, var(--secondary) 26%, transparent) 6px 12px)",
+            }}
+            aria-hidden="true"
+          />
           <LoginButton />
           <UserMenu />
         </div>

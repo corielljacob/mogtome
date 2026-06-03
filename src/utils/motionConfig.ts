@@ -1,24 +1,24 @@
 /**
  * Motion Configuration Utilities
- * 
+ *
  * PERFORMANCE: Optimizes Framer Motion animations for mobile devices
  * - Reduces animation complexity on low-powered devices
  * - Disables expensive effects on mobile
  * - Provides simplified variants for better performance
  */
 
-import type { Transition, Variants } from 'motion/react';
+import type { Transition, Variants } from "motion/react";
 
 // Detect if device is likely mobile/low-powered
 const isMobile = () => {
-  if (typeof window === 'undefined') return false;
-  
+  if (typeof window === "undefined") return false;
+
   // Check if touch device
-  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
   // Check viewport width (mobile typically < 768px)
   const isSmallScreen = window.innerWidth < 768;
-  
+
   return isTouch && isSmallScreen;
 };
 
@@ -31,8 +31,8 @@ export const IS_MOBILE: boolean = isMobile();
 
 // Detect if device prefers reduced motion
 const prefersReducedMotion = () => {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
 /**
@@ -41,19 +41,21 @@ const prefersReducedMotion = () => {
  */
 export function getOptimizedTransition(
   desktopTransition: Transition = { duration: 0.3 },
-  mobileTransition?: Transition
+  mobileTransition?: Transition,
 ): Transition {
   if (prefersReducedMotion()) {
     return { duration: 0.001 };
   }
-  
+
   if (isMobile()) {
-    return mobileTransition || {
-      ...desktopTransition,
-      duration: (desktopTransition.duration as number) * 0.7, // 30% faster on mobile
-    };
+    return (
+      mobileTransition || {
+        ...desktopTransition,
+        duration: (desktopTransition.duration as number) * 0.7, // 30% faster on mobile
+      }
+    );
   }
-  
+
   return desktopTransition;
 }
 
@@ -64,13 +66,16 @@ export function getOptimizedTransition(
 export function createOptimizedVariants(variants: Variants): Variants {
   if (prefersReducedMotion()) {
     // No animation for reduced motion
-    return Object.keys(variants).reduce((acc, key) => ({
-      ...acc,
-      [key]: {
-        ...(typeof variants[key] === 'object' ? variants[key] : {}),
-        transition: { duration: 0 },
-      },
-    }), {});
+    return Object.keys(variants).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: {
+          ...(typeof variants[key] === "object" ? variants[key] : {}),
+          transition: { duration: 0 },
+        },
+      }),
+      {},
+    );
   }
 
   if (!isMobile()) {
@@ -80,7 +85,7 @@ export function createOptimizedVariants(variants: Variants): Variants {
   // Simplify animations for mobile
   return Object.keys(variants).reduce((acc, key) => {
     const variant = variants[key];
-    if (typeof variant !== 'object') return { ...acc, [key]: variant };
+    if (typeof variant !== "object") return { ...acc, [key]: variant };
 
     return {
       ...acc,
@@ -96,7 +101,9 @@ export function createOptimizedVariants(variants: Variants): Variants {
         // Faster transitions
         transition: {
           ...(variant.transition as Transition),
-          duration: ((variant.transition as Transition)?.duration as number || 0.3) * 0.7,
+          duration:
+            (((variant.transition as Transition)?.duration as number) || 0.3) *
+            0.7,
         },
       },
     };
@@ -115,7 +122,7 @@ export function getHoverProps(hoverScale: number = 1.05) {
   return {
     whileHover: { scale: hoverScale },
     whileTap: { scale: 0.98 },
-    transition: { type: 'spring', stiffness: 400, damping: 17 },
+    transition: { type: "spring", stiffness: 400, damping: 17 },
   };
 }
 

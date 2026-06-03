@@ -1,23 +1,23 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, AlertTriangle } from 'lucide-react';
-import { Button } from './Button';
+import { useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { X, AlertTriangle } from "lucide-react";
+import { Button } from "./Button";
 
-import deadMoogle from '../assets/moogles/dead moogle.webp';
+import deadMoogle from "../assets/moogles/dead moogle.webp";
 
 export function MissingUserDataDialog() {
   const [searchParams, setSearchParams] = useSearchParams();
   // Derive open state directly from the URL — the dialog shows whenever the
   // `missingUserData` flag is present, so there's no state to sync.
-  const isOpen = searchParams.get('missingUserData') === 'true';
+  const isOpen = searchParams.get("missingUserData") === "true";
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleClose = useCallback(() => {
     // Drop the query param; isOpen re-derives to false and AnimatePresence
     // plays the exit animation.
-    searchParams.delete('missingUserData');
+    searchParams.delete("missingUserData");
     setSearchParams(searchParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
@@ -26,24 +26,24 @@ export function MissingUserDataDialog() {
       // Focus the dialog when it opens
       closeButtonRef.current?.focus();
       // Prevent body scroll when dialog is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         handleClose();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, handleClose]);
 
   return (
@@ -86,7 +86,11 @@ export function MissingUserDataDialog() {
             <div className="absolute top-4 left-6 opacity-70">
               <motion.div
                 animate={{ rotate: [-5, 5, -5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
               </motion.div>
@@ -94,7 +98,12 @@ export function MissingUserDataDialog() {
             <div className="absolute top-16 right-8 opacity-50 pointer-events-none">
               <motion.div
                 animate={{ rotate: [5, -5, 5] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.3,
+                }}
               >
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
               </motion.div>
@@ -138,9 +147,11 @@ export function MissingUserDataDialog() {
                   Your Discord has not yet been linked to your character.
                 </p>
                 <p className="text-[var(--text-muted)] leading-relaxed">
-                  Please try logging in again in a few hours. If you still see this message, 
-                  shoot a message to{' '}
-                  <span className="font-semibold text-[var(--primary)]">Plane Donut</span>{' '}
+                  Please try logging in again in a few hours. If you still see
+                  this message, shoot a message to{" "}
+                  <span className="font-semibold text-[var(--primary)]">
+                    Plane Donut
+                  </span>{" "}
                   on Discord!
                 </p>
               </div>

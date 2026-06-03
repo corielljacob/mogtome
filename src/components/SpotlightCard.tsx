@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -7,14 +7,11 @@ interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function SpotlightCard({
   children,
-  className = '',
+  className = "",
   ...props
 }: SpotlightCardProps) {
   return (
-    <div
-      className={`group relative overflow-hidden ${className}`}
-      {...props}
-    >
+    <div className={`group relative overflow-hidden ${className}`} {...props}>
       {children}
     </div>
   );

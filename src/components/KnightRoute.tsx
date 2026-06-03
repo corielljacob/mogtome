@@ -1,10 +1,10 @@
-import { motion } from 'motion/react';
-import { LogIn, Shield, Swords } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { DiscordIcon } from './DiscordIcon';
+import { motion } from "motion/react";
+import { LogIn, Shield, Swords } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { DiscordIcon } from "./DiscordIcon";
 
 // Assets
-import wizardMoogle from '../assets/moogles/wizard moogle.webp';
+import wizardMoogle from "../assets/moogles/wizard moogle.webp";
 
 interface KnightRouteProps {
   children: React.ReactNode;
@@ -38,7 +38,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         {/* Background gradient */}
         <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
           <motion.div
             className="max-w-md w-full"
@@ -56,17 +56,17 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <motion.img
-                  src={wizardMoogle} 
-                  alt="A moogle wizard guarding the page" 
+                  src={wizardMoogle}
+                  alt="A moogle wizard guarding the page"
                   className="relative w-32 md:w-40 mx-auto drop-shadow-lg"
-                  animate={{ 
+                  animate={{
                     y: [0, -6, 0],
                     rotate: [0, 2, -2, 0],
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 4,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: "easeInOut",
                   }}
                 />
               </motion.div>
@@ -100,7 +100,8 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                This page is reserved for Moogle Knights. Sign in with Discord to verify your knighthood.
+                This page is reserved for Moogle Knights. Sign in with Discord
+                to verify your knighthood.
               </motion.p>
 
               {/* Discord login button */}
@@ -149,7 +150,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         {/* Background gradient */}
         <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
           <motion.div
             className="max-w-md w-full"
@@ -167,17 +168,17 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <motion.img
-                  src={wizardMoogle} 
-                  alt="A moogle wizard guarding the page" 
+                  src={wizardMoogle}
+                  alt="A moogle wizard guarding the page"
                   className="relative w-32 md:w-40 mx-auto drop-shadow-lg"
-                  animate={{ 
+                  animate={{
                     y: [0, -6, 0],
                     rotate: [0, 2, -2, 0],
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 4,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: "easeInOut",
                   }}
                 />
               </motion.div>
@@ -211,7 +212,8 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                This dashboard is only available to Moogle Knights and those with temporary knighthood, kupo!
+                This dashboard is only available to Moogle Knights and those
+                with temporary knighthood, kupo!
               </motion.p>
 
               {/* User info */}
@@ -223,14 +225,18 @@ export function KnightRoute({ children }: KnightRouteProps) {
                   transition={{ delay: 0.5 }}
                 >
                   <div className="flex items-center gap-3">
-                    <img 
-                      src={user.memberPortraitUrl} 
+                    <img
+                      src={user.memberPortraitUrl}
                       alt={user.memberName}
                       className="w-12 h-12 rounded-xl object-cover"
                     />
                     <div className="text-left">
-                      <p className="font-soft font-semibold text-[var(--text)]">{user.memberName}</p>
-                      <p className="text-sm text-[var(--text-muted)]">{user.memberRank}</p>
+                      <p className="font-soft font-semibold text-[var(--text)]">
+                        {user.memberName}
+                      </p>
+                      <p className="text-sm text-[var(--text-muted)]">
+                        {user.memberRank}
+                      </p>
                     </div>
                   </div>
                 </motion.div>

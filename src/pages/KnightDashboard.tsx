@@ -1,6 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'motion/react';
-import { FileText, Link2, Sparkles, Lightbulb, Loader2, Inbox } from 'lucide-react';
+import { useQuery } from "@tanstack/react-query";
+import { motion } from "motion/react";
+import {
+  FileText,
+  Link2,
+  Sparkles,
+  Lightbulb,
+  Loader2,
+  Inbox,
+} from "lucide-react";
 
 import {
   PageLayout,
@@ -9,10 +16,10 @@ import {
   Tag,
   PendingSubmissions,
   CharacterMapping,
-} from '../components';
-import { useAuth } from '../contexts/AuthContext';
-import { useCharacterMapping } from '../features/characterMapping';
-import { biographyApi } from '../api/biography';
+} from "../components";
+import { useAuth } from "../contexts/AuthContext";
+import { useCharacterMapping } from "../features/characterMapping";
+import { biographyApi } from "../api/biography";
 
 /**
  * Knight Dashboard — knight-only command center.
@@ -38,11 +45,21 @@ interface StatTileProps {
   delay: number;
 }
 
-function StatTile({ icon, count, label, hint, targetId, isLoading, delay }: StatTileProps) {
+function StatTile({
+  icon,
+  count,
+  label,
+  hint,
+  targetId,
+  isLoading,
+  delay,
+}: StatTileProps) {
   const isClear = !isLoading && count === 0;
 
   const handleClick = () => {
-    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById(targetId)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -60,10 +77,13 @@ function StatTile({ icon, count, label, hint, targetId, isLoading, delay }: Stat
       </span>
       <span className="min-w-0">
         {isLoading ? (
-          <Loader2 className="w-6 h-6 text-[var(--text-subtle)] animate-spin" aria-hidden="true" />
+          <Loader2
+            className="w-6 h-6 text-[var(--text-subtle)] animate-spin"
+            aria-hidden="true"
+          />
         ) : (
           <span
-            className={`font-number text-3xl font-bold leading-none ${isClear ? 'text-[var(--text-subtle)]' : 'text-[var(--text)]'}`}
+            className={`font-number text-3xl font-bold leading-none ${isClear ? "text-[var(--text-subtle)]" : "text-[var(--text)]"}`}
           >
             {count}
           </span>
@@ -72,7 +92,7 @@ function StatTile({ icon, count, label, hint, targetId, isLoading, delay }: Stat
           {label}
         </span>
         <span className="block text-xs text-[var(--text-muted)]">
-          {isClear ? 'all clear, kupo!' : hint}
+          {isClear ? "all clear, kupo!" : hint}
         </span>
       </span>
     </motion.button>
@@ -81,7 +101,7 @@ function StatTile({ icon, count, label, hint, targetId, isLoading, delay }: Stat
 
 export function KnightDashboard() {
   const { user } = useAuth();
-  const firstName = user?.memberName?.split(' ')[0] ?? 'Knight';
+  const firstName = user?.memberName?.split(" ")[0] ?? "Knight";
 
   // Pending biography submissions — shares the ['biography-submissions'] cache
   // with <PendingSubmissions />, so this doesn't add a network request.
@@ -90,7 +110,7 @@ export function KnightDashboard() {
     isLoading: isLoadingBios,
     isError: isErrorBios,
   } = useQuery({
-    queryKey: ['biography-submissions'],
+    queryKey: ["biography-submissions"],
     queryFn: () => biographyApi.getPendingSubmissions(),
     staleTime: 1000 * 30,
   });
@@ -109,7 +129,11 @@ export function KnightDashboard() {
   const hasError = isErrorBios || isErrorMapping;
   const isLoading = isLoadingBios || isLoadingMapping;
   const allClear =
-    !isLoading && !hasError && pendingCount === 0 && unmappedCount === 0 && autoMatchCount === 0;
+    !isLoading &&
+    !hasError &&
+    pendingCount === 0 &&
+    unmappedCount === 0 &&
+    autoMatchCount === 0;
 
   return (
     <PageLayout maxWidth="max-w-4xl">
@@ -183,7 +207,9 @@ export function KnightDashboard() {
         <SectionLabel
           label="Character Mapping"
           icon={<Link2 className="w-4 h-4" aria-hidden="true" />}
-          badge={unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined}
+          badge={
+            unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined
+          }
         />
         <CharacterMapping />
       </section>
@@ -191,9 +217,13 @@ export function KnightDashboard() {
       {/* ── Cozy footer note (demoted "Have an Idea?") ── */}
       <div className="text-center pb-2">
         <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
-          <Lightbulb className="w-4 h-4 text-[var(--accent)]" aria-hidden="true" />
-          Have an idea for the dashboard? Ping{' '}
-          <span className="text-[var(--primary)] font-semibold">Plane</span>, kupo~
+          <Lightbulb
+            className="w-4 h-4 text-[var(--accent)]"
+            aria-hidden="true"
+          />
+          Have an idea for the dashboard? Ping{" "}
+          <span className="text-[var(--primary)] font-semibold">Plane</span>,
+          kupo~
         </p>
       </div>
     </PageLayout>

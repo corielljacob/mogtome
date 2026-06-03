@@ -11,7 +11,7 @@ export function EmptyState({
   title,
   subtitle,
   action,
-  className = '',
+  className = "",
 }: EmptyStateProps) {
   return (
     <div
@@ -24,9 +24,7 @@ export function EmptyState({
         {title}
       </p>
       {subtitle && (
-        <p className="text-xs text-[var(--text-muted)] max-w-xs">
-          {subtitle}
-        </p>
+        <p className="text-xs text-[var(--text-muted)] max-w-xs">{subtitle}</p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>

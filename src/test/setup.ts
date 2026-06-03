@@ -1,16 +1,16 @@
-import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
-import React from 'react';
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach, vi } from "vitest";
+import React from "react";
 
 // Mock @iconify/react so icons render in jsdom (no network needed)
-vi.mock('@iconify/react', () => ({
+vi.mock("@iconify/react", () => ({
   Icon: (props: Record<string, unknown>) => {
     const { icon, width, height, ...rest } = props;
-    return React.createElement('svg', {
-      'data-icon': icon,
-      width: width ?? '1em',
-      height: height ?? '1em',
+    return React.createElement("svg", {
+      "data-icon": icon,
+      width: width ?? "1em",
+      height: height ?? "1em",
       ...rest,
     });
   },
@@ -22,7 +22,7 @@ afterEach(() => {
 });
 
 // Mock matchMedia for components that use it
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -47,10 +47,12 @@ const localStorageMock = {
     delete localStorageStore[key];
   }),
   clear: vi.fn(() => {
-    Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
+    Object.keys(localStorageStore).forEach(
+      (key) => delete localStorageStore[key],
+    );
   }),
 };
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
@@ -66,7 +68,7 @@ class MockIntersectionObserver {
   disconnect = vi.fn();
   unobserve = vi.fn();
 }
-Object.defineProperty(window, 'IntersectionObserver', {
+Object.defineProperty(window, "IntersectionObserver", {
   writable: true,
   value: MockIntersectionObserver,
 });
@@ -77,7 +79,7 @@ class MockResizeObserver {
   disconnect = vi.fn();
   unobserve = vi.fn();
 }
-Object.defineProperty(window, 'ResizeObserver', {
+Object.defineProperty(window, "ResizeObserver", {
   writable: true,
   value: MockResizeObserver,
 });

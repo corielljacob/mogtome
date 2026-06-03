@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useDeferredValue } from 'react';
-import type { UnmappedCharacter, UnmappedDiscordUser } from '../types';
+import { useState, useMemo, useCallback, useDeferredValue } from "react";
+import type { UnmappedCharacter, UnmappedDiscordUser } from "../types";
 
 // --- Types -------------------------------------------------------------------
 
@@ -38,13 +38,15 @@ export function useManualPicker({
 }: UseManualPickerOptions): UseManualPickerResult {
   // -- Selection state --------------------------------------------------------
 
-  const [selectedCharacter, setSelectedCharacter] = useState<UnmappedCharacter | null>(null);
-  const [selectedDiscordUser, setSelectedDiscordUser] = useState<UnmappedDiscordUser | null>(null);
+  const [selectedCharacter, setSelectedCharacter] =
+    useState<UnmappedCharacter | null>(null);
+  const [selectedDiscordUser, setSelectedDiscordUser] =
+    useState<UnmappedDiscordUser | null>(null);
 
   // -- Search state -----------------------------------------------------------
 
-  const [characterSearch, setCharacterSearch] = useState('');
-  const [discordSearch, setDiscordSearch] = useState('');
+  const [characterSearch, setCharacterSearch] = useState("");
+  const [discordSearch, setDiscordSearch] = useState("");
   const deferredCharSearch = useDeferredValue(characterSearch);
   const deferredDiscordSearch = useDeferredValue(discordSearch);
 
@@ -56,7 +58,8 @@ export function useManualPicker({
     return allCharacters.filter(
       (c) =>
         c.name.toLowerCase().includes(searchLower) ||
-        (c.freeCompanyRank && c.freeCompanyRank.toLowerCase().includes(searchLower))
+        (c.freeCompanyRank &&
+          c.freeCompanyRank.toLowerCase().includes(searchLower)),
     );
   }, [allCharacters, deferredCharSearch]);
 
@@ -64,7 +67,7 @@ export function useManualPicker({
     const searchLower = deferredDiscordSearch.toLowerCase().trim();
     if (!searchLower) return allDiscordUsers;
     return allDiscordUsers.filter((u) =>
-      u.serverNickName.toLowerCase().includes(searchLower)
+      u.serverNickName.toLowerCase().includes(searchLower),
     );
   }, [allDiscordUsers, deferredDiscordSearch]);
 
@@ -72,21 +75,21 @@ export function useManualPicker({
 
   const selectCharacter = useCallback((character: UnmappedCharacter) => {
     setSelectedCharacter((prev) =>
-      prev?.characterId === character.characterId ? null : character
+      prev?.characterId === character.characterId ? null : character,
     );
   }, []);
 
   const selectDiscordUser = useCallback((user: UnmappedDiscordUser) => {
     setSelectedDiscordUser((prev) =>
-      prev?.discordId === user.discordId ? null : user
+      prev?.discordId === user.discordId ? null : user,
     );
   }, []);
 
   const reset = useCallback(() => {
     setSelectedCharacter(null);
     setSelectedDiscordUser(null);
-    setCharacterSearch('');
-    setDiscordSearch('');
+    setCharacterSearch("");
+    setDiscordSearch("");
   }, []);
 
   // -- Return -----------------------------------------------------------------

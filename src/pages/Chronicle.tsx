@@ -1,19 +1,41 @@
-import { useState, useMemo, useCallback, useEffect, useRef, memo, useDeferredValue, type CSSProperties } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'motion/react';
-import { Wifi, Loader2, Search, X } from 'lucide-react';
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+  memo,
+  useDeferredValue,
+  type CSSProperties,
+} from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "motion/react";
+import { Wifi, Loader2, Search, X } from "lucide-react";
 
 // Shared components
-import { PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState, Tag, KawaiiStar, KawaiiSparkle } from '../components';
-import { useEventsHub, type ConnectionStatus } from '../hooks';
+import {
+  PageLayout,
+  PageHeader,
+  PageFooter,
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  Tag,
+  KawaiiStar,
+  KawaiiHeart,
+  KawaiiSparkle,
+  KawaiiBow,
+} from "../components";
+import type { ComponentType } from "react";
+import { useEventsHub, type ConnectionStatus } from "../hooks";
 
 // Utils & Constants
-import { formatRelativeTime } from '../utils';
-import { getEventTypeConfig, EVENT_TYPE_CONFIG } from '../constants';
+import { formatRelativeTime } from "../utils";
+import { getEventTypeConfig, EVENT_TYPE_CONFIG } from "../constants";
 
 // API
-import { eventsApi } from '../api/events';
-import type { ChronicleEvent, ChronicleEventFilter } from '../types';
+import { eventsApi } from "../api/events";
+import type { ChronicleEvent, ChronicleEventFilter } from "../types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Filter options derived from the event type config
@@ -27,20 +49,22 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
 }));
 
 // Assets
-import flyingMoogles from '../assets/moogles/moogles flying.webp';
-import moogleMail from '../assets/moogles/moogle mail.webp';
+import flyingMoogles from "../assets/moogles/moogles flying.webp";
+import moogleMail from "../assets/moogles/moogle mail.webp";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Functions
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PLACEHOLDER_TIMESTAMP = 0;
-const PLACEHOLDER_CREATION_TIME = '1970-01-01T00:00:00Z';
+const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";
 
 /** Check if an event has a valid (non-placeholder) ID */
 function hasValidId(event: ChronicleEvent): boolean {
-  return event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
-         event.id.creationTime !== PLACEHOLDER_CREATION_TIME;
+  return (
+    event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
+    event.id.creationTime !== PLACEHOLDER_CREATION_TIME
+  );
 }
 
 /** Get a signature for deduplication (createdAt + type + text) */
@@ -74,12 +98,12 @@ function getDayLabel(dateString: string): string {
   const d = new Date(dateString);
   const now = new Date();
   const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
-  if (diffDays <= 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
-  const opts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
-  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
-  return d.toLocaleDateString('en-US', opts);
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
+  const opts: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = "numeric";
+  return d.toLocaleDateString("en-US", opts);
 }
 
 interface EntryItem {
@@ -116,13 +140,24 @@ function buildDayGroups(items: EntryItem[]): DayGroup[] {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Quiet, theme-tinted "live" indicator (replaces the old status pill). */
-const LiveStatus = memo(function LiveStatus({ status }: { status: ConnectionStatus }) {
-  const config: Record<ConnectionStatus, { tone: string; label: string; pulse: boolean }> = {
-    connected: { tone: 'var(--primary)', label: 'live', pulse: true },
-    connecting: { tone: 'var(--accent)', label: 'connecting', pulse: true },
-    reconnecting: { tone: 'var(--accent)', label: 'reconnecting', pulse: true },
-    disconnected: { tone: 'var(--text-subtle)', label: 'offline', pulse: false },
-    error: { tone: 'var(--text-subtle)', label: 'offline', pulse: false },
+const LiveStatus = memo(function LiveStatus({
+  status,
+}: {
+  status: ConnectionStatus;
+}) {
+  const config: Record<
+    ConnectionStatus,
+    { tone: string; label: string; pulse: boolean }
+  > = {
+    connected: { tone: "var(--primary)", label: "live", pulse: true },
+    connecting: { tone: "var(--accent)", label: "connecting", pulse: true },
+    reconnecting: { tone: "var(--accent)", label: "reconnecting", pulse: true },
+    disconnected: {
+      tone: "var(--text-subtle)",
+      label: "offline",
+      pulse: false,
+    },
+    error: { tone: "var(--text-subtle)", label: "offline", pulse: false },
   };
   const { tone, label, pulse } = config[status];
 
@@ -140,45 +175,47 @@ const LiveStatus = memo(function LiveStatus({ status }: { status: ConnectionStat
             style={{ background: tone }}
           />
         )}
-        <span className="relative inline-flex w-2 h-2 rounded-full" style={{ background: tone }} />
+        <span
+          className="relative inline-flex w-2 h-2 rounded-full"
+          style={{ background: tone }}
+        />
       </span>
       {label}
     </span>
   );
 });
 
-/** A single journal entry sitting on the day's timeline thread. */
-const JournalEntry = memo(function JournalEntry({ item, isLast }: { item: EntryItem; isLast: boolean }) {
+/** A single diary line on the logbook page: a little type icon + the entry. */
+const JournalEntry = memo(function JournalEntry({ item }: { item: EntryItem }) {
   const { event, isRealtime, isUnseen } = item;
   const { Icon, hex, label } = getEventTypeConfig(event.type);
 
   return (
     <motion.li
-      className="relative flex gap-3 sm:gap-4"
+      className="relative flex gap-2.5 sm:gap-3"
       initial={isRealtime && isUnseen ? { opacity: 0, y: -8 } : false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+      transition={{ type: "spring", stiffness: 300, damping: 26 }}
     >
-      {/* Timeline node + connecting thread */}
-      <div className="relative flex flex-col items-center">
-        <span
-          className="icon-badge w-9 h-9 shrink-0 z-10"
-          style={{
-            color: hex,
-            background: `color-mix(in srgb, ${hex} 10%, var(--bg))`,
-            borderColor: `color-mix(in srgb, ${hex} 28%, var(--border))`,
-          }}
-        >
-          <Icon className="w-4 h-4" aria-hidden="true" />
-        </span>
-        {!isLast && <span className="w-px flex-1 bg-[var(--border)] mt-1" aria-hidden="true" />}
-      </div>
+      <span
+        className="icon-badge w-7 h-7 shrink-0 mt-0.5"
+        style={{
+          color: hex,
+          background: `color-mix(in srgb, ${hex} 12%, var(--card))`,
+          borderColor: `color-mix(in srgb, ${hex} 30%, var(--border))`,
+        }}
+      >
+        <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+      </span>
 
-      {/* Entry content */}
-      <div className={`flex-1 min-w-0 ${isLast ? 'pb-1' : 'pb-6'}`}>
-        <div className="flex items-center gap-2 flex-wrap mb-1.5">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap mb-0.5">
           <Tag color={hex}>{label}</Tag>
-          {isUnseen && <Tag color="var(--primary)" dot>just in</Tag>}
+          {isUnseen && (
+            <Tag color="var(--primary)" dot>
+              just in
+            </Tag>
+          )}
           <time
             className="ml-auto shrink-0 text-xs text-[var(--text-subtle)] font-soft"
             dateTime={event.createdAt}
@@ -194,13 +231,57 @@ const JournalEntry = memo(function JournalEntry({ item, isLast }: { item: EntryI
   );
 });
 
+// ── Scrapbook bits ─────────────────────────────────────────────────────────────
+
+type Motif = ComponentType<{ className?: string; color?: string }>;
+const DAY_STICKERS: Motif[] = [
+  KawaiiHeart,
+  KawaiiSparkle,
+  KawaiiBow,
+  KawaiiStar,
+];
+const STICKER_COLORS = ["var(--primary)", "var(--secondary)", "var(--accent)"];
+
+/** A strip of striped washi tape. Tint with `color`; place with `className`. */
+function WashiTape({
+  className = "",
+  color = "var(--accent)",
+}: {
+  className?: string;
+  color?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none rounded-[2px] ${className}`}
+      style={{
+        background: `repeating-linear-gradient(45deg, color-mix(in srgb, ${color} 42%, transparent) 0 6px, color-mix(in srgb, ${color} 20%, transparent) 6px 12px)`,
+      }}
+    />
+  );
+}
+
+/** Stable per-day tilt + sticker + tape colour (a hash, so it never jitters on re-render). */
+function dayDecor(key: string, index: number) {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return {
+    tilt: ((h % 5) - 2) * 1.1, // ~ -2.2 .. 2.2 deg
+    Sticker: DAY_STICKERS[index % DAY_STICKERS.length],
+    tapeColor: STICKER_COLORS[h % STICKER_COLORS.length],
+    stickerColor: STICKER_COLORS[(h >> 3) % STICKER_COLORS.length],
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Chronicle() {
-  const [searchInput, setSearchInput] = useState('');
-  const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(
+    null,
+  );
   const deferredSearchQuery = useDeferredValue(searchInput);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -210,7 +291,8 @@ export function Chronicle() {
   const hasActiveQuery = isSearching || hasActiveFilter;
 
   // Realtime events (SignalR)
-  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen } = useEventsHub();
+  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen } =
+    useEventsHub();
 
   // ── API query ─────────────────────────────────────────────────────────
   const {
@@ -222,7 +304,7 @@ export function Chronicle() {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['chronicle-events', deferredSearchQuery.trim(), activeFilter],
+    queryKey: ["chronicle-events", deferredSearchQuery.trim(), activeFilter],
     queryFn: ({ pageParam }) =>
       eventsApi.getEvents({
         cursor: pageParam,
@@ -230,7 +312,8 @@ export function Chronicle() {
         query: deferredSearchQuery.trim() || undefined,
         filter: activeFilter ?? undefined,
       }),
-    getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor : undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.nextCursor : undefined,
     initialPageParam: undefined as string | undefined,
     staleTime: 1000 * 60 * 2,
   });
@@ -250,12 +333,17 @@ export function Chronicle() {
     }
     observerRef.current = new IntersectionObserver(
       ([entry]) => setSentinelVisible(entry.isIntersecting),
-      { rootMargin: '300px', threshold: 0 },
+      { rootMargin: "300px", threshold: 0 },
     );
     observerRef.current.observe(node);
   }, []);
 
-  useEffect(() => () => { observerRef.current?.disconnect(); }, []);
+  useEffect(
+    () => () => {
+      observerRef.current?.disconnect();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (sentinelVisible && hasNextPage && !isFetchingNextPage) {
@@ -269,14 +357,16 @@ export function Chronicle() {
   const apiEvents = useMemo(() => {
     if (!data?.pages) return [];
     const seen = new Set<string>();
-    return data.pages.flatMap((page) => page.events).filter((event) => {
-      const key = hasValidId(event)
-        ? `${event.id.timestamp}-${event.id.creationTime}`
-        : getEventSignature(event);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    return data.pages
+      .flatMap((page) => page.events)
+      .filter((event) => {
+        const key = hasValidId(event)
+          ? `${event.id.timestamp}-${event.id.creationTime}`
+          : getEventSignature(event);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
   }, [data]);
 
   // When searching or filtering, display ONLY the API results.
@@ -292,7 +382,7 @@ export function Chronicle() {
   // the reference stays stable for the dayGroups dependency list below.
   const visibleRealtimeEvents = useMemo(
     () => (hasActiveQuery ? [] : realtimeEvents),
-    [hasActiveQuery, realtimeEvents]
+    [hasActiveQuery, realtimeEvents],
   );
   const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
 
@@ -300,8 +390,16 @@ export function Chronicle() {
   // into day groups. Live items sit at the top of "Today" with a gentle marker.
   const dayGroups = useMemo(() => {
     const items: EntryItem[] = [
-      ...visibleRealtimeEvents.map((event, i) => ({ event, isRealtime: true, isUnseen: i < unseenCount })),
-      ...displayedEvents.map((event) => ({ event, isRealtime: false, isUnseen: false })),
+      ...visibleRealtimeEvents.map((event, i) => ({
+        event,
+        isRealtime: true,
+        isUnseen: i < unseenCount,
+      })),
+      ...displayedEvents.map((event) => ({
+        event,
+        isRealtime: false,
+        isUnseen: false,
+      })),
     ];
     return buildDayGroups(items);
   }, [visibleRealtimeEvents, displayedEvents, unseenCount]);
@@ -311,22 +409,25 @@ export function Chronicle() {
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleClearSearch = useCallback(() => {
-    setSearchInput('');
+    setSearchInput("");
     searchInputRef.current?.focus();
   }, []);
 
   const handleClearAll = useCallback(() => {
-    setSearchInput('');
+    setSearchInput("");
     setActiveFilter(null);
     searchInputRef.current?.focus();
   }, []);
 
   const handleToggleFilter = useCallback((filter: ChronicleEventFilter) => {
-    setActiveFilter((prev) => prev === filter ? null : filter);
+    setActiveFilter((prev) => (prev === filter ? null : filter));
   }, []);
 
   return (
-    <PageLayout moogles={{ primary: flyingMoogles, secondary: moogleMail }} maxWidth="max-w-3xl">
+    <PageLayout
+      moogles={{ primary: flyingMoogles, secondary: moogleMail }}
+      maxWidth="max-w-3xl"
+    >
       <PageHeader
         opener="~ a little logbook of our days ~"
         title="The Chronicle"
@@ -341,7 +442,9 @@ export function Chronicle() {
         transition={{ delay: 0.1 }}
       >
         <div className="relative group">
-          <label htmlFor="chronicle-search" className="sr-only">Search chronicle events</label>
+          <label htmlFor="chronicle-search" className="sr-only">
+            Search chronicle events
+          </label>
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--primary)]/70 pointer-events-none"
             aria-hidden="true"
@@ -363,7 +466,7 @@ export function Chronicle() {
               font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
               focus:outline-none transition-all touch-manipulation
             "
-            style={{ fontSize: '16px' }}
+            style={{ fontSize: "16px" }}
           />
           {searchInput && (
             <button
@@ -377,7 +480,11 @@ export function Chronicle() {
         </div>
 
         {/* Filter chips — hairline toggles tinted per event type */}
-        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by event type">
+        <div
+          className="mt-4 flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter by event type"
+        >
           {EVENT_FILTERS.map(({ value, label }) => {
             const config = EVENT_TYPE_CONFIG[value];
             const isActive = activeFilter === value;
@@ -391,15 +498,19 @@ export function Chronicle() {
                   px-3.5 py-1.5 rounded-full text-sm font-display font-bold
                   cursor-pointer transition-colors duration-200 touch-manipulation
                   focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${isActive ? 'gel text-white' : 'bg-[var(--card)] border-2 text-[var(--text)]'}
+                  ${isActive ? "gel text-white" : "bg-[var(--card)] border-2 text-[var(--text)]"}
                 `}
-                style={isActive
-                  ? ({ '--gel-color': config.hex } as CSSProperties)
-                  : ({ borderColor: `color-mix(in srgb, ${config.hex} 32%, var(--card))` } as CSSProperties)}
+                style={
+                  isActive
+                    ? ({ "--gel-color": config.hex } as CSSProperties)
+                    : ({
+                        borderColor: `color-mix(in srgb, ${config.hex} 32%, var(--card))`,
+                      } as CSSProperties)
+                }
               >
                 <config.Icon
                   className="w-3.5 h-3.5"
-                  style={{ color: isActive ? '#fff' : config.hex }}
+                  style={{ color: isActive ? "#fff" : config.hex }}
                   aria-hidden="true"
                 />
                 <span>{label}</span>
@@ -420,15 +531,25 @@ export function Chronicle() {
 
         {/* Search/filter results count */}
         {hasActiveQuery && !isLoading && (
-          <p className="mt-3 px-1 font-soft text-sm text-[var(--text-muted)]" aria-live="polite">
+          <p
+            className="mt-3 px-1 font-soft text-sm text-[var(--text-muted)]"
+            aria-live="polite"
+          >
             {isTransitioning ? (
               <span className="inline-flex items-center gap-1.5">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                <Loader2
+                  className="w-3.5 h-3.5 animate-spin"
+                  aria-hidden="true"
+                />
                 Looking...
               </span>
             ) : (
               <>
-                Found <span className="font-bold text-[var(--primary)]">{displayedEvents.length}</span> entr{displayedEvents.length !== 1 ? 'ies' : 'y'}
+                Found{" "}
+                <span className="font-bold text-[var(--primary)]">
+                  {displayedEvents.length}
+                </span>{" "}
+                entr{displayedEvents.length !== 1 ? "ies" : "y"}
               </>
             )}
           </p>
@@ -439,7 +560,7 @@ export function Chronicle() {
       <div className="flex items-center justify-between gap-3 mb-6 px-1 min-h-6">
         <LiveStatus status={status} />
         <div className="flex items-center gap-4">
-          {(status === 'disconnected' || status === 'error') && (
+          {(status === "disconnected" || status === "error") && (
             <button
               onClick={reconnect}
               className="inline-flex items-center gap-1.5 text-xs font-soft font-medium text-[var(--primary)] hover:underline cursor-pointer touch-manipulation"
@@ -462,22 +583,55 @@ export function Chronicle() {
       {/* Timeline */}
       <AnimatePresence mode="wait">
         {isLoading && apiEvents.length === 0 ? (
-          <motion.div key="loading" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <LoadingState message="Gathering the chronicles, kupo..." imageSrc={flyingMoogles} />
+          <motion.div
+            key="loading"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <LoadingState
+              message="Gathering the chronicles, kupo..."
+              imageSrc={flyingMoogles}
+            />
           </motion.div>
         ) : isError ? (
-          <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            <ErrorState message="The chronicle tome got lost, kupo..." onRetry={() => refetch()} />
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ErrorState
+              message="The chronicle tome got lost, kupo..."
+              onRetry={() => refetch()}
+            />
           </motion.div>
         ) : totalCount === 0 ? (
-          <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             {hasActiveQuery ? (
               <EmptyState
                 title="Nothing here"
-                message={isSearching ? 'Kupo? Nothing matches that search...' : 'No entries of that kind yet, kupo...'}
+                message={
+                  isSearching
+                    ? "Kupo? Nothing matches that search..."
+                    : "No entries of that kind yet, kupo..."
+                }
                 imageSrc={moogleMail}
                 onClear={handleClearAll}
-                clearLabel={isSearching && hasActiveFilter ? 'Clear search & filter' : isSearching ? 'Clear search' : 'Clear filter'}
+                clearLabel={
+                  isSearching && hasActiveFilter
+                    ? "Clear search & filter"
+                    : isSearching
+                      ? "Clear search"
+                      : "Clear filter"
+                }
               />
             ) : (
               <EmptyState
@@ -489,60 +643,83 @@ export function Chronicle() {
           </motion.div>
         ) : (
           <motion.div
-            key={`content-${activeFilter ?? 'all'}-${deferredSearchQuery.trim()}`}
+            key={`content-${activeFilter ?? "all"}-${deferredSearchQuery.trim()}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`space-y-6 sm:space-y-8 transition-opacity duration-200 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}
+            className={`journal relative pl-10 sm:pl-12 pr-5 sm:pr-7 py-7 sm:py-9 transition-opacity duration-200 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
             role="feed"
             aria-label="Chronicle timeline"
           >
-            {dayGroups.map((group) => (
-              <section
-                key={group.key}
-                className="surface p-4 sm:p-6"
-                aria-label={`Entries from ${group.label}`}
-              >
-                {/* Day header — sticker tab */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="sticker px-3 py-1.5"
-                    style={{
-                      backgroundColor: 'color-mix(in srgb, var(--primary) 14%, var(--card))',
-                      border: '2px solid color-mix(in srgb, var(--primary) 30%, var(--card))',
-                    }}
-                  >
-                    <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-                    <h2 className="font-display font-bold text-sm sm:text-base text-[var(--text)] leading-none whitespace-nowrap">
-                      {group.label}
-                    </h2>
-                    <span
-                      className="text-xs font-display font-bold px-1.5 py-0.5 rounded-full leading-none"
-                      style={{
-                        backgroundColor: 'color-mix(in srgb, var(--primary) 20%, var(--card))',
-                        color: 'var(--primary)',
-                      }}
-                    >
-                      {group.items.length}
-                    </span>
-                  </div>
-                  <div className="flex-1 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_22%,transparent)]" aria-hidden="true" />
-                  <KawaiiStar className="w-4 h-4 text-[var(--accent)]" />
-                </div>
+            {/* the page, taped into the scrapbook */}
+            <WashiTape
+              color="var(--accent)"
+              className="absolute -top-3 left-10 w-20 h-7 -rotate-3 opacity-85 z-10"
+            />
+            <WashiTape
+              color="var(--secondary)"
+              className="absolute -top-3 right-12 w-16 h-7 rotate-2 opacity-85 z-10"
+            />
 
-                {/* Entries on a connecting thread */}
-                <ol>
-                  {group.items.map((item, i) => (
-                    <JournalEntry
-                      key={`${item.isRealtime ? 'rt' : 'h'}-${getEventKey(item.event, i)}`}
-                      item={item}
-                      isLast={i === group.items.length - 1}
+            {dayGroups.map((group, gi) => {
+              const { tilt, Sticker, tapeColor, stickerColor } = dayDecor(
+                group.key,
+                gi,
+              );
+              return (
+                <section
+                  key={group.key}
+                  className={
+                    gi > 0
+                      ? "mt-8 pt-7 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]"
+                      : ""
+                  }
+                  aria-label={`Entries from ${group.label}`}
+                >
+                  {/* Taped, tilted handwritten diary date + a sticker doodle */}
+                  <header className="relative mb-4 flex items-center gap-2.5">
+                    <div
+                      className="relative inline-flex items-center gap-1.5"
+                      style={{ transform: `rotate(${tilt}deg)` }}
+                    >
+                      <WashiTape
+                        color={tapeColor}
+                        className="absolute -top-2.5 left-2 w-9 h-3.5 -rotate-6 opacity-85"
+                      />
+                      <KawaiiStar className="relative w-4 h-4 shrink-0 text-[var(--accent)]" />
+                      <h2 className="relative font-accent font-bold text-2xl sm:text-3xl text-[var(--primary)] leading-none">
+                        {group.label}
+                      </h2>
+                      <span className="relative font-accent text-lg text-[var(--text-subtle)] leading-none">
+                        · {group.items.length}
+                      </span>
+                    </div>
+                    <span
+                      className="shrink-0"
+                      style={{ transform: `rotate(${-tilt * 2.5}deg)` }}
+                      aria-hidden="true"
+                    >
+                      <Sticker className="w-5 h-5" color={stickerColor} />
+                    </span>
+                    <span
+                      className="flex-1 self-center border-b-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_20%,transparent)]"
+                      aria-hidden="true"
                     />
-                  ))}
-                </ol>
-              </section>
-            ))}
+                  </header>
+
+                  {/* Diary lines */}
+                  <ol className="space-y-2.5">
+                    {group.items.map((item, i) => (
+                      <JournalEntry
+                        key={`${item.isRealtime ? "rt" : "h"}-${getEventKey(item.event, i)}`}
+                        item={item}
+                      />
+                    ))}
+                  </ol>
+                </section>
+              );
+            })}
 
             {/* Infinity scroll sentinel + loading indicator */}
             {hasNextPage && (
@@ -558,11 +735,18 @@ export function Chronicle() {
                     className="flex items-center gap-2.5 text-[var(--text-muted)]"
                     role="status"
                   >
-                    <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" aria-hidden="true" />
-                    <span className="font-soft text-sm font-medium">Turning the page...</span>
+                    <Loader2
+                      className="w-5 h-5 animate-spin text-[var(--primary)]"
+                      aria-hidden="true"
+                    />
+                    <span className="font-soft text-sm font-medium">
+                      Turning the page...
+                    </span>
                   </motion.div>
                 ) : (
-                  <span className="text-xs text-[var(--text-muted)]/50">&#8203;</span>
+                  <span className="text-xs text-[var(--text-muted)]/50">
+                    &#8203;
+                  </span>
                 )}
               </div>
             )}
@@ -571,7 +755,10 @@ export function Chronicle() {
       </AnimatePresence>
 
       {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
-        <PageFooter message="Every moment tells a story, kupo!" closing="~ to be continued ~" />
+        <PageFooter
+          message="Every moment tells a story, kupo!"
+          closing="~ to be continued ~"
+        />
       )}
     </PageLayout>
   );

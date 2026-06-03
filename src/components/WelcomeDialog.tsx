@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, Heart, PartyPopper, ArrowRight } from 'lucide-react';
-import { Button } from './Button';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { X, Sparkles, Heart, PartyPopper, ArrowRight } from "lucide-react";
+import { Button } from "./Button";
 
-import mailMoogle from '../assets/moogles/moogle mail.webp';
+import mailMoogle from "../assets/moogles/moogle mail.webp";
 
-const STORAGE_KEY = 'mogtome-welcome-seen';
+const STORAGE_KEY = "mogtome-welcome-seen";
 
 export function WelcomeDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ export function WelcomeDialog() {
   }, []);
 
   const handleClose = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, 'true');
+    localStorage.setItem(STORAGE_KEY, "true");
     setIsOpen(false);
   }, []);
 
@@ -35,24 +35,24 @@ export function WelcomeDialog() {
       // Focus the dialog when it opens
       closeButtonRef.current?.focus();
       // Prevent body scroll when dialog is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         handleClose();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, handleClose]);
 
   const handleNext = () => {
@@ -70,16 +70,23 @@ export function WelcomeDialog() {
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-center gap-2 text-[var(--secondary)]">
             <PartyPopper className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="font-accent text-lg sm:text-xl">Grand Opening, kupo!</span>
+            <span className="font-accent text-lg sm:text-xl">
+              Grand Opening, kupo!
+            </span>
             <PartyPopper className="w-4 h-4 sm:w-5 sm:h-5 scale-x-[-1]" />
           </div>
           <p className="text-sm sm:text-base text-[var(--text)] leading-relaxed">
-            We're so excited you're here! MogTome is the cozy digital home for our Free Company, 
-            <span className="font-semibold text-[var(--primary)]"> Kupo Life!</span>
+            We're so excited you're here! MogTome is the cozy digital home for
+            our Free Company,
+            <span className="font-semibold text-[var(--primary)]">
+              {" "}
+              Kupo Life!
+            </span>
           </p>
           <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed">
-            This is a place where our moogle family can gather, share adventures, 
-            and keep up with everything happening in our little corner of Eorzea.
+            This is a place where our moogle family can gather, share
+            adventures, and keep up with everything happening in our little
+            corner of Eorzea.
           </p>
         </div>
       ),
@@ -94,9 +101,13 @@ export function WelcomeDialog() {
             </div>
           </div>
           <p className="text-sm sm:text-base text-[var(--text)] leading-relaxed">
-            Browse our <span className="font-semibold text-[var(--primary)]">Members</span> page to see our FC family, 
-            check out the <span className="font-semibold text-[var(--secondary)]">Chronicle</span> for updates, 
-            or just enjoy the vibes!
+            Browse our{" "}
+            <span className="font-semibold text-[var(--primary)]">Members</span>{" "}
+            page to see our FC family, check out the{" "}
+            <span className="font-semibold text-[var(--secondary)]">
+              Chronicle
+            </span>{" "}
+            for updates, or just enjoy the vibes!
           </p>
           <p className="text-[var(--text-muted)] font-accent text-base sm:text-lg">
             Thank you for being part of Kupo Life! ✧
@@ -193,11 +204,11 @@ export function WelcomeDialog() {
                     onClick={() => setStep(i)}
                     className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 ${
                       i === step
-                        ? 'bg-[var(--primary)] scale-110'
-                        : 'bg-[var(--border)] hover:bg-[var(--text-muted)]/30'
+                        ? "bg-[var(--primary)] scale-110"
+                        : "bg-[var(--border)] hover:bg-[var(--text-muted)]/30"
                     }`}
                     aria-label={`Go to step ${i + 1}`}
-                    aria-current={i === step ? 'step' : undefined}
+                    aria-current={i === step ? "step" : undefined}
                   />
                 ))}
               </div>
