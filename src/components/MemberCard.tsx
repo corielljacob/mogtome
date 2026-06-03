@@ -64,7 +64,7 @@ export const MemberCard = memo(function MemberCard({
         This prevents `fadeSlideIn` animation transforms from stomping over our hover translations!
       */}
       <div
-        className="w-full transition-[transform,box-shadow,z-index] duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-0 group-hover:z-20 group-hover:shadow-[var(--panel-shadow-strong)]"
+        className="w-full rounded-2xl transition-[transform,box-shadow,z-index] duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-0 group-hover:z-20 group-hover:shadow-[var(--panel-shadow-strong)]"
         style={{
           transform: `translate(0px, 0px) rotate(${baseTilt}deg)`,
           ...(isHovered
