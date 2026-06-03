@@ -1,4 +1,4 @@
-import { lazy, Suspense, Component } from "react";
+import { lazy, Suspense, Component, useEffect } from "react";
 import type { ReactNode, ErrorInfo } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -16,7 +16,7 @@ import {
   useAccessibility,
 } from "./contexts/AccessibilityContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { APP_SCROLL_ID } from "./utils/scroll";
+import { APP_SCROLL_ID, jumpAppToTop } from "./utils/scroll";
 
 // Error boundary to catch chunk loading failures after deployments
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
@@ -99,8 +99,15 @@ function PageLoader() {
 // Inner app content that has access to accessibility context
 function AppContent() {
   const { settings } = useAccessibility();
-  // Washi paper backdrop on every page except Home (which has its own bg).
-  const isHome = useLocation().pathname === "/";
+  const location = useLocation();
+  // Page pattern on every page except Home (which has its own bg).
+  const isHome = location.pathname === "/";
+
+  // Start each view at the top — the app scrolls inside #app-scroll, which
+  // persists across routes, so its scroll position must be reset on navigation.
+  useEffect(() => {
+    jumpAppToTop();
+  }, [location.pathname]);
 
   return (
     <MotionConfig
@@ -123,7 +130,7 @@ function AppContent() {
         {/* Main content area — pad left on desktop to clear the edge tabs */}
         <div
           id={APP_SCROLL_ID}
-          className={`flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16 ${isHome ? "" : "page-pattern"}`}
+          className={`flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain md:pl-16 ${isHome ? "" : "page-pattern"}`}
         >
           {/* Mobile top bar + desktop user controls */}
           <Navbar />

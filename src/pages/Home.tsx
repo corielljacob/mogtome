@@ -1654,7 +1654,13 @@ export function Home() {
 
       {/* ── Main Layout ── */}
       {/* Mobile: pad for fixed top/bottom bars. Desktop: no padding needed (sidebar handles nav) */}
-      <div className="flex-1 min-h-0 relative z-10 flex flex-col p-4 sm:p-8 lg:py-8 lg:px-12 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4">
+      <div
+        className={`flex-1 min-h-0 relative z-10 flex flex-col p-4 sm:p-8 lg:py-8 lg:px-12 ${
+          isEventThemeActive && activeEvent
+            ? "pt-[calc(8.5rem+env(safe-area-inset-top))]"
+            : "pt-[calc(4rem+env(safe-area-inset-top))]"
+        } md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4`}
+      >
         {/* ── Hero: text column + moogle column ── */}
         <div className="relative flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
           {/* Scrapbook stickers scattered across the page (desktop) — fills the center */}
@@ -1672,7 +1678,7 @@ export function Home() {
           </div>
 
           {/* ── Left Side: Whimsical Text & CTA ── */}
-          <div className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left z-20">
+          <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
             <motion.div
               initial={{ opacity: 0, x: -40, rotate: -2 }}
               animate={{ opacity: 1, x: 0, rotate: 0 }}

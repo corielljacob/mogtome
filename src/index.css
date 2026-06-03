@@ -1360,9 +1360,9 @@
 
 /* ─── Page pattern (gingham check) ─────────────────────────────────────────────
  * A soft gingham check for the page background. Placed on the scroll container
- * (#app-scroll) so it scrolls natively with the content. Two perpendicular
- * translucent stripe sets overlap into the classic 3-tone check, tinted from the
- * theme so it recolours per palette. Hidden in high-contrast for a clean a11y bg.
+ * (#app-scroll). Two perpendicular translucent stripe sets overlap into the
+ * classic 3-tone check, tinted from the theme so it recolours per palette. Hidden
+ * in high-contrast for a clean a11y bg.
  * ─────────────────────────────────────────────────────────────────────────────── */
 .page-pattern {
   --gp: color-mix(in srgb, var(--primary) 9%, transparent);
@@ -1370,8 +1370,9 @@
   background-image:
     repeating-linear-gradient(90deg, var(--gp) 0 16px, transparent 16px 32px),
     repeating-linear-gradient(0deg, var(--gp) 0 16px, transparent 16px 32px);
-  /* "local" so the check scrolls natively with the content (no JS, no lag). */
-  background-attachment: local;
+  /* Default (scroll) attachment, pinned to the viewport — NOT "local". The check
+     is uniform, so there's no visible difference while scrolling, but it no longer
+     rides the overscroll bounce / content reflow, which made it jitter. */
 }
 /* Dark mode: keep the check very gentle on the deep base. */
 .dark .page-pattern {

@@ -8,3 +8,15 @@ export function scrollAppToTop() {
   const el = document.getElementById(APP_SCROLL_ID);
   (el ?? window).scrollTo({ top: 0, behavior: "smooth" });
 }
+
+/** Instantly jump the app's scroll container to the top — used on route changes
+ *  so each view starts at the top instead of keeping the previous scroll spot. */
+export function jumpAppToTop() {
+  const el = document.getElementById(APP_SCROLL_ID);
+  if (el) {
+    el.scrollTop = 0;
+    el.scrollLeft = 0;
+  } else {
+    window.scrollTo(0, 0);
+  }
+}

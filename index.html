@@ -11,19 +11,12 @@
       name="description"
       content="MogTome - Your cozy FFXIV Free Company hub"
     />
-    <!-- Theme color for browser chrome - matches page background -->
-    <meta
-      name="theme-color"
-      content="#FFF6F4"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#16131F"
-      media="(prefers-color-scheme: dark)"
-    />
-    <!-- PWA: Transparent status bar when added to home screen -->
+    <!-- Theme color for browser chrome — a single meta kept in sync with the
+         active theme's --bg (set from first paint below, then by ThemeContext). -->
+    <meta name="theme-color" content="#FFF6F4" />
+    <!-- PWA / native: standalone-capable + transparent status bar -->
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
@@ -97,6 +90,10 @@
         var bgColor = isDark ? "#16131F" : "#FFF6F4";
         document.documentElement.style.backgroundColor = bgColor;
         document.body.style.backgroundColor = bgColor;
+
+        // Match the browser chrome (address/status bar) from the very first paint
+        var tcMeta = document.querySelector('meta[name="theme-color"]');
+        if (tcMeta) tcMeta.setAttribute("content", bgColor);
       })();
     </script>
     <div id="root"></div>

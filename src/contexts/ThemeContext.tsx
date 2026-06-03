@@ -303,6 +303,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         getComputedStyle(root).getPropertyValue("--bg").trim() ||
         (isDarkMode ? "#1A1722" : "#FFF9F5");
       root.style.backgroundColor = bgColor;
+      // Keep the browser chrome (address bar / status bar) matching the active
+      // theme + mode, so the page edges blend into the device UI natively.
+      const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeColorMeta) themeColorMeta.setAttribute("content", bgColor);
     });
 
     // Persist to localStorage
