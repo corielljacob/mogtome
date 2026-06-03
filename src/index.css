@@ -1263,17 +1263,23 @@
  * brown). Frame is the candy --primary border; pin cards with the .pushpin nub. */
 .corkboard {
   --cork-base: #f1e3cd;
-  --cork-grain: #c8a679;
+  --cork-dot-a: color-mix(in srgb, var(--primary) 18%, transparent);
+  --cork-dot-b: color-mix(in srgb, var(--secondary) 15%, transparent);
   position: relative;
   border-radius: var(--radius-3xl);
   border: 6px solid color-mix(in srgb, var(--primary) 30%, var(--card));
   background-color: var(--cork-base);
+  /* Flat-ish kawaii cork: two-tone candy polka dots over a flat theme-tinted base,
+     with just a faint SVG fractal-noise grain (soft-light) for a hint of cork —
+     no blobby mottling/highlights. */
   background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 34%, transparent) 0 1.1px, transparent 1.7px),
-    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 24%, transparent) 0 1px, transparent 1.5px),
-    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 16%, transparent) 0 1px, transparent 1.4px);
-  background-size: 17px 17px, 11px 11px, 24px 24px;
-  background-position: 0 0, 6px 9px, 11px 4px;
+    radial-gradient(circle, var(--cork-dot-a) 0 3px, transparent 3.7px),
+    radial-gradient(circle, var(--cork-dot-b) 0 2.6px, transparent 3.3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='cork'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='5' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncG type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncB type='linear' slope='1.5' intercept='-0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23cork)' opacity='0.22'/%3E%3C/svg%3E");
+  background-size: 46px 46px, 46px 46px, 300px 300px;
+  background-position: 0 0, 23px 23px, 0 0;
+  background-repeat: repeat, repeat, repeat;
+  background-blend-mode: normal, normal, soft-light;
   box-shadow:
     inset 0 2px 12px color-mix(in srgb, #6b4a26 22%, transparent),
     inset 0 0 0 1px color-mix(in srgb, #6b4a26 8%, transparent),
@@ -1283,16 +1289,11 @@
 }
 .dark .corkboard {
   --cork-base: color-mix(in srgb, var(--bg) 52%, var(--card));
+  --cork-dot-a: color-mix(in srgb, var(--primary) 28%, transparent);
+  --cork-dot-b: color-mix(in srgb, var(--secondary) 24%, transparent);
   border-color: color-mix(in srgb, var(--primary) 26%, var(--card));
-  background-image:
-    /* faint warm theme wash */
-    linear-gradient(color-mix(in srgb, var(--accent) 6%, transparent), color-mix(in srgb, var(--accent) 6%, transparent)),
-    /* speckles — light + warm, so the grain reads on the dark board */
-    radial-gradient(circle, color-mix(in srgb, var(--text) 12%, transparent) 0 1.2px, transparent 1.8px),
-    radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent) 0 1px, transparent 1.5px),
-    radial-gradient(circle, color-mix(in srgb, var(--text) 7%, transparent) 0 0.9px, transparent 1.4px);
-  background-size: 100% 100%, 18px 18px, 13px 13px, 25px 25px;
-  background-position: 0 0, 0 0, 6px 9px, 11px 4px;
+  /* Flatter in dark: brighter candy dots (vars above) on the flat base, with just
+     the faint inherited soft-light grain — no blobby mottling/highlights. */
   box-shadow:
     inset 0 2px 14px rgba(0, 0, 0, 0.3),
     0 18px 40px -18px rgba(0, 0, 0, 0.55),

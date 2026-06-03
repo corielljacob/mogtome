@@ -7,7 +7,6 @@ import { membersApi } from '../api/members';
 import { PaginatedMemberGrid, Dropdown, PageLayout, LoadingState, ErrorState, EmptyState, ScrollToTopButton, KawaiiSparkle, KawaiiBow, KawaiiHeart } from '../components';
 import { getRankColor } from '../constants';
 import { FC_RANKS } from '../types';
-import { APP_SCROLL_ID } from '../utils/scroll';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
@@ -125,17 +124,6 @@ export function Members() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  // Once you scroll into the grid, collapse the sticky note down to just the
-  // search + sort bar (the rank shelf folds away) so it stays slim while browsing.
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const el = document.getElementById(APP_SCROLL_ID);
-    if (!el) return;
-    const onScroll = () => setScrolled(el.scrollTop > 72);
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -285,17 +273,16 @@ export function Members() {
           </div>
         </header>
 
-        {/* ═══ SEARCH & FILTER (sticky pinned note) ═══ */}
+        {/* ═══ Sticky search + sort bar (stays slim; shelf scrolls under it) ═══ */}
         <motion.section
-          className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 mb-7 sm:mb-9"
+          className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 mb-4 sm:mb-5"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
           <span className="pushpin absolute -top-2 left-8 z-10" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
-          {/* Kawaii control note: search pill + sort + always-on rank shelf */}
-          <div className="surface paper p-4 sm:p-5">
-          
+          <span className="pushpin absolute -top-2 right-8 z-10" style={{ '--pin': 'var(--primary)' } as CSSProperties} aria-hidden="true" />
+          <div className="surface paper p-3 sm:p-4">
           {/* Search pill + sort */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -360,16 +347,14 @@ export function Members() {
               />
             </div>
           </div>
+          </div>
+        </motion.section>
 
-          {/* Rank shelf — folds away once you scroll into the grid */}
-          <motion.div
-            initial={false}
-            animate={{ height: scrolled ? 0 : 'auto', opacity: scrolled ? 0 : 1 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="overflow-hidden"
-            aria-hidden={scrolled}
-          >
-          <div className="mt-4 pt-4 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]">
+        {/* ═══ Rank shelf — scrolls away (not sticky) ═══ */}
+        <section className="relative mb-7 sm:mb-9">
+          <span className="pushpin absolute -top-2 left-8 z-10" style={{ '--pin': 'var(--accent)' } as CSSProperties} aria-hidden="true" />
+          <span className="pushpin absolute -top-2 right-8 z-10" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
+          <div className="surface paper p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <KawaiiBow className="w-5 h-5 text-[var(--primary)]" />
@@ -432,23 +417,23 @@ export function Members() {
               })}
             </div>
           </div>
-          </motion.div>
-        </div>
-      </motion.section>
+        </section>
 
         {/* ═══ CONTENT — Loading, Error, Empty, or the pinned member grid ═══ */}
         {isLoading ? (
-          <LoadingState message="Fetching members, kupo..." />
+          <div className="paper"><LoadingState message="Fetching members, kupo..." /></div>
         ) : isError ? (
-          <ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} />
+          <div className="paper"><ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} /></div>
         ) : filteredMembers.length === 0 ? (
-          <EmptyState
-            title="No members found"
-            message="Kupo? We couldn't find anyone by that name..."
-            imageSrc={grumpyMoogle}
-            onClear={hasActiveFilters ? clearFilters : undefined}
-            clearLabel="Clear filters"
-          />
+          <div className="paper">
+            <EmptyState
+              title="No members found"
+              message="Kupo? We couldn't find anyone by that name..."
+              imageSrc={grumpyMoogle}
+              onClear={hasActiveFilters ? clearFilters : undefined}
+              clearLabel="Clear filters"
+            />
+          </div>
         ) : (
           <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
             <PaginatedMemberGrid
