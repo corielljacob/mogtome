@@ -1,18 +1,17 @@
-import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useDeferredValue, useEffect, useCallback, type CSSProperties } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Search, Users, X, 
-  ArrowUpDown, Filter, SlidersHorizontal 
-} from 'lucide-react';
+import { motion } from 'motion/react';
+import { Search, Users, X, ArrowUpDown } from 'lucide-react';
 import { membersApi } from '../api/members';
-import { PaginatedMemberGrid, StoryDivider, Dropdown, PageLayout, PageHeader, PageFooter, LoadingState, ErrorState, EmptyState } from '../components';
+import { PaginatedMemberGrid, Dropdown, PageLayout, LoadingState, ErrorState, EmptyState, ScrollToTopButton, KawaiiSparkle, KawaiiBow, KawaiiHeart } from '../components';
 import { getRankColor } from '../constants';
 import { FC_RANKS } from '../types';
+import { APP_SCROLL_ID } from '../utils/scroll';
 import grumpyMoogle from '../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp';
 import wizardMoogle from '../assets/moogles/wizard moogle.webp';
 import musicMoogle from '../assets/moogles/moogle playing music.webp';
+import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
 // Valid rank names for URL validation (typed as Set<string> for flexibility)
 const VALID_RANK_NAMES: Set<string> = new Set(FC_RANKS.map(r => r.name));
@@ -31,7 +30,6 @@ const DEFAULT_SORT: SortOption = 'rank-asc';
 
 export function Members() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showFilters, setShowFilters] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Read search/filter/sort state from URL
@@ -115,7 +113,31 @@ export function Members() {
     }, 300);
     return () => clearTimeout(timer);
   }, [inputValue, searchQuery, setSearchQuery]);
-  
+
+  // Press "/" anywhere to jump to the search box
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/') return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      e.preventDefault();
+      searchInputRef.current?.focus({ preventScroll: true });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Once you scroll into the grid, collapse the sticky note down to just the
+  // search + sort bar (the rank shelf folds away) so it stays slim while browsing.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const el = document.getElementById(APP_SCROLL_ID);
+    if (!el) return;
+    const onScroll = () => setScrolled(el.scrollTop > 72);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
   const isFiltering = searchQuery !== deferredSearchQuery || selectedRanks !== deferredSelectedRanks;
@@ -224,39 +246,63 @@ export function Members() {
 
   return (
     <PageLayout moogles={{ primary: wizardMoogle, secondary: musicMoogle }}>
-      <PageHeader
-        opener="~ the whole moogle pile ~"
-        title="Our Family"
-        subtitle="everyone who calls Kupo Life home"
-      >
-        {/* Member count */}
-        <div className="inline-flex items-center gap-1.5 mb-3 text-[var(--text-muted)]">
-          <Users className="w-4 h-4 text-[var(--secondary)]" aria-hidden="true" />
-          <span className="font-soft text-sm">
-            <span className="font-display font-bold text-[var(--text)]">{allMembers.length}</span> members
-          </span>
-        </div>
-      </PageHeader>
+      <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
+        {/* Corner pins holding the board to the wall */}
+        <span className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20" aria-hidden="true" />
+        <span className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
+        <span className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20" style={{ '--pin': 'var(--accent)' } as CSSProperties} aria-hidden="true" />
+        <span className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          SEARCH & FILTER SECTION
-      ═══════════════════════════════════════════════════════════════════ */}
-      <motion.section 
-        className="mb-8"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        {/* Main search bar - always visible */}
-        <div className="surface overflow-hidden">
+        {/* Corner-peek moogle */}
+        <img
+          src={lilGuyMoogle}
+          alt=""
+          aria-hidden="true"
+          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
+        />
+
+        {/* ── Pinned title sign ───────────────────────────────────────────── */}
+        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
+          <span className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10" aria-hidden="true" />
+          <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
+            <div className="flex items-center justify-center gap-1.5 mb-1.5" aria-hidden="true">
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+            </div>
+            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
+              ~ the whole moogle pile ~
+            </p>
+            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
+              <span className="text-highlight">Our Family</span>
+            </h1>
+            <div className="inline-flex items-center gap-1.5 mt-2 text-[var(--text-muted)]">
+              <Users className="w-4 h-4 text-[var(--secondary)]" aria-hidden="true" />
+              <span className="font-soft text-sm">
+                <span className="font-display font-bold text-[var(--text)]">{allMembers.length}</span> members
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* ═══ SEARCH & FILTER (sticky pinned note) ═══ */}
+        <motion.section
+          className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 mb-7 sm:mb-9"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <span className="pushpin absolute -top-2 left-8 z-10" style={{ '--pin': 'var(--secondary)' } as CSSProperties} aria-hidden="true" />
+          {/* Kawaii control note: search pill + sort + always-on rank shelf */}
+          <div className="surface paper p-4 sm:p-5">
           
-          {/* Search input row */}
-          <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+          {/* Search pill + sort */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <label htmlFor="member-search" className="sr-only">Search members by name or rank</label>
-              <Search 
-                className="absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-subtle)] pointer-events-none" 
-                aria-hidden="true" 
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--primary)]/70 pointer-events-none"
+                aria-hidden="true"
               />
               <input
                 ref={searchInputRef}
@@ -264,25 +310,32 @@ export function Members() {
                 type="search"
                 inputMode="search"
                 enterKeyHint="search"
-                placeholder="Search members..."
+                placeholder="Find a friend, kupo~"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 aria-describedby="search-results-count"
                 className="
-                  w-full pl-10 sm:pl-11 pr-10 py-3 sm:py-3
-                  bg-[var(--bg)]/50 rounded-xl
-                  border border-[var(--border)] 
+                  w-full pl-11 pr-11 py-3
+                  bg-[var(--bg)] rounded-full
+                  border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]
                   focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
                   font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
-                  focus:outline-none transition-all
-                  touch-manipulation
+                  focus:outline-none transition-all touch-manipulation
                 "
                 style={{ fontSize: '16px' }}
               />
+              {!inputValue && (
+                <kbd
+                  className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-md bg-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))] border border-[color:color-mix(in_srgb,var(--primary)_22%,var(--card))] text-[var(--text-subtle)] text-xs font-mono pointer-events-none"
+                  aria-hidden="true"
+                >
+                  /
+                </kbd>
+              )}
               {inputValue && (
                 <button
                   onClick={() => { setInputValue(''); setSearchQuery(''); }}
-                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-1 rounded-lg bg-[var(--primary)]/10 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary)]/12 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
                   aria-label="Clear search"
                 >
                   <X className="w-4 h-4 text-[var(--primary)]" />
@@ -290,227 +343,135 @@ export function Members() {
               )}
             </div>
 
-            {/* Filter toggle button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              aria-expanded={showFilters}
-              aria-controls="filter-panel"
-              className={`
-                flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-xl
-                font-soft font-medium text-sm
-                transition-all cursor-pointer touch-manipulation
-                focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                active:scale-95
-                ${showFilters 
-                  ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/25' 
-                  : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text)] sm:hover:border-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/5'
-                }
-              `}
-            >
-              <SlidersHorizontal className="w-5 h-5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Filters</span>
-              {selectedRanks.length > 0 && (
-                <span className={`
-                  px-1.5 py-0.5 text-xs font-bold rounded-full min-w-[1.25rem] text-center
-                  ${showFilters ? 'bg-white/25 text-white' : 'bg-[var(--primary)] text-white'}
-                `}>
-                  {selectedRanks.length}
-                </span>
-              )}
-            </button>
+            {/* Sort */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="hidden sm:flex items-center gap-1.5 text-sm font-display font-bold text-[var(--text-muted)] pl-1">
+                <ArrowUpDown className="w-4 h-4 text-[var(--secondary)]" aria-hidden="true" />
+                Sort
+              </span>
+              <Dropdown
+                options={SORT_OPTIONS}
+                value={validSortBy}
+                onChange={setSortBy}
+                icon={<ArrowUpDown className="w-4 h-4" />}
+                menuClassName="paper"
+                className="w-full sm:w-44"
+                aria-label="Sort members by"
+              />
+            </div>
           </div>
 
-          {/* Expandable filter panel */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                id="filter-panel"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="overflow-hidden"
-              >
-                <div className="px-4 pb-5 pt-2 border-t border-[var(--border)]">
-                  
-                  {/* Sort & Filter controls - stacked on mobile */}
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-5 lg:gap-6 pt-4">
-                    
-                    {/* Sort dropdown */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <ArrowUpDown className="w-4 h-4 text-[var(--secondary)]" />
-                        <span className="font-soft font-semibold text-sm text-[var(--text)]">Sort by</span>
-                      </div>
-                      <Dropdown
-                        options={SORT_OPTIONS}
-                        value={validSortBy}
-                        onChange={setSortBy}
-                        icon={<ArrowUpDown className="w-4 h-4" />}
-                        className="w-full"
-                        aria-label="Sort members by"
-                      />
-                    </div>
-
-                    {/* Rank filter chips */}
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Filter className="w-4 h-4 text-[var(--secondary)]" />
-                          <span className="font-soft font-semibold text-sm text-[var(--text)]">Filter by rank</span>
-                          {selectedRanks.length > 0 && (
-                            <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--primary)] text-white">
-                              {selectedRanks.length}
-                            </span>
-                          )}
-                        </div>
-                        {selectedRanks.length > 0 && (
-                          <button
-                            onClick={() => setSelectedRanks([])}
-                            className="text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] sm:hover:text-[var(--primary)] transition-colors cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-lg active:bg-[var(--primary)]/10 touch-manipulation"
-                          >
-                            <X className="w-4 h-4" />
-                            Clear
-                          </button>
-                        )}
-                      </div>
-                      
-                      {/* Rank filter chips with rank-specific colors */}
-                      <div className="flex flex-wrap gap-2.5" role="group" aria-label="Filter by rank">
-                        {FC_RANKS.map((rank) => {
-                          const count = rankCounts[rank.name] || 0;
-                          const isSelected = selectedRanks.includes(rank.name);
-                          const rankColor = getRankColor(rank.name);
-                          const RankIcon = rankColor.icon;
-                          return (
-                            <motion.button
-                              key={rank.name}
-                              onClick={() => toggleRank(rank.name)}
-                              aria-pressed={isSelected}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className={`
-                                inline-flex items-center gap-2
-                                px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm font-soft font-medium
-                                cursor-pointer transition-all duration-200 touch-manipulation
-                                focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                                ${isSelected 
-                                  ? 'text-white shadow-md' 
-                                  : 'bg-[var(--bg)]/50 border border-[var(--border)] hover:bg-[var(--primary)]/5 text-[var(--text)]'
-                                }
-                              `}
-                              style={isSelected ? {
-                                backgroundColor: rankColor.hex,
-                                boxShadow: `0 4px 12px -2px ${rankColor.glow}`,
-                              } : undefined}
-                            >
-                              <RankIcon className={`w-4 h-4 sm:w-3.5 sm:h-3.5 ${isSelected ? 'text-white' : ''}`} style={!isSelected ? { color: rankColor.hex } : undefined} aria-hidden="true" />
-                              <span>{rank.name}</span>
-                              <span className={`
-                                text-xs px-2 py-0.5 rounded-full
-                                ${isSelected 
-                                  ? 'bg-white/20' 
-                                  : 'bg-[var(--card)] text-[var(--text-muted)]'
-                                }
-                              `}>
-                                {count}
-                              </span>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Active filters summary bar - shows when filters active but panel closed */}
-          {hasActiveFilters && !showFilters && (
-            <div className="px-3 sm:px-4 pb-3 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-3">
-              <p id="search-results-count" className="font-soft text-sm text-[var(--text)]" aria-live="polite">
-                Showing <span className="font-bold text-[var(--primary)]">{filteredMembers.length}</span> of {allMembers.length} members
-              </p>
-              <button
-                onClick={clearFilters}
-                className="text-sm font-soft font-medium text-[var(--primary)] hover:text-[var(--primary)]/80 transition-colors cursor-pointer flex items-center gap-1 touch-manipulation"
-              >
-                <X className="w-3.5 h-3.5" />
-                Clear all
-              </button>
+          {/* Rank shelf — folds away once you scroll into the grid */}
+          <motion.div
+            initial={false}
+            animate={{ height: scrolled ? 0 : 'auto', opacity: scrolled ? 0 : 1 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="overflow-hidden"
+            aria-hidden={scrolled}
+          >
+          <div className="mt-4 pt-4 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <KawaiiBow className="w-5 h-5 text-[var(--primary)]" />
+                <span className="font-display font-bold text-sm text-[var(--text)]">Pick a rank, kupo!</span>
+                {hasActiveFilters && (
+                  <span id="search-results-count" aria-live="polite" className="text-xs font-soft text-[var(--text-muted)]">
+                    · <span className="font-display font-bold text-[var(--primary)]">{filteredMembers.length}</span>/{allMembers.length}
+                  </span>
+                )}
+              </div>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="flex items-center gap-1 text-sm font-display font-bold text-[var(--text-muted)] hover:text-[var(--primary)] active:text-[var(--primary)] transition-colors cursor-pointer touch-manipulation"
+                >
+                  <X className="w-4 h-4" />
+                  Clear
+                </button>
+              )}
             </div>
-          )}
+
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by rank">
+              {FC_RANKS.map((rank) => {
+                const count = rankCounts[rank.name] || 0;
+                const isSelected = selectedRanks.includes(rank.name);
+                const rankColor = getRankColor(rank.name);
+                const RankIcon = rankColor.icon;
+                return (
+                  <motion.button
+                    key={rank.name}
+                    onClick={() => toggleRank(rank.name)}
+                    aria-pressed={isSelected}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    className={`
+                      inline-flex items-center gap-1.5
+                      pl-1.5 pr-3 py-1.5 rounded-full text-sm font-display font-bold
+                      cursor-pointer transition-colors duration-200 touch-manipulation
+                      focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+                      ${isSelected ? 'gel text-white' : 'bg-[var(--card)] border-2 text-[var(--text)]'}
+                    `}
+                    style={isSelected
+                      ? ({ '--gel-color': rankColor.hex } as CSSProperties)
+                      : ({ borderColor: `color-mix(in srgb, ${rankColor.hex} 32%, var(--card))` } as CSSProperties)}
+                  >
+                    <span
+                      className="flex items-center justify-center w-6 h-6 rounded-full shrink-0"
+                      style={isSelected
+                        ? { background: 'rgba(255,255,255,0.22)' }
+                        : { background: `color-mix(in srgb, ${rankColor.hex} 16%, var(--card))` }}
+                    >
+                      <RankIcon className="w-3.5 h-3.5" style={{ color: isSelected ? '#fff' : rankColor.hex }} aria-hidden="true" />
+                    </span>
+                    <span>{rank.name}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full leading-none ${isSelected ? 'bg-white/25' : 'bg-[var(--bg)] text-[var(--text-muted)]'}`}>
+                      {count}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+          </motion.div>
         </div>
       </motion.section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          QUICK RANK CHIPS - Popular ranks for one-tap filtering (desktop)
-      ═══════════════════════════════════════════════════════════════════ */}
-      {!showFilters && !hasActiveFilters && (
-        <motion.div 
-          className="hidden md:flex items-center justify-center gap-2 mb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <span className="text-sm font-soft text-[var(--text-muted)] mr-2">Quick filter:</span>
-          {FC_RANKS.slice(0, 5).map((rank) => {
-            const rankColor = getRankColor(rank.name);
-            const RankIcon = rankColor.icon;
-            return (
-              <button
-                key={rank.name}
-                onClick={() => toggleRank(rank.name)}
-                className="
-                  inline-flex items-center gap-1.5
-                  px-3 py-1.5 rounded-md text-sm font-soft font-medium
-                  bg-transparent border border-[var(--border)]
-                  hover:border-[var(--primary)]/40 hover:text-[var(--primary)]
-                  text-[var(--text)] cursor-pointer transition-all touch-manipulation
-                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                "
-              >
-                <RankIcon className="w-3.5 h-3.5" style={{ color: rankColor.hex }} aria-hidden="true" />
-                {rank.name}
-              </button>
-            );
-          })}
-        </motion.div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          CONTENT AREA - Loading, Error, Empty, or Grid
-      ═══════════════════════════════════════════════════════════════════ */}
-      
-      <StoryDivider className="mx-auto mb-8" />
-      
-      {isLoading ? (
-        <LoadingState message="Fetching members, kupo..." />
-      ) : isError ? (
-        <ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} />
-      ) : filteredMembers.length === 0 ? (
-        <EmptyState
-          title="No members found"
-          message="Kupo? We couldn't find anyone by that name..."
-          imageSrc={grumpyMoogle}
-          onClear={hasActiveFilters ? clearFilters : undefined}
-          clearLabel="Clear filters"
-        />
-      ) : (
-        <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
-          <PaginatedMemberGrid
-            members={filteredMembers}
-            membersByRank={membersByRank}
-            showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery && validSortBy === 'rank-asc'}
-            pageSize={24}
+        {/* ═══ CONTENT — Loading, Error, Empty, or the pinned member grid ═══ */}
+        {isLoading ? (
+          <LoadingState message="Fetching members, kupo..." />
+        ) : isError ? (
+          <ErrorState message="A moogle fell over, kupo..." onRetry={() => refetch()} />
+        ) : filteredMembers.length === 0 ? (
+          <EmptyState
+            title="No members found"
+            message="Kupo? We couldn't find anyone by that name..."
+            imageSrc={grumpyMoogle}
+            onClear={hasActiveFilters ? clearFilters : undefined}
+            clearLabel="Clear filters"
           />
-        </div>
-      )}
+        ) : (
+          <div className={`transition-opacity duration-200 ${isFiltering ? 'opacity-50' : 'opacity-100'}`}>
+            <PaginatedMemberGrid
+              members={filteredMembers}
+              membersByRank={membersByRank}
+              showGrouped={deferredSelectedRanks.length === 0 && !deferredSearchQuery && validSortBy === 'rank-asc'}
+              pageSize={24}
+            />
+          </div>
+        )}
 
-      {!isLoading && !isError && filteredMembers.length > 0 && (
-        <PageFooter message="Every member makes us stronger, kupo!" />
-      )}
+        {!isLoading && !isError && filteredMembers.length > 0 && (
+          <div className="text-center mt-10 pt-7">
+            <p className="eyebrow-script text-2xl text-[var(--text-muted)] inline-flex items-center justify-center gap-2.5">
+              <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
+              Every member makes us stronger, kupo!
+              <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
+            </p>
+          </div>
+        )}
+      </div>
+
+      <ScrollToTopButton />
     </PageLayout>
   );
 }

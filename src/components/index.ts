@@ -27,6 +27,7 @@ export { MooglePom, MooglePomCluster } from './MooglePom';
 export { StoryDivider } from './StoryDivider';
 export { FloatingSparkles } from './FloatingSparkles';
 export { FloatingBubbles } from './FloatingBubbles';
+export { ScrollToTopButton } from './ScrollToTopButton';
 export { KawaiiStar, KawaiiSparkle, KawaiiHeart, KawaiiBow, KawaiiCloud } from './kawaiiMotifs';
 export { FloatingMoogles, SimpleFloatingMoogles, type MoogleConfig } from './FloatingMoogles';
 

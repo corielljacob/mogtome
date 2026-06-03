@@ -1185,10 +1185,12 @@
 .surface::after { content: none; display: none; }
 
 .dark .surface {
-  border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+  /* No candy "lip" in dark mode — it reads as a bright glow. Just a faint candy
+     edge + a soft neutral drop shadow for a little depth. */
+  border-color: color-mix(in srgb, var(--primary) 14%, var(--border));
   box-shadow:
-    0 2px 0 0 color-mix(in srgb, var(--primary) 16%, transparent),
-    0 10px 22px -10px var(--shadow);
+    0 2px 6px -2px rgba(0, 0, 0, 0.5),
+    0 6px 16px -8px rgba(0, 0, 0, 0.42);
 }
 
 /* Matte "candy" button — solid pastel, pill, chunky offset lip, squishy press.
@@ -1251,6 +1253,90 @@
   background-image:
     radial-gradient(circle, color-mix(in srgb, var(--primary) 24%, transparent) 2.5px, transparent 3px),
     radial-gradient(circle, color-mix(in srgb, var(--secondary) 20%, transparent) 2.5px, transparent 3px);
+}
+
+/* ─── Cork bulletin board ──────────────────────────────────────────────────────
+ * Light: a warm cream speckled cork (cards pop as white polaroids on cream).
+ * Dark: a board pitched between the page bg and the cards — darker than the cards
+ * so the polaroids pop, lighter than the page so the board stands out — warmed by
+ * a faint theme wash and lit with light speckles so the grain reads (no muddy
+ * brown). Frame is the candy --primary border; pin cards with the .pushpin nub. */
+.corkboard {
+  --cork-base: #f1e3cd;
+  --cork-grain: #c8a679;
+  position: relative;
+  border-radius: var(--radius-3xl);
+  border: 6px solid color-mix(in srgb, var(--primary) 30%, var(--card));
+  background-color: var(--cork-base);
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 34%, transparent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 24%, transparent) 0 1px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--cork-grain) 16%, transparent) 0 1px, transparent 1.4px);
+  background-size: 17px 17px, 11px 11px, 24px 24px;
+  background-position: 0 0, 6px 9px, 11px 4px;
+  box-shadow:
+    inset 0 2px 12px color-mix(in srgb, #6b4a26 22%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #6b4a26 8%, transparent),
+    0 2px 0 0 color-mix(in srgb, var(--primary) 12%, transparent),
+    0 20px 44px -18px var(--shadow),
+    0 8px 18px -10px var(--shadow);
+}
+.dark .corkboard {
+  --cork-base: color-mix(in srgb, var(--bg) 52%, var(--card));
+  border-color: color-mix(in srgb, var(--primary) 26%, var(--card));
+  background-image:
+    /* faint warm theme wash */
+    linear-gradient(color-mix(in srgb, var(--accent) 6%, transparent), color-mix(in srgb, var(--accent) 6%, transparent)),
+    /* speckles — light + warm, so the grain reads on the dark board */
+    radial-gradient(circle, color-mix(in srgb, var(--text) 12%, transparent) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent) 0 1px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--text) 7%, transparent) 0 0.9px, transparent 1.4px);
+  background-size: 100% 100%, 18px 18px, 13px 13px, 25px 25px;
+  background-position: 0 0, 0 0, 6px 9px, 11px 4px;
+  box-shadow:
+    inset 0 2px 14px rgba(0, 0, 0, 0.3),
+    0 18px 40px -18px rgba(0, 0, 0, 0.55),
+    0 6px 16px -8px rgba(0, 0, 0, 0.4);
+}
+:root.high-contrast .corkboard {
+  background-image: none;
+  background-color: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* Push-pin — a tiny domed pin for "pinning" cards to the cork board. Set --pin. */
+.pushpin {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.85) 0 12%, transparent 40%),
+    var(--pin, var(--primary));
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--pin, var(--primary)) 60%, black),
+    0 2px 3px -0.5px rgba(0, 0, 0, 0.3);
+}
+:root.high-contrast .pushpin {
+  background: var(--pin, var(--primary));
+  box-shadow: 0 0 0 1.5px var(--border);
+}
+
+/* "Paper" — pinned photos/notes on the cork board read as warm cream paper with
+   dark ink in dark mode (like real polaroids on cork), even though the rest of
+   dark mode stays dark. It only re-points the surface/text tokens locally, so any
+   .surface or text-[var(--text)] inside renders as paper; candy accents
+   (--primary etc.) and .gel buttons are untouched. No-op in light mode (cards are
+   already light) and skipped in high-contrast so the a11y palette wins. */
+.dark:not(.high-contrast) .paper {
+  --card: #f6efe2;
+  --bg: #eadfcc;
+  --text: #2a2336;
+  --text-muted: #6c6376;
+  --text-subtle: #998fa3;
+  --border: #e4dcca;
+  --shadow: rgba(60, 40, 20, 0.28);
 }
 
 /* Sticker text — chunky cream outline + soft drop, for big display headings.

@@ -15,6 +15,9 @@ interface DropdownProps<T extends string = string> {
   placeholder?: string;
   icon?: React.ReactNode;
   className?: string;
+  /** Extra class names on the portaled menu (e.g. "paper" so it inherits the
+   *  cork-board paper tokens, since the menu renders outside its container). */
+  menuClassName?: string;
   /** Accessible label for the dropdown (required for accessibility) */
   'aria-label'?: string;
   /** ID of element that labels this dropdown */
@@ -39,6 +42,7 @@ export function Dropdown<T extends string = string>({
   placeholder = 'Select...',
   icon,
   className = '',
+  menuClassName = '',
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
 }: DropdownProps<T>) {
@@ -158,14 +162,14 @@ export function Dropdown<T extends string = string>({
         left: menuPosition.left,
         minWidth: Math.max(menuPosition.width, 160),
       }}
-      className="
+      className={`
         z-[9999]
         surface
-        border border-[var(--border)]
-        rounded-xl shadow-sm
+        rounded-xl
         py-1 sm:py-1.5 max-h-60 overflow-auto
         focus:outline-none
-      "
+        ${menuClassName}
+      `}
     >
       {options.map((option, index) => {
         const isSelected = option.value === value;
@@ -218,7 +222,7 @@ export function Dropdown<T extends string = string>({
         aria-labelledby={ariaLabelledBy}
         className={`
           w-full flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl
-          bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]          border border-[var(--border)]
+          bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]          border-2 border-[color:color-mix(in_srgb,var(--primary)_14%,var(--card))]
           hover:border-[var(--primary)]/30 hover:bg-[var(--card)]
           focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 focus:outline-none
           font-soft font-medium text-xs sm:text-sm text-[var(--text)]

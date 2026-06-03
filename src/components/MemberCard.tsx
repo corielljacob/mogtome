@@ -45,7 +45,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   // animated parent so the entrance animation isn't stomped).
   return (
     <article
-      className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation cursor-pointer
+      className="paper group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation cursor-pointer
         active:scale-[0.97] active:duration-100"
       style={{
         animation: `fadeSlideIn 0.4s ease-out ${Math.min(index * 0.04, 0.4)}s both`,
@@ -156,12 +156,12 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             className="
               absolute -inset-px hidden sm:flex
               items-center justify-center
-              bg-black/30
               rounded-lg
               opacity-0 group-hover:opacity-100
               transition-opacity duration-300
               pointer-events-none
             "
+            style={{ background: 'color-mix(in srgb, var(--card-hex) 45%, rgba(0,0,0,0.34))' }}
             aria-hidden="true"
           >
             <span
@@ -234,7 +234,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
  */
 export function MemberCardSkeleton() {
   return (
-    <div className="w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]">
+    <div className="paper w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]">
       <div className="relative">
         <div className="surface relative p-2.5 sm:p-3 pb-6 sm:pb-8 overflow-visible">
           {/* Avatar placeholder */}

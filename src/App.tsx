@@ -7,6 +7,7 @@ import { Navbar, ScrapbookNav, ProtectedRoute, KnightRoute, WelcomeDialog, Missi
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { APP_SCROLL_ID } from './utils/scroll';
 
 // Error boundary to catch chunk loading failures after deployments
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
@@ -91,7 +92,7 @@ function AppContent() {
         <ScrapbookNav />
 
         {/* Main content area — pad left on desktop to clear the edge tabs */}
-        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16">
+        <div id={APP_SCROLL_ID} className="flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16">
           {/* Mobile top bar + desktop user controls */}
           <Navbar />
           

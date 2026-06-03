@@ -1,10 +1,12 @@
-import { useState, useMemo, useRef, useEffect, useCallback, useTransition } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback, useTransition, type CSSProperties } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ChevronLeft, ChevronRight, Star, ChevronsLeft, ChevronsRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import type { FreeCompanyMember } from '../types';
 import { MemberCard } from './MemberCard';
+import { KawaiiStar } from './kawaiiMotifs';
 import { getRankColor } from '../constants';
+import { scrollAppToTop } from '../utils/scroll';
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];
@@ -61,47 +63,45 @@ function RankHeader({ rankName, memberCount }: { rankName: string; memberCount: 
   const RankIcon = rankColor.icon;
 
   return (
-    <div className="flex items-center gap-2.5 sm:gap-3 py-3 sm:py-4">
-      <div 
-        className="
-          w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center 
-          shadow-md shadow-black/5
-        "
-        style={{ backgroundColor: rankColor.hex }}
+    <div className="flex items-center gap-3 py-3 sm:py-4">
+      {/* Rank label as a sticker tab tacked to the board */}
+      <div
+        className="sticker px-3 py-1.5"
+        style={{
+          backgroundColor: `color-mix(in srgb, ${rankColor.hex} 15%, var(--card))`,
+          border: `2px solid color-mix(in srgb, ${rankColor.hex} 34%, var(--card))`,
+        }}
       >
-        <RankIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" aria-hidden="true" />
-      </div>
-      <div className="flex items-center gap-2 sm:gap-2.5">
-        <h2 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-[var(--text)]">
+        <span
+          className="flex items-center justify-center w-5 h-5 rounded-full shrink-0"
+          style={{ backgroundColor: rankColor.hex }}
+        >
+          <RankIcon className="w-3 h-3 text-white" aria-hidden="true" />
+        </span>
+        <h2 className="font-display font-bold text-sm sm:text-base text-[var(--text)] leading-none">
           {rankColor.label}
         </h2>
-        <span 
-          className="
-            px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full 
-            text-xs sm:text-sm font-soft font-bold
-          "
+        <span
+          className="text-xs font-display font-bold px-1.5 py-0.5 rounded-full leading-none"
           style={{
-            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 12%, transparent)`,
-            color: rankColor.hex,
+            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 22%, var(--card))`,
+            color: `color-mix(in srgb, ${rankColor.hex} 62%, var(--text))`,
           }}
           aria-label={`${memberCount} members`}
         >
           {memberCount}
         </span>
       </div>
-      <div 
-        className="flex-1 h-px" 
-        style={{ 
-          background: `linear-gradient(to right, ${rankColor.hex}33, transparent)`,
-        }}
-        aria-hidden="true" 
+      {/* Dashed "tacked string" divider */}
+      <div
+        className="flex-1 border-t-2 border-dashed"
+        style={{ borderColor: `color-mix(in srgb, ${rankColor.hex} 28%, transparent)` }}
+        aria-hidden="true"
       />
+      <KawaiiStar className="w-4 h-4 shrink-0" color={rankColor.hex} />
     </div>
   );
 }
-
-// Height of navbar (~72px) + sticky search bar (~80px compact) + breathing room
-const SCROLL_OFFSET = 200;
 
 /**
  * PaginatedMemberGrid - Non-virtualized grid with pagination.
@@ -220,38 +220,20 @@ export function PaginatedMemberGrid({
     return grouped;
   }, [showGrouped, membersByRank, currentPage, pageSize]);
 
-  // Scroll to top of page when paginating
-  // On mobile, scroll to very top for a clean view
-  // On desktop, scroll to just above the grid with offset for sticky header
-  const scrollToGrid = useCallback(() => {
-    const isMobile = window.innerWidth < 768; // md breakpoint
-    
-    if (isMobile) {
-      // On mobile, scroll to the very top of the page
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (containerRef.current) {
-      // On desktop, scroll to just above the grid
-      const rect = containerRef.current.getBoundingClientRect();
-      const absoluteTop = rect.top + window.scrollY;
-      const targetScroll = absoluteTop - SCROLL_OFFSET;
-      window.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
-    }
-  }, []);
-  
-  // Track previous page to detect page changes (including from browser navigation)
-  const prevPage = useRef(currentPage);
+  // Scroll the app container to the top AFTER an explicit page change commits, so
+  // the smooth scroll isn't interrupted by the content swap. The flag keeps it from
+  // firing on filter-induced page resets — toggling a rank keeps you in place.
+  const scrollOnPageChange = useRef(false);
   useEffect(() => {
-    if (prevPage.current !== currentPage) {
-      scrollToGrid();
-      prevPage.current = currentPage;
+    if (scrollOnPageChange.current) {
+      scrollOnPageChange.current = false;
+      scrollAppToTop();
     }
-  }, [currentPage, scrollToGrid]);
+  }, [currentPage]);
 
   // Navigate to a specific page (0-indexed internally, 1-indexed in URL)
   const navigateToPage = useCallback((page: number) => {
-    // Scroll first, before the transition starts
-    scrollToGrid();
-    
+    scrollOnPageChange.current = true;
     startTransition(() => {
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
@@ -263,7 +245,7 @@ export function PaginatedMemberGrid({
         return next;
       });
     });
-  }, [pageParam, setSearchParams, scrollToGrid]);
+  }, [pageParam, setSearchParams]);
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 0) navigateToPage(currentPage - 1);
@@ -272,18 +254,6 @@ export function PaginatedMemberGrid({
   const handleNextPage = useCallback(() => {
     if (currentPage < totalPages - 1) navigateToPage(currentPage + 1);
   }, [currentPage, totalPages, navigateToPage]);
-
-  const handleFirstPage = useCallback(() => {
-    navigateToPage(0);
-  }, [navigateToPage]);
-
-  const handleLastPage = useCallback(() => {
-    navigateToPage(totalPages - 1);
-  }, [totalPages, navigateToPage]);
-
-  const handlePageClick = useCallback((page: number) => {
-    navigateToPage(page);
-  }, [navigateToPage]);
 
   // Keyboard navigation - directly calls navigateToPage to ensure scroll happens
   useEffect(() => {
@@ -303,34 +273,6 @@ export function PaginatedMemberGrid({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentPage, totalPages, navigateToPage]);
-
-  // PERFORMANCE: Memoize page number generation (was recalculated on every render)
-  const pageNumbers = useMemo(() => {
-    const pages: (number | 'ellipsis')[] = [];
-    const maxVisible = 5;
-    
-    if (totalPages <= maxVisible + 2) {
-      // Show all pages
-      for (let i = 0; i < totalPages; i++) pages.push(i);
-    } else {
-      // Always show first page
-      pages.push(0);
-      
-      if (currentPage > 2) pages.push('ellipsis');
-      
-      // Show pages around current
-      const start = Math.max(1, currentPage - 1);
-      const end = Math.min(totalPages - 2, currentPage + 1);
-      for (let i = start; i <= end; i++) pages.push(i);
-      
-      if (currentPage < totalPages - 3) pages.push('ellipsis');
-      
-      // Always show last page
-      pages.push(totalPages - 1);
-    }
-    
-    return pages;
-  }, [totalPages, currentPage]);
 
   return (
     <div ref={containerRef} className="w-full">
@@ -369,240 +311,63 @@ export function PaginatedMemberGrid({
         </div>
       )}
 
-      {/* Pagination controls */}
+      {/* Pagination — a simple prev · page · next cluster (← → still work) */}
       {totalPages > 1 && (
-        <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-[var(--border)]">
-          {/* Mobile-first pagination - simpler, larger touch targets */}
-          <div className="sm:hidden">
-            {/* Page indicator */}
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)] shadow-sm" role="status" aria-live="polite">
-                {isPending ? (
-                  <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
-                ) : (
-                  <Star className="w-4 h-4 text-[var(--secondary)] fill-[var(--secondary)]" aria-hidden="true" />
-                )}
-                <span className="font-soft font-medium text-sm text-[var(--text)]">
-                  Page <span className="text-[var(--primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
-                </span>
-              </div>
-            </div>
+        <nav
+          className="mt-8 sm:mt-10 pt-7 flex items-center justify-center gap-2.5 sm:gap-4"
+          aria-label="Pagination"
+        >
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 0 || isPending}
+            aria-label="Go to previous page"
+            className="
+              flex items-center justify-center gap-1.5 h-11 px-4 sm:px-5
+              gel hover-bounce text-white font-display font-bold text-sm
+              disabled:opacity-35 disabled:cursor-not-allowed
+              focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
+              cursor-pointer touch-manipulation
+            "
+            style={{ '--gel-color': 'var(--secondary)' } as CSSProperties}
+          >
+            <ChevronLeft className="w-5 h-5" aria-hidden="true" />
+            <span className="hidden sm:inline">Prev</span>
+          </button>
 
-            {/* Mobile navigation - full-width buttons for easy thumb access */}
-            <nav className="flex items-center gap-3" aria-label="Pagination" role="navigation">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 0 || isPending}
-                aria-label="Go to previous page"
-                className="
-                  flex-1 flex items-center justify-center gap-2 py-4 rounded-lg
-                  bg-[var(--card)] border border-[var(--border)]
-                  text-[var(--text)] font-soft font-semibold text-base
-                  active:scale-[0.97] active:bg-[var(--primary)]/10
-                  disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:bg-[var(--card)]
-                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  transition-all cursor-pointer touch-manipulation
-                "
-              >
-                <ChevronLeft className="w-5 h-5" aria-hidden="true" />
-                Previous
-              </button>
-
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages - 1 || isPending}
-                aria-label="Go to next page"
-                className="
-                  flex-1 flex items-center justify-center gap-2 py-4 rounded-lg
-                  bg-[var(--primary)]
-                  text-white font-soft font-semibold text-base
-                  shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
-                  active:scale-[0.97] active:shadow-sm
-                  disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
-                  focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
-                  transition-all cursor-pointer touch-manipulation
-                "
-              >
-                Next
-                <ChevronRight className="w-5 h-5" aria-hidden="true" />
-              </button>
-            </nav>
-
-            {/* Quick jump for mobile - first/last */}
-            {totalPages > 3 && (
-              <div className="flex items-center justify-center gap-3 mt-3">
-                <button
-                  onClick={handleFirstPage}
-                  disabled={currentPage === 0 || isPending}
-                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronsLeft className="w-4 h-4 inline-block mr-1" aria-hidden="true" />
-                  First
-                </button>
-                <span className="text-[var(--text-subtle)]">·</span>
-                <button
-                  onClick={handleLastPage}
-                  disabled={currentPage === totalPages - 1 || isPending}
-                  className="px-4 py-2 rounded-xl text-sm font-soft font-medium text-[var(--text-muted)] active:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  Last
-                  <ChevronsRight className="w-4 h-4 inline-block ml-1" aria-hidden="true" />
-                </button>
-              </div>
+          <div
+            className="inline-flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-[var(--card)] border-2 border-[color:color-mix(in_srgb,var(--primary)_18%,var(--card))]"
+            role="status"
+            aria-live="polite"
+          >
+            {isPending && (
+              <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
             )}
-          </div>
-
-          {/* Desktop pagination - more compact with page numbers */}
-          <div className="hidden sm:block">
-            {/* Page info header with loading indicator */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/20 to-transparent" aria-hidden="true" />
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-sm" role="status" aria-live="polite">
-                {isPending ? (
-                  <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" aria-hidden="true" />
-                ) : (
-                  <Star className="w-4 h-4 text-[var(--secondary)] fill-[var(--secondary)]" aria-hidden="true" />
-                )}
-                <span className="font-soft font-medium text-sm text-[var(--text)]">
-                  Page <span className="text-[var(--primary)] font-bold">{currentPage + 1}</span> of <span className="font-bold">{totalPages}</span>
-                </span>
-              </div>
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/20 to-transparent" aria-hidden="true" />
-            </div>
-
-            {/* Main pagination controls */}
-            <nav 
-              className="flex items-center justify-center gap-4"
-              aria-label="Pagination"
-              role="navigation"
+            <span
+              className="font-display font-bold text-sm text-[var(--text)] whitespace-nowrap"
+              aria-label={`Page ${currentPage + 1} of ${totalPages}`}
             >
-              {/* Navigation buttons group */}
-              <div className="flex items-center gap-2">
-                {/* First page button */}
-                <button
-                  onClick={handleFirstPage}
-                  disabled={currentPage === 0 || isPending}
-                  aria-label="Go to first page"
-                  className="
-                    flex items-center justify-center w-10 h-10 rounded-xl
-                    bg-[var(--card)] border border-[var(--border)]
-                    text-[var(--text-muted)]
-                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 hover:text-[var(--primary)]
-                    active:scale-95 active:bg-[var(--primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                    transition-all cursor-pointer
-                  "
-                >
-                  <ChevronsLeft className="w-4 h-4" aria-hidden="true" />
-                </button>
-
-                {/* Previous button */}
-                <button
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 0 || isPending}
-                  aria-label="Go to previous page"
-                  className="
-                    flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
-                    bg-[var(--card)] border border-[var(--border)]
-                    text-[var(--text)] font-soft font-medium text-sm
-                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
-                    active:scale-95 active:bg-[var(--primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                    transition-all cursor-pointer
-                  "
-                >
-                  <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-                  Previous
-                </button>
-
-                {/* Page numbers */}
-                <div className="flex items-center gap-1 mx-1">
-                  {pageNumbers.map((page, idx) => (
-                    page === 'ellipsis' ? (
-                      <span 
-                        key={`ellipsis-${idx}`} 
-                        className="w-8 text-center text-[var(--text-muted)] font-soft select-none text-sm"
-                        aria-hidden="true"
-                      >
-                        ···
-                      </span>
-                    ) : (
-                      <button
-                        key={page}
-                        onClick={() => handlePageClick(page)}
-                        disabled={isPending}
-                        aria-label={`Go to page ${page + 1}`}
-                        aria-current={currentPage === page ? 'page' : undefined}
-                        className={`
-                          w-10 h-10 rounded-xl font-soft font-semibold text-sm
-                          transition-all cursor-pointer
-                          active:scale-95
-                          disabled:cursor-wait
-                          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none focus-visible:ring-offset-2
-                          ${currentPage === page
-                            ? 'bg-[var(--primary)] text-white shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]'
-                            : 'bg-[var(--card)] border border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]'
-                          }
-                        `}
-                      >
-                        {page + 1}
-                      </button>
-                    )
-                  ))}
-                </div>
-
-                {/* Next button */}
-                <button
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages - 1 || isPending}
-                  aria-label="Go to next page"
-                  className="
-                    flex items-center justify-center gap-1.5 px-4 py-2.5 h-10 rounded-xl
-                    bg-[var(--card)] border border-[var(--border)]
-                    text-[var(--text)] font-soft font-medium text-sm
-                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5
-                    active:scale-95 active:bg-[var(--primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                    transition-all cursor-pointer
-                  "
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4" aria-hidden="true" />
-                </button>
-
-                {/* Last page button */}
-                <button
-                  onClick={handleLastPage}
-                  disabled={currentPage === totalPages - 1 || isPending}
-                  aria-label="Go to last page"
-                  className="
-                    flex items-center justify-center w-10 h-10 rounded-xl
-                    bg-[var(--card)] border border-[var(--border)]
-                    text-[var(--text-muted)]
-                    hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 hover:text-[var(--primary)]
-                    active:scale-95 active:bg-[var(--primary)]/10
-                    disabled:opacity-30 disabled:cursor-not-allowed disabled:active:bg-[var(--card)]
-                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                    transition-all cursor-pointer
-                  "
-                >
-                  <ChevronsRight className="w-4 h-4" aria-hidden="true" />
-                </button>
-              </div>
-            </nav>
-
-            {/* Keyboard hint */}
-            <p className="text-center mt-4 text-xs text-[var(--text-subtle)] font-soft">
-              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg)] border border-[var(--border)] text-[var(--text-muted)] font-mono text-[10px]">←</kbd>
-              {' '}
-              <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg)] border border-[var(--border)] text-[var(--text-muted)] font-mono text-[10px]">→</kbd>
-              {' '}to navigate pages
-            </p>
+              <span className="text-[var(--primary)]">{currentPage + 1}</span>
+              <span className="text-[var(--text-subtle)] font-soft px-0.5">/</span>
+              {totalPages}
+            </span>
           </div>
-        </div>
+
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages - 1 || isPending}
+            aria-label="Go to next page"
+            className="
+              flex items-center justify-center gap-1.5 h-11 px-4 sm:px-5
+              gel hover-bounce text-white font-display font-bold text-sm
+              disabled:opacity-35 disabled:cursor-not-allowed
+              focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
+              cursor-pointer touch-manipulation
+            "
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-5 h-5" aria-hidden="true" />
+          </button>
+        </nav>
       )}
     </div>
   );
