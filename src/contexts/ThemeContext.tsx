@@ -89,32 +89,32 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = [
   {
     id: "pom-pom",
     name: "Pom-Pom Classic",
-    description: "Warm reds and soft purples",
-    preview: { primary: "#E54B4B", secondary: "#9683B8", accent: "#F28B8B" },
+    description: "Candy pink, mint & butter",
+    preview: { primary: "#E25D88", secondary: "#3FAE95", accent: "#F4BE4C" },
   },
   {
     id: "crystal",
     name: "Crystal Tower",
-    description: "Allagan blues & gold",
-    preview: { primary: "#245F9E", secondary: "#2BA6BE", accent: "#D2A24A" },
+    description: "Candy sky-blue & turquoise",
+    preview: { primary: "#3A8ED2", secondary: "#34BFD6", accent: "#F4BE4C" },
   },
   {
     id: "chocobo",
     name: "Chocobo Gold",
-    description: "Golden plumage & warm orange",
-    preview: { primary: "#B5800F", secondary: "#D9682B", accent: "#F2C24C" },
+    description: "Sunny gold & warm amber",
+    preview: { primary: "#D3851A", secondary: "#EF9A3A", accent: "#F5CD5F" },
   },
   {
     id: "tonberry",
     name: "Tonberry Lantern",
-    description: "Murky green & lantern glow",
-    preview: { primary: "#3C7A4A", secondary: "#2C6657", accent: "#D89A3A" },
+    description: "Lantern teal & leafy green",
+    preview: { primary: "#1FA68C", secondary: "#4FBF78", accent: "#F0B94A" },
   },
   {
     id: "cactuar",
     name: "Cactuar Fresh",
-    description: "Desert greens & sunlit sand",
-    preview: { primary: "#33944E", secondary: "#7DA82F", accent: "#E6C257" },
+    description: "Fresh green & sunlit lime",
+    preview: { primary: "#2F9E4C", secondary: "#8CBF3A", accent: "#F0CF4A" },
   },
   {
     id: "moogle-cloud",
@@ -125,14 +125,14 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = [
   {
     id: "midnight",
     name: "Midnight Realm",
-    description: "Deep indigo & starlight",
-    preview: { primary: "#3F3AA8", secondary: "#6A3CB0", accent: "#8E9AF0" },
+    description: "Candy indigo & lavender",
+    preview: { primary: "#6A5CD4", secondary: "#9A6ED6", accent: "#A0AEF5" },
   },
   {
     id: "sunset",
     name: "Costa del Sol",
     description: "Sunset orange & coral",
-    preview: { primary: "#DE5F28", secondary: "#D84F6A", accent: "#F2B061" },
+    preview: { primary: "#E8682E", secondary: "#EC5F7C", accent: "#F6BD6C" },
   },
 ];
 

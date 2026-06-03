@@ -353,11 +353,11 @@
 
 /* Pom-Pom Classic (default - no additional class needed, uses :root values) */
 
-/* Crystal Tower - Cool blues and cyans */
+/* Crystal Tower - Candy sky-blue & turquoise */
 .theme-crystal {
-  --primary: #245f9e;
-  --secondary: #2ba6be;
-  --accent: #d2a24a;
+  --primary: #3a8ed2;
+  --secondary: #34bfd6;
+  --accent: #f4be4c;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -366,9 +366,9 @@
 }
 
 .dark.theme-crystal {
-  --primary: #5e9fda;
-  --secondary: #45c6dc;
-  --accent: #e6c46e;
+  --primary: #6cb2e6;
+  --secondary: #54d4e6;
+  --accent: #ffd57e;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -376,11 +376,11 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Chocobo Gold - Warm yellows and golds */
+/* Chocobo Gold - Sunny candy gold & warm amber */
 .theme-chocobo {
-  --primary: #b5800f;
-  --secondary: #d9682b;
-  --accent: #f2c24c;
+  --primary: #d3851a;
+  --secondary: #ef9a3a;
+  --accent: #f5cd5f;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -389,9 +389,9 @@
 }
 
 .dark.theme-chocobo {
-  --primary: #eeb534;
-  --secondary: #f0824a;
-  --accent: #f8d778;
+  --primary: #f0bb45;
+  --secondary: #f5a85a;
+  --accent: #fbe08a;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -399,11 +399,11 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Tonberry Lantern - Deep teals and greens */
+/* Tonberry Lantern - Candy teal & leafy green */
 .theme-tonberry {
-  --primary: #3c7a4a;
-  --secondary: #2c6657;
-  --accent: #d89a3a;
+  --primary: #1fa68c;
+  --secondary: #4fbf78;
+  --accent: #f0b94a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -412,9 +412,9 @@
 }
 
 .dark.theme-tonberry {
-  --primary: #5fae6e;
-  --secondary: #4da38a;
-  --accent: #ecb85a;
+  --primary: #52cca6;
+  --secondary: #7dd98e;
+  --accent: #f7cf6e;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -422,11 +422,11 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Cactuar Fresh - Bright greens and limes */
+/* Cactuar Fresh - Fresh candy green & sunlit lime */
 .theme-cactuar {
-  --primary: #33944e;
-  --secondary: #7da82f;
-  --accent: #e6c257;
+  --primary: #2f9e4c;
+  --secondary: #8cbf3a;
+  --accent: #f0cf4a;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -435,9 +435,9 @@
 }
 
 .dark.theme-cactuar {
-  --primary: #5fc97a;
-  --secondary: #a6cf50;
-  --accent: #f2da7e;
+  --primary: #66cf82;
+  --secondary: #b0d95e;
+  --accent: #f7dd72;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 13%, transparent);
@@ -445,7 +445,7 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Moogle Cloud - Soft pinks and lavenders */
+/* Moogle Cloud - Soft candy pink & lavender */
 .theme-moogle-cloud {
   --primary: #d9527f;
   --secondary: #8e72c2;
@@ -468,11 +468,11 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Midnight Realm - Deep indigos and purples */
+/* Midnight Realm - Candy indigo & lavender starlight */
 .theme-midnight {
-  --primary: #3f3aa8;
-  --secondary: #6a3cb0;
-  --accent: #8e9af0;
+  --primary: #6a5cd4;
+  --secondary: #9a6ed6;
+  --accent: #a0aef5;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
@@ -481,8 +481,8 @@
 }
 
 .dark.theme-midnight {
-  --primary: #8a8ff0;
-  --secondary: #ae8af0;
+  --primary: #9b90f0;
+  --secondary: #bd96ef;
   --accent: #b9c6ff;
   --shadow: color-mix(in srgb, var(--primary) 24%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 12%, transparent);
@@ -491,11 +491,11 @@
   --gradient-4: color-mix(in srgb, var(--secondary) 9%, transparent);
 }
 
-/* Costa del Sol - Warm oranges and corals */
+/* Costa del Sol - Candy sunset orange & coral */
 .theme-sunset {
-  --primary: #de5f28;
-  --secondary: #d84f6a;
-  --accent: #f2b061;
+  --primary: #e8682e;
+  --secondary: #ec5f7c;
+  --accent: #f6bd6c;
   --shadow: color-mix(in srgb, var(--primary) 18%, transparent);
   --gradient-1: color-mix(in srgb, var(--secondary) 14%, transparent);
   --gradient-2: color-mix(in srgb, var(--primary) 16%, transparent);
