@@ -14,6 +14,7 @@ import {
   type SeasonalEvent,
   type SeasonalEventId,
 } from "../constants/seasonalEvents";
+import { THEME_META, THEME_PALETTES } from "../styles/themePalettes";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -85,56 +86,20 @@ export interface ThemeDefinition {
   };
 }
 
-export const THEME_DEFINITIONS: ThemeDefinition[] = [
-  {
-    id: "pom-pom",
-    name: "Pom-Pom Classic",
-    description: "Candy pink, mint & butter",
-    preview: { primary: "#E25D88", secondary: "#3FAE95", accent: "#F4BE4C" },
-  },
-  {
-    id: "crystal",
-    name: "Crystal Tower",
-    description: "Candy sky-blue & turquoise",
-    preview: { primary: "#3A8ED2", secondary: "#34BFD6", accent: "#F4BE4C" },
-  },
-  {
-    id: "chocobo",
-    name: "Chocobo Gold",
-    description: "Sunny gold & warm amber",
-    preview: { primary: "#D3851A", secondary: "#EF9A3A", accent: "#F5CD5F" },
-  },
-  {
-    id: "tonberry",
-    name: "Tonberry Lantern",
-    description: "Lantern teal & leafy green",
-    preview: { primary: "#1FA68C", secondary: "#4FBF78", accent: "#F0B94A" },
-  },
-  {
-    id: "cactuar",
-    name: "Cactuar Fresh",
-    description: "Fresh green & sunlit lime",
-    preview: { primary: "#2F9E4C", secondary: "#8CBF3A", accent: "#F0CF4A" },
-  },
-  {
-    id: "moogle-cloud",
-    name: "Moogle Cloud",
-    description: "Soft pom-pink & lavender",
-    preview: { primary: "#D9527F", secondary: "#8E72C2", accent: "#F2A6C6" },
-  },
-  {
-    id: "midnight",
-    name: "Midnight Realm",
-    description: "Candy indigo & lavender",
-    preview: { primary: "#6A5CD4", secondary: "#9A6ED6", accent: "#A0AEF5" },
-  },
-  {
-    id: "sunset",
-    name: "Costa del Sol",
-    description: "Sunset orange & coral",
-    preview: { primary: "#E8682E", secondary: "#EC5F7C", accent: "#F6BD6C" },
-  },
-];
+/**
+ * The user-selectable themes, derived from the single palette source
+ * (src/styles/themePalettes.ts) so the picker swatches always match the
+ * generated CSS. Preview colours are each theme's light-mode identity colours.
+ */
+export const THEME_DEFINITIONS: ThemeDefinition[] = THEME_META.map((meta) => {
+  const { primary, secondary, accent } = THEME_PALETTES[meta.id].light;
+  return {
+    id: meta.id as ColorTheme,
+    name: meta.name,
+    description: meta.description,
+    preview: { primary, secondary, accent },
+  };
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants

@@ -3,10 +3,28 @@ import path from 'node:path'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { generateThemeCss } from './src/styles/themeCss'
+
+// Serves the generated theme/event CSS variable blocks (built from the single
+// source in src/styles/themePalettes.ts) as `virtual:theme.css`. Vite watches the
+// config's imports, so editing the palettes restarts dev and regenerates.
+function themeCssPlugin() {
+  const virtualId = 'virtual:theme.css'
+  const resolvedId = '\0' + virtualId
+  return {
+    name: 'theme-css',
+    resolveId(id: string) {
+      if (id === virtualId) return resolvedId
+    },
+    load(id: string) {
+      if (id === resolvedId) return generateThemeCss()
+    },
+  }
+}
 
 // Full config options: https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), themeCssPlugin()],
   resolve: {
     alias: {
       'lucide-react': path.resolve(__dirname, 'src/icons/cozyIcons.tsx'),
