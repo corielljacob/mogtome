@@ -29,13 +29,41 @@ export interface ModePalette {
 
 /** Display metadata for the user-selectable themes (order = Settings order). */
 export const THEME_META: { id: string; name: string; description: string }[] = [
-  { id: "pom-pom", name: "Pom-Pom Classic", description: "Candy pink, mint & butter" },
-  { id: "crystal", name: "Crystal Tower", description: "Candy sky-blue & turquoise" },
-  { id: "chocobo", name: "Chocobo Gold", description: "Sunny gold & warm amber" },
-  { id: "tonberry", name: "Tonberry Lantern", description: "Lantern teal & leafy green" },
-  { id: "cactuar", name: "Cactuar Fresh", description: "Fresh green & sunlit lime" },
-  { id: "moogle-cloud", name: "Moogle Cloud", description: "Soft pom-pink & lavender" },
-  { id: "midnight", name: "Midnight Realm", description: "Candy indigo & lavender" },
+  {
+    id: "pom-pom",
+    name: "Pom-Pom Classic",
+    description: "Candy pink, mint & butter",
+  },
+  {
+    id: "crystal",
+    name: "Crystal Tower",
+    description: "Candy sky-blue & turquoise",
+  },
+  {
+    id: "chocobo",
+    name: "Chocobo Gold",
+    description: "Sunny gold & warm amber",
+  },
+  {
+    id: "tonberry",
+    name: "Tonberry Lantern",
+    description: "Lantern teal & leafy green",
+  },
+  {
+    id: "cactuar",
+    name: "Cactuar Fresh",
+    description: "Fresh green & sunlit lime",
+  },
+  {
+    id: "moogle-cloud",
+    name: "Moogle Cloud",
+    description: "Soft pom-pink & lavender",
+  },
+  {
+    id: "midnight",
+    name: "Midnight Realm",
+    description: "Candy indigo & lavender",
+  },
   { id: "sunset", name: "Costa del Sol", description: "Sunset orange & coral" },
 ];
 
@@ -86,24 +114,74 @@ export const EVENT_PALETTES: Record<string, ModePalette> = {
     dark: { primary: "#f0756a", secondary: "#f3c356", accent: "#f8dd8a" },
   },
   valentiones: {
-    light: { primary: "#d6325c", secondary: "#d14f8c", accent: "#f08aa0", bg: "#fff5f7" },
-    dark: { primary: "#f07090", secondary: "#ec7fb0", accent: "#f8b0c4", bg: "#1c1520" },
+    light: {
+      primary: "#d6325c",
+      secondary: "#d14f8c",
+      accent: "#f08aa0",
+      bg: "#fff5f7",
+    },
+    dark: {
+      primary: "#f07090",
+      secondary: "#ec7fb0",
+      accent: "#f8b0c4",
+      bg: "#1c1520",
+    },
   },
   "little-ladies": {
-    light: { primary: "#e06699", secondary: "#ee9cc0", accent: "#f7d9e6", bg: "#fdf2f8" },
-    dark: { primary: "#f08bb4", secondary: "#f4adcb", accent: "#fbd7e6", bg: "#1a1520" },
+    light: {
+      primary: "#e06699",
+      secondary: "#ee9cc0",
+      accent: "#f7d9e6",
+      bg: "#fdf2f8",
+    },
+    dark: {
+      primary: "#f08bb4",
+      secondary: "#f4adcb",
+      accent: "#fbd7e6",
+      bg: "#1a1520",
+    },
   },
   "hatching-tide": {
-    light: { primary: "#9b7be0", secondary: "#52c99a", accent: "#f2c94c", bg: "#fefdf5" },
-    dark: { primary: "#b49aec", secondary: "#7ddcb4", accent: "#f7de7e", bg: "#181820" },
+    light: {
+      primary: "#9b7be0",
+      secondary: "#52c99a",
+      accent: "#f2c94c",
+      bg: "#fefdf5",
+    },
+    dark: {
+      primary: "#b49aec",
+      secondary: "#7ddcb4",
+      accent: "#f7de7e",
+      bg: "#181820",
+    },
   },
   "make-it-rain": {
-    light: { primary: "#d18e1e", secondary: "#9b6fd6", accent: "#f5cf52", bg: "#fffbeb" },
-    dark: { primary: "#f0c63e", secondary: "#b491ec", accent: "#f8de7a", bg: "#1a1810" },
+    light: {
+      primary: "#d18e1e",
+      secondary: "#9b6fd6",
+      accent: "#f5cf52",
+      bg: "#fffbeb",
+    },
+    dark: {
+      primary: "#f0c63e",
+      secondary: "#b491ec",
+      accent: "#f8de7a",
+      bg: "#1a1810",
+    },
   },
   "moonfire-faire": {
-    light: { primary: "#e8682e", secondary: "#2fa3d4", accent: "#f5d27a", bg: "#fffaf5" },
-    dark: { primary: "#f5874a", secondary: "#4fbce6", accent: "#f8de96", bg: "#1a1614" },
+    light: {
+      primary: "#e8682e",
+      secondary: "#2fa3d4",
+      accent: "#f5d27a",
+      bg: "#fffaf5",
+    },
+    dark: {
+      primary: "#f5874a",
+      secondary: "#4fbce6",
+      accent: "#f8de96",
+      bg: "#1a1614",
+    },
   },
   "the-rising": {
     light: { primary: "#e0503f", secondary: "#3f7fd6", accent: "#f0b94a" },

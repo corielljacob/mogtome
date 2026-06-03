@@ -17,11 +17,21 @@ function paletteBlock(selector: string, p: Palette, isDark: boolean): string {
   lines.push(`  --primary: ${p.primary};`);
   lines.push(`  --secondary: ${p.secondary};`);
   lines.push(`  --accent: ${p.accent};`);
-  lines.push(`  --shadow: color-mix(in srgb, var(--primary) ${shadowPct}%, transparent);`);
-  lines.push(`  --gradient-1: color-mix(in srgb, var(--secondary) ${g1}%, transparent);`);
-  lines.push(`  --gradient-2: color-mix(in srgb, var(--primary) ${g2}%, transparent);`);
-  lines.push(`  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);`);
-  lines.push(`  --gradient-4: color-mix(in srgb, var(--secondary) ${g4}%, transparent);`);
+  lines.push(
+    `  --shadow: color-mix(in srgb, var(--primary) ${shadowPct}%, transparent);`,
+  );
+  lines.push(
+    `  --gradient-1: color-mix(in srgb, var(--secondary) ${g1}%, transparent);`,
+  );
+  lines.push(
+    `  --gradient-2: color-mix(in srgb, var(--primary) ${g2}%, transparent);`,
+  );
+  lines.push(
+    `  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);`,
+  );
+  lines.push(
+    `  --gradient-4: color-mix(in srgb, var(--secondary) ${g4}%, transparent);`,
+  );
 
   return `${selector} {\n${lines.join("\n")}\n}`;
 }
