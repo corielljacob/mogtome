@@ -109,7 +109,7 @@ export const MobileSheet = memo(function MobileSheet({
             aria-label={title}
           >
             <div className={`
-              bg-[var(--card)] rounded-t-xl border-t border-x border-[var(--border)] 
+              bg-[var(--card)] rounded-t-3xl border-t border-x border-[var(--border)]
               flex flex-col
               ${sizeClasses[size]}
             `}>
@@ -131,7 +131,7 @@ export const MobileSheet = memo(function MobileSheet({
                   {showCloseButton && (
                     <motion.button
                       onClick={onClose}
-                      className="p-2.5 -mr-2 rounded-xl text-[var(--text-muted)] active:bg-[var(--bg)] active:text-[var(--text)] cursor-pointer touch-manipulation"
+                      className="p-2.5 -mr-2 rounded-full text-[var(--text-muted)] active:bg-[var(--bg)] active:text-[var(--text)] cursor-pointer touch-manipulation"
                       whileTap={{ scale: 0.9 }}
                       aria-label="Close"
                     >

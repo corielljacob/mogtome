@@ -31,13 +31,13 @@ export function Card({
     lg: 'p-6 md:p-8',
   };
 
-  const hoverClasses = hover 
-    ? 'hover-lift' 
+  const hoverClasses = hover
+    ? 'hover-bounce'
     : '';
 
   return (
     <div className={`
-      relative isolate rounded-2xl
+      relative isolate
       ${variantClasses[variant]}
       ${paddingClasses[padding]}
       ${hoverClasses}

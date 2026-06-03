@@ -1,4 +1,4 @@
-import { type ReactNode, type ButtonHTMLAttributes } from 'react';
+import { type ReactNode, type ButtonHTMLAttributes, type CSSProperties } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
@@ -22,12 +22,13 @@ export function Button({
   fun = true,
   className = '',
   disabled,
+  style,
   ...props
 }: ButtonProps) {
   const baseClasses = `
     inline-flex items-center justify-center gap-2
     font-soft font-semibold tracking-[0.01em]
-    rounded-2xl
+    rounded-full
     transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]
     focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none
@@ -55,14 +56,14 @@ export function Button({
           bg-[var(--primary)] text-white
           border-[color:color-mix(in_srgb,var(--primary)_75%,black)]
           shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
-          hover:shadow-[0_4px_14px_-3px_color-mix(in_srgb,var(--primary)_50%,transparent)]
+          hover:shadow-[0_6px_20px_-4px_color-mix(in_srgb,var(--primary)_55%,transparent)]
           focus-visible:ring-[var(--primary)]
         `,
         secondary: `
           bg-[var(--secondary)] text-white
           border-[color:color-mix(in_srgb,var(--secondary)_70%,black)]
           shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--secondary)_35%,transparent)]
-          hover:shadow-[0_4px_14px_-3px_color-mix(in_srgb,var(--secondary)_45%,transparent)]
+          hover:shadow-[0_6px_20px_-4px_color-mix(in_srgb,var(--secondary)_50%,transparent)]
           focus-visible:ring-[var(--secondary)]
         `,
         ghost: `
@@ -84,9 +85,23 @@ export function Button({
         `,
       };
 
+  // Glossy "gel/candy" treatment for solid variants; outline/ghost stay flat.
+  const GEL_COLORS: Partial<Record<NonNullable<ButtonProps['variant']>, string>> = {
+    primary: 'var(--primary)',
+    secondary: 'var(--secondary)',
+    danger: '#e5484d',
+    success: '#46a758',
+  };
+  const gelColor = !outline ? GEL_COLORS[variant] : undefined;
+  const variantClass = gelColor ? 'gel focus-visible:ring-[color:var(--gel-color)]' : variantClasses[variant];
+  const mergedStyle = gelColor
+    ? ({ '--gel-color': gelColor, ...style } as CSSProperties)
+    : style;
+
   return (
     <button
-      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`${baseClasses} ${sizeClasses[size]} ${variantClass} ${className}`}
+      style={mergedStyle}
       disabled={disabled || isLoading}
       {...props}
     >
@@ -144,7 +159,7 @@ export function IconButton({
       aria-label={ariaLabel}
       className={`
         inline-flex items-center justify-center
-        rounded-2xl
+        rounded-full
         transition-[transform,colors] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]
         focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2
         cursor-pointer

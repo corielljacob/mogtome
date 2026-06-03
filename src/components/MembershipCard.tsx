@@ -52,9 +52,9 @@ export function MembershipCard({
         onMouseLeave={handleMouseLeave}
         className={`relative w-full ${sizeClasses} mx-auto aspect-[1.6/1] rounded-2xl overflow-hidden
           border-2 border-[var(--border)]
-          shadow-[0_4px_16px_-4px_var(--shadow)]
+          shadow-[var(--panel-shadow)]
           transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-          hover:-translate-y-1 hover:shadow-[0_8px_28px_-6px_var(--shadow)]`}
+          hover:-translate-y-1 hover:shadow-[var(--panel-shadow-strong)]`}
         style={{
           background: `linear-gradient(135deg, 
             color-mix(in srgb, var(--primary) 16%, var(--card)) 0%,

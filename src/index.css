@@ -7,6 +7,22 @@
 /* Custom breakpoint for extra-small screens (pagination mobile indicator) */
 @custom-variant xs (@media (min-width: 480px));
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * COZY • CUTE • COMFORTING — design tokens
+ * Rounder than Tailwind's defaults so every `rounded-*` reads soft and pillowy,
+ * one consistent radius scale across cards, inputs, nav and badges.
+ * Full house style: docs/DESIGN.md
+ * ───────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --radius-sm: 0.375rem;  /* 6px  — hairline chips */
+  --radius-md: 0.625rem;  /* 10px — tags, inline controls */
+  --radius-lg: 0.875rem;  /* 14px — small interactive bits, menu items */
+  --radius-xl: 1.125rem;  /* 18px — inputs, dropdowns */
+  --radius-2xl: 1.5rem;   /* 24px — the default card radius (matches .surface) */
+  --radius-3xl: 2rem;     /* 32px — hero / large surfaces */
+  --radius-4xl: 2.5rem;   /* 40px — extra-large flourishes */
+}
+
 /* Base Styles */
 @layer base {
   html {
@@ -36,10 +52,10 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.15;
+    letter-spacing: 0;
+    line-height: 1.18;
     font-optical-sizing: auto;
     color: var(--text);
   }
@@ -241,21 +257,28 @@
 /* Design System Variables — Enchanted Garden Palette */
 :root {
   color-scheme: light;
-  --bg: #faf6f2;
+  /* Cozy type system — storybook rounded display, clean body, handwritten accent */
+  --font-display: 'Zen Maru Gothic', 'Fredoka', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+  /* Pop-kawaii "Pom-Pom" palette (default). Candy-bright pastels on a milk-pink
+     cream; --primary stays saturated enough for white-on-primary buttons. */
+  --bg: #fff6f4;
   --card: #ffffff;
   --text: #1f1a2e;
   --text-muted: #635b70;
   --text-subtle: #9890a3;
-  --primary: #c75d73;
-  --secondary: #5a8a7f;
-  --accent: #d9a04e;
-  --success: #5a9e6f;
-  --warning: #d4943a;
+  --primary: #e25d88;
+  --secondary: #3fae95;
+  --accent: #f4be4c;
+  --success: #4fb877;
+  --warning: #eaa53a;
   --border: rgba(31, 26, 46, 0.08);
   --shadow: rgba(31, 26, 46, 0.06);
   --glass: #ffffff;
-  --panel-shadow: 0 1px 3px rgba(31, 26, 46, 0.04), 0 4px 14px -4px rgba(31, 26, 46, 0.06);
-  --panel-shadow-strong: 0 2px 6px rgba(31, 26, 46, 0.06), 0 12px 28px -6px rgba(31, 26, 46, 0.10);
+  /* Soft "die-cut sticker" float — surfaces lift gently off the page */
+  --panel-shadow: 0 2px 4px -1px rgba(31, 26, 46, 0.05), 0 10px 22px -8px rgba(31, 26, 46, 0.11);
+  --panel-shadow-strong: 0 4px 8px -2px rgba(31, 26, 46, 0.07), 0 18px 34px -10px rgba(31, 26, 46, 0.16);
   --panel-inset: none;
   /* Gradient colors for background mesh */
   --gradient-1: rgba(90, 138, 127, 0.08);
@@ -269,21 +292,22 @@
 
 .dark {
   color-scheme: dark;
-  --bg: #12101e;
-  --card: #1c1a2b;
+  --bg: #16131f;
+  --card: #211e30;
   --text: #eee9f3;
   --text-muted: #b3adc2;
   --text-subtle: #7b7590;
-  --primary: #e8899a;
-  --secondary: #7ec4b8;
-  --accent: #f0c57c;
+  --primary: #f48bae;
+  --secondary: #66cdb4;
+  --accent: #ffcf79;
   --success: #7fc493;
   --warning: #f0b840;
   --border: rgba(238, 233, 243, 0.07);
   --shadow: rgba(0, 0, 0, 0.40);
   --glass: #1c1a2b;
-  --panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.16), 0 4px 14px -4px rgba(0, 0, 0, 0.22);
-  --panel-shadow-strong: 0 2px 6px rgba(0, 0, 0, 0.20), 0 12px 28px -6px rgba(0, 0, 0, 0.30);
+  /* Soft "die-cut sticker" float (dark) */
+  --panel-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.24), 0 10px 22px -8px rgba(0, 0, 0, 0.36);
+  --panel-shadow-strong: 0 4px 8px -2px rgba(0, 0, 0, 0.30), 0 18px 34px -10px rgba(0, 0, 0, 0.46);
   --panel-inset: none;
   /* Gradient colors for background mesh */
   --gradient-1: rgba(126, 196, 184, 0.06);
@@ -1089,17 +1113,20 @@
 }
 
 /* Typography */
-.font-inter { font-family: 'Manrope', system-ui, sans-serif; }
-.font-display { font-family: 'Fraunces', Georgia, serif; }
-.font-number { font-family: 'Fraunces', Georgia, serif; font-variant-numeric: lining-nums tabular-nums; }
-.font-accent { font-family: 'Caveat', cursive; }
-.font-soft { font-family: 'Manrope', system-ui, sans-serif; }
-.font-title { font-family: 'Fraunces', Georgia, serif; }
+.font-inter { font-family: var(--font-body); }
+.font-display { font-family: var(--font-display); }
+.font-number { font-family: var(--font-display); font-variant-numeric: lining-nums tabular-nums; }
+.font-accent { font-family: var(--font-script); }
+.font-soft { font-family: var(--font-body); }
+.font-title { font-family: var(--font-display); }
+/* Latin rounded display — for the giant home title; Latin metrics keep hover
+   hitboxes aligned (Zen Maru's CJK ascent pushed them too high). */
+.font-title-latin { font-family: 'Fredoka', 'Manrope', system-ui, sans-serif; }
 
 .editorial-title {
-  font-family: 'Fraunces', Georgia, serif;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: var(--font-display);
+  letter-spacing: -0.005em;
+  line-height: 1.12;
   text-wrap: balance;
 }
 
@@ -1144,32 +1171,108 @@
   background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 20%, transparent), color-mix(in srgb, var(--primary) 8%, transparent));
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * KAWAII SURFACE — matte "puffy sticker" card (pop kawaii).
+ * Shared base for cards, nav, dropdowns and pills. Solid, soft, chunky-rounded,
+ * with a candy outline + a little drop. No gloss, no frost. See docs/DESIGN.md.
+ * ───────────────────────────────────────────────────────────────────────────── */
 .surface {
   position: relative;
   isolation: isolate;
+  border-radius: var(--radius-2xl);
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  box-shadow: var(--panel-shadow);
+  border: 2px solid color-mix(in srgb, var(--primary) 16%, var(--card));
+  box-shadow:
+    0 2px 0 0 color-mix(in srgb, var(--primary) 10%, transparent),
+    0 8px 18px -8px var(--shadow),
+    0 2px 6px -3px var(--shadow);
+}
+.surface::before,
+.surface::after { content: none; display: none; }
+
+.dark .surface {
+  border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+  box-shadow:
+    0 2px 0 0 color-mix(in srgb, var(--primary) 16%, transparent),
+    0 10px 22px -10px var(--shadow);
 }
 
-/* Subtle warm inner glow at top — gives surfaces a lit-from-above feel */
-.surface::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 3%, transparent), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
+/* Matte "candy" button — solid pastel, pill, chunky offset lip, squishy press.
+   Set --gel-color to a theme color. (No gloss — pop kawaii is matte.) */
+.gel {
+  position: relative;
+  color: #fff;
+  border-radius: 9999px;
+  background: var(--gel-color, var(--primary));
+  border: 2px solid color-mix(in srgb, var(--gel-color, var(--primary)) 64%, black);
+  box-shadow:
+    0 3px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
+    0 7px 14px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
+}
+.gel:hover:not(:disabled) {
+  filter: brightness(1.04) saturate(1.05);
+  box-shadow:
+    0 3px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
+    0 9px 18px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 52%, transparent);
+}
+.gel:active:not(:disabled) {
+  /* sink the candy onto a shorter lip */
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black),
+    0 3px 8px -5px color-mix(in srgb, var(--gel-color, var(--primary)) 45%, transparent);
 }
 
-.dark .surface::before {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 4%, transparent), transparent 30%);
+/* High-contrast / dyslexia modes: flatten decoration to solid for legibility */
+:root.high-contrast .surface {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
+}
+:root.high-contrast .gel {
+  background: var(--gel-color, var(--primary));
+  border-color: color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black);
+  box-shadow: none;
+  filter: none;
 }
 
-.surface::after {
-  display: none;
+/* Sticker-book polka dots — soft two-tone background pattern (theme-tinted) */
+.kawaii-dots {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--primary) 13%, transparent) 2.5px, transparent 3px),
+    radial-gradient(circle, color-mix(in srgb, var(--secondary) 11%, transparent) 2.5px, transparent 3px);
+  background-size: 38px 38px, 38px 38px;
+  background-position: 0 0, 19px 19px;
+}
+
+/* Dashed "cut-here" sticker border */
+.kawaii-dashed {
+  border: 2px dashed color-mix(in srgb, var(--primary) 38%, transparent);
+  border-radius: var(--radius-2xl);
+}
+
+:root.high-contrast .kawaii-dots { background-image: none; }
+
+/* Brighter polka dots on dark backgrounds (incl. event themes) */
+.dark .kawaii-dots {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--primary) 24%, transparent) 2.5px, transparent 3px),
+    radial-gradient(circle, color-mix(in srgb, var(--secondary) 20%, transparent) 2.5px, transparent 3px);
+}
+
+/* Sticker text — chunky cream outline + soft drop, for big display headings.
+   Color the fill with a normal text color class; the outline sits behind it. */
+.sticker-text {
+  -webkit-text-stroke: 0.05em var(--card);
+  paint-order: stroke fill;
+  /* text-shadow instead of filter: drop-shadow — cheaper, no extra paint layer */
+  text-shadow: 2px 4px 1px color-mix(in srgb, var(--text) 16%, transparent);
+}
+.dark .sticker-text {
+  -webkit-text-stroke: 0.05em rgba(255, 255, 255, 0.9);
+}
+:root.high-contrast .sticker-text {
+  -webkit-text-stroke: 0;
+  filter: none;
 }
 
 .surface-flat {
@@ -1209,6 +1312,115 @@
   background: var(--card);
   border: 1.5px solid var(--border);
   box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * COZY • CUTE • COMFORTING — whimsy kit
+ * Springy hovers, sticker badges, gentle bounce. Motion is neutralized under
+ * prefers-reduced-motion (guard at the end of this block). See docs/DESIGN.md.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Springy lift for interactive cards & nav — bouncier cousin of .hover-lift */
+.hover-bounce {
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 280ms ease;
+}
+.hover-bounce:hover {
+  transform: translateY(-3px) scale(1.012) rotate(-0.4deg);
+  box-shadow: var(--panel-shadow-strong);
+}
+.hover-bounce:active {
+  transform: translateY(-1px) scale(0.99);
+  transition-duration: 120ms;
+}
+
+/* Die-cut sticker badge — filled, soft shadow, a card-colored outline ring and a
+   playful tilt. Set background/color inline (e.g. a rank or event-type color). */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 2px var(--card), 0 2px 6px -1px var(--shadow);
+  transform: rotate(-2deg);
+}
+.sticker-r { transform: rotate(2deg); } /* alternate tilt for variety */
+
+/* Gentle attention wobble */
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+.animate-wobble { animation: wobble 0.5s ease-in-out; }
+.hover-wobble:hover { animation: wobble 0.5s ease-in-out; }
+
+/* Pop-in entrance with a little overshoot */
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.8); }
+  70% { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-pop-in { animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Squishy press for buttons */
+@keyframes boop {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.animate-boop { animation: boop 0.28s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-bounce,
+  .hover-bounce:hover,
+  .hover-bounce:active {
+    transform: none;
+    transition: box-shadow 200ms ease;
+  }
+  .animate-wobble,
+  .hover-wobble:hover,
+  .animate-pop-in,
+  .animate-boop {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * PLAYFUL GAME-MENU TOUCHES — soap bubbles + warm "menu-select" glow
+ * The quirky-fun charm of early-2000s game UIs (PlayOnline), warm & theme-tinted.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Soap-bubble look: translucent with an offset highlight + thin rim.
+   Tint via --bubble-tint (defaults to the theme primary). */
+.bubble {
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 32% 28%,
+      rgba(255, 255, 255, 0.92),
+      rgba(255, 255, 255, 0.12) 42%,
+      color-mix(in srgb, var(--bubble-tint, var(--primary)) 30%, transparent) 78%,
+      color-mix(in srgb, var(--bubble-tint, var(--primary)) 10%, transparent) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 0 6px -1px rgba(255, 255, 255, 0.55),
+    0 2px 8px -3px color-mix(in srgb, var(--bubble-tint, var(--primary)) 40%, transparent);
+}
+
+/* Slow drift upward with a gentle sway — for ambient background bubbles */
+@keyframes bubble-rise {
+  0%   { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; }
+  12%  { opacity: var(--bubble-opacity, 0.45); }
+  50%  { transform: translateY(-50vh) translateX(12px) scale(1); }
+  88%  { opacity: var(--bubble-opacity, 0.45); }
+  100% { transform: translateY(-100vh) translateX(-8px) scale(1.05); opacity: 0; }
+}
+.animate-bubble-rise { animation: bubble-rise linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bubble-rise { animation: none; opacity: 0; }
+  /* arbitrary animate-[wiggle…] / animate-[float-gentle…] on mascots/decorations */
+  [class*="wiggle"],
+  [class*="float-gentle"] { animation: none; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1482,7 +1694,7 @@
   .glass-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 1.25rem;
+    border-radius: var(--radius-2xl);
     box-shadow: var(--panel-shadow);
   }
   

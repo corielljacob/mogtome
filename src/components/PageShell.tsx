@@ -2,11 +2,14 @@ import type { ReactNode } from 'react';
 import { Heart, RefreshCw, Sparkles, X } from 'lucide-react';
 import { StoryDivider } from './StoryDivider';
 import { FloatingSparkles } from './FloatingSparkles';
+import { FloatingBubbles } from './FloatingBubbles';
 import { SimpleFloatingMoogles } from './FloatingMoogles';
 import { ContentCard } from './ContentCard';
+import { KawaiiSparkle, KawaiiBow, KawaiiStar } from './kawaiiMotifs';
 
 import pushingMoogles from '../assets/moogles/moogles pushing.webp';
 import deadMoogle from '../assets/moogles/dead moogle.webp';
+import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PageLayout - Consistent page wrapper with background decorations
@@ -33,9 +36,13 @@ export function PageLayout({
       {/* Background gradient overlay */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_10%,transparent)_0%,_transparent_32%),linear-gradient(180deg,_color-mix(in_srgb,var(--card)_12%,transparent)_0%,_transparent_36%)]" />
       
+      {/* Sticker-book polka-dot backdrop */}
+      <div className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-70" aria-hidden="true" />
+
       {/* Floating background decorations */}
       {moogles && <SimpleFloatingMoogles primarySrc={moogles.primary} secondarySrc={moogles.secondary} />}
-      <FloatingSparkles minimal />
+      <FloatingSparkles />
+      <FloatingBubbles />
 
       <div className={`relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10 ${className}`}>
         <div className={`${maxWidth} mx-auto`}>
@@ -74,9 +81,24 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <header 
-      className="text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]"
+    <header
+      className="relative text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]"
     >
+      {/* Corner-peeking moogle (desktop) */}
+      <img
+        src={lilGuyMoogle}
+        alt=""
+        aria-hidden="true"
+        className="hidden lg:block absolute -top-4 right-0 w-16 object-contain rotate-[8deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none"
+      />
+
+      {/* Kawaii bow + sparkles accent */}
+      <div className="flex items-center justify-center gap-1.5 mb-2" aria-hidden="true">
+        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+        <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+      </div>
+
       {opener && (
         <p
           className="eyebrow-script text-xl sm:text-2xl md:text-3xl text-[var(--secondary)]/90 mb-3 sm:mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]"
@@ -161,6 +183,7 @@ export function SectionLabel({ label, badge, icon }: SectionLabelProps) {
       </h2>
       {badge}
       <div className="divider flex-1" aria-hidden="true" />
+      <KawaiiStar className="w-4 h-4 shrink-0 text-[var(--accent)]" aria-hidden="true" />
     </div>
   );
 }
@@ -179,13 +202,16 @@ interface LoadingStateProps {
 export function LoadingState({ message, imageSrc }: LoadingStateProps) {
   return (
     <ContentCard className="text-center py-16" aria-busy={true} aria-live="polite">
-      <img 
-        src={imageSrc || pushingMoogles} 
-        alt="" 
-        className="w-40 md:w-52 mx-auto mb-4 animate-[wiggle_0.7s_ease-in-out_infinite]"
+      <img
+        src={imageSrc || pushingMoogles}
+        alt=""
+        className="w-40 md:w-52 mx-auto mb-2 animate-[wiggle_0.7s_ease-in-out_infinite]"
         aria-hidden="true"
       />
-      <p 
+      <p className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-1 select-none" aria-hidden="true">
+        (๑•̀ㅂ•́)و
+      </p>
+      <p
         className="font-accent text-2xl text-[var(--text-muted)] animate-pulse"
         role="status"
       >
@@ -209,12 +235,15 @@ interface ErrorStateProps {
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <ContentCard className="text-center py-12 md:py-16" role="alert">
-      <img 
-        src={deadMoogle} 
-        alt="" 
-        className="w-40 h-40 mx-auto mb-5 object-contain"
+      <img
+        src={deadMoogle}
+        alt=""
+        className="w-40 h-40 mx-auto mb-2 object-contain animate-[float-gentle_3.5s_ease-in-out_infinite]"
         aria-hidden="true"
       />
+      <p className="font-display text-2xl sm:text-3xl text-[var(--primary)] mb-2 select-none" aria-hidden="true">
+        (╥﹏╥)
+      </p>
       <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">
         Something went wrong
       </p>
@@ -264,12 +293,15 @@ interface EmptyStateProps {
 export function EmptyState({ title, message, imageSrc, onClear, clearLabel = 'Clear filters' }: EmptyStateProps) {
   return (
     <ContentCard className="text-center py-12 md:py-16" aria-live="polite">
-      <img 
-        src={imageSrc} 
-        alt="" 
-        className="w-40 h-40 mx-auto mb-5 object-contain"
+      <img
+        src={imageSrc}
+        alt=""
+        className="w-40 h-40 mx-auto mb-2 object-contain animate-[float-gentle_3.5s_ease-in-out_infinite]"
         aria-hidden="true"
       />
+      <p className="font-display text-2xl sm:text-3xl text-[var(--secondary)] mb-2 select-none" aria-hidden="true">
+        (・_・;)
+      </p>
       <p className="text-xl font-display font-semibold mb-2 text-[var(--text)]">{title}</p>
       <p className="font-accent text-2xl text-[var(--text-muted)] mb-5">
         {message}

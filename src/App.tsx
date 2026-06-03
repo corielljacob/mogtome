@@ -3,7 +3,7 @@ import type { ReactNode, ErrorInfo } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
-import { Navbar, Sidebar, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUserDataDialog } from './components';
+import { Navbar, ScrapbookNav, ProtectedRoute, KnightRoute, WelcomeDialog, MissingUserDataDialog } from './components';
 import { AuthProvider } from './contexts/AuthContext';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -87,11 +87,11 @@ function AppContent() {
           Skip to main content
         </a>
         
-        {/* Desktop sidebar navigation */}
-        <Sidebar />
-        
-        {/* Main content area */}
-        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto">
+        {/* Scrapbook index-tab navigation (left edge desktop / bottom strip mobile) */}
+        <ScrapbookNav />
+
+        {/* Main content area — pad left on desktop to clear the edge tabs */}
+        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto md:pl-16">
           {/* Mobile top bar + desktop user controls */}
           <Navbar />
           

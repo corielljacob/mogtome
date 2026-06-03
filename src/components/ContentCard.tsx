@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import { IS_MOBILE } from '../utils';
 
 /**
  * Styled content wrapper card.
- * Used for main content sections with consistent styling.
  *
- * PERFORMANCE: Colored shadows are only shown on desktop to avoid
- * expensive GPU compositing that causes jank on lower-powered devices.
+ * The single cozy card base: `.surface` provides the card background, hairline
+ * border, 24px radius, soft `--panel-shadow` and a warm top glow. Do not layer
+ * extra rounded-/border-/shadow- utilities on top (see docs/DESIGN.md).
  */
 
 export interface ContentCardProps {
@@ -30,9 +29,8 @@ export function ContentCard({
   return (
     <div 
       className={`
-        relative isolate rounded-2xl surface shadow-sm
-        border border-[var(--border)]
-        p-4 sm:p-6 md:p-8 
+        relative isolate surface
+        p-4 sm:p-6 md:p-8
         ${className}
       `}
       role={role}

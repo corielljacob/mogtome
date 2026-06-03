@@ -41,12 +41,8 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
   const hoverX = ((index * 11 + 2) % 7) - 3; // -3px to 3px
   const tapeColor = WASHI_TAPE_COLORS[index % WASHI_TAPE_COLORS.length];
 
-  const currentTransform = isHovered 
-    ? `translate(${hoverX}px, ${hoverY}px) rotate(${hoverTilt}deg)`
-    : `translate(0px, 0px) rotate(${baseTilt}deg)`;
-
-  // Group hover utilities handles the transform beautifully without needing `onMouseEnter` logic 
-  // or interfering with the fade slide-in animation.
+  // Group-hover float is applied on the inner wrapper below (kept off the
+  // animated parent so the entrance animation isn't stomped).
   return (
     <article
       className="group relative w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem] touch-manipulation cursor-pointer
@@ -63,7 +59,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
         This prevents `fadeSlideIn` animation transforms from stomping over our hover translations!
       */}
       <div 
-        className="w-full transition-[transform,box-shadow,z-index] duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-0 group-hover:z-20 group-hover:shadow-[0_16px_32px_-8px_var(--shadow)]"
+        className="w-full transition-[transform,box-shadow,z-index] duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-0 group-hover:z-20 group-hover:shadow-[var(--panel-shadow-strong)]"
         style={{
            transform: `translate(0px, 0px) rotate(${baseTilt}deg)`,
            ...(isHovered ? { transform: `translate(${hoverX}px, ${hoverY}px) rotate(${hoverTilt}deg)` } : {})
@@ -74,12 +70,8 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
         {/* Card surface — warm paper feel with washi tape */}
         <div
           className="
-            relative w-full
-            bg-[var(--card)]
-            border border-[var(--border)]
+            surface relative w-full
             p-2.5 sm:p-3 pb-6 sm:pb-8
-            rounded-sm
-            shadow-md sm:shadow-lg
             overflow-visible
           "
         >
@@ -90,7 +82,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
           target="_blank"
           rel="noopener noreferrer"
           className="
-            block relative overflow-hidden aspect-square rounded-sm shadow-inner
+            block relative overflow-hidden aspect-square rounded-lg shadow-inner
             bg-[var(--bg)]
             focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--primary)]
             focus:outline-none
@@ -113,7 +105,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
             decoding="async"
             onLoad={handleImageLoad}
             className={`
-              block w-full h-full object-cover rounded-xl
+              block w-full h-full object-cover rounded-lg
               transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
               group-hover:scale-[1.06]
               ${imageLoaded ? 'opacity-100' : 'opacity-0'}
@@ -165,7 +157,7 @@ export const MemberCard = memo(function MemberCard({ member, index = 0 }: Member
               absolute -inset-px hidden sm:flex
               items-center justify-center
               bg-black/30
-              rounded-xl
+              rounded-lg
               opacity-0 group-hover:opacity-100
               transition-opacity duration-300
               pointer-events-none
@@ -244,9 +236,9 @@ export function MemberCardSkeleton() {
   return (
     <div className="w-full max-w-[11rem] sm:max-w-[10.5rem] md:max-w-[11rem] lg:max-w-[12rem]">
       <div className="relative">
-        <div className="relative bg-[var(--card)] border border-[var(--border)] p-2.5 sm:p-3 pb-6 sm:pb-8 rounded-sm shadow-md sm:shadow-lg overflow-visible">
+        <div className="surface relative p-2.5 sm:p-3 pb-6 sm:pb-8 overflow-visible">
           {/* Avatar placeholder */}
-          <div className="relative aspect-square rounded-sm bg-[var(--bg)] overflow-hidden">
+          <div className="relative aspect-square rounded-lg bg-[var(--bg)] overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--primary)]/8 to-transparent animate-shimmer" />
             {/* Rank badge placeholder */}
             <div className="absolute top-1.5 left-1.5">
@@ -292,12 +284,7 @@ export function MemberCardCompact({ member }: { member: FreeCompanyMember }) {
       aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
       className="
         group flex items-center gap-3 p-2 pr-4
-        bg-[var(--card)]
-        border-2 border-[var(--border)]
-        rounded-2xl shadow-sm
-        hover:shadow-md hover:-translate-y-0.5
-        active:scale-[0.98]
-        transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]
+        surface hover-bounce
         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
       "
       style={{

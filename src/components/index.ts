@@ -14,7 +14,7 @@ export { PaginatedMemberGrid } from './PaginatedMemberGrid';
 
 // Layout & Navigation
 export { Navbar } from './Navbar';
-export { Sidebar, SIDEBAR_WIDTH_EXPANDED, SIDEBAR_WIDTH_COLLAPSED } from './Sidebar';
+export { ScrapbookNav } from './ScrapbookNav';
 export { AccessibilityMenu } from './AccessibilityMenu';
 export { ProtectedRoute } from './ProtectedRoute';
 export { KnightRoute } from './KnightRoute';
@@ -26,6 +26,8 @@ export { SpotlightCard } from './SpotlightCard';
 export { MooglePom, MooglePomCluster } from './MooglePom';
 export { StoryDivider } from './StoryDivider';
 export { FloatingSparkles } from './FloatingSparkles';
+export { FloatingBubbles } from './FloatingBubbles';
+export { KawaiiStar, KawaiiSparkle, KawaiiHeart, KawaiiBow, KawaiiCloud } from './kawaiiMotifs';
 export { FloatingMoogles, SimpleFloatingMoogles, type MoogleConfig } from './FloatingMoogles';
 
 // Shared Icons & Branding

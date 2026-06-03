@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Heart, ArrowRight, Sparkles, Star,
-  LogIn, CalendarDays,
+  CalendarDays,
   Ghost, Skull, Moon, Snowflake, TreePine, Gift,
 } from 'lucide-react';
 
 // Shared components
 import {
-  Button, FloatingMoogles, DiscordIcon, StoryDivider, MooglePom, type MoogleConfig,
+  Button, FloatingMoogles, DiscordIcon, KawaiiStar, KawaiiBow, KawaiiHeart, KawaiiSparkle, KawaiiCloud, type MoogleConfig,
 } from '../components';
 
 // Contexts
@@ -69,27 +69,18 @@ const floatingMoogles: MoogleConfig[] = [
 // Default fairy lights — warm twinkling dots
 const DEFAULT_FAIRY_LIGHTS = [
   { left: '8%', top: '10%', size: 4, color: 'rgba(251,191,36,0.50)', delay: 0, dur: 3 },
-  { left: '22%', top: '5%', size: 3, color: 'rgba(251,113,133,0.40)', delay: 0.8, dur: 3.5 },
   { left: '88%', top: '14%', size: 4, color: 'rgba(251,191,36,0.45)', delay: 1.5, dur: 2.8 },
-  { left: '75%', top: '7%', size: 3, color: 'rgba(252,165,165,0.40)', delay: 0.3, dur: 3.2 },
   { left: '4%', top: '48%', size: 3, color: 'rgba(251,191,36,0.35)', delay: 2.0, dur: 3.8 },
   { left: '93%', top: '44%', size: 4, color: 'rgba(251,113,133,0.30)', delay: 1.0, dur: 3 },
   { left: '12%', top: '82%', size: 3, color: 'rgba(252,165,165,0.40)', delay: 1.2, dur: 3.5 },
   { left: '85%', top: '78%', size: 4, color: 'rgba(251,191,36,0.40)', delay: 0.5, dur: 2.5 },
-  { left: '48%', top: '4%', size: 3, color: 'rgba(251,191,36,0.30)', delay: 1.8, dur: 3.3 },
-  { left: '62%', top: '90%', size: 3, color: 'rgba(251,113,133,0.35)', delay: 2.5, dur: 3 },
-  { left: '35%', top: '93%', size: 4, color: 'rgba(251,191,36,0.40)', delay: 0.7, dur: 3.6 },
-  { left: '96%', top: '28%', size: 3, color: 'rgba(252,165,165,0.35)', delay: 1.4, dur: 2.8 },
 ];
 
 // Default warm floating motes
 const DEFAULT_WARM_MOTES = [
-  { left: '12%', size: 3, color: 'rgba(251,191,36,0.30)', duration: 9, delay: 0, drift: 18 },
-  { left: '30%', size: 2.5, color: 'rgba(251,113,133,0.25)', duration: 11, delay: 2.5, drift: -14 },
-  { left: '50%', size: 3, color: 'rgba(251,191,36,0.25)', duration: 10, delay: 4, drift: 22 },
-  { left: '70%', size: 2.5, color: 'rgba(252,165,165,0.28)', duration: 12, delay: 1.5, drift: -18 },
-  { left: '88%', size: 2.5, color: 'rgba(251,191,36,0.22)', duration: 10, delay: 6, drift: 12 },
-  { left: '40%', size: 2.5, color: 'rgba(251,113,133,0.22)', duration: 11, delay: 3.5, drift: -10 },
+  { left: '14%', size: 3, color: 'rgba(251,191,36,0.30)', duration: 10, delay: 0, drift: 18 },
+  { left: '52%', size: 3, color: 'rgba(251,191,36,0.25)', duration: 11, delay: 4, drift: 22 },
+  { left: '86%', size: 2.5, color: 'rgba(251,113,133,0.22)', duration: 10, delay: 6, drift: 12 },
 ];
 
 // Faint stars that drift in the hero's deep background — hand-placed, not random
@@ -310,32 +301,19 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Default — warm golden cozy lantern
+  // Default — a single soft candy glow (light on the GPU)
   return (
-    <>
-      {/* Outer warm pulsing glow */}
-      <motion.div
-        className="absolute inset-0 scale-[1.8]"
-        animate={{ scale: [1.8, 2.1, 1.8], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        aria-hidden="true"
-      >
-        <div className="w-full h-full rounded-full bg-gradient-to-br from-[var(--primary)]/30 via-amber-400/25 to-[var(--secondary)]/30 blur-3xl" />
-      </motion.div>
-
-      {/* Inner rotating warm halo */}
-      <motion.div
-        className="absolute inset-0 scale-[1.2]"
-        animate={{ rotate: [0, 360], opacity: [0.2, 0.35, 0.2] }}
-        transition={{
-          rotate: { duration: 14, repeat: Infinity, ease: 'linear' },
-          opacity: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
-        }}
-        aria-hidden="true"
-      >
-        <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400/25 via-[var(--accent)]/20 to-rose-400/20 blur-2xl" />
-      </motion.div>
-    </>
+    <motion.div
+      className="absolute inset-0 scale-[1.6]"
+      animate={{ scale: [1.6, 1.85, 1.6], opacity: [0.35, 0.55, 0.35] }}
+      transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+      aria-hidden="true"
+    >
+      <div
+        className="w-full h-full rounded-full blur-2xl"
+        style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--primary) 32%, transparent), color-mix(in srgb, var(--accent) 16%, transparent) 45%, transparent 70%)' }}
+      />
+    </motion.div>
   );
 }
 
@@ -449,7 +427,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Default — hearts and stars
+  // Default — a few kawaii stickers floating around the moogle
   return (
     <motion.div
       className="absolute inset-0 pointer-events-none"
@@ -458,49 +436,17 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
       transition={{ delay: 0.7, duration: 0.6 }}
       aria-hidden="true"
     >
-      {/* Top — floating heart */}
-      <motion.div
-        className="absolute -top-1 left-1/4"
-        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-      >
-        <Heart className="w-3.5 h-3.5 text-[var(--primary)] fill-[var(--primary)]" />
+      <motion.div className="absolute -top-1 left-1/4" animate={{ y: [0, -7, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
+        <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
       </motion.div>
-
-      {/* Left — warm heart */}
-      <motion.div
-        className="absolute top-1/5 -left-6 md:-left-10"
-        animate={{ y: [0, -5, 0], rotate: [0, 12, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <Heart className="w-4 h-4 md:w-5 md:h-5 text-rose-400 fill-rose-400" />
+      <motion.div className="absolute top-1/5 -left-6 md:-left-10" animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
+        <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--accent)]" />
       </motion.div>
-
-      {/* Right — golden star */}
-      <motion.div
-        className="absolute top-1/4 -right-6 md:-right-10"
-        animate={{ y: [0, -4, 0], scale: [1, 1.2, 1] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-      >
-        <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-400 fill-amber-400" />
+      <motion.div className="absolute top-1/4 -right-6 md:-right-10" animate={{ y: [0, -5, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}>
+        <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--secondary)]" />
       </motion.div>
-
-      {/* Bottom-right — sparkle */}
-      <motion.div
-        className="absolute bottom-1/4 -right-5 md:-right-8"
-        animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-      >
-        <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
-      </motion.div>
-
-      {/* Bottom-left — heart */}
-      <motion.div
-        className="absolute bottom-1/3 -left-5 md:-left-8"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.9, 0.4] }}
-        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-      >
-        <Heart className="w-3.5 h-3.5 text-[var(--secondary)] fill-[var(--secondary)]" />
+      <motion.div className="absolute bottom-1/4 -right-4 md:-right-8" animate={{ y: [0, -4, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}>
+        <KawaiiHeart className="w-4 h-4 text-[var(--secondary)]" />
       </motion.div>
     </motion.div>
   );
@@ -1083,79 +1029,54 @@ function EventBunting({ event }: { event: SeasonalEvent }) {
   const dates = formatEventDates(event.dateRange);
   const countdown = eventCountdownLabel(daysLeft);
 
-  const FLAG_COLORS = ['var(--primary)', 'var(--secondary)', 'var(--accent)'];
-  const FLAG_COUNT = 28;
-
-  // Starlight already drapes its own string lights across the top — show only the label there.
-  const hasTopGarland = event.id === 'starlight';
-
-  const garland = buildDrapedGarland(6, 12, 30, FLAG_COUNT);
-
   return (
     <div
-      className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] md:top-0 z-0 pointer-events-none flex flex-col items-center select-none"
+      className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] md:top-4 z-20 pointer-events-none flex justify-center px-4 select-none"
       role="status"
       aria-label={`Now celebrating ${event.name}. ${dates}. ${countdown}.`}
     >
-      {/* Pennant garland — draped in U-swoops across the full viewport (desktop).
-          Skipped when the event already drapes its own top garland (Starlight). */}
-      {!hasTopGarland && (
-        <div className="relative w-full hidden md:block h-[90px]" aria-hidden="true">
-          {/* draped cord */}
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none">
-            <path
-              d={garland.wirePath}
-              fill="none"
-              style={{ stroke: 'color-mix(in srgb, var(--text) 30%, transparent)' }}
-              strokeWidth={2}
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
-          {/* pennants hanging straight down from the cord */}
-          {garland.points.map((p, i) => (
-            <motion.span
-              key={i}
-              className="absolute block origin-top"
-              style={{
-                left: `${(p.x / 1000) * 100}%`,
-                top: `${(p.y / 100) * 90}px`,
-                marginLeft: '-9px',
-                width: 0,
-                height: 0,
-                borderLeft: '9px solid transparent',
-                borderRight: '9px solid transparent',
-                borderTop: `18px solid ${FLAG_COLORS[i % FLAG_COLORS.length]}`,
-                opacity: 0.9,
-              }}
-              animate={{ rotate: [0, 5, 0, -5, 0] }}
-              transition={{ duration: 4 + (i % 3), repeat: Infinity, ease: 'easeInOut', delay: (i % 5) * 0.25 }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Event label, centered below the garland */}
+      {/* Kawaii sticker banner */}
       <motion.div
-        className={`text-center px-4 ${hasTopGarland ? 'mt-16 sm:mt-24' : 'mt-2 md:mt-3'}`}
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        className="relative -rotate-1"
+        initial={{ opacity: 0, y: -12, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: 'spring', bounce: 0.4, duration: 0.7, delay: 0.3 }}
       >
-        <p className="eyebrow-script text-base sm:text-lg text-[var(--secondary)] leading-none">
-          Now celebrating
-        </p>
-        <h2 className="font-display font-bold text-lg sm:text-2xl text-[var(--text)] mt-0.5 flex items-center justify-center gap-2">
-          <EventIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary)]" aria-hidden="true" />
-          {event.name}
-        </h2>
-        <p className="text-xs sm:text-sm font-soft text-[var(--text-muted)] mt-1 flex items-center justify-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1">
-            <CalendarDays className="w-3.5 h-3.5 text-[var(--text-subtle)]" aria-hidden="true" />
-            {dates}
+        {/* washi tape across the top */}
+        <span
+          className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 rotate-[-3deg] rounded-[2px] opacity-80 z-10"
+          style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 50%, transparent) 0 7px, color-mix(in srgb, var(--accent) 28%, transparent) 7px 14px)' }}
+          aria-hidden="true"
+        />
+        {/* star sticker corner */}
+        <KawaiiStar className="absolute -top-2 -right-2 w-5 h-5 text-[var(--accent)] rotate-12 z-10" aria-hidden="true" />
+
+        <div
+          className="flex items-center gap-3 px-4 py-2.5 rounded-2xl"
+          style={{
+            background: 'color-mix(in srgb, var(--primary) 14%, var(--card))',
+            border: '2px solid color-mix(in srgb, var(--primary) 45%, var(--card))',
+            boxShadow: '0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 30%, transparent), 0 0 26px -6px color-mix(in srgb, var(--primary) 50%, transparent)',
+          }}
+        >
+          {/* event icon sticker */}
+          <span
+            className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full"
+            style={{ background: 'color-mix(in srgb, var(--primary) 16%, var(--card))', color: 'var(--primary)' }}
+          >
+            <EventIcon className="w-6 h-6" aria-hidden="true" />
           </span>
-          <span className="text-[var(--text-subtle)]">·</span>
-          <span className="font-accent text-sm sm:text-base text-[var(--primary)]">{countdown}</span>
-        </p>
+          <div className="text-left">
+            <p className="eyebrow-script text-base text-[var(--secondary)] leading-none">Now celebrating</p>
+            <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)] leading-tight">{event.name}</h2>
+            <p className="text-[11px] font-soft text-[var(--text-muted)] flex items-center gap-1.5 mt-0.5 flex-wrap">
+              <CalendarDays className="w-3 h-3 text-[var(--text-subtle)]" aria-hidden="true" />
+              {dates}
+              <span className="text-[var(--text-subtle)]">·</span>
+              <span className="font-accent text-sm text-[var(--primary)]">{countdown}</span>
+            </p>
+          </div>
+        </div>
       </motion.div>
     </div>
   );
@@ -1220,19 +1141,15 @@ export function Home() {
       : 'var(--secondary)';
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-        {/* Warm light pool — drifts in from the top-left like lamplight */}
-        <motion.div
-          className="absolute -top-[12%] -left-[10%] w-[55vw] h-[55vw] min-w-[360px] min-h-[360px] rounded-full blur-[100px]"
-          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 22%, transparent), transparent 70%)` }}
-          animate={{ x: [0, 26, 0], y: [0, 18, 0], opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Warm light pool — top-left (static for performance) */}
+        <div
+          className="absolute -top-[12%] -left-[10%] w-[45vw] h-[45vw] min-w-[320px] min-h-[320px] rounded-full blur-[60px] opacity-70"
+          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 20%, transparent), transparent 70%)` }}
         />
-        {/* Warm light pool — drifts in from the bottom-right */}
-        <motion.div
-          className="absolute -bottom-[12%] -right-[10%] w-[50vw] h-[50vw] min-w-[320px] min-h-[320px] rounded-full blur-[90px]"
-          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 20%, transparent), transparent 70%)` }}
-          animate={{ x: [0, -22, 0], y: [0, -16, 0], opacity: [0.45, 0.72, 0.45] }}
-          transition={{ duration: 32, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Warm light pool — bottom-right (static) */}
+        <div
+          className="absolute -bottom-[12%] -right-[10%] w-[40vw] h-[40vw] min-w-[300px] min-h-[300px] rounded-full blur-[55px] opacity-65"
+          style={{ background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 18%, transparent), transparent 70%)` }}
         />
         {/* A few faint stars drifting in the deep background */}
         {COZY_STARS.map((s, i) => (
@@ -1263,6 +1180,8 @@ export function Home() {
         }}
         aria-hidden="true"
       />
+      {/* Scrapbook polka-dot page */}
+      <div className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80" aria-hidden="true" />
       {!IS_MOBILE_DEVICE && renderCozyAtmosphere()}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && <EventParticles particles={activeEvent.particles} />}
@@ -1276,8 +1195,19 @@ export function Home() {
       <div className="flex-1 min-h-0 relative z-10 flex flex-col p-4 sm:p-8 lg:py-8 lg:px-12 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4">
 
         {/* ── Hero: text column + moogle column ── */}
-        <div className="flex-1 min-h-0 w-full flex flex-col lg:flex-row items-center justify-center">
-        
+        <div className="relative flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
+
+        {/* Scrapbook stickers scattered across the page (desktop) — fills the center */}
+        <div className="hidden lg:block absolute inset-0 pointer-events-none z-0" aria-hidden="true">
+          <KawaiiStar className="absolute left-[47%] top-[14%] w-7 h-7 text-[var(--accent)] rotate-12" />
+          <KawaiiHeart className="absolute left-[57%] top-[28%] w-6 h-6 text-[var(--primary)] -rotate-6" />
+          <KawaiiBow className="absolute left-[44%] top-[55%] w-9 h-9 text-[var(--secondary)] rotate-6" />
+          <KawaiiSparkle className="absolute left-[60%] top-[66%] w-6 h-6 text-[var(--accent)]" />
+          <KawaiiStar className="absolute left-[40%] top-[80%] w-5 h-5 text-[var(--primary)] -rotate-12" />
+          <KawaiiHeart className="absolute left-[63%] top-[12%] w-5 h-5 text-[var(--secondary)] rotate-12" />
+          <KawaiiSparkle className="absolute left-[51%] top-[42%] w-5 h-5 text-[var(--primary)]" />
+        </div>
+
         {/* ── Left Side: Whimsical Text & CTA ── */}
           <div className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left z-20">
           <motion.div
@@ -1285,19 +1215,20 @@ export function Home() {
             animate={{ opacity: 1, x: 0, rotate: 0 }}
             transition={{ type: "spring", bounce: 0.4, duration: 1.2 }}
           >
-            <p className="eyebrow-script text-2xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-2 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md">
+            <p className="eyebrow-script text-2xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-2 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md inline-flex items-center gap-2">
               Welcome to
+              <KawaiiStar className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--accent)] rotate-12" aria-hidden="true" />
             </p>
           </motion.div>
 
           {/* Staggered Giant Title */}
           <motion.h1
-            className="font-display font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
+            className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
           >
-            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--text)] drop-shadow-sm flex whitespace-nowrap">
+            <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--primary)] flex whitespace-nowrap">
               {Array.from("Mog").map((char, i) => (
                 <motion.span
                   key={`mog-${i}`}
@@ -1309,7 +1240,7 @@ export function Home() {
                 </motion.span>
               ))}
             </span>
-            <span className="block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-highlight ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
+            <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--secondary)] ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
               {Array.from("Tome").map((char, i) => (
                 <motion.span
                   key={`tome-${i}`}
@@ -1351,37 +1282,57 @@ export function Home() {
             transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.8 }}
           >
             {!isLoading && !isAuthenticated ? (
-              <div className="relative group inline-block focus-visible:outline-none cursor-pointer">
-                {/* Wobbly background for CTA */}
-                <div className="absolute inset-[-10%] bg-[var(--primary)] opacity-20 rounded-[40%_60%_60%_40%/50%_50%_50%_50%] scale-[0.85] blur-lg group-hover:scale-100 group-hover:opacity-40 group-active:scale-95 transition-all duration-300" aria-hidden="true" />
-                <Button
-                  size="lg"
-                  onClick={login}
-                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden w-full sm:w-auto focus-visible:ring-offset-[var(--bg)]"
-                >
-                  {/* Subtle shine effect */}
-                  <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-150%] skew-x-[-45deg] group-hover:animate-shine pointer-events-none" aria-hidden="true" />
-                  <DiscordIcon className="w-[1.35rem] h-[1.35rem] opacity-90" />
-                  <span className="font-soft font-bold tracking-wide">Login with Discord</span>
-                  <ArrowRight className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:translate-x-1.5 transition-transform" />
-                </Button>
-              </div>
+              <Button size="lg" onClick={login} className="group gap-2.5 px-8 py-4 text-lg w-full sm:w-auto">
+                <DiscordIcon className="w-[1.35rem] h-[1.35rem]" />
+                <span>Login with Discord</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+              </Button>
             ) : (
-              <Link to="/members" className="relative group inline-block focus-visible:outline-none">
-                {/* Wobbly background for CTA */}
-                <div className="absolute inset-[-10%] bg-[var(--primary)] opacity-20 rounded-[40%_60%_60%_40%/50%_50%_50%_50%] scale-[0.85] blur-lg group-hover:scale-100 group-hover:opacity-40 group-active:scale-95 transition-all duration-300" aria-hidden="true" />
-                <Button
-                  size="lg"
-                  className="relative gap-2.5 px-8 py-4 text-lg rounded-2xl shadow-lg border-2 border-transparent group-hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-[var(--primary)] text-white overflow-hidden"
-                >
-                  {/* Subtle shine effect */}
-                  <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-150%] skew-x-[-45deg] group-hover:animate-shine" aria-hidden="true" />
-                  <Heart className="w-5 h-5 fill-white/20" />
-                  <span className="font-soft font-bold tracking-wide">Enter the Book</span>
+              <Link to="/members">
+                <Button size="lg" className="group gap-2.5 px-8 py-4 text-lg">
+                  <Heart className="w-5 h-5 fill-white/30" />
+                  <span>Enter the Book</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </Button>
               </Link>
             )}
+          </motion.div>
+
+          {/* Quick-links scrapbook card (desktop) */}
+          <motion.div
+            className="relative hidden lg:block mt-9 ml-0 lg:ml-20"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.5 }}
+          >
+            {/* washi tape */}
+            <span
+              className="absolute -top-2.5 left-8 w-20 h-6 rotate-[-5deg] rounded-[2px] opacity-80 z-10"
+              style={{ background: 'repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 50%, transparent) 0 7px, color-mix(in srgb, var(--accent) 28%, transparent) 7px 14px)' }}
+              aria-hidden="true"
+            />
+            <div className="surface inline-block -rotate-1 px-4 py-3">
+              <p className="font-display font-bold text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2 flex items-center gap-1.5">
+                <KawaiiStar className="w-3.5 h-3.5 text-[var(--accent)]" aria-hidden="true" />
+                Take a peek, kupo
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { to: '/members', label: 'Family', color: 'var(--secondary)' },
+                  { to: '/chronicle', label: 'Chronicle', color: 'var(--accent)' },
+                  { to: '/about', label: 'About', color: '#a886d6' },
+                ].map((c) => (
+                  <Link
+                    key={c.to}
+                    to={c.to}
+                    className="px-3 py-1 rounded-full font-display font-bold text-sm hover-bounce"
+                    style={{ background: `color-mix(in srgb, ${c.color} 18%, var(--card))`, color: c.color }}
+                  >
+                    {c.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </motion.div>
 
         </div>
@@ -1404,13 +1355,16 @@ export function Home() {
           >
             <div
               className="
-                relative bg-[var(--card)]/95
+                relative bg-[var(--card)]
                 px-5 sm:px-7 py-3 sm:py-4
                 rounded-[2rem] rounded-br-md
-                shadow-xl border-2 border-[var(--border)]/60
+                border-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))]
+                shadow-[0_0_0_3px_var(--card),3px_4px_0_0_color-mix(in_srgb,var(--primary)_22%,transparent)]
                 max-w-[260px] sm:max-w-[300px]
               "
             >
+              {/* Bow tied on the bubble */}
+              <KawaiiBow className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm" aria-hidden="true" />
               {/* Thought bubble dots trailing down toward moogle */}
               <div className="absolute -bottom-3 left-1/2 -translate-x-3 w-3.5 h-3.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40" aria-hidden="true" />
               <div className="absolute -bottom-7 left-1/2 translate-x-1 w-2.5 h-2.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40" aria-hidden="true" />
@@ -1439,6 +1393,10 @@ export function Home() {
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ type: "spring", bounce: 0.5, duration: 1.5, delay: 0.3 }}
           >
+            {/* Fluffy cloud the moogle floats on */}
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[118%] pointer-events-none drop-shadow-[0_10px_12px_rgba(0,0,0,0.18)]" aria-hidden="true">
+              <KawaiiCloud className="w-full text-white" />
+            </div>
             <WarmMoogleAura eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
             <MoogleCharms eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
             
@@ -1470,13 +1428,6 @@ export function Home() {
 
         </div>
         </div>
-      </div>
-
-      {/* ── Cozy footer signature ── */}
-      <div className="shrink-0 w-full flex justify-center py-2 z-10">
-        <p className="font-accent text-[11px] text-[var(--text-subtle)] flex items-center gap-1.5">
-          Crafted with <Heart className="w-2.5 h-2.5 text-rose-400 fill-rose-400 animate-pulse" aria-hidden="true" /> inside a cozy nest
-        </p>
       </div>
 
     </div>

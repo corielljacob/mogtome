@@ -17,10 +17,12 @@ describe('ContentCard', () => {
     const { container } = render(
       <ContentCard>Content</ContentCard>
     );
-    
+
+    // The cozy card base: a single `.surface` class provides background,
+    // border, radius and soft shadow (see docs/DESIGN.md).
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('rounded-2xl');
-    expect(card).toHaveClass('shadow-sm');
+    expect(card).toHaveClass('surface');
+    expect(card).toHaveClass('isolate');
   });
 
   it('applies custom className', () => {

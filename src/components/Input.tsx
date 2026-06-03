@@ -47,8 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               font-soft text-sm
               text-[var(--text)]
               placeholder:text-[var(--text-subtle)]
-              bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
-              border border-[var(--border)]
+              bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]              border border-[var(--border)]
               rounded-xl
               transition-all duration-200
               focus:outline-none
@@ -124,8 +123,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             font-soft text-sm
             text-[var(--text)]
             placeholder:text-[var(--text-subtle)]
-            bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
-            border border-[var(--border)]
+            bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]            border border-[var(--border)]
             rounded-xl
             transition-all duration-200
             focus:outline-none
@@ -188,8 +186,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             px-4 py-2.5
             font-soft text-sm
             text-[var(--text)]
-            bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
-            border border-[var(--border)]
+            bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]            border border-[var(--border)]
             rounded-xl
             transition-all duration-200
             focus:outline-none
