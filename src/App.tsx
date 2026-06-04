@@ -139,6 +139,21 @@ function AppContent() {
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div className="h-full bg-[var(--bg)] page-bg transition-colors duration-300 flex">
+        {/* Home's warm ambient glow lives inside the content area, so the fixed
+            nav's left gutter (md:pl-16) would otherwise read as a dark seam —
+            most visible at tablet widths. This app-level wash bathes that strip
+            in the same warm light, behind the nav. */}
+        {isHome && (
+          <div
+            className="hidden md:block absolute inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
+            aria-hidden="true"
+            style={{
+              background:
+                "radial-gradient(60% 50% at 0% 18%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 70%)",
+            }}
+          />
+        )}
+
         {/* Missing user data warning dialog */}
         <MissingUserDataDialog />
 
