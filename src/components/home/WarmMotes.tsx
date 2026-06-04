@@ -2,9 +2,8 @@ import { motion } from "motion/react";
 import { IS_MOBILE } from "../../utils";
 import { DEFAULT_WARM_MOTES } from "./homeData";
 
-/** Warm floating embers — like sitting by a cozy fireplace */
 export function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
-  // PERFORMANCE: Skip motes entirely on mobile — removes animated glow overhead
+  // skip on mobile - drops animated glow overhead
   if (IS_MOBILE) return null;
 
   return (

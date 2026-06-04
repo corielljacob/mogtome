@@ -4,22 +4,23 @@ import { MobileSheet } from "../MobileSheet";
 import { useIsMobile } from "../../hooks";
 import { ProfileSection } from "./ProfileSection";
 import { BioEditor } from "./BioEditor";
-import type { ProfileData, ProfileViewer, BiographySubmission } from "../../types";
+import type {
+  ProfileData,
+  ProfileViewer,
+  BiographySubmission,
+} from "../../types";
 
 interface ProfileBioProps {
   profile: ProfileData;
   viewer: ProfileViewer;
   submission: BiographySubmission | null;
   onSubmissionUpdate: () => void;
-  /** The biography (staff list) is still loading */
+  /** bio comes from the staff list, still loading */
   isBioLoading: boolean;
 }
 
-/**
- * ProfileBio — the "About" section. Shows the biography as a handwritten note;
- * the owner can edit it (knights save directly, others submit for review).
- * Editing is self-contained: inline on desktop, in a bottom sheet on mobile.
- */
+// owner can edit (knights save directly, others submit for review). editing is
+// inline on desktop, in a bottom sheet on mobile.
 export function ProfileBio({
   profile,
   viewer,
@@ -80,13 +81,12 @@ export function ProfileBio({
         </p>
       ) : viewer.isOwnProfile ? (
         <p className="text-sm text-[var(--text-subtle)]">
-          You haven't written a bio yet — add a few words about yourself, kupo~
+          You haven't written a bio yet - add a few words about yourself, kupo~
         </p>
       ) : (
         <p className="text-sm text-[var(--text-subtle)]">No biography yet.</p>
       )}
 
-      {/* Mobile editor lives in a bottom sheet */}
       <MobileSheet
         isOpen={isEditing && isMobile}
         onClose={() => setIsEditing(false)}

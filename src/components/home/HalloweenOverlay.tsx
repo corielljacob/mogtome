@@ -3,14 +3,9 @@ import { motion } from "motion/react";
 import { Ghost } from "lucide-react";
 import { IS_MOBILE } from "../../utils";
 
-/**
- * All Saints' Wake — Creeping fog that drifts across the bottom of the screen,
- * eerie flickering jack-o-lantern glow, and wandering ghost silhouettes.
- *
- * PERFORMANCE: On mobile, shows only static fog + 1 ghost (instead of ~12 animated elements)
- */
+// All Saints' Wake overlay. mobile gets a static fallback (fog + 1 ghost)
+// instead of ~12 animated elements.
 export function HalloweenOverlay() {
-  // Ghost silhouettes that drift slowly across the screen
   const ghosts = useMemo(
     () => [
       {
@@ -67,14 +62,12 @@ export function HalloweenOverlay() {
     [],
   );
 
-  // PERFORMANCE: Minimal version for mobile
   if (IS_MOBILE) {
     return (
       <div
         className="fixed inset-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
-        {/* Static fog */}
         <div
           className="absolute bottom-0 inset-x-0 h-[40%] opacity-80"
           style={{
@@ -82,7 +75,6 @@ export function HalloweenOverlay() {
               "linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)",
           }}
         />
-        {/* Single ghost with CSS animation */}
         <div
           className="absolute animate-float-moogle-subtle"
           style={{
@@ -98,7 +90,6 @@ export function HalloweenOverlay() {
             strokeWidth={1}
           />
         </div>
-        {/* Vignette */}
         <div
           className="absolute inset-0"
           style={{
@@ -115,7 +106,6 @@ export function HalloweenOverlay() {
       className="fixed inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
-      {/* Fog layers — thick gradient mist at the bottom */}
       <motion.div
         className="absolute bottom-0 inset-x-0 h-[40%]"
         style={{
@@ -140,7 +130,6 @@ export function HalloweenOverlay() {
         }}
       />
 
-      {/* Drifting fog wisps — horizontal movement */}
       <motion.div
         className="absolute bottom-[5%] h-[15%] w-[60%] rounded-full blur-3xl"
         style={{ background: "rgba(167,139,250,0.08)" }}
@@ -159,7 +148,6 @@ export function HalloweenOverlay() {
         }}
       />
 
-      {/* Eerie pulsing vignette — darker around the edges */}
       <motion.div
         className="absolute inset-0"
         style={{
@@ -170,7 +158,6 @@ export function HalloweenOverlay() {
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Wandering ghost silhouettes */}
       {ghosts.map((ghost, i) => (
         <motion.div
           key={i}
@@ -196,7 +183,6 @@ export function HalloweenOverlay() {
         </motion.div>
       ))}
 
-      {/* Flickering jack-o-lantern glow spots */}
       {[
         { left: "10%", top: "70%", size: 120 },
         { left: "80%", top: "65%", size: 100 },

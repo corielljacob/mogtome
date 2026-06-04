@@ -8,12 +8,8 @@ interface ProfileHeroProps {
   profile: ProfileData;
 }
 
-/**
- * ProfileHero — the identity polaroid pinned to the top of the board: the
- * member's portrait as the photo, name + rank as the handwritten caption.
- * Identity is read-only (it comes from FFXIV/Discord); the only editable thing,
- * the biography, lives in its own section below.
- */
+// identity is read-only (sourced from FFXIV/Discord); only the bio, in its own
+// section below, is editable
 export function ProfileHero({ profile }: ProfileHeroProps) {
   const rankColor = getRankColor(profile.rank);
   const RankIcon = rankColor.icon;
@@ -28,14 +24,12 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
         aria-hidden="true"
       />
       <div className="surface paper -rotate-1 p-3 sm:p-4 w-[16.5rem] sm:w-80">
-        {/* Photo */}
         <div className="relative">
           <img
             src={profile.avatarUrl}
             alt=""
             className="w-full aspect-square rounded-xl object-cover border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]"
           />
-          {/* Rank sticker, top-left */}
           <div
             className="absolute top-2 left-2 flex items-center justify-center w-8 h-8 rounded-full shadow-sm"
             style={{
@@ -46,7 +40,6 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
           >
             <RankIcon className="w-4 h-4" style={{ color: rankColor.hex }} />
           </div>
-          {/* Lodestone link, bottom-right */}
           {profile.lodestoneUrl && (
             <a
               href={profile.lodestoneUrl}
@@ -60,7 +53,6 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
           )}
         </div>
 
-        {/* Caption */}
         <div className="pt-3 pb-1 text-center">
           <h1 className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] leading-tight">
             {profile.name}

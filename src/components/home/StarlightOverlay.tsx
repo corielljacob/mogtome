@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { Snowflake, Sparkles } from "lucide-react";
 import { IS_MOBILE } from "../../utils";
 
-// Christmas string lights — colored bulbs draped in clean U-swoops across the top
 const STRING_LIGHT_COLORS = [
   "#EF4444",
   "#22C55E",
@@ -15,12 +14,10 @@ const STRING_LIGHT_COLORS = [
   "#3B82F6",
 ];
 
-/**
- * Builds a draped "UUUU" garland: a wire that sags in repeated U-swoops between
- * evenly spaced pegs, plus evenly spaced points along the wire to hang bulbs or
- * pennants from. Coordinates use a 0–1000 (x) × 0–100 (y) viewBox — render the
- * wire with preserveAspectRatio="none" and vector-effect="non-scaling-stroke".
- */
+// Draped "UUUU" garland: a wire sagging in U-swoops between evenly spaced pegs,
+// plus evenly spaced points to hang bulbs/pennants. Coords are 0–1000 (x) × 0–100
+// (y) viewBox - render the wire with preserveAspectRatio="none" and
+// vector-effect="non-scaling-stroke".
 function buildDrapedGarland(
   swoops: number,
   pegY: number,
@@ -46,14 +43,10 @@ function buildDrapedGarland(
   return { wirePath, points };
 }
 
-/**
- * Starlight Celebration — Gentle snowfall, twinkling christmas lights,
- * warm golden fireplace glow, and festive sparkles.
- *
- * PERFORMANCE: On mobile, shows 6 CSS snowflakes + static glow (instead of 60+ animated elements)
- */
+// Starlight Celebration overlay. mobile gets a CSS-only fallback (6 snowflakes
+// + static glow) instead of 60+ animated elements.
 export function StarlightOverlay() {
-  // Generate snowflake particles with deterministic positions
+  // deterministic positions - stable across renders
   const snowflakes = useMemo(() => {
     const flakes: Array<{
       left: string;
@@ -81,26 +74,24 @@ export function StarlightOverlay() {
   }, []);
 
   const { wirePath, stringLightBulbs } = useMemo(() => {
-    // 8 gentle swoops across the top; bulbs ride along the draped wire
+    // 8 swoops, 17 bulbs
     const garland = buildDrapedGarland(8, 5, 13, 17);
     const bulbs = garland.points.map((p, i) => ({
-      x: p.x / 10, // 0–100 (the bulb renderer multiplies x by 10)
+      x: p.x / 10, // bulb renderer multiplies x back by 10
       y: p.y,
       color: STRING_LIGHT_COLORS[i % STRING_LIGHT_COLORS.length],
       delay: i * 0.22,
-      size: 8 + (i % 3) * 2, // 8–12px bulbs
+      size: 8 + (i % 3) * 2,
     }));
     return { wirePath: garland.wirePath, stringLightBulbs: bulbs };
   }, []);
 
-  // PERFORMANCE: Minimal version for mobile — CSS-only, no Framer Motion
   if (IS_MOBILE) {
     return (
       <div
         className="fixed inset-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
-        {/* 6 simple CSS snowflakes instead of 35 Framer Motion snowflakes */}
         {[12, 28, 45, 62, 78, 90].map((left, i) => (
           <div
             key={i}
@@ -116,7 +107,6 @@ export function StarlightOverlay() {
             }}
           />
         ))}
-        {/* Static warm glow from below */}
         <div
           className="absolute bottom-0 inset-x-0 h-[30%] opacity-80"
           style={{
@@ -124,7 +114,6 @@ export function StarlightOverlay() {
               "linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)",
           }}
         />
-        {/* Snow accumulation */}
         <div
           className="absolute bottom-0 inset-x-0 h-[3%]"
           style={{
@@ -141,7 +130,6 @@ export function StarlightOverlay() {
       className="fixed inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
-      {/* Snowfall */}
       {snowflakes.map((flake, i) => (
         <motion.div
           key={i}
@@ -199,9 +187,7 @@ export function StarlightOverlay() {
         </motion.div>
       ))}
 
-      {/* Christmas string lights draped across the top —
-           Everything lives inside a single SVG so the wire and bulbs
-           share the exact same coordinate space. */}
+      {/* wire and bulbs share one SVG so they live in the same coordinate space */}
       <svg
         className="absolute top-0 inset-x-0 h-20 sm:h-24"
         viewBox="0 0 1000 40"
@@ -209,7 +195,6 @@ export function StarlightOverlay() {
         fill="none"
         aria-hidden="true"
       >
-        {/* Glow definitions */}
         <defs>
           {stringLightBulbs.map((bulb, i) => (
             <radialGradient key={`glow-${i}`} id={`bulb-glow-${i}`}>
@@ -220,14 +205,13 @@ export function StarlightOverlay() {
           ))}
         </defs>
 
-        {/* Wire shadow — dark line behind for depth */}
+        {/* dark line behind the cord for depth */}
         <path
           d={wirePath}
           stroke="rgba(0,0,0,0.20)"
           strokeWidth="2.5"
           fill="none"
         />
-        {/* Wire — visible cord */}
         <path
           d={wirePath}
           stroke="rgba(255,255,255,0.14)"
@@ -235,14 +219,12 @@ export function StarlightOverlay() {
           fill="none"
         />
 
-        {/* Bulbs + glows rendered in SVG space — they sit exactly on the path */}
         {stringLightBulbs.map((bulb, i) => {
-          const cx = bulb.x * 10; // match the path's x scale
+          const cx = bulb.x * 10; // undo the /10 from the data def
           const cy = bulb.y;
-          const r = bulb.size * 0.4; // radius in SVG units
+          const r = bulb.size * 0.4;
           return (
             <g key={i}>
-              {/* Large outer glow halo */}
               <motion.circle
                 cx={cx}
                 cy={cy}
@@ -259,7 +241,6 @@ export function StarlightOverlay() {
                   delay: bulb.delay,
                 }}
               />
-              {/* Inner bright glow */}
               <motion.circle
                 cx={cx}
                 cy={cy}
@@ -275,7 +256,7 @@ export function StarlightOverlay() {
                   delay: bulb.delay + 0.1,
                 }}
               />
-              {/* Bulb body — slightly elongated ellipse */}
+              {/* bulb body, slightly elongated */}
               <motion.ellipse
                 cx={cx}
                 cy={cy + r * 0.15}
@@ -290,7 +271,7 @@ export function StarlightOverlay() {
                   delay: bulb.delay,
                 }}
               />
-              {/* Specular highlight */}
+              {/* specular highlight */}
               <ellipse
                 cx={cx - r * 0.25}
                 cy={cy - r * 0.35}
@@ -304,7 +285,6 @@ export function StarlightOverlay() {
         })}
       </svg>
 
-      {/* Warm golden fireplace glow from below */}
       <motion.div
         className="absolute bottom-0 inset-x-0 h-[30%]"
         style={{
@@ -315,7 +295,6 @@ export function StarlightOverlay() {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Soft snow accumulation glow at the very bottom */}
       <div
         className="absolute bottom-0 inset-x-0 h-[3%]"
         style={{
@@ -324,7 +303,6 @@ export function StarlightOverlay() {
         }}
       />
 
-      {/* Festive sparkle bursts — brief twinkling stars scattered around */}
       {[
         { left: "15%", top: "20%", delay: 0 },
         { left: "75%", top: "15%", delay: 2 },

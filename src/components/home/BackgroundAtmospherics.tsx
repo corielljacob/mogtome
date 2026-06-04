@@ -14,12 +14,6 @@ import { HalloweenOverlay } from "./HalloweenOverlay";
 import { StarlightOverlay } from "./StarlightOverlay";
 import { EventBunting } from "./EventBunting";
 
-/**
- * All the fixed, full-viewport background layers for the Home page: the base
- * gradient, polka-dot page, drifting cozy light pools, fairy lights, floating
- * moogles, and (during a flagship event) the themed particles, overlay, and
- * bunting.
- */
 export function BackgroundAtmospherics() {
   const { activeEvent, isEventThemeActive } = useTheme();
 
@@ -34,7 +28,6 @@ export function BackgroundAtmospherics() {
 
   return (
     <>
-      {/* ── Background Atmospherics ── */}
       <div
         className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
         style={{
@@ -45,7 +38,6 @@ export function BackgroundAtmospherics() {
         }}
         aria-hidden="true"
       />
-      {/* Scrapbook polka-dot page */}
       <div
         className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
         aria-hidden="true"
@@ -62,7 +54,9 @@ export function BackgroundAtmospherics() {
         <StarlightOverlay />
       )}
       <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
-      {isEventThemeActive && activeEvent && <EventBunting event={activeEvent} />}
+      {isEventThemeActive && activeEvent && (
+        <EventBunting event={activeEvent} />
+      )}
     </>
   );
 }

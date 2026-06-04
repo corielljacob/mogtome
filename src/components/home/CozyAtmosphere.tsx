@@ -2,11 +2,6 @@ import { motion } from "motion/react";
 import { Star } from "lucide-react";
 import { COZY_STARS } from "./homeData";
 
-/**
- * Bespoke ambient layer — soft warm light pools that gently drift (no morphing
- * "blob" shapes) plus a few faint drifting stars, so the background reads as
- * cozy lamplight in a nest rather than a generic SaaS gradient blob.
- */
 export function CozyAtmosphere({ eventId }: { eventId: string | null }) {
   const poolA =
     eventId === "all-saints-wake"
@@ -25,23 +20,22 @@ export function CozyAtmosphere({ eventId }: { eventId: string | null }) {
       className="fixed inset-0 overflow-hidden pointer-events-none z-0"
       aria-hidden="true"
     >
-      {/* Warm light pool — top-left. Fixed size + position + its own GPU layer
-          so a window resize never re-rasterizes the 60px blur (the main cause
-          of resize jank was viewport-sized blurs re-blurring every frame). */}
+      {/* fixed size + own GPU layer (translateZ) so a window resize never
+          re-rasterizes the 60px blur - viewport-sized blurs re-blurring every
+          frame was the main cause of resize jank */}
       <div
         className="absolute -top-40 -left-32 w-[48rem] h-[48rem] rounded-full blur-[60px] opacity-70 [transform:translateZ(0)]"
         style={{
           background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 20%, transparent), transparent 70%)`,
         }}
       />
-      {/* Warm light pool — bottom-right (static, same treatment) */}
+      {/* bottom-right pool, same static treatment */}
       <div
         className="absolute -bottom-40 -right-32 w-[44rem] h-[44rem] rounded-full blur-[55px] opacity-65 [transform:translateZ(0)]"
         style={{
           background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 18%, transparent), transparent 70%)`,
         }}
       />
-      {/* A few faint stars drifting in the deep background */}
       {COZY_STARS.map((s, i) => (
         <motion.div
           key={i}

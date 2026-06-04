@@ -2,13 +2,12 @@ import { motion } from "motion/react";
 import { IS_MOBILE } from "../../utils";
 import { DEFAULT_FAIRY_LIGHTS } from "./homeData";
 
-/** Twinkling warm fairy lights — like a string of cozy golden fireflies */
 export function FairyLights({
   lights,
 }: {
   lights: typeof DEFAULT_FAIRY_LIGHTS;
 }) {
-  // PERFORMANCE: Skip fairy lights entirely on mobile — removes animated glow overhead
+  // skip on mobile - drops animated glow overhead
   if (IS_MOBILE) return null;
   const displayLights = lights;
 

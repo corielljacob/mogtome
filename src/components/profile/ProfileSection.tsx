@@ -15,12 +15,8 @@ interface ProfileSectionProps {
   children: ReactNode;
 }
 
-/**
- * ProfileSection — the one composition primitive every profile section uses
- * (mirrors Settings' card: a pinned `paper` + `surface` with a sticker header).
- * Adding a future section means rendering its content through this, so the
- * whole page stays visually consistent as it grows.
- */
+// shared primitive for every profile section (mirrors Settings' card: pinned
+// paper + surface with a sticker header) so the page stays consistent as it grows
 export function ProfileSection({
   icon: Icon,
   title,

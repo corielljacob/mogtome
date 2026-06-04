@@ -3,9 +3,7 @@ import { motion } from "motion/react";
 import type { EventParticle } from "../../constants/seasonalEvents";
 import { IS_MOBILE } from "../../utils";
 
-/** Themed particles (snow, petals, embers…) drifting across the whole viewport */
 export function EventParticles({ particles }: { particles: EventParticle[] }) {
-  // Generate stable positions for each particle
   const items = useMemo(() => {
     const result: Array<{
       Icon: EventParticle["icon"];
@@ -21,7 +19,7 @@ export function EventParticles({ particles }: { particles: EventParticle[] }) {
 
     particles.forEach((config, pIdx) => {
       for (let i = 0; i < config.count; i++) {
-        // Use deterministic pseudo-random placement based on index
+        // deterministic placement from index - stable across renders
         const seed = pIdx * 100 + i;
         const left = ((seed * 37 + 13) % 90) + 5;
         const top = ((seed * 53 + 7) % 85) + 5;
@@ -49,7 +47,7 @@ export function EventParticles({ particles }: { particles: EventParticle[] }) {
     return result;
   }, [particles]);
 
-  // PERFORMANCE: Skip event particles on mobile — too many animated elements
+  // skip on mobile - too many animated elements
   if (IS_MOBILE) return null;
 
   return (

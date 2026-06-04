@@ -53,12 +53,7 @@ function eventCountdownLabel(daysLeft: number): string {
   return `${daysLeft} days left to celebrate`;
 }
 
-/**
- * EventBunting — a festive pennant garland strung across the FULL viewport during
- * a seasonal event (mirrors how StarlightOverlay drapes its string lights), with
- * the event name, dates, and countdown centered below. Rendered as a fixed
- * overlay so it spans the whole width — sidebar included.
- */
+// fixed overlay so it spans the full width, sidebar included
 export function EventBunting({ event }: { event: SeasonalEvent }) {
   const EventIcon = event.icon;
   const daysLeft = getEventDaysLeft(event.dateRange);
@@ -71,14 +66,13 @@ export function EventBunting({ event }: { event: SeasonalEvent }) {
       role="status"
       aria-label={`Now celebrating ${event.name}. ${dates}. ${countdown}.`}
     >
-      {/* Kawaii sticker banner */}
       <motion.div
         className="relative -rotate-1"
         initial={{ opacity: 0, y: -12, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: "spring", bounce: 0.4, duration: 0.7, delay: 0.3 }}
       >
-        {/* washi tape across the top */}
+        {/* washi tape */}
         <span
           className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 rotate-[-3deg] rounded-[2px] opacity-80 z-10"
           style={{
@@ -87,7 +81,6 @@ export function EventBunting({ event }: { event: SeasonalEvent }) {
           }}
           aria-hidden="true"
         />
-        {/* star sticker corner */}
         <KawaiiStar
           className="absolute -top-2 -right-2 w-5 h-5 text-[var(--accent)] rotate-12 z-10"
           aria-hidden="true"
@@ -103,7 +96,6 @@ export function EventBunting({ event }: { event: SeasonalEvent }) {
               "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 30%, transparent), 0 0 26px -6px color-mix(in srgb, var(--primary) 50%, transparent)",
           }}
         >
-          {/* event icon sticker */}
           <span
             className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full"
             style={{

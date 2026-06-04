@@ -1,13 +1,19 @@
 import { motion } from "motion/react";
-import { Ghost, Skull, Moon, Snowflake, Gift, Star, TreePine } from "lucide-react";
+import {
+  Ghost,
+  Skull,
+  Moon,
+  Snowflake,
+  Gift,
+  Star,
+  TreePine,
+} from "lucide-react";
 import { KawaiiHeart, KawaiiStar } from "../kawaiiMotifs";
 import { IS_MOBILE } from "../../utils";
 
-/** Little charms orbiting the moogle — kawaii by default, themed during events */
 export function MoogleCharms({ eventId }: { eventId: string | null }) {
-  // PERFORMANCE: Skip charms entirely on mobile — they're tiny and not worth the cost
+  // skip on mobile - tiny, not worth the cost
   if (IS_MOBILE) return null;
-  // All Saints' Wake — skulls, ghosts, and moons orbit the moogle
   if (eventId === "all-saints-wake") {
     return (
       <motion.div
@@ -86,7 +92,6 @@ export function MoogleCharms({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Starlight Celebration — snowflakes, gifts, stars, and trees orbit the moogle
   if (eventId === "starlight") {
     return (
       <motion.div
@@ -173,7 +178,6 @@ export function MoogleCharms({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Default — a few kawaii stickers floating around the moogle
   return (
     <motion.div
       className="absolute inset-0 pointer-events-none"

@@ -5,7 +5,6 @@ import {
   KawaiiSparkle,
 } from "../kawaiiMotifs";
 
-/** Scrapbook stickers scattered across the hero center (desktop only) */
 export function ScatteredStickers() {
   return (
     <div

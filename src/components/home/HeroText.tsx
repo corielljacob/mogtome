@@ -9,7 +9,6 @@ const QUICK_LINKS = [
   { to: "/about", label: "About", color: "#a886d6" },
 ];
 
-/** Left hero column — eyebrow, the giant staggered title, tagline, quick-links. */
 export function HeroText() {
   const defaultTagline = getTagline();
 
@@ -29,7 +28,6 @@ export function HeroText() {
         </p>
       </motion.div>
 
-      {/* Staggered Giant Title */}
       <motion.h1
         className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
         initial={{ opacity: 0, y: 30 }}
@@ -70,7 +68,6 @@ export function HeroText() {
         </span>
       </motion.h1>
 
-      {/* Tagline */}
       <motion.div
         className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24"
         initial={{ opacity: 0 }}
@@ -91,7 +88,6 @@ export function HeroText() {
         </p>
       </motion.div>
 
-      {/* Quick-links scrapbook card (desktop) */}
       <motion.div
         className="relative hidden lg:block mt-9 ml-0 lg:ml-20"
         initial={{ opacity: 0, y: 16 }}

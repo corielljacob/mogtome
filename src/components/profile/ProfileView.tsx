@@ -5,7 +5,11 @@ import { KawaiiHeart } from "../kawaiiMotifs";
 import { ProfileHero } from "./ProfileHero";
 import { ProfileBio } from "./ProfileBio";
 import lilGuyMoogle from "../../assets/moogles/lil guy moogle.webp";
-import type { ProfileData, ProfileViewer, BiographySubmission } from "../../types";
+import type {
+  ProfileData,
+  ProfileViewer,
+  BiographySubmission,
+} from "../../types";
 
 interface ProfileViewProps {
   profile: ProfileData;
@@ -15,15 +19,10 @@ interface ProfileViewProps {
   isBioLoading: boolean;
 }
 
-/**
- * ProfileView — the presentational shell. Pure: it renders an identity from
- * `{ profile, viewer }` and knows nothing about routes or auth, so the same
- * component serves your own profile today and any member's profile later.
- *
- * Sections are driven by a registry (order is data, not JSX): adding a future
- * section is one entry once its component exists. Each section must render
- * nothing when it has nothing to show — no "coming soon" placeholders.
- */
+// Presentational shell, pure: renders from { profile, viewer }, no routes/auth,
+// so it serves both your own profile and any member's later. Sections come from
+// a registry (order is data, not JSX) - adding one is a single entry, and each
+// must render null when it has nothing to show (no "coming soon" placeholders).
 export function ProfileView({
   profile,
   viewer,
@@ -44,8 +43,8 @@ export function ProfileView({
         />
       ),
     },
-    // FUTURE SLOTS — build the component, then add its entry here. Each section
-    // must return null when it has nothing to show (no FOMO placeholders), e.g.:
+    // future slots - build the component, then add its entry here. each must
+    // return null when empty (no FOMO placeholders), e.g.:
     // { key: "achievements",    render: () => <ProfileAchievements profile={profile} /> },
     // { key: "activity",        render: () => <ProfileActivity profile={profile} /> },
     // { key: "personalization", render: () => <ProfilePersonalization profile={profile} viewer={viewer} /> },
@@ -53,8 +52,10 @@ export function ProfileView({
 
   return (
     <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-      {/* Corner pins */}
-      <span className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20" aria-hidden="true" />
+      <span
+        className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
+        aria-hidden="true"
+      />
       <span
         className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
         style={{ "--pin": "var(--secondary)" } as CSSProperties}
@@ -71,7 +72,6 @@ export function ProfileView({
         aria-hidden="true"
       />
 
-      {/* Corner-peek moogle */}
       <img
         src={lilGuyMoogle}
         alt=""
@@ -81,13 +81,12 @@ export function ProfileView({
 
       <ProfileHero profile={profile} />
 
-      {/* Sections */}
       <div className="space-y-7 sm:space-y-9 mt-8 sm:mt-10">
         {sections.map((s) => (
           <Fragment key={s.key}>{s.render()}</Fragment>
         ))}
 
-        {/* Membership card — its own chrome, so it's pinned but not re-wrapped in a surface */}
+        {/* brings its own chrome - pinned but not re-wrapped in a surface */}
         <section className="paper relative">
           <span
             className="pushpin absolute -top-2 left-8 z-10"
@@ -104,7 +103,6 @@ export function ProfileView({
         </section>
       </div>
 
-      {/* Footer note */}
       <p className="flex items-center justify-center gap-1.5 text-center font-soft text-xs text-[var(--text-subtle)] mt-9">
         <KawaiiHeart className="w-3.5 h-3.5 text-[var(--primary)]" />
         {viewer.isOwnProfile

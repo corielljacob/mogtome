@@ -13,12 +13,9 @@ import {
   getTimeGreeting,
 } from "./homeData";
 
-// Assets
 import welcomingMoogle from "../../assets/moogles/mooglef fly transparent.webp";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PERFORMANCE: Preload hero moogle for instant LCP
-// ─────────────────────────────────────────────────────────────────────────────
+// preload hero moogle for LCP
 if (typeof window !== "undefined") {
   const preloadLink = document.createElement("link");
   preloadLink.rel = "preload";
@@ -28,15 +25,10 @@ if (typeof window !== "undefined") {
   document.head.appendChild(preloadLink);
 }
 
-/**
- * Right hero column — the draggable floating moogle on its cloud, its warm aura
- * and charms, and the speech bubble that cycles through kupo quotes.
- */
 export function HeroMoogle() {
   const { user } = useAuth();
   const { activeEvent, isEventThemeActive } = useTheme();
 
-  // Determine quotes: event-specific or default
   const kupoQuotes = useMemo(
     () =>
       isEventThemeActive && activeEvent
@@ -47,7 +39,7 @@ export function HeroMoogle() {
 
   const [quoteIndex, setQuoteIndex] = useState(-1);
 
-  // Time-aware greeting shown before the rotation kicks in
+  // shown first, before the quote rotation kicks in
   const timeGreeting = useMemo(() => getTimeGreeting(), []);
   const firstGreeting = user
     ? `Welcome home, ${user.memberName.split(" ")[0]}!`
@@ -57,7 +49,7 @@ export function HeroMoogle() {
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length);
-    }, 4500); // slightly slower pace for a relaxed feel
+    }, 4500);
     return () => clearInterval(interval);
   }, [kupoQuotes]);
 
@@ -72,7 +64,7 @@ export function HeroMoogle() {
 
   return (
     <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
-      {/* Speech bubble lives ABOVE the moogle in DOM flow */}
+      {/* bubble sits above the moogle in DOM flow */}
       <motion.div
         className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20"
         initial={{ opacity: 0, scale: 0.5 }}
@@ -101,14 +93,12 @@ export function HeroMoogle() {
           flex items-center justify-center
         "
         >
-          {/* Bow tied on the bubble */}
           <KawaiiBow
             className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm"
             aria-hidden="true"
           />
-          {/* Speech-bubble tail — points down to the moogle. The card-colored
-              body sits over the bubble's bottom border (hiding the seam); the
-              two bordered outer edges form the pointed tip. */}
+          {/* tail: card-colored body covers the bubble's bottom border (hides
+              the seam), the two bordered outer edges form the pointed tip */}
           <div
             className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-[18px] h-[18px] bg-[var(--card)] border-b-2 border-r-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))] rotate-45 rounded-br-[6px]"
             aria-hidden="true"
@@ -131,8 +121,8 @@ export function HeroMoogle() {
         </div>
       </motion.div>
 
-      {/* Scale the moogle visually only — a CSS transform doesn't affect
-          the flex layout, so the speech bubble above stays exactly put. */}
+      {/* scale via CSS transform only - doesn't affect flex layout, so the
+          speech bubble above stays exactly put */}
       <div className="origin-center scale-105 sm:scale-110 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
         <motion.div
           className="relative pointer-events-auto"
@@ -145,7 +135,6 @@ export function HeroMoogle() {
             delay: 0.3,
           }}
         >
-          {/* Cute cloud the moogle floats on */}
           <div
             className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[116%] pointer-events-none drop-shadow-[0_12px_14px_rgba(0,0,0,0.15)]"
             aria-hidden="true"
@@ -155,7 +144,6 @@ export function HeroMoogle() {
           <WarmMoogleAura eventId={eventId} />
           <MoogleCharms eventId={eventId} />
 
-          {/* The majestic floating Moogle */}
           <motion.img
             src={welcomingMoogle}
             alt="A magical mogtome moogle"

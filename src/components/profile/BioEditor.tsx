@@ -4,7 +4,11 @@ import { Send, Check, AlertCircle, Clock, XCircle, Pencil } from "lucide-react";
 import { biographyApi } from "../../api/biography";
 import { Textarea } from "../Input";
 import { Button } from "../Button";
-import type { ProfileData, ProfileViewer, BiographySubmission } from "../../types";
+import type {
+  ProfileData,
+  ProfileViewer,
+  BiographySubmission,
+} from "../../types";
 
 const MAX_BIO_LENGTH = 300;
 
@@ -20,14 +24,9 @@ interface BioEditorProps {
   isMobile?: boolean;
 }
 
-/**
- * BioEditor — the biography form.
- *
- * Permanent knights save directly; everyone else submits for review (and can
- * keep editing a pending submission until it's approved). Built on the shared
- * candy `Textarea` + `Button`. Mutations invalidate the same `["staff"]` /
- * `["user-submission"]` keys the rest of the app reads, so edits propagate.
- */
+// knights save directly; everyone else submits for review (and can keep editing
+// a pending submission until approved). mutations invalidate the same ["staff"] /
+// ["user-submission"] keys the rest of the app reads, so edits propagate.
 export const BioEditor = memo(function BioEditor({
   profile,
   viewer,
@@ -46,15 +45,14 @@ export const BioEditor = memo(function BioEditor({
   const hasPendingSubmission = submission?.status === "Pending";
   const hasRejectedSubmission = submission?.status === "Rejected";
 
-  // Auto-focus the textarea when opened in the mobile sheet.
+  // auto-focus only in the mobile sheet
   useEffect(() => {
     if (!isMobile) return;
     const timer = setTimeout(() => textareaRef.current?.focus(), 100);
     return () => clearTimeout(timer);
   }, [isMobile]);
 
-  // Seed from the pending submission (if any) or the saved bio when the editor
-  // opens / the submission changes.
+  // seed from the pending submission if there is one, else the saved bio
   useEffect(() => {
     setBiography(
       hasPendingSubmission && submission?.biography
@@ -123,19 +121,27 @@ export const BioEditor = memo(function BioEditor({
       : "Submit for review";
 
   return (
-    <form onSubmit={handleSubmit} className={compact ? "space-y-3" : "space-y-4"}>
-      {/* Status banners */}
+    <form
+      onSubmit={handleSubmit}
+      className={compact ? "space-y-3" : "space-y-4"}
+    >
       {hasPendingSubmission && (
         <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
-          <Clock className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
+          <Clock
+            className="w-4 h-4 text-amber-500 shrink-0"
+            aria-hidden="true"
+          />
           <p className="text-xs font-soft text-amber-600 dark:text-amber-400">
-            Awaiting a Knight's review — you can keep editing until then.
+            Awaiting a Knight's review - you can keep editing until then.
           </p>
         </div>
       )}
       {hasRejectedSubmission && (
         <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/25">
-          <XCircle className="w-4 h-4 text-red-500 shrink-0" aria-hidden="true" />
+          <XCircle
+            className="w-4 h-4 text-red-500 shrink-0"
+            aria-hidden="true"
+          />
           <p className="text-xs font-soft text-red-600 dark:text-red-400">
             Your last submission wasn't approved. Tweak it and resubmit, kupo~
           </p>
@@ -151,12 +157,14 @@ export const BioEditor = memo(function BioEditor({
           rows={isMobile ? 6 : compact ? 4 : 6}
           maxLength={MAX_BIO_LENGTH + 50}
           disabled={isSubmitting}
-          error={isOverLimit ? "A touch long — trim it to 300." : undefined}
+          error={isOverLimit ? "A touch long - trim it to 300." : undefined}
           style={{ fontSize: "16px" }}
         />
 
         <div className="flex justify-between items-center mt-2 px-1">
-          {!canSetDirectly && !hasPendingSubmission && !hasRejectedSubmission ? (
+          {!canSetDirectly &&
+          !hasPendingSubmission &&
+          !hasRejectedSubmission ? (
             <p className="text-xs text-[var(--text-subtle)]">
               A Knight will review this before it appears.
             </p>
@@ -177,10 +185,12 @@ export const BioEditor = memo(function BioEditor({
         </div>
       </div>
 
-      {/* Success / error banners */}
       {successMessage && (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-green-500/10 border border-green-500/25">
-          <Check className="w-4 h-4 text-green-500 shrink-0" aria-hidden="true" />
+          <Check
+            className="w-4 h-4 text-green-500 shrink-0"
+            aria-hidden="true"
+          />
           <p className="text-xs text-green-600 dark:text-green-400">
             {successMessage}
           </p>

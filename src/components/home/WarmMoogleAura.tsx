@@ -1,11 +1,9 @@
 import { motion } from "motion/react";
 import { IS_MOBILE } from "../../utils";
 
-/** Warm golden glow aura behind the moogle — adapts to flagship events */
 export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
-  // PERFORMANCE: Skip moogle aura entirely on mobile — removes large blurred element
+  // skip on mobile - drops a large blurred element
   if (IS_MOBILE) return null;
-  // All Saints' Wake — eerie purple/green flickering glow
   if (eventId === "all-saints-wake") {
     return (
       <>
@@ -28,7 +26,6 @@ export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         >
           <div className="w-full h-full rounded-full bg-gradient-to-tr from-orange-400/30 via-purple-600/25 to-green-400/20 blur-2xl" />
         </motion.div>
-        {/* Extra flickering pulse — mimics candlelight */}
         <motion.div
           className="absolute inset-0 scale-[1.6]"
           animate={{ opacity: [0.1, 0.35, 0.05, 0.3, 0.1] }}
@@ -41,7 +38,6 @@ export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Starlight Celebration — warm golden/red/green festive glow
   if (eventId === "starlight") {
     return (
       <>
@@ -64,7 +60,6 @@ export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         >
           <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400/30 via-red-400/20 to-green-400/20 blur-2xl" />
         </motion.div>
-        {/* Warm golden starlight halo */}
         <motion.div
           className="absolute inset-0 scale-[1.5]"
           animate={{ opacity: [0.15, 0.35, 0.15], scale: [1.5, 1.7, 1.5] }}
@@ -77,7 +72,6 @@ export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Default — a single soft candy glow (light on the GPU)
   return (
     <motion.div
       className="absolute inset-0 scale-[1.6]"

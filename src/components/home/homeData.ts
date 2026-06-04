@@ -1,14 +1,9 @@
 import type { MoogleConfig } from "../FloatingMoogles";
 
-// Assets
 import wizardMoogle from "../../assets/moogles/wizard moogle.webp";
 import flyingMoogles from "../../assets/moogles/moogles flying.webp";
 import musicMoogle from "../../assets/moogles/moogle playing music.webp";
 import lilGuyMoogle from "../../assets/moogles/lil guy moogle.webp";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const DEFAULT_KUPO_QUOTES = [
   "Welcome home, kupo!",
@@ -52,7 +47,6 @@ export const floatingMoogles: MoogleConfig[] = [
   },
 ];
 
-// Default fairy lights — warm twinkling dots
 export const DEFAULT_FAIRY_LIGHTS = [
   {
     left: "8%",
@@ -104,7 +98,6 @@ export const DEFAULT_FAIRY_LIGHTS = [
   },
 ];
 
-// Default warm floating motes
 export const DEFAULT_WARM_MOTES = [
   {
     left: "14%",
@@ -132,7 +125,7 @@ export const DEFAULT_WARM_MOTES = [
   },
 ];
 
-// Faint stars that drift in the hero's deep background — hand-placed, not random
+// hand-placed, not random
 export const COZY_STARS = [
   {
     left: "12%",
@@ -176,11 +169,6 @@ export const COZY_STARS = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Time-of-day greeting — makes the page feel alive and personal */
 export function getTimeGreeting(): string {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return "Good morning, kupo~";
@@ -189,15 +177,10 @@ export function getTimeGreeting(): string {
   return "Up late, kupo? ✧";
 }
 
-/** Tagline — clear statement of purpose */
 export function getTagline(): string {
   return "A companion experience for Kupo Life!";
 }
 
-/**
- * Generate fairy lights from event colors instead of defaults.
- * Distributes lights around the viewport edges using event palette.
- */
 export function generateEventFairyLights(colors: string[]) {
   const positions = [
     { left: "8%", top: "10%" },
@@ -223,9 +206,6 @@ export function generateEventFairyLights(colors: string[]) {
   }));
 }
 
-/**
- * Generate warm motes from event colors instead of defaults.
- */
 export function generateEventMotes(colors: string[]) {
   const bases = [
     { left: "12%", drift: 18 },
