@@ -1,19 +1,18 @@
 import { useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { Star, ExternalLink } from "lucide-react";
 
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 import { getRankColor } from "../constants";
-import { formatMemberSince } from "../utils";
 import { useReducedMotion } from "../hooks";
-import { KawaiiStar, KawaiiHeart, KawaiiSparkle } from "./kawaiiMotifs";
+import { useTheme } from "../contexts/ThemeContext";
+import { KawaiiHeart, KawaiiStar } from "./kawaiiMotifs";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MEMBERSHIP CARD — a kawaii, "physical" FC member card. At rest it's a matte
-// candy-paper card; on hover it becomes a holographic keepsake that pivots to
-// the cursor, catches the light (glare + pastel sheen) and lifts off the page,
-// with the moogle popping out in 3D. Pointer-tilt is gated behind reduced-motion
-// and hover-capable pointers, so touch / reduced-motion get the calm static card.
+// MEMBERSHIP CARD — a handmade café-style member card: a marker-handwritten
+// Japanese face (Yusei Magic), a washi-taped tilted photo, hand-drawn lines and
+// doodles on cream paper, finished with a warm welcome note. At rest it's matte
+// cardstock; on hover it pivots to the cursor and catches the light. Pointer-tilt
+// is gated behind reduced-motion + hover pointers; lighting eases off in dark.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MembershipCardProps {
@@ -21,7 +20,7 @@ export interface MembershipCardProps {
   rank: string;
   avatarUrl: string;
   characterId?: string;
-  /** MogTome first-login date (NOT the FC join date); shown as "MogTome member since …" */
+  /** MogTome first-login date (NOT the FC join date); shown in the "Member Since" field */
   memberSince?: Date | string;
   compact?: boolean;
 }
@@ -29,21 +28,66 @@ export interface MembershipCardProps {
 const MAX_TILT = 12; // degrees
 const HOVER_SCALE = 1.03;
 
+// Handmade marker-handwritten face, just for the card (loaded in index.html).
+const HAND = '"Yusei Magic", "Zen Maru Gothic", "Caveat", cursive';
+
+/** A little paw print — the café's hand-drawn logo mark. */
+function PawPrint({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <ellipse cx="12" cy="16.2" rx="5.2" ry="4.3" />
+      <circle cx="5.4" cy="10.6" r="2.1" />
+      <circle cx="9.7" cy="7.1" r="2.2" />
+      <circle cx="14.3" cy="7.1" r="2.2" />
+      <circle cx="18.6" cy="10.6" r="2.1" />
+    </svg>
+  );
+}
+
+/** Hand-drawn wavy underline. */
+function Squiggle({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 6"
+      preserveAspectRatio="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M0,3 Q8,0 16,3 T32,3 T48,3 T64,3 T80,3 T100,3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function printDate(memberSince?: Date | string): string | null {
+  if (!memberSince) return null;
+  const d = memberSince instanceof Date ? memberSince : new Date(memberSince);
+  if (isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export function MembershipCard({
   name,
   rank,
   avatarUrl,
-  characterId,
   memberSince,
   compact = false,
 }: MembershipCardProps) {
   const rankColor = getRankColor(rank);
   const RankIcon = rankColor.icon;
-  const lodestoneUrl = characterId
-    ? `https://na.finalfantasyxiv.com/lodestone/character/${characterId}`
-    : null;
-  const since = memberSince ? formatMemberSince(memberSince) : null;
+  const since = printDate(memberSince);
 
+  const { isDarkMode } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const [canHover] = useState(
     () =>
@@ -52,11 +96,19 @@ export function MembershipCard({
   );
   const enableTilt = !prefersReducedMotion && canHover;
 
+  // Lighting is gentler in dark mode (soft-light white blows out on a dark card).
+  const lit = {
+    glareWhite: isDarkMode ? 0.34 : 0.6,
+    glareMul: isDarkMode ? 0.55 : 1,
+    holoMul: isDarkMode ? 0.38 : 0.85,
+    topSheen: isDarkMode ? 0.07 : 0.16,
+  };
+
   const rootRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
 
-  const setVar = (name: string, value: string) =>
-    rootRef.current?.style.setProperty(name, value);
+  const setVar = (n: string, v: string) =>
+    rootRef.current?.style.setProperty(n, v);
 
   const handleEnter = () => {
     const el = rootRef.current;
@@ -86,10 +138,11 @@ export function MembershipCard({
     setVar("--card-shadow", "var(--panel-shadow)");
   };
 
-  const sizeClass = compact ? "max-w-[340px] sm:max-w-[360px]" : "max-w-[360px]";
-  const padding = compact ? "p-4 sm:p-[1.15rem]" : "p-5";
-  const avatarSize = compact ? "w-14 h-14 sm:w-16 sm:h-16" : "w-16 h-16";
-  const nameSize = compact ? "text-base" : "text-base sm:text-lg";
+  const sizeClass = compact
+    ? "max-w-[340px] sm:max-w-[360px]"
+    : "max-w-[360px]";
+  const dashColor =
+    "border-[color:color-mix(in_srgb,var(--text)_24%,transparent)]";
 
   return (
     <div className={compact ? "" : "py-4"}>
@@ -117,96 +170,91 @@ export function MembershipCard({
               : undefined
           }
         >
-          {/* Card face — clipped, rounded, bordered */}
+          {/* Card face — cream paper */}
           <div
-            className="absolute inset-0 rounded-[1.75rem] overflow-hidden border-2"
+            className="absolute inset-0 rounded-[1.35rem] overflow-hidden border"
             style={
               {
                 borderColor:
-                  "color-mix(in srgb, var(--primary) 22%, var(--card))",
-                background: `linear-gradient(140deg,
-                  color-mix(in srgb, var(--primary) 18%, var(--card)) 0%,
-                  color-mix(in srgb, var(--secondary) 13%, var(--card)) 52%,
-                  color-mix(in srgb, var(--accent) 15%, var(--card)) 100%)`,
+                  "color-mix(in srgb, var(--primary) 26%, var(--card))",
+                background: `linear-gradient(165deg, color-mix(in srgb, var(--primary) 7%, var(--card)), var(--card) 55%)`,
                 boxShadow: "var(--card-shadow, var(--panel-shadow))",
                 transition: "box-shadow 0.25s ease-out",
               } as CSSProperties
             }
           >
-            {/* Candy polka-dot texture */}
+            {/* Faint paper grain dots */}
             <div
-              className="absolute inset-0 opacity-[0.5] pointer-events-none"
+              className="absolute inset-0 opacity-[0.3] pointer-events-none"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--primary) 22%, transparent) 1.5px, transparent 1.6px)",
-                backgroundSize: "15px 15px",
+                  "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--text) 11%, transparent) 1px, transparent 1.4px)",
+                backgroundSize: "13px 13px",
               }}
               aria-hidden="true"
             />
+            {/* Doodles */}
+            <KawaiiHeart className="absolute top-10 right-6 w-3 h-3 text-[var(--primary)] opacity-30 rotate-12" />
+            <KawaiiStar className="absolute bottom-8 left-7 w-3 h-3 text-[var(--accent)] opacity-30 -rotate-12" />
 
-            {/* Rank-tinted glow, warms on hover */}
+            {/* Content — all handwritten */}
             <div
-              className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-              style={{
-                boxShadow: `inset 0 0 34px -10px ${rankColor.glow}`,
-                opacity: "calc(0.3 + var(--glow,0) * 0.35)",
-              }}
-              aria-hidden="true"
-            />
-
-            {/* Flat background stickers */}
-            <KawaiiStar className="absolute top-9 right-3 w-3.5 h-3.5 text-[var(--accent)] opacity-50 rotate-12" />
-            <KawaiiHeart className="absolute bottom-3 right-4 w-3 h-3 text-[var(--primary)] opacity-40 -rotate-6" />
-
-            {/* Content */}
-            <div className={`relative h-full ${padding} flex flex-col`}>
+              className="relative h-full px-4 py-3 flex flex-col"
+              style={{ fontFamily: HAND }}
+            >
               {/* Header */}
-              <div className="flex items-center gap-2">
-                <span
-                  className="flex items-center justify-center w-7 h-7 rounded-xl shrink-0"
-                  style={{
-                    backgroundColor:
-                      "color-mix(in srgb, var(--primary) 80%, var(--card))",
-                    border:
-                      "2px solid color-mix(in srgb, var(--primary) 90%, #fff)",
-                  }}
-                  aria-hidden="true"
-                >
-                  <Star className="w-3.5 h-3.5 text-white fill-white/70" />
-                </span>
-                <div className="leading-none">
-                  <p className="font-display font-bold text-[var(--text)] text-sm tracking-wide">
-                    Kupo Life
-                  </p>
-                  <p className="font-accent text-[var(--primary)] text-lg leading-tight">
-                    ~ member card ~
-                  </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="flex items-center justify-center w-6 h-6 rounded-full shrink-0 -rotate-6"
+                    style={{ backgroundColor: "var(--primary)" }}
+                  >
+                    <PawPrint className="w-3.5 h-3.5 text-white" />
+                  </span>
+                  <div className="leading-none">
+                    <p className="text-lg text-[var(--text)]">Kupo Life</p>
+                    <p className="text-[10px] text-[var(--text-muted)] -mt-0.5">
+                      メンバーズカード · Member's Card
+                    </p>
+                  </div>
                 </div>
+                <span className="text-[10px] text-[var(--text-subtle)] -rotate-3">
+                  MogTome
+                </span>
               </div>
 
-              <div className="flex-1" />
+              {/* Hand-drawn divider */}
+              <Squiggle className="w-full h-1.5 mt-1.5 text-[color:color-mix(in_srgb,var(--primary)_35%,transparent)]" />
 
-              {/* Member */}
-              <div className="flex items-end gap-3">
-                <div className="relative shrink-0">
+              {/* Body — washi-taped photo + handwritten fields */}
+              <div className="flex-1 flex items-center gap-4 min-h-0">
+                {/* Photo */}
+                <div className="relative shrink-0 rotate-[-3deg]">
+                  {/* Washi tape */}
                   <div
-                    className="absolute -inset-1 rounded-2xl"
+                    className="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-12 h-4 rotate-3 rounded-[2px]"
                     style={{
-                      background: `linear-gradient(135deg, ${rankColor.hex}, color-mix(in srgb, var(--accent) 70%, var(--card)))`,
-                      opacity: 0.7,
+                      background:
+                        "repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 42%, transparent) 0 5px, color-mix(in srgb, var(--secondary) 24%, transparent) 5px 10px)",
+                      boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
                     }}
                     aria-hidden="true"
                   />
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    className={`relative ${avatarSize} rounded-2xl object-cover border-2 border-[color:color-mix(in_srgb,var(--card)_85%,#fff)]`}
-                  />
+                  <div
+                    className="p-[5px] pb-3 rounded-[3px] bg-white"
+                    style={{ boxShadow: "0 2px 5px -2px rgba(0,0,0,0.25)" }}
+                  >
+                    <img
+                      src={avatarUrl}
+                      alt=""
+                      className="w-[4rem] h-[4rem] object-cover rounded-[2px]"
+                    />
+                  </div>
                   <span
-                    className="absolute -bottom-1.5 -right-1.5 flex items-center justify-center w-6 h-6 rounded-full"
+                    className="absolute -bottom-1 -right-2 flex items-center justify-center w-6 h-6 rounded-full rotate-6"
                     style={{
                       backgroundColor: `color-mix(in srgb, ${rankColor.hex} 26%, var(--card))`,
-                      border: `2px solid color-mix(in srgb, ${rankColor.hex} 42%, var(--card))`,
+                      border: `2px solid color-mix(in srgb, ${rankColor.hex} 46%, var(--card))`,
                     }}
                     aria-hidden="true"
                   >
@@ -217,47 +265,63 @@ export function MembershipCard({
                   </span>
                 </div>
 
-                <div className="flex-1 min-w-0 pb-0.5">
-                  <h3
-                    className={`font-display font-bold text-[var(--text)] ${nameSize} truncate leading-tight`}
-                  >
-                    {name}
-                  </h3>
-                  <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                    <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-soft font-semibold"
-                      style={{
-                        color: rankColor.hex,
-                        backgroundColor: `color-mix(in srgb, ${rankColor.hex} 16%, var(--card))`,
-                        border: `1.5px solid color-mix(in srgb, ${rankColor.hex} 32%, var(--card))`,
-                      }}
-                    >
-                      <RankIcon className="w-2.5 h-2.5" aria-hidden="true" />
-                      {rank}
+                {/* Fields */}
+                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                  <div>
+                    <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
+                      なまえ / Name
                     </span>
-                    {lodestoneUrl && (
-                      <a
-                        href={lodestoneUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[10px] text-[var(--text-subtle)] hover:text-[var(--primary)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded"
+                    <span className="block text-[var(--text)] text-xl leading-tight truncate">
+                      {name}
+                    </span>
+                    <Squiggle className="w-20 h-1 text-[color:color-mix(in_srgb,var(--accent)_55%,transparent)]" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="min-w-0">
+                      <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
+                        ランク / Rank
+                      </span>
+                      <span
+                        className="flex items-center gap-1 text-sm leading-tight truncate"
+                        style={{ color: rankColor.hex }}
                       >
-                        <ExternalLink className="w-2.5 h-2.5" aria-hidden="true" />
-                        Lodestone
-                      </a>
+                        <RankIcon
+                          className="w-3 h-3 shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span className="truncate">{rank}</span>
+                      </span>
+                    </div>
+                    {since && (
+                      <div className="shrink-0">
+                        <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
+                          なかま歴 / Since
+                        </span>
+                        <span className="block text-sm text-[var(--text)] leading-tight">
+                          {since}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
-
-                <KawaiiSparkle className="w-4 h-4 text-[var(--accent)] opacity-70 shrink-0 mb-1" />
               </div>
 
-              {/* MogTome member-since stamp */}
-              {since && (
-                <p className="mt-3 text-center font-accent text-base text-[var(--text-subtle)] leading-none">
-                  MogTome member since {since}
+              {/* Warm footer note */}
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <span
+                  className={`flex-1 border-t border-dashed ${dashColor}`}
+                  aria-hidden="true"
+                />
+                <p className="flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] whitespace-nowrap">
+                  <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
+                  part of the moogle family
+                  <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
                 </p>
-              )}
+                <span
+                  className={`flex-1 border-t border-dashed ${dashColor}`}
+                  aria-hidden="true"
+                />
+              </div>
             </div>
 
             {/* ── Lighting overlays (above content, pointer-events-none) ───────── */}
@@ -274,7 +338,7 @@ export function MembershipCard({
                 backgroundSize: "220% 100%",
                 backgroundPositionX: "var(--mx,50%)",
                 mixBlendMode: "soft-light",
-                opacity: "calc(var(--glow,0) * 0.9)",
+                opacity: `calc(var(--glow,0) * ${lit.holoMul})`,
                 transition: "opacity 0.25s ease-out",
               }}
               aria-hidden="true"
@@ -283,36 +347,34 @@ export function MembershipCard({
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background:
-                  "radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.6), rgba(255,255,255,0) 42%)",
+                background: `radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,${lit.glareWhite}), rgba(255,255,255,0) 42%)`,
                 mixBlendMode: "soft-light",
-                opacity: "var(--glow,0)",
+                opacity: `calc(var(--glow,0) * ${lit.glareMul})`,
                 transition: "opacity 0.25s ease-out",
               }}
               aria-hidden="true"
             />
             {/* Static top rim sheen for a glossy edge */}
             <div
-              className="absolute inset-x-0 top-0 h-1/3 pointer-events-none"
+              className="absolute inset-x-0 top-0 h-1/4 pointer-events-none"
               style={{
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.16), transparent)",
-                opacity: "calc(0.35 + var(--glow,0) * 0.4)",
+                background: `linear-gradient(180deg, rgba(255,255,255,${lit.topSheen}), transparent)`,
+                opacity: "calc(0.5 + var(--glow,0) * 0.5)",
               }}
               aria-hidden="true"
             />
           </div>
 
-          {/* Moogle — pops out of the card in 3D (sibling, so it isn't clipped) */}
+          {/* Moogle — the café mascot, popping out of the corner in 3D */}
           <span
-            className="absolute -top-4 -right-3 z-10 pointer-events-none select-none"
+            className="absolute -bottom-3 -right-3 z-10 pointer-events-none select-none"
             style={enableTilt ? { transform: "translateZ(45px)" } : undefined}
             aria-hidden="true"
           >
             <img
               src={lilGuyMoogle}
               alt=""
-              className="w-16 object-contain rotate-[8deg] animate-float-gentle drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)]"
+              className="w-14 object-contain rotate-[-8deg] animate-float-gentle drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)]"
             />
           </span>
         </div>
