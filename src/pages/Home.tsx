@@ -1894,62 +1894,75 @@ export function Home() {
               </div>
             </motion.div>
 
-            <motion.div
-              className="relative lg:mr-10 xl:mr-20 pointer-events-auto"
-              initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{
-                type: "spring",
-                bounce: 0.5,
-                duration: 1.5,
-                delay: 0.3,
-              }}
-            >
-              {/* Fluffy cloud the moogle floats on */}
-              <div
-                className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[118%] pointer-events-none drop-shadow-[0_10px_12px_rgba(0,0,0,0.18)]"
-                aria-hidden="true"
-              >
-                <KawaiiCloud className="w-full text-white" />
-              </div>
-              <WarmMoogleAura
-                eventId={
-                  isEventThemeActive && activeEvent ? activeEvent.id : null
-                }
-              />
-              <MoogleCharms
-                eventId={
-                  isEventThemeActive && activeEvent ? activeEvent.id : null
-                }
-              />
-
-              {/* The majestic floating Moogle */}
-              <motion.img
-                src={welcomingMoogle}
-                alt="A magical mogtome moogle"
-                className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
-                drag
-                dragConstraints={{ left: -20, right: 20, top: -15, bottom: 15 }}
-                dragElastic={0.15}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95, rotate: -5 }}
-                onClick={() =>
-                  setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
-                }
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-                animate={{
-                  y: [-8, 12, -8],
-                  rotate: [-1.5, 2.5, -1.5],
-                }}
+            {/* Scale the moogle visually only — a CSS transform doesn't affect
+                the flex layout, so the speech bubble above stays exactly put. */}
+            <div className="origin-center scale-105 sm:scale-110 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
+              <motion.div
+                className="relative pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{
-                  y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-                  rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
+                  type: "spring",
+                  bounce: 0.5,
+                  duration: 1.5,
+                  delay: 0.3,
                 }}
-              />
-              <WarmMotes motes={warmMotes} />
-            </motion.div>
+              >
+                {/* Cute cloud the moogle floats on */}
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[116%] pointer-events-none drop-shadow-[0_12px_14px_rgba(0,0,0,0.15)]"
+                  aria-hidden="true"
+                >
+                  <KawaiiCloud className="w-full text-white" />
+                </div>
+                <WarmMoogleAura
+                  eventId={
+                    isEventThemeActive && activeEvent ? activeEvent.id : null
+                  }
+                />
+                <MoogleCharms
+                  eventId={
+                    isEventThemeActive && activeEvent ? activeEvent.id : null
+                  }
+                />
+
+                {/* The majestic floating Moogle */}
+                <motion.img
+                  src={welcomingMoogle}
+                  alt="A magical mogtome moogle"
+                  className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
+                  drag
+                  dragConstraints={{
+                    left: -20,
+                    right: 20,
+                    top: -15,
+                    bottom: 15,
+                  }}
+                  dragElastic={0.15}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95, rotate: -5 }}
+                  onClick={() =>
+                    setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
+                  }
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  animate={{
+                    y: [-8, 12, -8],
+                    rotate: [-1.5, 2.5, -1.5],
+                  }}
+                  transition={{
+                    y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+                    rotate: {
+                      duration: 7,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }}
+                />
+                <WarmMotes motes={warmMotes} />
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

@@ -77,17 +77,18 @@ export const KawaiiCloud = memo(function KawaiiCloud({
 }: MotifProps) {
   return (
     <svg
-      viewBox="0 0 140 80"
+      viewBox="0 0 144 88"
       fill="currentColor"
       className={className}
       style={color ? { color } : undefined}
       aria-hidden="true"
       focusable="false"
     >
-      <ellipse cx="70" cy="60" rx="64" ry="18" />
-      <circle cx="40" cy="44" r="24" />
-      <circle cx="72" cy="34" r="32" />
-      <circle cx="104" cy="46" r="22" />
+      {/* Cute, symmetric puff — a soft wide base with a gentle three-bump top */}
+      <ellipse cx="72" cy="64" rx="62" ry="17" />
+      <circle cx="44" cy="50" r="22" />
+      <circle cx="72" cy="40" r="28" />
+      <circle cx="100" cy="50" r="22" />
     </svg>
   );
 });
