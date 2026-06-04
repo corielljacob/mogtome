@@ -10,7 +10,6 @@ describe("Card", () => {
 
   it("renders with default variant", () => {
     const { container } = render(<Card>Content</Card>);
-    // Card renders as a div with rounded corners
     const card = container.firstChild as HTMLElement;
     expect(card).toBeInTheDocument();
     expect(card.tagName).toBe("DIV");

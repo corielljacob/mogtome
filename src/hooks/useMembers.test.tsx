@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { useMembers, useMemberByCharacterId } from "./useMembers";
 import { membersApi } from "../api/members";
 
-// Mock the members API
 vi.mock("../api/members", () => ({
   membersApi: {
     getMembers: vi.fn(),
@@ -65,10 +64,8 @@ describe("useMembers", () => {
       wrapper: createWrapper(),
     });
 
-    // Initially loading
     expect(result.current.isLoading).toBe(true);
 
-    // Wait for data
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
@@ -138,7 +135,6 @@ describe("useMemberByCharacterId", () => {
       wrapper: createWrapper(),
     });
 
-    // Query should be disabled
     expect(result.current.fetchStatus).toBe("idle");
     expect(membersApi.getMemberByCharacterId).not.toHaveBeenCalled();
   });

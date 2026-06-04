@@ -10,7 +10,6 @@ describe("MooglePom", () => {
 
   it("renders with stem by default", () => {
     const { container } = render(<MooglePom />);
-    // The component should have multiple child elements (pom + stem)
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.children.length).toBeGreaterThan(1);
   });
@@ -18,7 +17,6 @@ describe("MooglePom", () => {
   it("hides stem when showStem is false", () => {
     const { container } = render(<MooglePom showStem={false} />);
     const wrapper = container.firstChild as HTMLElement;
-    // Should have fewer children without stem
     expect(wrapper).toBeInTheDocument();
   });
 
@@ -61,7 +59,6 @@ describe("MooglePomCluster", () => {
 
   it("renders multiple poms", () => {
     const { container } = render(<MooglePomCluster />);
-    // Should have 3 poms in the cluster
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.children.length).toBe(3);
   });

@@ -3,12 +3,11 @@ import { render, screen, waitFor } from "../test/test-utils";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AuthProvider } from "../contexts/AuthContext";
 
-// Mock the refreshAuthToken function from api/client to prevent network calls
+// mock refreshAuthToken to keep the auth check off the network
 vi.mock("../api/client", () => ({
   refreshAuthToken: vi.fn().mockResolvedValue(null),
 }));
 
-// Helper to create a valid JWT token
 function createMockJwt(
   payload: Record<string, unknown>,
   expiresIn = 3600,
@@ -44,7 +43,6 @@ describe("ProtectedRoute", () => {
       </AuthProvider>,
     );
 
-    // Wait for auth check to complete
     await waitFor(() => {
       expect(screen.getByText("Members Only, Kupo!")).toBeInTheDocument();
     });

@@ -31,7 +31,7 @@ describe("MemberCard", () => {
 
   it("renders avatar with correct src", () => {
     const { container } = render(<MemberCard member={mockMember} />);
-    // Avatar uses empty alt (decorative) since the link has an accessible label
+    // empty alt is intentional: link already has an accessible label
     const avatar = container.querySelector(
       `img[src="${mockMember.avatarLink}"]`,
     );
@@ -51,7 +51,6 @@ describe("MemberCard", () => {
 
   it("applies animation delay based on index", () => {
     const { container } = render(<MemberCard member={mockMember} index={5} />);
-    // The motion.div should be present
     expect(container.firstChild).toBeInTheDocument();
   });
 
@@ -86,7 +85,6 @@ describe("MemberCardSkeleton", () => {
   it("renders skeleton elements", () => {
     const { container } = render(<MemberCardSkeleton />);
     expect(container.firstChild).toBeInTheDocument();
-    // Should have shimmer animations
     expect(
       container.querySelector(".animate-shimmer, .animate-pulse"),
     ).toBeInTheDocument();
@@ -115,7 +113,7 @@ describe("MemberCardCompact", () => {
 
   it("renders avatar", () => {
     const { container } = render(<MemberCardCompact member={mockMember} />);
-    // Avatar uses empty alt (decorative) since the link has an accessible label
+    // empty alt is intentional: link already has an accessible label
     const avatar = container.querySelector(
       `img[src="${mockMember.avatarLink}"]`,
     );

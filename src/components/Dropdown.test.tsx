@@ -55,7 +55,6 @@ describe("Dropdown", () => {
     const trigger = screen.getByRole("button");
     fireEvent.click(trigger);
 
-    // Options should be visible
     expect(screen.getByRole("listbox")).toBeInTheDocument();
     expect(screen.getAllByRole("option")).toHaveLength(3);
   });
@@ -72,10 +71,8 @@ describe("Dropdown", () => {
       />,
     );
 
-    // Open dropdown
     fireEvent.click(screen.getByRole("button"));
 
-    // Click on option 3
     fireEvent.click(screen.getByText("Option 3"));
 
     expect(handleChange).toHaveBeenCalledWith("option3");
@@ -91,14 +88,11 @@ describe("Dropdown", () => {
       />,
     );
 
-    // Open dropdown
     fireEvent.click(screen.getByRole("button"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
 
-    // Select option
     fireEvent.click(screen.getByText("Option 2"));
 
-    // Dropdown should close
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 
@@ -162,7 +156,6 @@ describe("Dropdown", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger).toHaveAttribute("aria-label", "Sort by");
 
-    // Open and check expanded state
     fireEvent.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
@@ -239,11 +232,9 @@ describe("Dropdown", () => {
     const trigger = screen.getByRole("button");
     trigger.focus();
 
-    // Arrow down to open
     await user.keyboard("{ArrowDown}");
     expect(screen.getByRole("listbox")).toBeInTheDocument();
 
-    // Arrow down to move focus, then Enter to select
     await user.keyboard("{ArrowDown}");
     await user.keyboard("{Enter}");
 

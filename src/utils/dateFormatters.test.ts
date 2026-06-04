@@ -8,7 +8,7 @@ import {
 
 describe("dateFormatters", () => {
   beforeEach(() => {
-    // Mock current time to 2026-01-15 12:00:00 UTC
+    // pin "now" so relative-time math is deterministic
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-01-15T12:00:00Z"));
   });
@@ -44,10 +44,9 @@ describe("dateFormatters", () => {
   describe("formatFullDate", () => {
     it("formats date without time", () => {
       const result = formatFullDate("2026-01-15T14:30:00Z");
-      // Should include day of week, month, and day number
       expect(result).toContain("Jan");
       expect(result).toContain("15");
-      // Should NOT include time
+      // no time component, despite the source timestamp carrying one
       expect(result).not.toContain(":");
       expect(result).not.toContain("PM");
       expect(result).not.toContain("AM");
@@ -82,14 +81,13 @@ describe("dateFormatters", () => {
 
     it("returns formatted time for timestamps over an hour ago", () => {
       const now = new Date("2026-01-15T12:00:00Z").getTime();
-      const result = formatLastUpdated(now - 3600000); // 1 hour ago
-      // Should contain time format like "11:00 AM"
+      const result = formatLastUpdated(now - 3600000);
       expect(result).toMatch(/\d{1,2}:\d{2}\s*(AM|PM)/i);
     });
 
     it("handles edge case at exactly 10 seconds", () => {
       const now = new Date("2026-01-15T12:00:00Z").getTime();
-      // At exactly 10 seconds, should show seconds, not "just now"
+      // boundary: 10s is the cutoff, flips from "just now" to seconds
       expect(formatLastUpdated(now - 10000)).toBe("10s ago");
     });
 
@@ -146,14 +144,12 @@ describe("dateFormatters", () => {
     });
 
     it("formatRelativeTime handles year boundaries", () => {
-      // Event from last year
       const result = formatRelativeTime("2025-01-01T12:00:00Z");
       expect(result).toContain("Jan");
     });
 
     it("formatLastUpdated handles timestamps from today at different hours", () => {
       const now = new Date("2026-01-15T12:00:00Z").getTime();
-      // 2 hours ago
       const twoHoursAgo = formatLastUpdated(now - 7200000);
       expect(twoHoursAgo).toMatch(/\d{1,2}:\d{2}\s*(AM|PM)/i);
     });

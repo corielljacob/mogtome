@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { CharacterMapping } from "../features/characterMapping";
 import { characterMappingApi } from "../api/characterMapping";
 
-// Mock the characterMappingApi
 vi.mock("../api/characterMapping", () => ({
   characterMappingApi: {
     getUnmappedCharacters: vi.fn(),
@@ -35,7 +34,6 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
@@ -174,7 +172,7 @@ describe("CharacterMapping", () => {
         screen.getByRole("button", { name: /confirm 1 exact match/i }),
       ).toBeInTheDocument();
     });
-    // The matched character/account tiles carry an "Exact Match" confidence badge.
+    // matched tiles also get an "Exact Match" confidence badge
     expect(screen.getAllByText("Exact Match").length).toBeGreaterThan(0);
   });
 

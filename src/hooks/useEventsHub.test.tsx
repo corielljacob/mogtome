@@ -1,16 +1,10 @@
 import { describe, it, expect } from "vitest";
 import type { ConnectionStatus } from "./useEventsHub";
 
-/**
- * Note: Full integration tests for useEventsHub require complex SignalR mocking.
- * These tests verify the types and basic structure.
- *
- * For full testing, use integration/e2e tests with a real SignalR server.
- */
+// types/structure only - full coverage needs SignalR mocking, left to e2e
 
 describe("useEventsHub types", () => {
   it("ConnectionStatus type has expected values", () => {
-    // Type check - these should compile without errors
     const statuses: ConnectionStatus[] = [
       "disconnected",
       "connecting",
@@ -36,19 +30,15 @@ describe("useEventsHub exports", () => {
   });
 
   it("exports ConnectionStatus type", async () => {
-    // This is a compile-time check - if it compiles, the type exists
+    // compile-time check: if it compiles, the type exists
     const status: ConnectionStatus = "connected";
     expect(status).toBe("connected");
   });
 
   it("hook returns expected shape", async () => {
-    // Just verify the module structure - actual hook behavior requires SignalR mock
+    // structure-only; exercising the hook needs a SignalR mock
     const module = await import("./useEventsHub");
 
-    // The hook should be a function
     expect(typeof module.useEventsHub).toBe("function");
-
-    // Expected return type shape (compile-time check):
-    // { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen }
   });
 });

@@ -16,8 +16,7 @@ describe("ContentCard", () => {
   it("applies default styling", () => {
     const { container } = render(<ContentCard>Content</ContentCard>);
 
-    // The cozy card base: a single `.surface` class provides background,
-    // border, radius and soft shadow (see docs/DESIGN.md).
+    // `.surface` bundles bg/border/radius/shadow (see docs/DESIGN.md)
     const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass("surface");
     expect(card).toHaveClass("isolate");

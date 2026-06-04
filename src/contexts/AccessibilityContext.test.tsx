@@ -14,7 +14,6 @@ const STORAGE_KEY = "mogtome-accessibility";
 describe("AccessibilityProvider", () => {
   beforeEach(() => {
     localStorage.clear();
-    // Reset document classes
     document.documentElement.className = "";
     document.body.className = "";
   });
@@ -51,7 +50,7 @@ describe("AccessibilityProvider", () => {
     expect(result.current.settings.highContrast).toBe(true);
     expect(result.current.settings.largeText).toBe(true);
     expect(result.current.settings.colorblindMode).toBe("protanopia");
-    // Non-stored values should have defaults
+    // unstored keys fall back to defaults, not undefined
     expect(result.current.settings.extraDark).toBe(false);
   });
 
@@ -60,12 +59,10 @@ describe("AccessibilityProvider", () => {
 
     const { result } = renderHook(() => useAccessibility(), { wrapper });
 
-    // Should fall back to defaults
     expect(result.current.settings.highContrast).toBe(false);
   });
 
   it("respects system reduced motion preference", () => {
-    // Mock matchMedia to return reduced motion
     vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
       matches: query === "(prefers-reduced-motion: reduce)",
       media: query,
@@ -179,8 +176,7 @@ describe("AccessibilityProvider", () => {
         result.current.resetSettings();
       });
 
-      // After reset, the effect re-persists default settings
-      // What matters is that the settings themselves are reset to defaults
+      // reset effect re-persists defaults, so assert state not storage removal
       expect(result.current.settings.highContrast).toBe(false);
       expect(result.current.settings.colorblindMode).toBe("none");
     });
@@ -345,7 +341,6 @@ describe("COLORBLIND_MODES constant", () => {
   });
 });
 
-// Test component that uses accessibility
 function TestAccessibilityComponent() {
   const { settings, toggleSetting, updateSetting, resetSettings } =
     useAccessibility();

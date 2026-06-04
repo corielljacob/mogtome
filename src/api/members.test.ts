@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { membersApi } from './members';
 import apiClient from './client';
 
-// Mock the API client
 vi.mock('./client', () => ({
   default: {
     get: vi.fn(),
@@ -45,7 +44,7 @@ const mockMembers = [
 describe('membersApi', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset module state between tests
+    // members module caches results, so reset module state between tests
     vi.resetModules();
   });
 

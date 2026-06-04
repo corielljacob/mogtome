@@ -21,7 +21,6 @@ describe("StoryDivider", () => {
     const { container } = render(<StoryDivider />);
 
     const svg = container.querySelector("svg");
-    // Medium size classes
     expect(svg).toHaveClass("w-56", "md:w-72", "h-7");
   });
 
@@ -49,11 +48,9 @@ describe("StoryDivider", () => {
   it("contains decorative elements", () => {
     const { container } = render(<StoryDivider />);
 
-    // Check for the wavy path
     const path = container.querySelector("path");
     expect(path).toBeInTheDocument();
 
-    // Check for decorative circles
     const circles = container.querySelectorAll("circle");
     expect(circles.length).toBeGreaterThan(0);
   });

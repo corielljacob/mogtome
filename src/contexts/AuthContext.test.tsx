@@ -13,12 +13,11 @@ import {
 } from "./AuthContext";
 import type { ReactNode } from "react";
 
-// Mock the refreshAuthToken function from api/client
+// keep the auth check off the network
 vi.mock("../api/client", () => ({
   refreshAuthToken: vi.fn().mockResolvedValue(null),
 }));
 
-// Helper to create a valid JWT token for testing
 function createMockJwt(
   payload: Record<string, unknown>,
   expiresIn = 3600,
@@ -31,10 +30,9 @@ function createMockJwt(
   return `${header}.${payloadEncoded}.${signature}`;
 }
 
-// Create an expired token
 function createExpiredJwt(payload: Record<string, unknown>): string {
   const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const exp = Math.floor(Date.now() / 1000) - 3600; // Expired 1 hour ago
+  const exp = Math.floor(Date.now() / 1000) - 3600; // expired 1h ago
   const payloadWithExp = { ...payload, exp };
   const payloadEncoded = btoa(JSON.stringify(payloadWithExp));
   const signature = "mock-signature";
@@ -134,7 +132,6 @@ describe("AuthProvider", () => {
   it("starts with loading state", async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    // After initial render and async refresh attempt, loading should complete
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
@@ -221,19 +218,16 @@ describe("AuthProvider", () => {
   it("refreshUser reloads user from token", async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    // Wait for initial load
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Initially not authenticated
     expect(result.current.isAuthenticated).toBe(false);
 
-    // Set a token externally
+    // set token outside the provider so refreshUser has something to pick up
     const token = createMockJwt(mockUserPayload);
     localStorage.setItem("mogtome_auth_token", token);
 
-    // Call refreshUser (now async)
     await act(async () => {
       await result.current.refreshUser();
     });
@@ -245,7 +239,7 @@ describe("AuthProvider", () => {
 
 describe("useAuth hook", () => {
   it("throws error when used outside AuthProvider", () => {
-    // Suppress console.error for this test
+    // silence the expected React error boundary log
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => {
@@ -256,7 +250,6 @@ describe("useAuth hook", () => {
   });
 });
 
-// Test component that uses auth
 function TestAuthComponent() {
   const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
@@ -291,7 +284,6 @@ describe("Auth Component Integration", () => {
       </AuthProvider>,
     );
 
-    // Wait for loading to finish
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });

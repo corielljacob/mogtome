@@ -61,7 +61,7 @@ describe("Button", () => {
     render(<Button isLoading>Loading</Button>);
     const button = screen.getByRole("button");
     expect(button).toBeDisabled();
-    // Loading spinner should be present (SVG element)
+    // spinner renders as an inline svg
     expect(button.querySelector("svg")).toBeInTheDocument();
   });
 
