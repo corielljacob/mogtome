@@ -1837,7 +1837,7 @@ export function Home() {
           <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
             {/* Speech bubble lives ABOVE the moogle in DOM flow */}
             <motion.div
-              className="relative z-40 mb-3 sm:mb-4 lg:mb-6 lg:mr-10 xl:mr-20"
+              className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ y: [0, -8, 0], opacity: 1, scale: 1 }}
               transition={{
@@ -1857,10 +1857,11 @@ export function Home() {
                 className="
                 relative bg-[var(--card)]
                 px-5 sm:px-7 py-3 sm:py-4
-                rounded-[2rem] rounded-br-md
+                rounded-[1.9rem]
                 border-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))]
                 shadow-[0_0_0_3px_var(--card),3px_4px_0_0_color-mix(in_srgb,var(--primary)_22%,transparent)]
-                max-w-[260px] sm:max-w-[300px]
+                w-[16rem] sm:w-[18rem] min-h-[3.75rem] sm:min-h-[4.25rem]
+                flex items-center justify-center
               "
               >
                 {/* Bow tied on the bubble */}
@@ -1868,28 +1869,22 @@ export function Home() {
                   className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm"
                   aria-hidden="true"
                 />
-                {/* Thought bubble dots trailing down toward moogle */}
+                {/* Speech-bubble tail — points down to the moogle. The card-colored
+                    body sits over the bubble's bottom border (hiding the seam); the
+                    two bordered outer edges form the pointed tip. */}
                 <div
-                  className="absolute -bottom-3 left-1/2 -translate-x-3 w-3.5 h-3.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40"
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute -bottom-7 left-1/2 translate-x-1 w-2.5 h-2.5 bg-[var(--card)]/95 rounded-full shadow-sm border border-[var(--border)]/40"
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute -bottom-10 left-1/2 translate-x-4 w-1.5 h-1.5 bg-[var(--primary)]/60 rounded-full"
+                  className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-[18px] h-[18px] bg-[var(--card)] border-b-2 border-r-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))] rotate-45 rounded-br-[6px]"
                   aria-hidden="true"
                 />
 
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.p
                     key={quoteIndex < 0 ? "greeting" : quoteIndex}
                     className="font-accent text-base sm:text-lg md:text-xl text-[var(--primary)] text-center leading-snug font-bold"
-                    initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    exit={{ opacity: 0, scale: 0.85, rotate: 2 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
                     aria-live="polite"
                     aria-atomic="true"
                   >
@@ -1932,7 +1927,7 @@ export function Home() {
               <motion.img
                 src={welcomingMoogle}
                 alt="A magical mogtome moogle"
-                className="relative w-40 sm:w-56 md:w-72 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
+                className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
                 drag
                 dragConstraints={{ left: -20, right: 20, top: -15, bottom: 15 }}
                 dragElastic={0.15}

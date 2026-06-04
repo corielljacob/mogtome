@@ -379,7 +379,8 @@ export function CharacterMapping() {
                               key={user.discordId}
                               user={user}
                               isSelected={
-                                selectedDiscordUser?.discordId === user.discordId
+                                selectedDiscordUser?.discordId ===
+                                user.discordId
                               }
                               matchInfo={matchInfo}
                               onClick={() => selectDiscordUser(user)}
