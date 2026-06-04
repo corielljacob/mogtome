@@ -1576,16 +1576,18 @@ export function Home() {
         className="fixed inset-0 overflow-hidden pointer-events-none z-0"
         aria-hidden="true"
       >
-        {/* Warm light pool — top-left (static for performance) */}
+        {/* Warm light pool — top-left. Fixed size + position + its own GPU layer
+            so a window resize never re-rasterizes the 60px blur (the main cause
+            of resize jank was viewport-sized blurs re-blurring every frame). */}
         <div
-          className="absolute -top-[12%] -left-[10%] w-[45vw] h-[45vw] min-w-[320px] min-h-[320px] rounded-full blur-[60px] opacity-70"
+          className="absolute -top-40 -left-32 w-[48rem] h-[48rem] rounded-full blur-[60px] opacity-70 [transform:translateZ(0)]"
           style={{
             background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 20%, transparent), transparent 70%)`,
           }}
         />
-        {/* Warm light pool — bottom-right (static) */}
+        {/* Warm light pool — bottom-right (static, same treatment) */}
         <div
-          className="absolute -bottom-[12%] -right-[10%] w-[40vw] h-[40vw] min-w-[300px] min-h-[300px] rounded-full blur-[55px] opacity-65"
+          className="absolute -bottom-40 -right-32 w-[44rem] h-[44rem] rounded-full blur-[55px] opacity-65 [transform:translateZ(0)]"
           style={{
             background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 18%, transparent), transparent 70%)`,
           }}
@@ -1802,7 +1804,7 @@ export function Home() {
                   />
                   Take a peek, kupo
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {[
                     {
                       to: "/members",
@@ -1819,7 +1821,7 @@ export function Home() {
                     <Link
                       key={c.to}
                       to={c.to}
-                      className="px-3 py-1 rounded-full font-display font-bold text-sm hover-bounce"
+                      className="shrink-0 whitespace-nowrap px-3 py-1 rounded-full font-display font-bold text-sm hover-bounce"
                       style={{
                         background: `color-mix(in srgb, ${c.color} 18%, var(--card))`,
                         color: c.color,

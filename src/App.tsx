@@ -109,6 +109,29 @@ function AppContent() {
     jumpAppToTop();
   }, [location.pathname]);
 
+  // While the viewport is actively resizing, mark <html data-resizing> so the
+  // global CSS freeze (animations.css) suspends transitions/animations. Without
+  // it, spring/overshoot transitions and the Home view's transform layers can
+  // render a transient oversized/stale frame that only corrects on a reflow.
+  useEffect(() => {
+    const root = document.documentElement;
+    let timer: number | undefined;
+    const onResize = () => {
+      root.setAttribute("data-resizing", "");
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(
+        () => root.removeAttribute("data-resizing"),
+        180,
+      );
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (timer) window.clearTimeout(timer);
+      root.removeAttribute("data-resizing");
+    };
+  }, []);
+
   return (
     <MotionConfig
       reducedMotion={settings.reducedMotion ? "always" : "never"}

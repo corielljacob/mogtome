@@ -253,3 +253,20 @@ input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * RESIZE FREEZE
+ * While the window is actively being resized, kill transitions and pause
+ * animations. Spring/overshoot transitions (and the many transform layers on
+ * the Home view) can otherwise render a transient oversized/stale frame mid-
+ * resize that only corrects on the next forced reflow. Freezing lets the layout
+ * settle in one clean pass when resizing stops — and keeps resizing cheap.
+ * The `data-resizing` attribute is toggled in App (see AppContent).
+ * ───────────────────────────────────────────────────────────────────────────── */
+html[data-resizing] *,
+html[data-resizing] *::before,
+html[data-resizing] *::after {
+  transition: none !important;
+  animation-play-state: paused !important;
+  scroll-behavior: auto !important;
+}
