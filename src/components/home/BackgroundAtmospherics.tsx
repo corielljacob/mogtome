@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
-import { IS_MOBILE } from "../../utils";
+import { IS_MOBILE } from "../../utils/motionConfig";
 import { FloatingMoogles } from "../FloatingMoogles";
 import {
   DEFAULT_FAIRY_LIGHTS,

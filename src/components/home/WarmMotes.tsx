@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { IS_MOBILE } from "../../utils";
+import { IS_MOBILE } from "../../utils/motionConfig";
 import { DEFAULT_WARM_MOTES } from "./homeData";
 
 export function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {

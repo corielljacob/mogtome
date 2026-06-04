@@ -13,7 +13,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import type { FreeCompanyMember } from "../types";
 import { MemberCard } from "./MemberCard";
 import { KawaiiStar } from "./kawaiiMotifs";
-import { getRankColor } from "../constants";
+import { getRankColor } from "../constants/rankColors";
 import { scrollAppToTop } from "../utils/scroll";
 
 interface PaginatedMemberGridProps {

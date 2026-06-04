@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { IS_MOBILE } from "../../utils";
+import { IS_MOBILE } from "../../utils/motionConfig";
 import { DEFAULT_FAIRY_LIGHTS } from "./homeData";
 
 export function FairyLights({

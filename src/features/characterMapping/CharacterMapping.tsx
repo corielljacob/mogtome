@@ -15,13 +15,12 @@ import {
 import { ContentCard } from "../../components/ContentCard";
 import { Button, IconButton } from "../../components/Button";
 import { DiscordIcon } from "../../components/DiscordIcon";
-import { useCharacterMapping, useSmartPicker } from "./hooks";
-import {
-  EmptyState,
-  CharacterItem,
-  DiscordUserItem,
-  SearchInput,
-} from "./components";
+import { useCharacterMapping } from "./hooks/useCharacterMapping";
+import { useSmartPicker } from "./hooks/useSmartPicker";
+import { EmptyState } from "./components/EmptyState";
+import { CharacterItem } from "./components/CharacterItem";
+import { DiscordUserItem } from "./components/DiscordUserItem";
+import { SearchInput } from "./components/SearchInput";
 import FfxivIcon from "../../assets/icons/ffxiv.png";
 
 export function CharacterMapping() {

@@ -19,17 +19,19 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-  Tag,
+} from "../components/PageShell";
+import { Tag } from "../components/Tag";
+import {
   KawaiiStar,
   KawaiiHeart,
   KawaiiSparkle,
   KawaiiBow,
-} from "../components";
+} from "../components/kawaiiMotifs";
 import type { ComponentType } from "react";
-import { useEventsHub, type ConnectionStatus } from "../hooks";
+import { useEventsHub, type ConnectionStatus } from "../hooks/useEventsHub";
 
-import { formatRelativeTime } from "../utils";
-import { getEventTypeConfig, EVENT_TYPE_CONFIG } from "../constants";
+import { formatRelativeTime } from "../utils/dateFormatters";
+import { getEventTypeConfig, EVENT_TYPE_CONFIG } from "../constants/eventTypes";
 
 import { eventsApi } from "../api/events";
 import type { ChronicleEvent, ChronicleEventFilter } from "../types";

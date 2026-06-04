@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
-import { getRankColor } from "../constants";
-import { useReducedMotion } from "../hooks";
+import { getRankColor } from "../constants/rankColors";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useTheme } from "../contexts/ThemeContext";
 import { KawaiiHeart, KawaiiStar } from "./kawaiiMotifs";
 

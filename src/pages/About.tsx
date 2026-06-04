@@ -17,13 +17,15 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-  Tag,
+} from "../components/PageShell";
+import { Tag } from "../components/Tag";
+import {
   KawaiiStar,
   KawaiiBow,
   KawaiiSparkle,
   KawaiiHeart,
-} from "../components";
-import { getRankColor } from "../constants";
+} from "../components/kawaiiMotifs";
+import { getRankColor } from "../constants/rankColors";
 import { useAuth } from "../contexts/AuthContext";
 import type { StaffMember } from "../types";
 import { FC_RANKS } from "../types";

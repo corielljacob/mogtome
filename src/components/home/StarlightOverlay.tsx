@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { Snowflake, Sparkles } from "lucide-react";
-import { IS_MOBILE } from "../../utils";
+import { IS_MOBILE } from "../../utils/motionConfig";
 
 const STRING_LIGHT_COLORS = [
   "#EF4444",

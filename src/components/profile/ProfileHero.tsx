@@ -1,7 +1,7 @@
 import { Globe } from "lucide-react";
 import { Tag } from "../Tag";
-import { getRankColor } from "../../constants";
-import { formatMemberSince } from "../../utils";
+import { getRankColor } from "../../constants/rankColors";
+import { formatMemberSince } from "../../utils/dateFormatters";
 import type { ProfileData } from "../../types";
 
 interface ProfileHeroProps {

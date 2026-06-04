@@ -1,14 +1,10 @@
 import type { CSSProperties } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useProfile } from "../hooks";
-import {
-  PageLayout,
-  LoadingState,
-  ErrorState,
-  ProfileView,
-  DiscordIcon,
-} from "../components";
+import { useProfile } from "../hooks/useProfile";
+import { PageLayout, LoadingState, ErrorState } from "../components/PageShell";
+import { ProfileView } from "../components/profile/ProfileView";
+import { DiscordIcon } from "../components/DiscordIcon";
 import type { ProfileTarget } from "../types";
 
 import mailMoogle from "../assets/moogles/moogle mail.webp";

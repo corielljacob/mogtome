@@ -1,10 +1,10 @@
 import { type CSSProperties } from "react";
+import { PageLayout } from "../components/PageShell";
 import {
-  PageLayout,
   KawaiiSparkle,
   KawaiiBow,
   KawaiiHeart,
-} from "../components";
+} from "../components/kawaiiMotifs";
 import { ThemeSection } from "../components/settings/ThemeSection";
 import { SeasonalEventSection } from "../components/settings/SeasonalEventSection";
 import { AccessibilitySection } from "../components/settings/AccessibilitySection";
