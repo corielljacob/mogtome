@@ -38,7 +38,6 @@ function SubmissionCard({
 }: SubmissionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Format the submission date
   const submittedDate = new Date(submission.submittedAt);
   const formattedDate = submittedDate.toLocaleDateString("en-US", {
     month: "short",
@@ -63,7 +62,6 @@ function SubmissionCard({
       exit={{ opacity: 0, x: -20 }}
       className="surface p-4 touch-manipulation"
     >
-      {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
         <div className="flex items-center gap-3 sm:gap-2.5 min-w-0">
           {submitter ? (
@@ -102,7 +100,6 @@ function SubmissionCard({
           </div>
         </div>
 
-        {/* Status tag */}
         <Tag
           color={submission.status === "Pending" ? "var(--warning)" : undefined}
           className="flex-shrink-0"
@@ -111,7 +108,6 @@ function SubmissionCard({
         </Tag>
       </div>
 
-      {/* Biography content */}
       <div className="mb-4">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
@@ -128,7 +124,6 @@ function SubmissionCard({
         </button>
       </div>
 
-      {/* Action buttons */}
       <div className="flex items-center gap-2">
         <Button
           variant="success"
@@ -157,17 +152,11 @@ function SubmissionCard({
   );
 }
 
-/**
- * PendingSubmissions - Knight Dashboard component for reviewing biography submissions
- *
- * Fetches pending submissions and allows Knights to approve them.
- */
 export function PendingSubmissions() {
   const queryClient = useQueryClient();
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
 
-  // Fetch pending submissions
   const {
     data: submissions = [],
     isLoading: isLoadingSubmissions,
@@ -176,29 +165,26 @@ export function PendingSubmissions() {
   } = useQuery({
     queryKey: ["biography-submissions"],
     queryFn: () => biographyApi.getPendingSubmissions(),
-    staleTime: 1000 * 30, // 30 seconds
+    staleTime: 1000 * 30, // 30s
   });
 
-  // Fetch staff to look up submitter info by Discord ID
+  // staff lookup resolves submitter info by Discord ID
   const { data: staffData } = useQuery({
     queryKey: ["staff"],
     queryFn: () => membersApi.getStaff(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5min
   });
 
-  // Create a lookup map from Discord ID to staff member
   const staffByDiscordId = new Map(
     (staffData?.staff || [])
       .filter((m) => m.discordId)
       .map((m) => [m.discordId!, m]),
   );
 
-  // Filter to only show pending submissions
   const pendingSubmissions = submissions.filter((s) => s.status === "Pending");
 
   const isLoading = isLoadingSubmissions;
 
-  // Mutation for approving submissions
   const approveMutation = useMutation({
     mutationFn: (submissionId: string) =>
       biographyApi.approveSubmission(submissionId),
@@ -206,9 +192,8 @@ export function PendingSubmissions() {
       setApprovingId(submissionId);
     },
     onSuccess: () => {
-      // Invalidate and refetch submissions
       queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
-      // Also invalidate staff data since approved bios appear there
+      // approved bios surface in staff data too
       queryClient.invalidateQueries({ queryKey: ["staff"] });
     },
     onSettled: () => {
@@ -216,7 +201,6 @@ export function PendingSubmissions() {
     },
   });
 
-  // Mutation for rejecting submissions
   const rejectMutation = useMutation({
     mutationFn: (submissionId: string) =>
       biographyApi.rejectSubmission(submissionId),
@@ -224,7 +208,6 @@ export function PendingSubmissions() {
       setRejectingId(submissionId);
     },
     onSuccess: () => {
-      // Invalidate and refetch submissions
       queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
     },
     onSettled: () => {
@@ -242,7 +225,6 @@ export function PendingSubmissions() {
 
   return (
     <ContentCard>
-      {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex items-start gap-2.5 sm:gap-3">
           <span className="icon-badge w-10 h-10 shrink-0 text-[var(--primary)]">
@@ -272,7 +254,6 @@ export function PendingSubmissions() {
         />
       </div>
 
-      {/* Content */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-8 sm:py-12">
           <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mb-3" />
@@ -308,14 +289,12 @@ export function PendingSubmissions() {
         </div>
       ) : (
         <div className="flex flex-col">
-          {/* Count badge */}
           <div className="flex items-center gap-2 mb-4 flex-shrink-0">
             <Tag color="var(--warning)">
               {pendingSubmissions.length} pending
             </Tag>
           </div>
 
-          {/* Scrollable submission cards container */}
           <div className="overflow-y-auto max-h-[400px] sm:max-h-[500px] pr-1 -mr-1 space-y-3 scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent">
             <AnimatePresence mode="popLayout">
               {pendingSubmissions.map((submission) => (
@@ -334,7 +313,7 @@ export function PendingSubmissions() {
             </AnimatePresence>
           </div>
 
-          {/* Error message - outside scroll area so it's always visible */}
+          {/* kept outside the scroll area so it stays visible */}
           {(approveMutation.isError || rejectMutation.isError) && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}

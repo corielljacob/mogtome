@@ -8,10 +8,6 @@ interface CardProps {
   hover?: boolean;
 }
 
-/**
- * Card - Base card component.
- * Clean cards with subtle shadows and optional hover effects.
- */
 export function Card({
   children,
   className = "",

@@ -10,10 +10,6 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RANK THEMES
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface RankTheme {
   gradient: string;
   glow: string;

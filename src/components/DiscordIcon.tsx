@@ -1,8 +1,5 @@
 import type { SVGProps } from "react";
 
-/**
- * Discord brand icon SVG - shared across Navbar, Home, and Profile.
- */
 export function DiscordIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg

@@ -1,13 +1,5 @@
-/**
- * Elegant decorative divider — botanical vine motif.
- * A delicate center ornament flanked by gentle trailing lines
- * with small leaf and dot accents.
- */
-
 export interface StoryDividerProps {
-  /** Additional CSS classes */
   className?: string;
-  /** Size variant */
   size?: "sm" | "md" | "lg";
 }
 
@@ -62,7 +54,7 @@ export function StoryDivider({
         className="text-[var(--secondary)]/40"
       />
 
-      {/* Center ornament — diamond with inner gem */}
+      {/* Center ornament - diamond with inner gem */}
       <g transform="translate(100, 12) rotate(45)">
         <rect
           x="-4.5"

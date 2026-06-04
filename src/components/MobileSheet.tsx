@@ -13,25 +13,11 @@ interface MobileSheetProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  /** Height of the sheet: 'auto' | 'half' | 'full' */
   size?: "auto" | "half" | "full";
-  /** Whether to show the close button */
   showCloseButton?: boolean;
-  /** Whether the sheet can be dismissed by swiping down */
   swipeToDismiss?: boolean;
 }
 
-/**
- * MobileSheet - A native-feeling bottom sheet for mobile interactions
- *
- * Features:
- * - Swipe-to-dismiss gesture
- * - Backdrop tap to close
- * - Body scroll lock
- * - Safe area support
- * - Spring animations for natural feel
- * - Only renders on mobile (hidden on md+)
- */
 export const MobileSheet = memo(function MobileSheet({
   isOpen,
   onClose,
@@ -46,7 +32,7 @@ export const MobileSheet = memo(function MobileSheet({
   const opacity = useTransform(y, [0, 300], [1, 0]);
   const backdropOpacity = useTransform(y, [0, 300], [0.5, 0]);
 
-  // Lock body scroll when sheet is open
+  // lock body scroll while open
   useEffect(() => {
     if (!isOpen) return;
 
@@ -72,7 +58,7 @@ export const MobileSheet = memo(function MobileSheet({
   ) => {
     if (!swipeToDismiss) return;
 
-    // Close if velocity is high or dragged past threshold
+    // close on a fast flick or a long enough drag
     if (info.velocity.y > 500 || info.offset.y > 150) {
       onClose();
     }
@@ -88,7 +74,7 @@ export const MobileSheet = memo(function MobileSheet({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop - z-[60] to be above bottom nav (z-50) */}
+          {/* z-[60] to sit above the bottom nav (z-50) */}
           <motion.div
             className="fixed inset-0 z-[60] bg-black md:hidden"
             style={{ opacity: backdropOpacity }}
@@ -99,7 +85,7 @@ export const MobileSheet = memo(function MobileSheet({
             aria-hidden="true"
           />
 
-          {/* Sheet - z-[60] to be above bottom nav (z-50) */}
+          {/* z-[60] to sit above the bottom nav (z-50) */}
           <motion.div
             ref={sheetRef}
             className="fixed inset-x-0 bottom-0 z-[60] md:hidden"
@@ -123,12 +109,11 @@ export const MobileSheet = memo(function MobileSheet({
               ${sizeClasses[size]}
             `}
             >
-              {/* Drag handle - larger touch area */}
+              {/* drag handle */}
               <div className="flex justify-center pt-4 pb-3 flex-shrink-0">
                 <div className="w-12 h-1.5 rounded-full bg-[var(--text-subtle)]/30" />
               </div>
 
-              {/* Header - only if title or close button */}
               {(title || showCloseButton) && (
                 <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--border)] flex-shrink-0">
                   {title ? (
@@ -151,7 +136,7 @@ export const MobileSheet = memo(function MobileSheet({
                 </div>
               )}
 
-              {/* Content - extra padding at bottom for safe area + space above where nav would be */}
+              {/* extra bottom padding clears the safe area + where the nav sits */}
               <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+5rem)]">
                 {children}
               </div>

@@ -1,10 +1,4 @@
-import {
-  memo,
-  useState,
-  useEffect,
-  useRef,
-  type CSSProperties,
-} from "react";
+import { memo, useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
@@ -26,23 +20,14 @@ import { LogoIcon } from "./LogoIcon";
 import { KawaiiStar, KawaiiHeart } from "./kawaiiMotifs";
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
-/**
- * ScrapbookNav — the whole-site navigation as die-cut "index tabs" stuck to the
- * page edge, like the colored dividers in a binder/journal. Pure pop-kawaii:
- * each section is its own candy-colored sticker tab. The active one juts out,
- * shows its label + a star, and a little moogle peeks over it.
- *
- * Desktop (md+): a vertical stack of tabs on the LEFT edge.
- * Mobile (<md): a horizontal strip of tabs poking up from the BOTTOM edge.
- *
- * Replaces both the old sidebar and the mobile bottom bar.
- */
+// whole-site nav as index tabs on the page edge.
+// desktop (md+): vertical stack on the left. mobile (<md): horizontal strip along the bottom.
 
 interface Tab {
   path: string;
   label: string;
   icon: LucideIcon;
-  /** Candy color for the sticker (theme token or hex). */
+  /** theme token or hex */
   color: string;
 }
 
@@ -87,7 +72,6 @@ function useTabs(): Tab[] {
   ];
 }
 
-// ── Desktop left-edge tab ─────────────────────────────────────────────────────
 const DesktopTab = memo(function DesktopTab({
   tab,
   isActive,
@@ -136,7 +120,6 @@ const DesktopTab = memo(function DesktopTab({
   );
 });
 
-// ── Desktop theme-toggle sticker ──────────────────────────────────────────────
 const ThemeToggleSticker = memo(function ThemeToggleSticker() {
   const { isDarkMode, setColorMode } = useTheme();
   return (
@@ -173,9 +156,7 @@ const ThemeToggleSticker = memo(function ThemeToggleSticker() {
   );
 });
 
-// ── Moogle logo easter egg ────────────────────────────────────────────────────
-// Not a nav link (Home already has its own tab) — poke the moogle and it wiggles,
-// squeaks a little "kupo", and puffs out a few hearts & stars.
+// poke-me easter egg, not a nav link - Home already has its own tab
 const KUPO_LINES = [
   "Kupo!",
   "Kupopo~",
@@ -214,7 +195,6 @@ const MoogleLogoButton = memo(function MoogleLogoButton() {
 
   return (
     <div className="relative mb-1">
-      {/* Little "kupo!" squeak bubble — pops out to the right of the tab */}
       <AnimatePresence>
         {say && (
           <motion.span
@@ -241,7 +221,6 @@ const MoogleLogoButton = memo(function MoogleLogoButton() {
             "0 0 0 3px var(--card), 2px 3px 0 0 color-mix(in srgb, var(--primary) 26%, transparent)",
         }}
       >
-        {/* Hearts & stars puff out on each poke */}
         {!reduceMotion && pokes > 0 && (
           <span
             key={pokes}
@@ -271,7 +250,6 @@ const MoogleLogoButton = memo(function MoogleLogoButton() {
           </span>
         )}
 
-        {/* The moogle himself — wiggles on each poke */}
         <motion.span
           key={pokes}
           animate={
@@ -289,7 +267,6 @@ const MoogleLogoButton = memo(function MoogleLogoButton() {
   );
 });
 
-// ── Mobile bottom tab ─────────────────────────────────────────────────────────
 const MobileTab = memo(function MobileTab({
   tab,
   isActive,
@@ -324,7 +301,6 @@ const MobileTab = memo(function MobileTab({
   );
 });
 
-// ── "More" 2×2 dot icon ───────────────────────────────────────────────────────
 function MoreIcon({ className = "" }: { className?: string }) {
   return (
     <span
@@ -338,7 +314,6 @@ function MoreIcon({ className = "" }: { className?: string }) {
   );
 }
 
-// ── "More" sheet tab — a sticker card in the bottom sheet ──────────────────────
 const SheetTab = memo(function SheetTab({
   tab,
   isActive,
@@ -383,7 +358,7 @@ export function ScrapbookNav() {
   const isActive = (path: string) => location.pathname === path;
 
   // Mobile: keep ~4 core tabs in the bar; everything else lives in the More
-  // sheet — so the bar stays fixed-size as more features are added.
+  // sheet - so the bar stays fixed-size as more features are added.
   const CORE_PRIORITY = ["/", "/members", "/chronicle", "/profile", "/about"];
   const coreTabs: Tab[] = [];
   for (const p of CORE_PRIORITY) {
@@ -398,12 +373,11 @@ export function ScrapbookNav() {
 
   return (
     <>
-      {/* Desktop: left-edge index tabs */}
+      {/* desktop: left-edge tabs */}
       <nav
         className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 flex-col items-start gap-2.5 max-h-screen py-2"
         aria-label="Main navigation"
       >
-        {/* Moogle logo — a poke-me easter egg (Home lives in its own tab below) */}
         <MoogleLogoButton />
 
         {tabs.map((tab) => (
@@ -413,7 +387,7 @@ export function ScrapbookNav() {
         <ThemeToggleSticker />
       </nav>
 
-      {/* Mobile: bottom bar — core tabs + "More" */}
+      {/* mobile: bottom bar - core tabs + "More" */}
       <nav
         className="md:hidden fixed bottom-0 inset-x-0 z-50 px-2 pb-[env(safe-area-inset-bottom)] pointer-events-none"
         aria-label="Mobile navigation"
@@ -448,11 +422,10 @@ export function ScrapbookNav() {
         </div>
       </nav>
 
-      {/* Mobile: "More" bottom sheet */}
+      {/* mobile: "More" bottom sheet */}
       <AnimatePresence>
         {sheetOpen && (
           <div className="md:hidden fixed inset-0 z-[60]">
-            {/* backdrop */}
             <motion.div
               className="absolute inset-0 bg-black/45"
               initial={{ opacity: 0 }}
@@ -461,7 +434,6 @@ export function ScrapbookNav() {
               onClick={() => setSheetOpen(false)}
               aria-hidden="true"
             />
-            {/* sheet */}
             <motion.div
               className="absolute inset-x-0 bottom-0"
               initial={{ y: "100%" }}
@@ -479,7 +451,6 @@ export function ScrapbookNav() {
               aria-label="More navigation"
             >
               <div className="surface rounded-t-2xl px-4 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
-                {/* drag handle */}
                 <div
                   className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[color:color-mix(in_srgb,var(--text-subtle)_40%,transparent)]"
                   aria-hidden="true"
@@ -510,7 +481,6 @@ export function ScrapbookNav() {
                       onNavigate={() => setSheetOpen(false)}
                     />
                   ))}
-                  {/* Theme toggle */}
                   <button
                     type="button"
                     onClick={() => setColorMode(isDarkMode ? "light" : "dark")}

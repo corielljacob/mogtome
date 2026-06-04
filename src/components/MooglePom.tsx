@@ -6,10 +6,6 @@ interface MooglePomProps {
   color?: "pink" | "coral" | "purple";
 }
 
-/**
- * MooglePom - A cute decorative moogle pom-pom element.
- * Features gradient coloring, optional glow, and bounce animation.
- */
 export function MooglePom({
   size = "md",
   className = "",
@@ -76,12 +72,10 @@ export function MooglePom({
 
   const pomContent = (
     <div className={`relative inline-flex flex-col items-center ${className}`}>
-      {/* Glow effect */}
       <div
         className={`absolute ${pom} rounded-full ${colors.glow} ${glow} scale-150`}
       />
 
-      {/* Main pom with gradient */}
       <div
         className={`
         relative ${pom} rounded-full 
@@ -90,11 +84,9 @@ export function MooglePom({
         shadow-lg
       `}
       >
-        {/* Highlight */}
         <div className="absolute top-[15%] left-[20%] w-[30%] h-[25%] rounded-full bg-white/50" />
       </div>
 
-      {/* Stem */}
       {showStem && (
         <div
           className={`${stem} bg-gradient-to-b ${colors.stem} rounded-full -mt-0.5`}
@@ -110,9 +102,6 @@ export function MooglePom({
   return pomContent;
 }
 
-/**
- * MooglePomCluster - A decorative cluster of pom-poms.
- */
 export function MooglePomCluster({ className = "" }: { className?: string }) {
   return (
     <div className={`relative inline-flex items-center gap-1 ${className}`}>

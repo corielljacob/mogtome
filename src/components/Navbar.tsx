@@ -6,14 +6,13 @@ import { useAuth } from "../contexts/AuthContext";
 import { DiscordIcon } from "./DiscordIcon";
 import { LogoIcon } from "./LogoIcon";
 
-// User menu dropdown for authenticated users
 function UserMenu() {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
+  // close on outside click / Escape
   useEffect(() => {
     if (!isOpen) return;
 
@@ -99,7 +98,6 @@ function UserMenu() {
                   "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 22%, transparent), 0 10px 24px -8px var(--shadow)",
               }}
             >
-              {/* User info header */}
               <div
                 className="px-3 py-2.5"
                 style={{
@@ -117,7 +115,6 @@ function UserMenu() {
                 </p>
               </div>
 
-              {/* Menu items */}
               <div className="p-1.5">
                 <button
                   onClick={() => {
@@ -168,7 +165,6 @@ function UserMenu() {
   );
 }
 
-// Discord login button for unauthenticated users
 function LoginButton() {
   const { login, isLoading, isAuthenticated } = useAuth();
 
@@ -190,15 +186,11 @@ function LoginButton() {
   );
 }
 
-/**
- * Navbar — the floating account chrome only (the page nav lives in ScrapbookNav).
- * Mobile: a top header with the logo + login/user menu.
- * Desktop: a top-right floating pill with login/user menu.
- */
+// floating account chrome only - the page nav lives in ScrapbookNav
 export function Navbar() {
   return (
     <>
-      {/* Mobile floating header - logo left, user controls right */}
+      {/* mobile: top header, logo left + account controls right */}
       <nav
         className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-3 pointer-events-none"
         aria-label="Mobile header"
@@ -244,7 +236,7 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Desktop top bar - floating pill with user controls */}
+      {/* desktop: top-right floating pill */}
       <header
         className="hidden md:block fixed top-0 right-0 z-50 pt-4 pb-4 pr-4 lg:pr-5 pointer-events-none"
         aria-label="User controls"

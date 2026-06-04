@@ -1,15 +1,11 @@
 import { memo } from "react";
 
-/**
- * Kawaii sticker-book motifs — tiny decorative SVGs (star, sparkle, heart, bow).
- *
- * All use `fill: currentColor`, so tint them with a `text-[...]` class or an
- * inline `color`. Decorative only (aria-hidden). Sprinkle sparingly.
- */
+// decorative SVGs that fill via currentColor - tint with a text-[...] class or
+// the inline color prop.
 
 interface MotifProps {
   className?: string;
-  /** Optional inline color (otherwise inherits currentColor). */
+  /** inline override; otherwise inherits currentColor */
   color?: string;
 }
 
@@ -70,7 +66,7 @@ export const KawaiiBow = memo(function KawaiiBow({
   );
 });
 
-/** Puffy fluffy cloud — overlapping bumps that merge into a soft cloud. */
+/** Puffy fluffy cloud - overlapping bumps that merge into a soft cloud. */
 export const KawaiiCloud = memo(function KawaiiCloud({
   className = "",
   color,
@@ -84,7 +80,7 @@ export const KawaiiCloud = memo(function KawaiiCloud({
       aria-hidden="true"
       focusable="false"
     >
-      {/* Cute, symmetric puff — a soft wide base with a gentle three-bump top */}
+      {/* wide base ellipse + three overlapping bumps merge into one puff */}
       <ellipse cx="72" cy="64" rx="62" ry="17" />
       <circle cx="44" cy="50" r="22" />
       <circle cx="72" cy="40" r="28" />

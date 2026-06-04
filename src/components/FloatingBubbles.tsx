@@ -1,12 +1,8 @@
 import { memo, type CSSProperties } from "react";
 import { KawaiiStar, KawaiiSparkle, KawaiiHeart } from "./kawaiiMotifs";
 
-/**
- * FloatingBubbles — ambient kawaii motifs (stars, sparkles, hearts) that drift
- * gently up the page. Sticker-book charm; theme-tinted and subtle; sits behind
- * page content. Pure CSS animation (compositor) via `bubble-rise` in index.css.
- * Honors prefers-reduced-motion (the `.animate-bubble-rise` rule no-ops + hides).
- */
+// pure-CSS `bubble-rise` (index.css) so it runs on the compositor; the
+// .animate-bubble-rise rule no-ops + hides under prefers-reduced-motion
 
 type Kind = "star" | "sparkle" | "heart";
 

@@ -13,11 +13,6 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   rightElement?: ReactNode;
 }
 
-/**
- * Input - KUPO BIT Refined Input Component
- * Clean, modern input with subtle styling and focus states.
- * Accessibility: Labels are properly associated with inputs via id/htmlFor.
- */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -117,10 +112,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = "Input";
 
-/**
- * Textarea - KUPO BIT Refined Textarea Component
- * Accessibility: Labels are properly associated with textareas via id/htmlFor.
- */
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
@@ -195,10 +186,6 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
 Textarea.displayName = "Textarea";
 
-/**
- * Select - KUPO BIT Refined Select Component
- * Accessibility: Labels are properly associated with selects via id/htmlFor.
- */
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;

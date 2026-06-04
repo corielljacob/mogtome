@@ -67,10 +67,6 @@ const SETTING_OPTIONS: SettingOption[] = [
   },
 ];
 
-/**
- * AccessibilityMenu - A dropdown menu for accessibility settings.
- * Provides toggles for high contrast, extra dark mode, large text, and more.
- */
 export function AccessibilityMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [colorblindExpanded, setColorblindExpanded] = useState(false);
@@ -79,13 +75,12 @@ export function AccessibilityMenu() {
   const { settings, toggleSetting, updateSetting, resetSettings } =
     useAccessibility();
 
-  // Count active settings (boolean toggles + colorblind mode if not 'none')
+  // colorblind counts as active unless "none"; everything else is a boolean
   const activeCount = Object.entries(settings).filter(([key, value]) => {
     if (key === "colorblindMode") return value !== "none";
     return value === true;
   }).length;
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -100,7 +95,6 @@ export function AccessibilityMenu() {
     }
   }, [isOpen]);
 
-  // Close on escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -115,7 +109,6 @@ export function AccessibilityMenu() {
 
   return (
     <div ref={menuRef} className="relative">
-      {/* Trigger button */}
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
@@ -137,7 +130,6 @@ export function AccessibilityMenu() {
       >
         <Accessibility className="w-5 h-5 mx-auto" />
 
-        {/* Badge showing active count */}
         {activeCount > 0 && (
           <span
             className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--primary)] text-white text-[10px] font-bold flex items-center justify-center"
@@ -148,7 +140,6 @@ export function AccessibilityMenu() {
         )}
       </button>
 
-      {/* Dropdown menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -162,7 +153,6 @@ export function AccessibilityMenu() {
             aria-modal="true"
           >
             <div className="surface rounded-2xl overflow-hidden">
-              {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
                 <div className="flex items-center gap-2">
                   <Accessibility
@@ -182,7 +172,6 @@ export function AccessibilityMenu() {
                 </button>
               </div>
 
-              {/* Settings list */}
               <div className="p-2 max-h-[60vh] overflow-y-auto">
                 <ul className="space-y-1" role="list">
                   {SETTING_OPTIONS.map(
@@ -213,7 +202,6 @@ export function AccessibilityMenu() {
                             aria-checked={isEnabled}
                             aria-describedby={`${key}-description`}
                           >
-                            {/* Icon */}
                             <div
                               className={`
                             flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
@@ -227,7 +215,6 @@ export function AccessibilityMenu() {
                               <Icon className="w-5 h-5" aria-hidden="true" />
                             </div>
 
-                            {/* Text */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span
@@ -251,7 +238,6 @@ export function AccessibilityMenu() {
                               </p>
                             </div>
 
-                            {/* Toggle indicator */}
                             <div
                               className={`
                               flex-shrink-0 w-11 h-6 rounded-full p-0.5 transition-colors duration-200
@@ -273,7 +259,6 @@ export function AccessibilityMenu() {
                   )}
                 </ul>
 
-                {/* Colorblind Mode Section */}
                 <div className="mt-3 pt-3 border-t border-[var(--border)]">
                   <button
                     onClick={() => setColorblindExpanded(!colorblindExpanded)}
@@ -289,7 +274,6 @@ export function AccessibilityMenu() {
                     `}
                     aria-expanded={colorblindExpanded}
                   >
-                    {/* Icon */}
                     <div
                       className={`
                       flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
@@ -303,7 +287,6 @@ export function AccessibilityMenu() {
                       <Eye className="w-5 h-5" aria-hidden="true" />
                     </div>
 
-                    {/* Text */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span
@@ -327,14 +310,12 @@ export function AccessibilityMenu() {
                       </p>
                     </div>
 
-                    {/* Chevron */}
                     <ChevronDown
                       className={`w-5 h-5 text-[var(--text-muted)] transition-transform duration-200 ${colorblindExpanded ? "rotate-180" : ""}`}
                       aria-hidden="true"
                     />
                   </button>
 
-                  {/* Colorblind options */}
                   <AnimatePresence>
                     {colorblindExpanded && (
                       <motion.div
@@ -376,7 +357,6 @@ export function AccessibilityMenu() {
                                   role="radio"
                                   aria-checked={isSelected}
                                 >
-                                  {/* Radio indicator */}
                                   <div
                                     className={`
                                   flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center
@@ -392,7 +372,6 @@ export function AccessibilityMenu() {
                                     )}
                                   </div>
 
-                                  {/* Text */}
                                   <div className="flex-1 min-w-0">
                                     <span
                                       className={`font-soft font-medium text-sm ${isSelected ? "text-[var(--primary)]" : ""}`}
@@ -414,7 +393,6 @@ export function AccessibilityMenu() {
                 </div>
               </div>
 
-              {/* Footer with reset button */}
               {activeCount > 0 && (
                 <div className="px-4 py-3 border-t border-[var(--border)]">
                   <button
@@ -427,7 +405,6 @@ export function AccessibilityMenu() {
                 </div>
               )}
 
-              {/* Info footer */}
               <div className="px-4 py-2 bg-[var(--bg)]/50 border-t border-[var(--border)]">
                 <p className="text-xs text-[var(--text-subtle)] text-center">
                   Settings are saved automatically

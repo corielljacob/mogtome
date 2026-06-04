@@ -7,13 +7,8 @@ import { useReducedMotion } from "../hooks";
 import { useTheme } from "../contexts/ThemeContext";
 import { KawaiiHeart, KawaiiStar } from "./kawaiiMotifs";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MEMBERSHIP CARD — a handmade café-style member card: a marker-handwritten
-// Japanese face (Yusei Magic), a washi-taped tilted photo, hand-drawn lines and
-// doodles on cream paper, finished with a warm welcome note. At rest it's matte
-// cardstock; on hover it pivots to the cursor and catches the light. Pointer-tilt
+// on hover the card pivots toward the cursor and catches the light. pointer-tilt
 // is gated behind reduced-motion + hover pointers; lighting eases off in dark.
-// ─────────────────────────────────────────────────────────────────────────────
 
 export interface MembershipCardProps {
   name: string;
@@ -28,10 +23,9 @@ export interface MembershipCardProps {
 const MAX_TILT = 12; // degrees
 const HOVER_SCALE = 1.03;
 
-// Handmade marker-handwritten face, just for the card (loaded in index.html).
+// handwritten face fonts, loaded in index.html
 const HAND = '"Yusei Magic", "Zen Maru Gothic", "Caveat", cursive';
 
-/** A little paw print — the café's hand-drawn logo mark. */
 function PawPrint({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -49,7 +43,6 @@ function PawPrint({ className = "" }: { className?: string }) {
   );
 }
 
-/** Hand-drawn wavy underline. */
 function Squiggle({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -170,7 +163,6 @@ export function MembershipCard({
               : undefined
           }
         >
-          {/* Card face — cream paper */}
           <div
             className="absolute inset-0 rounded-[1.35rem] overflow-hidden border"
             style={
@@ -183,7 +175,6 @@ export function MembershipCard({
               } as CSSProperties
             }
           >
-            {/* Faint paper grain dots */}
             <div
               className="absolute inset-0 opacity-[0.3] pointer-events-none"
               style={{
@@ -193,16 +184,13 @@ export function MembershipCard({
               }}
               aria-hidden="true"
             />
-            {/* Doodles */}
             <KawaiiHeart className="absolute top-10 right-6 w-3 h-3 text-[var(--primary)] opacity-30 rotate-12" />
             <KawaiiStar className="absolute bottom-8 left-7 w-3 h-3 text-[var(--accent)] opacity-30 -rotate-12" />
 
-            {/* Content — all handwritten */}
             <div
               className="relative h-full px-4 py-3 flex flex-col"
               style={{ fontFamily: HAND }}
             >
-              {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span
@@ -223,14 +211,10 @@ export function MembershipCard({
                 </span>
               </div>
 
-              {/* Hand-drawn divider */}
               <Squiggle className="w-full h-1.5 mt-1.5 text-[color:color-mix(in_srgb,var(--primary)_35%,transparent)]" />
 
-              {/* Body — washi-taped photo + handwritten fields */}
               <div className="flex-1 flex items-center gap-4 min-h-0">
-                {/* Photo */}
                 <div className="relative shrink-0 rotate-[-3deg]">
-                  {/* Washi tape */}
                   <div
                     className="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-12 h-4 rotate-3 rounded-[2px]"
                     style={{
@@ -265,7 +249,6 @@ export function MembershipCard({
                   </span>
                 </div>
 
-                {/* Fields */}
                 <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                   <div>
                     <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
@@ -306,7 +289,6 @@ export function MembershipCard({
                 </div>
               </div>
 
-              {/* Warm footer note */}
               <div className="flex items-center justify-center gap-2 mt-1">
                 <span
                   className={`flex-1 border-t border-dashed ${dashColor}`}
@@ -324,8 +306,7 @@ export function MembershipCard({
               </div>
             </div>
 
-            {/* ── Lighting overlays (above content, pointer-events-none) ───────── */}
-            {/* Pastel holographic sheen — sweeps with the cursor */}
+            {/* holographic sheen - backgroundPositionX tracks the cursor (--mx) */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -343,7 +324,7 @@ export function MembershipCard({
               }}
               aria-hidden="true"
             />
-            {/* Specular glare — a soft light that follows the pointer */}
+            {/* specular glare centered on the pointer (--mx/--my) */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -354,7 +335,6 @@ export function MembershipCard({
               }}
               aria-hidden="true"
             />
-            {/* Static top rim sheen for a glossy edge */}
             <div
               className="absolute inset-x-0 top-0 h-1/4 pointer-events-none"
               style={{
@@ -365,7 +345,7 @@ export function MembershipCard({
             />
           </div>
 
-          {/* Moogle — the café mascot, popping out of the corner in 3D */}
+          {/* translateZ pops the moogle out of the card in 3D under tilt */}
           <span
             className="absolute -bottom-3 -right-3 z-10 pointer-events-none select-none"
             style={enableTilt ? { transform: "translateZ(45px)" } : undefined}

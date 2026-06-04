@@ -18,17 +18,14 @@ import { scrollAppToTop } from "../utils/scroll";
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];
-  /** If provided, members will be grouped by rank with section headers */
+  /** when set, members render grouped by rank with section headers */
   membersByRank?: Map<string, FreeCompanyMember[]>;
-  /** Whether we're showing grouped view (by rank) or flat filtered view */
   showGrouped?: boolean;
-  /** Items per page (default 24) */
   pageSize?: number;
-  /** Query param name for page (default 'page') */
   pageParam?: string;
 }
 
-// Breakpoint configuration matching Tailwind's defaults
+// matches Tailwind's default breakpoints
 const BREAKPOINTS = {
   sm: 640,
   md: 768,
@@ -80,7 +77,6 @@ function RankHeader({
 
   return (
     <div className="flex items-center gap-3 py-3 sm:py-4">
-      {/* Rank label as a sticker tab tacked to the board */}
       <div
         className="sticker px-3 py-1.5"
         style={{
@@ -108,7 +104,6 @@ function RankHeader({
           {memberCount}
         </span>
       </div>
-      {/* Dashed "tacked string" divider */}
       <div
         className="flex-1 border-t-2 border-dashed"
         style={{
@@ -121,16 +116,8 @@ function RankHeader({
   );
 }
 
-/**
- * PaginatedMemberGrid - Non-virtualized grid with pagination.
- * Better for biography editing mode where form state needs to persist.
- *
- * FEATURES:
- * - URL-synced pagination (bookmarkable, shareable, back-button works)
- * - Smooth transitions between pages with loading indicator
- * - Keyboard navigation (← →)
- * - Accessible with ARIA labels
- */
+// non-virtualized so form state survives in biography-edit mode (virtual rows would unmount).
+// pagination is URL-synced (bookmarkable, back-button works).
 export function PaginatedMemberGrid({
   members,
   membersByRank,
@@ -145,27 +132,19 @@ export function PaginatedMemberGrid({
 
   const totalPages = Math.ceil(members.length / pageSize);
 
-  // Read page from URL, defaulting to 1 (displayed as 1-indexed to users)
+  // URL page is 1-indexed for users; convert to 0-indexed and clamp
   const urlPage = parseInt(searchParams.get(pageParam) || "1", 10);
-  // Convert to 0-indexed and clamp to valid range
   const currentPage = Math.max(0, Math.min(totalPages - 1, urlPage - 1));
 
-  // Update URL when page would be out of bounds (e.g., after filtering reduces results)
+  // re-sync URL when the page falls out of bounds (e.g. filtering shrinks the list)
   useEffect(() => {
-    // Determine the effective total pages (at least 1 if we have content? No, if 0 items, 0 pages)
-    // If totalPages is 0, we can treat it as page 1 (index 0) for display purposes or just hide pagination
-    // But here we want to ensure urlPage doesn't exceed totalPages when totalPages > 0
-
-    if (totalPages === 0) return; // Nothing to clamp if empty
+    if (totalPages === 0) return;
 
     const maxPageIdx = totalPages - 1;
     const urlPageIdx = urlPage - 1;
-
-    // Clamp index to [0, maxPageIdx]
     const clampedPageIdx = Math.max(0, Math.min(maxPageIdx, urlPageIdx));
 
     if (clampedPageIdx !== urlPageIdx) {
-      // console.log('Clamping page:', { urlPageIdx, clampedPageIdx, totalPages });
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
@@ -181,24 +160,17 @@ export function PaginatedMemberGrid({
     }
   }, [urlPage, totalPages, pageParam, setSearchParams]);
 
-  // Reset to page 1 when members array changes (filtering/searching)
-  // We track the first member's ID to detect actual content changes, not just count
+  // reset to page 1 when the list content changes. track the first member's id
+  // too, since count alone misses same-size filter swaps.
   const prevFirstMemberId = useRef<string | undefined>(undefined);
   const prevMemberCount = useRef(members.length);
 
   useEffect(() => {
-    // Update refs on mount/update
-    // But check for change first
-
     const firstMemberId = members[0]?.characterId;
     const countChanged = members.length !== prevMemberCount.current;
     const contentChanged = firstMemberId !== prevFirstMemberId.current;
 
-    // console.log('Member content check:', { countChanged, contentChanged, currentPage, firstMemberId, prevId: prevFirstMemberId.current });
-
-    // Reset to page 1 if content changed and we're not already on page 1
     if ((countChanged || contentChanged) && currentPage !== 0) {
-      // console.log('Resetting to page 1 due to content change');
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
@@ -218,11 +190,10 @@ export function PaginatedMemberGrid({
     return members.slice(start, start + pageSize);
   }, [members, currentPage, pageSize]);
 
-  // For grouped view, we paginate by rank groups
   const paginatedByRank = useMemo(() => {
     if (!showGrouped || !membersByRank) return null;
 
-    // Flatten all members with their rank info for pagination
+    // flatten across ranks so pagination cuts at a global offset, then regroup
     const allWithRank: { member: FreeCompanyMember; rank: string }[] = [];
     for (const [rankName, rankMembers] of membersByRank) {
       for (const member of rankMembers) {
@@ -233,7 +204,6 @@ export function PaginatedMemberGrid({
     const start = currentPage * pageSize;
     const paginated = allWithRank.slice(start, start + pageSize);
 
-    // Regroup paginated results
     const grouped = new Map<string, FreeCompanyMember[]>();
     for (const { member, rank } of paginated) {
       const existing = grouped.get(rank) || [];
@@ -246,7 +216,7 @@ export function PaginatedMemberGrid({
 
   // Scroll the app container to the top AFTER an explicit page change commits, so
   // the smooth scroll isn't interrupted by the content swap. The flag keeps it from
-  // firing on filter-induced page resets — toggling a rank keeps you in place.
+  // firing on filter-induced page resets - toggling a rank keeps you in place.
   const scrollOnPageChange = useRef(false);
   useEffect(() => {
     if (scrollOnPageChange.current) {
@@ -255,7 +225,6 @@ export function PaginatedMemberGrid({
     }
   }, [currentPage]);
 
-  // Navigate to a specific page (0-indexed internally, 1-indexed in URL)
   const navigateToPage = useCallback(
     (page: number) => {
       scrollOnPageChange.current = true;
@@ -263,7 +232,7 @@ export function PaginatedMemberGrid({
         setSearchParams((prev) => {
           const next = new URLSearchParams(prev);
           if (page === 0) {
-            next.delete(pageParam); // Keep URL clean for page 1
+            next.delete(pageParam); // keep page 1 out of the URL
           } else {
             next.set(pageParam, String(page + 1));
           }
@@ -282,10 +251,9 @@ export function PaginatedMemberGrid({
     if (currentPage < totalPages - 1) navigateToPage(currentPage + 1);
   }, [currentPage, totalPages, navigateToPage]);
 
-  // Keyboard navigation - directly calls navigateToPage to ensure scroll happens
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle if not in an input field
+      // ignore arrows while typing in a field
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -307,7 +275,6 @@ export function PaginatedMemberGrid({
 
   return (
     <div ref={containerRef} className="w-full">
-      {/* Grouped view */}
       {showGrouped && paginatedByRank ? (
         <div className="space-y-2">
           {Array.from(paginatedByRank.entries()).map(
@@ -342,7 +309,6 @@ export function PaginatedMemberGrid({
           )}
         </div>
       ) : (
-        /* Flat view */
         <div
           className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
           style={{
@@ -355,7 +321,6 @@ export function PaginatedMemberGrid({
         </div>
       )}
 
-      {/* Pagination — a simple prev · page · next cluster (← → still work) */}
       {totalPages > 1 && (
         <nav
           className="mt-8 sm:mt-10 pt-7 flex items-center justify-center gap-2.5 sm:gap-4"

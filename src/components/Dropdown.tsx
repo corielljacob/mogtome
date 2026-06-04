@@ -15,26 +15,14 @@ interface DropdownProps<T extends string = string> {
   placeholder?: string;
   icon?: React.ReactNode;
   className?: string;
-  /** Extra class names on the portaled menu (e.g. "paper" so it inherits the
-   *  cork-board paper tokens, since the menu renders outside its container). */
+  // menu portals out of the container, so it doesn't inherit paper tokens -
+  // pass e.g. "paper" here to re-apply them
   menuClassName?: string;
-  /** Accessible label for the dropdown (required for accessibility) */
   "aria-label"?: string;
-  /** ID of element that labels this dropdown */
   "aria-labelledby"?: string;
 }
 
-/**
- * Custom styled dropdown with accessible keyboard navigation.
- * Replaces native <select> with a fully styled accessible dropdown.
- * Uses a portal to escape overflow:hidden containers.
- *
- * Accessibility features:
- * - Proper ARIA roles (listbox, option)
- * - Keyboard navigation (Arrow keys, Enter, Escape, Tab)
- * - Focus management
- * - Screen reader announcements
- */
+// styled <select> replacement; portals the menu to escape overflow:hidden
 export function Dropdown<T extends string = string>({
   options,
   value,
@@ -62,19 +50,17 @@ export function Dropdown<T extends string = string>({
 
   const selectedOption = options.find((o) => o.value === value);
 
-  // Calculate menu position when opening
   useEffect(() => {
     if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setMenuPosition({
-        top: rect.bottom + 8, // 8px gap below trigger
+        top: rect.bottom + 8, // gap below trigger
         left: rect.left,
         width: rect.width,
       });
     }
   }, [isOpen]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
@@ -95,7 +81,7 @@ export function Dropdown<T extends string = string>({
     }
   }, [isOpen]);
 
-  // Close on scroll (menu position would be stale)
+  // close on scroll - fixed menu position would otherwise go stale
   useEffect(() => {
     if (isOpen) {
       const handleScroll = () => setIsOpen(false);
@@ -104,7 +90,6 @@ export function Dropdown<T extends string = string>({
     }
   }, [isOpen]);
 
-  // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       switch (e.key) {
@@ -145,7 +130,6 @@ export function Dropdown<T extends string = string>({
     [isOpen, focusedIndex, options, value, onChange],
   );
 
-  // Scroll focused item into view
   useEffect(() => {
     if (isOpen && focusedIndex >= 0 && listRef.current) {
       const focusedItem = listRef.current.children[focusedIndex] as HTMLElement;
@@ -234,7 +218,6 @@ export function Dropdown<T extends string = string>({
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      {/* Trigger button */}
       <button
         ref={triggerRef}
         id={buttonId}
@@ -277,7 +260,6 @@ export function Dropdown<T extends string = string>({
         />
       </button>
 
-      {/* Dropdown menu (rendered via portal) */}
       {menu}
     </div>
   );

@@ -8,20 +8,15 @@ interface TagProps {
    * (e.g. a per-rank color). Omit for a neutral, muted tag.
    */
   color?: string;
-  /** Optional small leading icon — inherits the tag color via currentColor. */
+  /** Optional small leading icon - inherits the tag color via currentColor. */
   icon?: ReactNode;
   /** Show a small leading dot in the tag color. Ignored if `icon` is set. */
   dot?: boolean;
   className?: string;
 }
 
-/**
- * Tag — a quiet, hand-labeled tag.
- *
- * Hairline border + label in a single semantic color, no fill. Intentionally
- * NOT a filled rounded-full pill — that "badge" look reads generic. Used for
- * ranks, statuses, counts, and small labels across the app.
- */
+// hairline border + label, no fill. intentionally not a filled pill - that
+// "badge" look reads generic.
 export function Tag({
   children,
   color,

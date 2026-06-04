@@ -11,17 +11,10 @@ import pushingMoogles from "../assets/moogles/moogles pushing.webp";
 import deadMoogle from "../assets/moogles/dead moogle.webp";
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PageLayout - Consistent page wrapper with background decorations
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface PageLayoutProps {
   children: ReactNode;
-  /** Floating moogle images for background decoration */
   moogles?: { primary: string; secondary: string };
-  /** Override the max-width container class (default: 'max-w-7xl') */
   maxWidth?: string;
-  /** Extra class names on the content container */
   className?: string;
 }
 
@@ -31,12 +24,11 @@ export function PageLayout({
   maxWidth = "max-w-7xl",
   className = "",
 }: PageLayoutProps) {
-  // The page backdrop (warm washi paper) lives on the #app-scroll container in
-  // App.tsx, so it scrolls natively with the content and sits behind the nav.
+  // page backdrop lives on the #app-scroll container in App.tsx so it scrolls
+  // natively with the content and sits behind the nav.
 
   return (
     <div className="min-h-full relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-      {/* Floating background decorations */}
       {moogles && (
         <SimpleFloatingMoogles
           primarySrc={moogles.primary}
@@ -55,22 +47,12 @@ export function PageLayout({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PageHeader - Consistent page title section
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface PageHeaderProps {
-  /** Decorative opener text (e.g. "~ The ones who guide us ~") */
   opener?: string;
-  /** Main page title */
   title: string;
-  /** Subtitle text */
   subtitle?: string;
-  /** Show a Heart icon next to the subtitle */
   showHeart?: boolean;
-  /** Size of the story divider */
   dividerSize?: "sm" | "md" | "lg";
-  /** Extra content after the subtitle (e.g. member count badge) */
   children?: ReactNode;
 }
 
@@ -83,7 +65,6 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <header className="relative w-fit mx-auto mb-6 sm:mb-10 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-      {/* Corner-peeking moogle (desktop) */}
       <img
         src={lilGuyMoogle}
         alt=""
@@ -91,7 +72,7 @@ export function PageHeader({
         className="hidden lg:block absolute -top-7 -right-5 w-16 object-contain rotate-[8deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-10"
       />
 
-      {/* The title sits on a pinned polaroid so it never floats on the bare page */}
+      {/* title sits on a pinned polaroid so it never floats on the bare page */}
       <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
         <div
           className="flex items-center justify-center gap-1.5 mb-1.5"
@@ -127,14 +108,8 @@ export function PageHeader({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PageFooter - Consistent page footer with story divider
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface PageFooterProps {
-  /** The main footer message */
   message: string;
-  /** The closing tag (default: "~ fin ~") */
   closing?: string;
 }
 
@@ -161,16 +136,10 @@ export function PageFooter({ message, closing = "~ fin ~" }: PageFooterProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SectionLabel - Consistent section header with icon and divider line
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface SectionLabelProps {
-  /** Section label text */
   label: string;
-  /** Optional badge (e.g. count) */
   badge?: ReactNode;
-  /** Icon to show (defaults to Sparkles) */
+  /** defaults to Sparkles */
   icon?: ReactNode;
 }
 
@@ -193,14 +162,9 @@ export function SectionLabel({ label, badge, icon }: SectionLabelProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LoadingState - Animated loading indicator with moogle
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface LoadingStateProps {
-  /** Loading message (e.g. "Fetching members, kupo...") */
   message: string;
-  /** Custom image source (defaults to pushing moogles) */
+  /** defaults to pushing moogles */
   imageSrc?: string;
 }
 
@@ -233,14 +197,8 @@ export function LoadingState({ message, imageSrc }: LoadingStateProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ErrorState - Error display with retry button
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface ErrorStateProps {
-  /** Error message (e.g. "A moogle fell over, kupo...") */
   message: string;
-  /** Retry callback */
   onRetry: () => void;
 }
 
@@ -288,20 +246,11 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EmptyState - Empty results with optional clear action
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface EmptyStateProps {
-  /** Title (e.g. "No members found") */
   title: string;
-  /** Kupo-themed message */
   message: string;
-  /** Custom image source */
   imageSrc: string;
-  /** Show a "Clear filters" button */
   onClear?: () => void;
-  /** Label for the clear button */
   clearLabel?: string;
 }
 

@@ -3,27 +3,18 @@ import { LogIn, Shield, Swords } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { DiscordIcon } from "./DiscordIcon";
 
-// Assets
 import wizardMoogle from "../assets/moogles/wizard moogle.webp";
 
 interface KnightRouteProps {
   children: React.ReactNode;
 }
 
-/**
- * Wraps a route to require knighthood (permanent or temporary).
- * Shows appropriate prompts based on auth state:
- * - Not authenticated: login prompt
- * - Authenticated but not a knight: access denied message
- * - Knight: renders children
- */
+// gates a route behind knighthood - permanent or temporary
 export function KnightRoute({ children }: KnightRouteProps) {
   const { user, isAuthenticated, isLoading, login } = useAuth();
 
-  // Check if user has knighthood (either permanent or temporary)
   const hasKnighthood = user?.hasKnighthood || user?.hasTemporaryKnighthood;
 
-  // Show loading state while checking auth
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
@@ -32,11 +23,9 @@ export function KnightRoute({ children }: KnightRouteProps) {
     );
   }
 
-  // Show login prompt if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        {/* Background gradient */}
         <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
@@ -46,9 +35,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Card container */}
             <div className="bg-[var(--card)] rounded-lg p-8 md:p-10 border border-[var(--border)] shadow-sm text-center">
-              {/* Moogle mascot */}
               <motion.div
                 className="relative mb-6"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -71,7 +58,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 />
               </motion.div>
 
-              {/* Shield icon */}
               <motion.div
                 className="flex justify-center mb-4"
                 initial={{ opacity: 0, scale: 0 }}
@@ -83,7 +69,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 </div>
               </motion.div>
 
-              {/* Title */}
               <motion.h1
                 className="text-2xl md:text-3xl font-display font-bold text-[var(--text)] mb-2"
                 initial={{ opacity: 0 }}
@@ -93,7 +78,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 Knights Only, Kupo!
               </motion.h1>
 
-              {/* Description */}
               <motion.p
                 className="text-[var(--text-muted)] font-soft mb-6"
                 initial={{ opacity: 0 }}
@@ -104,7 +88,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 to verify your knighthood.
               </motion.p>
 
-              {/* Discord login button */}
               <motion.button
                 onClick={login}
                 className="
@@ -129,7 +112,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
               </motion.button>
             </div>
 
-            {/* Footer note */}
             <motion.p
               className="text-center mt-6 text-sm text-[var(--text-muted)] font-accent"
               initial={{ opacity: 0 }}
@@ -144,11 +126,9 @@ export function KnightRoute({ children }: KnightRouteProps) {
     );
   }
 
-  // Show access denied if authenticated but not a knight
   if (!hasKnighthood) {
     return (
       <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        {/* Background gradient */}
         <div className="fixed inset-0 bg-gradient-to-b from-[var(--primary)]/[0.06] via-[var(--accent)]/[0.03] to-[var(--secondary)]/[0.05] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-4 py-8">
@@ -158,9 +138,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Card container */}
             <div className="bg-[var(--card)] rounded-lg p-8 md:p-10 border border-[var(--border)] shadow-sm text-center">
-              {/* Moogle mascot */}
               <motion.div
                 className="relative mb-6"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -183,7 +161,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 />
               </motion.div>
 
-              {/* Shield icon */}
               <motion.div
                 className="flex justify-center mb-4"
                 initial={{ opacity: 0, scale: 0 }}
@@ -195,7 +172,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 </div>
               </motion.div>
 
-              {/* Title */}
               <motion.h1
                 className="text-2xl md:text-3xl font-display font-bold text-[var(--text)] mb-2"
                 initial={{ opacity: 0 }}
@@ -205,7 +181,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 Knighthood Required
               </motion.h1>
 
-              {/* Description */}
               <motion.p
                 className="text-[var(--text-muted)] font-soft mb-4"
                 initial={{ opacity: 0 }}
@@ -216,7 +191,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
                 with temporary knighthood, kupo!
               </motion.p>
 
-              {/* User info */}
               {user && (
                 <motion.div
                   className="bg-[var(--bg)]/50 rounded-lg p-4 mb-4"
@@ -252,7 +226,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
               </motion.p>
             </div>
 
-            {/* Footer note */}
             <motion.p
               className="text-center mt-6 text-sm text-[var(--text-muted)] font-accent"
               initial={{ opacity: 0 }}
@@ -267,6 +240,5 @@ export function KnightRoute({ children }: KnightRouteProps) {
     );
   }
 
-  // User has knighthood, render the protected content
   return <>{children}</>;
 }

@@ -8,10 +8,7 @@ interface ScrollToTopButtonProps {
   threshold?: number;
 }
 
-/**
- * A little candy "back to top" nub that fades in once you've scrolled down a bit.
- * Watches (and scrolls) the app's scroll container, not the window.
- */
+// watches (and scrolls) the app's scroll container, not the window
 export function ScrollToTopButton({ threshold = 420 }: ScrollToTopButtonProps) {
   const [visible, setVisible] = useState(false);
 

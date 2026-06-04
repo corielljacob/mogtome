@@ -1,12 +1,8 @@
 import { memo } from "react";
 import { Sparkles, Star } from "lucide-react";
 
-/**
- * Floating sparkle/star decorations for ambient page effects.
- * Positioned around edges to avoid overlapping center content.
- *
- * PERFORMANCE: Uses CSS animations instead of Framer Motion for infinite loops.
- */
+// positioned around the edges to keep clear of center content; CSS animations
+// (not Framer Motion) so the infinite loops stay on the compositor
 
 export interface SparklePosition {
   left: string;
@@ -16,9 +12,7 @@ export interface SparklePosition {
 }
 
 export interface FloatingSparklesProps {
-  /** Custom sparkle positions. Uses default layout if not provided. */
   positions?: SparklePosition[];
-  /** Whether to use a minimal set of sparkles */
   minimal?: boolean;
 }
 

@@ -1,11 +1,7 @@
 import { memo } from "react";
 
-/**
- * Floating moogle background decorations for ambient page effects.
- *
- * PERFORMANCE: Uses CSS animations instead of Framer Motion for infinite loops.
- * CSS animations run on the compositor thread, avoiding main thread work.
- */
+// CSS animations (not Framer Motion) for the infinite loops - keeps them on the
+// compositor thread, off the main thread
 
 export interface MoogleConfig {
   src: string;
@@ -16,9 +12,8 @@ export interface MoogleConfig {
 }
 
 export interface FloatingMooglesProps {
-  /** Array of moogle configurations */
   moogles: MoogleConfig[];
-  /** Base opacity range [min, max] - converted to CSS custom properties */
+  // [min, max], exposed to CSS as custom properties
   opacityRange?: [number, number];
 }
 
@@ -41,7 +36,7 @@ export const FloatingMoogles = memo(function FloatingMoogles({
               transform: `rotate(${moogle.rotate}deg)`,
               animationDelay: `${moogle.delay}s`,
               animationDuration: `${5 + i}s`,
-              opacity: opacityRange[0], // Initial opacity before animation starts
+              opacity: opacityRange[0], // seed so it doesn't flash before the animation runs
               "--float-opacity-min": opacityRange[0],
               "--float-opacity-max": opacityRange[1],
             } as React.CSSProperties
@@ -52,14 +47,8 @@ export const FloatingMoogles = memo(function FloatingMoogles({
   );
 });
 
-/**
- * Simple two-moogle floating background for pages like Chronicle.
- * Uses CSS animations for better performance.
- */
 export interface SimpleFloatingMooglesProps {
-  /** First moogle image source */
   primarySrc: string;
-  /** Second moogle image source */
   secondarySrc: string;
 }
 
@@ -79,7 +68,7 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
           {
             transform: "rotate(-5deg)",
             animationDuration: "6s",
-            opacity: 0.2, // Initial opacity before animation starts
+            opacity: 0.2, // seed so it doesn't flash before the animation runs
             "--float-opacity-min": 0.2,
             "--float-opacity-max": 0.34,
           } as React.CSSProperties
@@ -96,7 +85,7 @@ export const SimpleFloatingMoogles = memo(function SimpleFloatingMoogles({
             transform: "rotate(8deg)",
             animationDelay: "1.5s",
             animationDuration: "5s",
-            opacity: 0.2, // Initial opacity before animation starts
+            opacity: 0.2, // seed so it doesn't flash before the animation runs
             "--float-opacity-min": 0.2,
             "--float-opacity-max": 0.34,
           } as React.CSSProperties

@@ -18,24 +18,21 @@ import {
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { APP_SCROLL_ID, jumpAppToTop } from "./utils/scroll";
 
-// Error boundary to catch chunk loading failures after deployments
+// catches stale-chunk failures after a deploy and reloads to fetch fresh assets
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
   static getDerivedStateFromError(error: Error): null {
-    // Check if this is a chunk loading error (dynamic import failure)
     if (
       error.name === "ChunkLoadError" ||
       error.message?.includes("Failed to fetch dynamically imported module") ||
       error.message?.includes("Loading chunk") ||
       error.message?.includes("Loading CSS chunk")
     ) {
-      // Auto-refresh the page to get the latest assets
       window.location.reload();
     }
     return null;
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log the error for debugging
     console.error("Chunk loading error:", error, errorInfo);
   }
 
@@ -44,7 +41,6 @@ class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
   }
 }
 
-// Lazy load pages for code splitting - reduces initial bundle size
 const Home = lazy(() =>
   import("./pages/Home").then((m) => ({ default: m.Home })),
 );
@@ -87,7 +83,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Minimal loading fallback - keeps layout stable during lazy load
 function PageLoader() {
   return (
     <div className="min-h-full flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
@@ -96,14 +91,13 @@ function PageLoader() {
   );
 }
 
-// Inner app content that has access to accessibility context
 function AppContent() {
   const { settings } = useAccessibility();
   const location = useLocation();
-  // Page pattern on every page except Home (which has its own bg).
+  // Home has its own bg; every other page gets the page pattern.
   const isHome = location.pathname === "/";
 
-  // Start each view at the top — the app scrolls inside #app-scroll, which
+  // Start each view at the top - the app scrolls inside #app-scroll, which
   // persists across routes, so its scroll position must be reset on navigation.
   useEffect(() => {
     jumpAppToTop();
@@ -135,12 +129,11 @@ function AppContent() {
   return (
     <MotionConfig
       reducedMotion={settings.reducedMotion ? "always" : "never"}
-      // Set global transition duration to 0 when reduced motion is on
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div className="h-full bg-[var(--bg)] page-bg transition-colors duration-300 flex">
         {/* Home's warm ambient glow lives inside the content area, so the fixed
-            nav's left gutter (md:pl-16) would otherwise read as a dark seam —
+            nav's left gutter (md:pl-16) would otherwise read as a dark seam -
             most visible at tablet widths. This app-level wash bathes that strip
             in the same warm light, behind the nav. */}
         {isHome && (
@@ -154,23 +147,20 @@ function AppContent() {
           />
         )}
 
-        {/* Missing user data warning dialog */}
         <MissingUserDataDialog />
 
-        {/* Skip to main content link for keyboard users */}
+        {/* keyboard skip link */}
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
 
-        {/* Scrapbook index-tab navigation (left edge desktop / bottom strip mobile) */}
         <ScrapbookNav />
 
-        {/* Main content area — pad left on desktop to clear the edge tabs */}
+        {/* pad left on desktop to clear the edge tabs */}
         <div
           id={APP_SCROLL_ID}
           className={`flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain md:pl-16 ${isHome ? "" : "page-pattern"}`}
         >
-          {/* Mobile top bar + desktop user controls */}
           <Navbar />
 
           <main id="main-content" className="flex-1" tabIndex={-1}>

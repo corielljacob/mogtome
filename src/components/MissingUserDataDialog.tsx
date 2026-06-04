@@ -8,24 +8,20 @@ import deadMoogle from "../assets/moogles/dead moogle.webp";
 
 export function MissingUserDataDialog() {
   const [searchParams, setSearchParams] = useSearchParams();
-  // Derive open state directly from the URL — the dialog shows whenever the
-  // `missingUserData` flag is present, so there's no state to sync.
+  // open state derives from the URL flag, so there's no local state to sync
   const isOpen = searchParams.get("missingUserData") === "true";
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleClose = useCallback(() => {
-    // Drop the query param; isOpen re-derives to false and AnimatePresence
-    // plays the exit animation.
+    // drop the param; isOpen re-derives false and AnimatePresence plays the exit
     searchParams.delete("missingUserData");
     setSearchParams(searchParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (isOpen) {
-      // Focus the dialog when it opens
       closeButtonRef.current?.focus();
-      // Prevent body scroll when dialog is open
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -35,7 +31,6 @@ export function MissingUserDataDialog() {
     };
   }, [isOpen]);
 
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -56,7 +51,6 @@ export function MissingUserDataDialog() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-black/50"
             initial={{ opacity: 0 }}
@@ -66,7 +60,6 @@ export function MissingUserDataDialog() {
             aria-hidden="true"
           />
 
-          {/* Dialog */}
           <motion.div
             ref={dialogRef}
             role="alertdialog"
@@ -79,10 +72,8 @@ export function MissingUserDataDialog() {
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
-            {/* Decorative header gradient - warning amber tones */}
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-amber-500/15 via-orange-500/5 to-transparent pointer-events-none" />
 
-            {/* Warning icon decoration */}
             <div className="absolute top-4 left-6 opacity-70">
               <motion.div
                 animate={{ rotate: [-5, 5, -5] }}
@@ -109,7 +100,6 @@ export function MissingUserDataDialog() {
               </motion.div>
             </div>
 
-            {/* Close button */}
             <button
               ref={closeButtonRef}
               onClick={handleClose}
@@ -119,9 +109,7 @@ export function MissingUserDataDialog() {
               <X className="w-5 h-5 text-[var(--text-muted)]" />
             </button>
 
-            {/* Content */}
             <div className="relative p-6 pt-8 sm:p-8 sm:pt-10">
-              {/* Moogle mascot - dramatically flopped over */}
               <div className="flex justify-center mb-4">
                 <motion.img
                   src={deadMoogle}
@@ -133,7 +121,6 @@ export function MissingUserDataDialog() {
                 />
               </div>
 
-              {/* Title */}
               <h2
                 id="missing-data-title"
                 className="text-2xl sm:text-3xl font-display font-bold text-center text-amber-500 mb-4"
@@ -141,7 +128,6 @@ export function MissingUserDataDialog() {
                 Hold Up, Kupo!
               </h2>
 
-              {/* Message */}
               <div id="missing-data-desc" className="space-y-4 text-center">
                 <p className="text-[var(--text)] leading-relaxed">
                   Your Discord has not yet been linked to your character.
@@ -156,7 +142,6 @@ export function MissingUserDataDialog() {
                 </p>
               </div>
 
-              {/* Action button */}
               <div className="flex justify-center mt-6">
                 <Button
                   onClick={handleClose}

@@ -13,10 +13,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fun?: boolean;
 }
 
-/**
- * Button - Warm, tactile button with CSS-only interactions.
- * Hover lifts and wobbles slightly; active squishes down.
- */
 export function Button({
   variant = "primary",
   size = "md",
@@ -145,10 +141,6 @@ export function Button({
   );
 }
 
-/**
- * IconButton - Icon-only control styled to match Button.
- * Accessibility: Requires aria-label for screen reader support.
- */
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   "aria-label": string;
