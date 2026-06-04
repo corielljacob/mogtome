@@ -1,12 +1,17 @@
-import { useMemo, useCallback, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { characterMappingApi } from '../../../api/characterMapping';
+import { useMemo, useCallback, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { characterMappingApi } from "../../../api/characterMapping";
 import {
   computeMatches,
   rankMatchesForCharacter,
   rankMatchesForDiscordUser,
-} from '../../../utils/characterMatching';
-import type { UnmappedCharacter, UnmappedDiscordUser, MatchPair, MatchInfo } from '../types';
+} from "../../../utils/characterMatching";
+import type {
+  UnmappedCharacter,
+  UnmappedDiscordUser,
+  MatchPair,
+  MatchInfo,
+} from "../types";
 
 // --- Types -------------------------------------------------------------------
 
@@ -29,19 +34,21 @@ export interface UseCharacterMappingResult {
   confirmPair: (pair: MatchPair) => void;
   dismissPair: (pair: MatchPair) => void;
   mapManually: (characterId: string, discordId: string) => Promise<void>;
+  confirmAllExact: () => Promise<void>;
   refresh: () => void;
 
   // Mutation state
   confirmingPairKey: string | null;
   isMapping: boolean;
+  isConfirmingAll: boolean;
   mappingError: Error | null;
 
   // Per-selection ranking for manual picker
   getRankedDiscordUsers: (
-    character: UnmappedCharacter | null
+    character: UnmappedCharacter | null,
   ) => Array<UnmappedDiscordUser & MatchInfo> | null;
   getRankedCharacters: (
-    discordUser: UnmappedDiscordUser | null
+    discordUser: UnmappedDiscordUser | null,
   ) => Array<UnmappedCharacter & MatchInfo> | null;
 }
 
@@ -52,7 +59,7 @@ export const pairKey = (p: MatchPair) =>
 
 function dedupeById<T extends { characterId: string } | { discordId: string }>(
   items: T[],
-  getId: (item: T) => string
+  getId: (item: T) => string,
 ): T[] {
   const map = new Map<string, T>();
   for (const item of items) {
@@ -66,9 +73,24 @@ function dedupeById<T extends { characterId: string } | { discordId: string }>(
 export function useCharacterMapping(): UseCharacterMappingResult {
   const queryClient = useQueryClient();
 
-  // Track dismissed pairs locally (doesn't persist across refreshes)
+  // Track dismissed (skipped) pairs locally (doesn't persist across refreshes)
   const [dismissedPairs, setDismissedPairs] = useState<Set<string>>(new Set());
-  const [confirmingPairKey, setConfirmingPairKey] = useState<string | null>(null);
+  const [confirmingPairKey, setConfirmingPairKey] = useState<string | null>(
+    null,
+  );
+  // Track linked ids so a row vanishes instantly on link (before the refetch lands).
+  const [linkedCharacterIds, setLinkedCharacterIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [linkedDiscordIds, setLinkedDiscordIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [isConfirmingAll, setIsConfirmingAll] = useState(false);
+
+  const markLinked = useCallback((characterId: string, discordId: string) => {
+    setLinkedCharacterIds((prev) => new Set(prev).add(characterId));
+    setLinkedDiscordIds((prev) => new Set(prev).add(discordId));
+  }, []);
 
   // -- Data fetching ----------------------------------------------------------
 
@@ -78,7 +100,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     isError: isCharactersError,
     refetch: refetchCharacters,
   } = useQuery({
-    queryKey: ['unmapped-characters'],
+    queryKey: ["unmapped-characters"],
     queryFn: () => characterMappingApi.getUnmappedCharacters(),
     staleTime: 1000 * 30,
   });
@@ -89,7 +111,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     isError: isDiscordUsersError,
     refetch: refetchDiscordUsers,
   } = useQuery({
-    queryKey: ['unmapped-discord-users'],
+    queryKey: ["unmapped-discord-users"],
     queryFn: () => characterMappingApi.getUnmappedDiscordUsers(),
     staleTime: 1000 * 30,
   });
@@ -102,37 +124,48 @@ export function useCharacterMapping(): UseCharacterMappingResult {
   const allCharacters = useMemo(() => {
     if (!charactersData) return [];
     return dedupeById(
-      [...charactersData.suggestedCharacters, ...charactersData.unmappedCharacters],
-      (c) => c.characterId
-    );
-  }, [charactersData]);
+      [
+        ...charactersData.suggestedCharacters,
+        ...charactersData.unmappedCharacters,
+      ],
+      (c) => c.characterId,
+    ).filter((c) => !linkedCharacterIds.has(c.characterId));
+  }, [charactersData, linkedCharacterIds]);
 
   const allDiscordUsers = useMemo(() => {
     if (!discordUsersData) return [];
     return dedupeById(
-      [...discordUsersData.suggestedDiscordUsers, ...discordUsersData.unmappedDiscordUsers],
-      (u) => u.discordId
-    );
-  }, [discordUsersData]);
+      [
+        ...discordUsersData.suggestedDiscordUsers,
+        ...discordUsersData.unmappedDiscordUsers,
+      ],
+      (u) => u.discordId,
+    ).filter((u) => !linkedDiscordIds.has(u.discordId));
+  }, [discordUsersData, linkedDiscordIds]);
 
   // -- Matching ---------------------------------------------------------------
 
   const matchResults = useMemo(
     () => computeMatches(allCharacters, allDiscordUsers),
-    [allCharacters, allDiscordUsers]
+    [allCharacters, allDiscordUsers],
   );
 
   const visibleExactMatches = useMemo(
-    () => matchResults.exactMatches.filter((p) => !dismissedPairs.has(pairKey(p))),
-    [matchResults.exactMatches, dismissedPairs]
+    () =>
+      matchResults.exactMatches.filter((p) => !dismissedPairs.has(pairKey(p))),
+    [matchResults.exactMatches, dismissedPairs],
   );
 
   const visibleSuggestedMatches = useMemo(
-    () => matchResults.suggestedMatches.filter((p) => !dismissedPairs.has(pairKey(p))),
-    [matchResults.suggestedMatches, dismissedPairs]
+    () =>
+      matchResults.suggestedMatches.filter(
+        (p) => !dismissedPairs.has(pairKey(p)),
+      ),
+    [matchResults.suggestedMatches, dismissedPairs],
   );
 
-  const totalMatches = visibleExactMatches.length + visibleSuggestedMatches.length;
+  const totalMatches =
+    visibleExactMatches.length + visibleSuggestedMatches.length;
 
   // -- Per-selection ranking --------------------------------------------------
 
@@ -141,7 +174,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
       if (!character) return null;
       return rankMatchesForCharacter(character, allDiscordUsers);
     },
-    [allDiscordUsers]
+    [allDiscordUsers],
   );
 
   const getRankedCharacters = useCallback(
@@ -149,20 +182,25 @@ export function useCharacterMapping(): UseCharacterMappingResult {
       if (!discordUser) return null;
       return rankMatchesForDiscordUser(discordUser, allCharacters);
     },
-    [allCharacters]
+    [allCharacters],
   );
 
   // -- Mutations --------------------------------------------------------------
 
   const invalidateAll = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['unmapped-characters'] });
-    queryClient.invalidateQueries({ queryKey: ['unmapped-discord-users'] });
-    queryClient.invalidateQueries({ queryKey: ['members'] });
+    queryClient.invalidateQueries({ queryKey: ["unmapped-characters"] });
+    queryClient.invalidateQueries({ queryKey: ["unmapped-discord-users"] });
+    queryClient.invalidateQueries({ queryKey: ["members"] });
   }, [queryClient]);
 
   const mapMutation = useMutation({
-    mutationFn: ({ characterId, discordId }: { characterId: string; discordId: string }) =>
-      characterMappingApi.mapCharacter(characterId, discordId),
+    mutationFn: ({
+      characterId,
+      discordId,
+    }: {
+      characterId: string;
+      discordId: string;
+    }) => characterMappingApi.mapCharacter(characterId, discordId),
     onSuccess: invalidateAll,
   });
 
@@ -180,13 +218,13 @@ export function useCharacterMapping(): UseCharacterMappingResult {
         {
           onSettled: () => setConfirmingPairKey(null),
           onSuccess: () => {
-            // Dismiss immediately to avoid flash while query invalidates
-            setDismissedPairs((prev) => new Set(prev).add(key));
+            // Remove the row immediately, before the refetch lands.
+            markLinked(pair.character.characterId, pair.discordUser.discordId);
           },
-        }
+        },
       );
     },
-    [mapMutation]
+    [mapMutation, markLinked],
   );
 
   const dismissPair = useCallback((pair: MatchPair) => {
@@ -196,12 +234,36 @@ export function useCharacterMapping(): UseCharacterMappingResult {
   const mapManually = useCallback(
     async (characterId: string, discordId: string) => {
       await mapMutation.mutateAsync({ characterId, discordId });
+      markLinked(characterId, discordId);
     },
-    [mapMutation]
+    [mapMutation, markLinked],
   );
+
+  // Bulk-confirm every (visible, exact) match in one go.
+  const confirmAllExact = useCallback(async () => {
+    if (isConfirmingAll) return;
+    setIsConfirmingAll(true);
+    try {
+      for (const pair of visibleExactMatches) {
+        try {
+          await mapMutation.mutateAsync({
+            characterId: pair.character.characterId,
+            discordId: pair.discordUser.discordId,
+          });
+          markLinked(pair.character.characterId, pair.discordUser.discordId);
+        } catch {
+          // Skip a failed pair and keep going with the rest.
+        }
+      }
+    } finally {
+      setIsConfirmingAll(false);
+    }
+  }, [isConfirmingAll, visibleExactMatches, mapMutation, markLinked]);
 
   const refresh = useCallback(() => {
     setDismissedPairs(new Set());
+    setLinkedCharacterIds(new Set());
+    setLinkedDiscordIds(new Set());
     refetchCharacters();
     refetchDiscordUsers();
   }, [refetchCharacters, refetchDiscordUsers]);
@@ -220,6 +282,8 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     confirmPair,
     dismissPair,
     mapManually,
+    confirmAllExact,
+    isConfirmingAll,
     refresh,
     confirmingPairKey,
     isMapping: mapMutation.isPending,

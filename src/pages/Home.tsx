@@ -1,46 +1,58 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
 import {
-  Users, Heart, ArrowRight, Sparkles, Star,
-  LogIn, BookOpen, Compass, CalendarDays,
-  Ghost, Skull, Moon, Snowflake, TreePine, Gift,
-} from 'lucide-react';
+  Sparkles,
+  Star,
+  CalendarDays,
+  Ghost,
+  Skull,
+  Moon,
+  Snowflake,
+  TreePine,
+  Gift,
+} from "lucide-react";
 
 // Shared components
 import {
-  Button, FloatingMoogles, DiscordIcon, type MoogleConfig,
-} from '../components';
+  FloatingMoogles,
+  KawaiiStar,
+  KawaiiBow,
+  KawaiiHeart,
+  KawaiiSparkle,
+  KawaiiCloud,
+  type MoogleConfig,
+} from "../components";
 
 // Contexts
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 // Utilities
-import { IS_MOBILE } from '../utils';
+import { IS_MOBILE } from "../utils";
 
 // PERFORMANCE: Alias for readability in this file
 const IS_MOBILE_DEVICE = IS_MOBILE;
 
 // Assets
-import welcomingMoogle from '../assets/moogles/mooglef fly transparent.webp';
-import wizardMoogle from '../assets/moogles/wizard moogle.webp';
-import flyingMoogles from '../assets/moogles/moogles flying.webp';
-import musicMoogle from '../assets/moogles/moogle playing music.webp';
-import lilGuyMoogle from '../assets/moogles/lil guy moogle.webp';
+import welcomingMoogle from "../assets/moogles/mooglef fly transparent.webp";
+import wizardMoogle from "../assets/moogles/wizard moogle.webp";
+import flyingMoogles from "../assets/moogles/moogles flying.webp";
+import musicMoogle from "../assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
 // Types
-import type { SeasonalEvent, EventParticle } from '../constants/seasonalEvents';
+import type { SeasonalEvent, EventParticle } from "../constants/seasonalEvents";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PERFORMANCE: Preload hero moogle for instant LCP
 // ─────────────────────────────────────────────────────────────────────────────
-if (typeof window !== 'undefined') {
-  const preloadLink = document.createElement('link');
-  preloadLink.rel = 'preload';
-  preloadLink.as = 'image';
+if (typeof window !== "undefined") {
+  const preloadLink = document.createElement("link");
+  preloadLink.rel = "preload";
+  preloadLink.as = "image";
   preloadLink.href = welcomingMoogle;
-  preloadLink.setAttribute('fetchpriority', 'high');
+  preloadLink.setAttribute("fetchpriority", "high");
   document.head.appendChild(preloadLink);
 }
 
@@ -60,42 +72,158 @@ const DEFAULT_KUPO_QUOTES = [
 ];
 
 const floatingMoogles: MoogleConfig[] = [
-  { src: wizardMoogle, position: 'top-12 left-3 md:left-14', size: 'w-20 md:w-28', rotate: -10, delay: 0 },
-  { src: flyingMoogles, position: 'top-14 right-0 md:right-8', size: 'w-24 md:w-36', rotate: 8, delay: 0.5 },
-  { src: musicMoogle, position: 'bottom-20 left-2 md:left-14', size: 'w-16 md:w-24', rotate: 5, delay: 1 },
-  { src: lilGuyMoogle, position: 'bottom-14 right-3 md:right-16', size: 'w-14 md:w-20', rotate: -6, delay: 1.5 },
-];
-
-const EXPLORE_LINKS = [
-  { to: '/members', icon: Users, label: 'Our Family', color: 'var(--bento-primary)' },
-  { to: '/chronicle', icon: BookOpen, label: 'Chronicle', color: 'var(--bento-secondary)' },
-  { to: '/about', icon: Compass, label: 'About Us', color: 'var(--bento-accent)' },
+  {
+    src: wizardMoogle,
+    position: "top-12 left-3 md:left-14",
+    size: "w-20 md:w-28",
+    rotate: -10,
+    delay: 0,
+  },
+  {
+    src: flyingMoogles,
+    position: "top-14 right-0 md:right-8",
+    size: "w-24 md:w-36",
+    rotate: 8,
+    delay: 0.5,
+  },
+  {
+    src: musicMoogle,
+    position: "bottom-20 left-2 md:left-14",
+    size: "w-16 md:w-24",
+    rotate: 5,
+    delay: 1,
+  },
+  {
+    src: lilGuyMoogle,
+    position: "bottom-14 right-3 md:right-16",
+    size: "w-14 md:w-20",
+    rotate: -6,
+    delay: 1.5,
+  },
 ];
 
 // Default fairy lights — warm twinkling dots
 const DEFAULT_FAIRY_LIGHTS = [
-  { left: '8%', top: '10%', size: 4, color: 'rgba(251,191,36,0.50)', delay: 0, dur: 3 },
-  { left: '22%', top: '5%', size: 3, color: 'rgba(251,113,133,0.40)', delay: 0.8, dur: 3.5 },
-  { left: '88%', top: '14%', size: 4, color: 'rgba(251,191,36,0.45)', delay: 1.5, dur: 2.8 },
-  { left: '75%', top: '7%', size: 3, color: 'rgba(252,165,165,0.40)', delay: 0.3, dur: 3.2 },
-  { left: '4%', top: '48%', size: 3, color: 'rgba(251,191,36,0.35)', delay: 2.0, dur: 3.8 },
-  { left: '93%', top: '44%', size: 4, color: 'rgba(251,113,133,0.30)', delay: 1.0, dur: 3 },
-  { left: '12%', top: '82%', size: 3, color: 'rgba(252,165,165,0.40)', delay: 1.2, dur: 3.5 },
-  { left: '85%', top: '78%', size: 4, color: 'rgba(251,191,36,0.40)', delay: 0.5, dur: 2.5 },
-  { left: '48%', top: '4%', size: 3, color: 'rgba(251,191,36,0.30)', delay: 1.8, dur: 3.3 },
-  { left: '62%', top: '90%', size: 3, color: 'rgba(251,113,133,0.35)', delay: 2.5, dur: 3 },
-  { left: '35%', top: '93%', size: 4, color: 'rgba(251,191,36,0.40)', delay: 0.7, dur: 3.6 },
-  { left: '96%', top: '28%', size: 3, color: 'rgba(252,165,165,0.35)', delay: 1.4, dur: 2.8 },
+  {
+    left: "8%",
+    top: "10%",
+    size: 4,
+    color: "rgba(251,191,36,0.50)",
+    delay: 0,
+    dur: 3,
+  },
+  {
+    left: "88%",
+    top: "14%",
+    size: 4,
+    color: "rgba(251,191,36,0.45)",
+    delay: 1.5,
+    dur: 2.8,
+  },
+  {
+    left: "4%",
+    top: "48%",
+    size: 3,
+    color: "rgba(251,191,36,0.35)",
+    delay: 2.0,
+    dur: 3.8,
+  },
+  {
+    left: "93%",
+    top: "44%",
+    size: 4,
+    color: "rgba(251,113,133,0.30)",
+    delay: 1.0,
+    dur: 3,
+  },
+  {
+    left: "12%",
+    top: "82%",
+    size: 3,
+    color: "rgba(252,165,165,0.40)",
+    delay: 1.2,
+    dur: 3.5,
+  },
+  {
+    left: "85%",
+    top: "78%",
+    size: 4,
+    color: "rgba(251,191,36,0.40)",
+    delay: 0.5,
+    dur: 2.5,
+  },
 ];
 
 // Default warm floating motes
 const DEFAULT_WARM_MOTES = [
-  { left: '12%', size: 3, color: 'rgba(251,191,36,0.30)', duration: 9, delay: 0, drift: 18 },
-  { left: '30%', size: 2.5, color: 'rgba(251,113,133,0.25)', duration: 11, delay: 2.5, drift: -14 },
-  { left: '50%', size: 3, color: 'rgba(251,191,36,0.25)', duration: 10, delay: 4, drift: 22 },
-  { left: '70%', size: 2.5, color: 'rgba(252,165,165,0.28)', duration: 12, delay: 1.5, drift: -18 },
-  { left: '88%', size: 2.5, color: 'rgba(251,191,36,0.22)', duration: 10, delay: 6, drift: 12 },
-  { left: '40%', size: 2.5, color: 'rgba(251,113,133,0.22)', duration: 11, delay: 3.5, drift: -10 },
+  {
+    left: "14%",
+    size: 3,
+    color: "rgba(251,191,36,0.30)",
+    duration: 10,
+    delay: 0,
+    drift: 18,
+  },
+  {
+    left: "52%",
+    size: 3,
+    color: "rgba(251,191,36,0.25)",
+    duration: 11,
+    delay: 4,
+    drift: 22,
+  },
+  {
+    left: "86%",
+    size: 2.5,
+    color: "rgba(251,113,133,0.22)",
+    duration: 10,
+    delay: 6,
+    drift: 12,
+  },
+];
+
+// Faint stars that drift in the hero's deep background — hand-placed, not random
+const COZY_STARS = [
+  {
+    left: "12%",
+    top: "22%",
+    size: 30,
+    op: 0.07,
+    drift: -14,
+    spin: 12,
+    dur: 13,
+    delay: 0,
+  },
+  {
+    left: "82%",
+    top: "18%",
+    size: 22,
+    op: 0.06,
+    drift: -10,
+    spin: -10,
+    dur: 16,
+    delay: 1.5,
+  },
+  {
+    left: "74%",
+    top: "70%",
+    size: 34,
+    op: 0.06,
+    drift: 12,
+    spin: 8,
+    dur: 15,
+    delay: 0.8,
+  },
+  {
+    left: "18%",
+    top: "74%",
+    size: 24,
+    op: 0.07,
+    drift: 10,
+    spin: -12,
+    dur: 14,
+    delay: 2.2,
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -105,19 +233,15 @@ const DEFAULT_WARM_MOTES = [
 /** Time-of-day greeting — makes the page feel alive and personal */
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'Good morning, kupo~';
-  if (hour >= 12 && hour < 17) return 'Good afternoon, kupo!';
-  if (hour >= 17 && hour < 21) return 'Good evening, kupo~';
-  return 'Up late, kupo? ✧';
+  if (hour >= 5 && hour < 12) return "Good morning, kupo~";
+  if (hour >= 12 && hour < 17) return "Good afternoon, kupo!";
+  if (hour >= 17 && hour < 21) return "Good evening, kupo~";
+  return "Up late, kupo? ✧";
 }
 
-/** Time-of-day tagline — shifts the vibe with the hour */
-function getTimeTagline(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'Your cozy morning awaits';
-  if (hour >= 12 && hour < 17) return 'Your sunny afternoon awaits';
-  if (hour >= 17 && hour < 21) return 'Your cozy evening awaits';
-  return 'Your peaceful night awaits';
+/** Tagline — clear statement of purpose */
+function getTagline(): string {
+  return "A companion experience for Kupo Life!";
 }
 
 /**
@@ -126,12 +250,18 @@ function getTimeTagline(): string {
  */
 function generateEventFairyLights(colors: string[]) {
   const positions = [
-    { left: '8%', top: '10%' }, { left: '22%', top: '5%' },
-    { left: '88%', top: '14%' }, { left: '75%', top: '7%' },
-    { left: '4%', top: '48%' }, { left: '93%', top: '44%' },
-    { left: '12%', top: '82%' }, { left: '85%', top: '78%' },
-    { left: '48%', top: '4%' }, { left: '62%', top: '90%' },
-    { left: '35%', top: '93%' }, { left: '96%', top: '28%' },
+    { left: "8%", top: "10%" },
+    { left: "22%", top: "5%" },
+    { left: "88%", top: "14%" },
+    { left: "75%", top: "7%" },
+    { left: "4%", top: "48%" },
+    { left: "93%", top: "44%" },
+    { left: "12%", top: "82%" },
+    { left: "85%", top: "78%" },
+    { left: "48%", top: "4%" },
+    { left: "62%", top: "90%" },
+    { left: "35%", top: "93%" },
+    { left: "96%", top: "28%" },
   ];
 
   return positions.map((pos, i) => ({
@@ -148,9 +278,12 @@ function generateEventFairyLights(colors: string[]) {
  */
 function generateEventMotes(colors: string[]) {
   const bases = [
-    { left: '12%', drift: 18 }, { left: '30%', drift: -14 },
-    { left: '50%', drift: 22 }, { left: '70%', drift: -18 },
-    { left: '88%', drift: 12 }, { left: '40%', drift: -10 },
+    { left: "12%", drift: 18 },
+    { left: "30%", drift: -14 },
+    { left: "50%", drift: 22 },
+    { left: "70%", drift: -18 },
+    { left: "88%", drift: 12 },
+    { left: "40%", drift: -10 },
   ];
 
   return bases.map((base, i) => ({
@@ -173,7 +306,10 @@ function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
   const displayLights = lights;
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {displayLights.map((light, i) => (
         <motion.div
           key={i}
@@ -189,7 +325,7 @@ function FairyLights({ lights }: { lights: typeof DEFAULT_FAIRY_LIGHTS }) {
           transition={{
             duration: light.dur,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             delay: light.delay,
           }}
         />
@@ -227,7 +363,7 @@ function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
           transition={{
             duration: mote.duration,
             repeat: Infinity,
-            ease: 'easeOut',
+            ease: "easeOut",
             delay: mote.delay,
           }}
         />
@@ -241,23 +377,23 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
   // PERFORMANCE: Skip moogle aura entirely on mobile — removes large blurred element
   if (IS_MOBILE_DEVICE) return null;
   // All Saints' Wake — eerie purple/green flickering glow
-  if (eventId === 'all-saints-wake') {
+  if (eventId === "all-saints-wake") {
     return (
       <>
         <motion.div
           className="absolute inset-0 scale-[2.0]"
-          animate={{ scale: [2.0, 2.4, 2.0], opacity: [0.25, 0.50, 0.25] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ scale: [2.0, 2.4, 2.0], opacity: [0.25, 0.5, 0.25] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden="true"
         >
           <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500/35 via-orange-500/20 to-green-500/25 blur-3xl" />
         </motion.div>
         <motion.div
           className="absolute inset-0 scale-[1.3]"
-          animate={{ rotate: [0, -360], opacity: [0.15, 0.40, 0.15] }}
+          animate={{ rotate: [0, -360], opacity: [0.15, 0.4, 0.15] }}
           transition={{
-            rotate: { duration: 10, repeat: Infinity, ease: 'linear' },
-            opacity: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { duration: 10, repeat: Infinity, ease: "linear" },
+            opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
           }}
           aria-hidden="true"
         >
@@ -266,34 +402,34 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         {/* Extra flickering pulse — mimics candlelight */}
         <motion.div
           className="absolute inset-0 scale-[1.6]"
-          animate={{ opacity: [0.1, 0.35, 0.05, 0.30, 0.1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ opacity: [0.1, 0.35, 0.05, 0.3, 0.1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden="true"
         >
-          <div className="w-full h-full rounded-full bg-gradient-radial from-orange-400/25 to-transparent blur-2xl" />
+          <div className="w-full h-full rounded-full bg-radial from-orange-400/25 to-transparent blur-2xl" />
         </motion.div>
       </>
     );
   }
 
   // Starlight Celebration — warm golden/red/green festive glow
-  if (eventId === 'starlight') {
+  if (eventId === "starlight") {
     return (
       <>
         <motion.div
           className="absolute inset-0 scale-[2.0]"
           animate={{ scale: [2.0, 2.3, 2.0], opacity: [0.35, 0.55, 0.35] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden="true"
         >
           <div className="w-full h-full rounded-full bg-gradient-to-br from-red-500/30 via-amber-400/30 to-green-500/25 blur-3xl" />
         </motion.div>
         <motion.div
           className="absolute inset-0 scale-[1.3]"
-          animate={{ rotate: [0, 360], opacity: [0.2, 0.40, 0.2] }}
+          animate={{ rotate: [0, 360], opacity: [0.2, 0.4, 0.2] }}
           transition={{
-            rotate: { duration: 16, repeat: Infinity, ease: 'linear' },
-            opacity: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { duration: 16, repeat: Infinity, ease: "linear" },
+            opacity: { duration: 4, repeat: Infinity, ease: "easeInOut" },
           }}
           aria-hidden="true"
         >
@@ -303,41 +439,31 @@ function WarmMoogleAura({ eventId }: { eventId: string | null }) {
         <motion.div
           className="absolute inset-0 scale-[1.5]"
           animate={{ opacity: [0.15, 0.35, 0.15], scale: [1.5, 1.7, 1.5] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden="true"
         >
-          <div className="w-full h-full rounded-full bg-gradient-radial from-amber-300/25 to-transparent blur-2xl" />
+          <div className="w-full h-full rounded-full bg-radial from-amber-300/25 to-transparent blur-2xl" />
         </motion.div>
       </>
     );
   }
 
-  // Default — warm golden cozy lantern
+  // Default — a single soft candy glow (light on the GPU)
   return (
-    <>
-      {/* Outer warm pulsing glow */}
-      <motion.div
-        className="absolute inset-0 scale-[1.8]"
-        animate={{ scale: [1.8, 2.1, 1.8], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        aria-hidden="true"
-      >
-        <div className="w-full h-full rounded-full bg-gradient-to-br from-[var(--bento-primary)]/30 via-amber-400/25 to-[var(--bento-secondary)]/30 blur-3xl" />
-      </motion.div>
-
-      {/* Inner rotating warm halo */}
-      <motion.div
-        className="absolute inset-0 scale-[1.2]"
-        animate={{ rotate: [0, 360], opacity: [0.2, 0.35, 0.2] }}
-        transition={{
-          rotate: { duration: 14, repeat: Infinity, ease: 'linear' },
-          opacity: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
+    <motion.div
+      className="absolute inset-0 scale-[1.6]"
+      animate={{ scale: [1.6, 1.85, 1.6], opacity: [0.35, 0.55, 0.35] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      aria-hidden="true"
+    >
+      <div
+        className="w-full h-full rounded-full blur-2xl"
+        style={{
+          background:
+            "radial-gradient(circle, color-mix(in srgb, var(--primary) 32%, transparent), color-mix(in srgb, var(--accent) 16%, transparent) 45%, transparent 70%)",
         }}
-        aria-hidden="true"
-      >
-        <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400/25 via-[var(--bento-accent)]/20 to-rose-400/20 blur-2xl" />
-      </motion.div>
-    </>
+      />
+    </motion.div>
   );
 }
 
@@ -346,7 +472,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
   // PERFORMANCE: Skip charms entirely on mobile — they're tiny and not worth the cost
   if (IS_MOBILE_DEVICE) return null;
   // All Saints' Wake — skulls, ghosts, and moons orbit the moogle
-  if (eventId === 'all-saints-wake') {
+  if (eventId === "all-saints-wake") {
     return (
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -358,7 +484,12 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         <motion.div
           className="absolute -top-1 left-1/4"
           animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
         >
           <Ghost className="w-4 h-4 text-purple-400" strokeWidth={1.5} />
         </motion.div>
@@ -366,23 +497,39 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         <motion.div
           className="absolute top-1/5 -left-6 md:-left-10"
           animate={{ y: [0, -6, 0], rotate: [0, -15, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Skull className="w-4 h-4 md:w-5 md:h-5 text-orange-400" strokeWidth={1.5} />
+          <Skull
+            className="w-4 h-4 md:w-5 md:h-5 text-orange-400"
+            strokeWidth={1.5}
+          />
         </motion.div>
 
         <motion.div
           className="absolute top-1/4 -right-6 md:-right-10"
           animate={{ y: [0, -5, 0], scale: [1, 1.2, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
         >
-          <Moon className="w-4 h-4 md:w-5 md:h-5 text-purple-300 fill-purple-300/30" strokeWidth={1.5} />
+          <Moon
+            className="w-4 h-4 md:w-5 md:h-5 text-purple-300 fill-purple-300/30"
+            strokeWidth={1.5}
+          />
         </motion.div>
 
         <motion.div
           className="absolute bottom-1/4 -right-5 md:-right-8"
           animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1.5,
+          }}
         >
           <Ghost className="w-3.5 h-3.5 text-green-400" strokeWidth={1.5} />
         </motion.div>
@@ -390,7 +537,12 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         <motion.div
           className="absolute bottom-1/3 -left-5 md:-left-8"
           animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
         >
           <Skull className="w-3.5 h-3.5 text-orange-300" strokeWidth={1.5} />
         </motion.div>
@@ -399,7 +551,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
   }
 
   // Starlight Celebration — snowflakes, gifts, stars, and trees orbit the moogle
-  if (eventId === 'starlight') {
+  if (eventId === "starlight") {
     return (
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -410,8 +562,17 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
       >
         <motion.div
           className="absolute -top-2 left-1/4"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5], rotate: [0, 90, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.5, 1, 0.5],
+            rotate: [0, 90, 0],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
         >
           <Snowflake className="w-4 h-4 text-blue-300" strokeWidth={1.5} />
         </motion.div>
@@ -419,31 +580,56 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
         <motion.div
           className="absolute top-1/5 -left-6 md:-left-10"
           animate={{ y: [0, -5, 0], rotate: [0, 12, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Gift className="w-4 h-4 md:w-5 md:h-5 text-red-400" strokeWidth={1.5} />
+          <Gift
+            className="w-4 h-4 md:w-5 md:h-5 text-red-400"
+            strokeWidth={1.5}
+          />
         </motion.div>
 
         <motion.div
           className="absolute top-1/4 -right-6 md:-right-10"
           animate={{ y: [0, -4, 0], scale: [1, 1.3, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
         >
-          <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-300 fill-amber-300" strokeWidth={1.5} />
+          <Star
+            className="w-4 h-4 md:w-5 md:h-5 text-amber-300 fill-amber-300"
+            strokeWidth={1.5}
+          />
         </motion.div>
 
         <motion.div
           className="absolute bottom-1/4 -right-5 md:-right-8"
           animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+          transition={{
+            duration: 3.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1.5,
+          }}
         >
           <TreePine className="w-4 h-4 text-green-500" strokeWidth={1.5} />
         </motion.div>
 
         <motion.div
           className="absolute bottom-1/3 -left-5 md:-left-8"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 1, 0.4], rotate: [0, 180, 360] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.4, 1, 0.4],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
         >
           <Snowflake className="w-3.5 h-3.5 text-blue-200" strokeWidth={1.5} />
         </motion.div>
@@ -451,7 +637,7 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
     );
   }
 
-  // Default — hearts and stars
+  // Default — a few kawaii stickers floating around the moogle
   return (
     <motion.div
       className="absolute inset-0 pointer-events-none"
@@ -460,77 +646,50 @@ function MoogleCharms({ eventId }: { eventId: string | null }) {
       transition={{ delay: 0.7, duration: 0.6 }}
       aria-hidden="true"
     >
-      {/* Top — floating heart */}
       <motion.div
         className="absolute -top-1 left-1/4"
-        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        animate={{ y: [0, -7, 0] }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
       >
-        <Heart className="w-3.5 h-3.5 text-[var(--bento-primary)] fill-[var(--bento-primary)]" />
+        <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
       </motion.div>
-
-      {/* Left — warm heart */}
       <motion.div
         className="absolute top-1/5 -left-6 md:-left-10"
-        animate={{ y: [0, -5, 0], rotate: [0, 12, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Heart className="w-4 h-4 md:w-5 md:h-5 text-rose-400 fill-rose-400" />
+        <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--accent)]" />
       </motion.div>
-
-      {/* Right — golden star */}
       <motion.div
         className="absolute top-1/4 -right-6 md:-right-10"
-        animate={{ y: [0, -4, 0], scale: [1, 1.2, 1] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+        animate={{ y: [0, -5, 0] }}
+        transition={{
+          duration: 3.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5,
+        }}
       >
-        <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-400 fill-amber-400" />
+        <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--secondary)]" />
       </motion.div>
-
-      {/* Bottom-right — sparkle */}
       <motion.div
-        className="absolute bottom-1/4 -right-5 md:-right-8"
-        animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+        className="absolute bottom-1/4 -right-4 md:-right-8"
+        animate={{ y: [0, -4, 0] }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.5,
+        }}
       >
-        <Sparkles className="w-3.5 h-3.5 text-[var(--bento-accent)]" />
-      </motion.div>
-
-      {/* Bottom-left — heart */}
-      <motion.div
-        className="absolute bottom-1/3 -left-5 md:-left-8"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.9, 0.4] }}
-        transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-      >
-        <Heart className="w-3.5 h-3.5 text-[var(--bento-secondary)] fill-[var(--bento-secondary)]" />
+        <KawaiiHeart className="w-4 h-4 text-[var(--secondary)]" />
       </motion.div>
     </motion.div>
-  );
-}
-
-/** Discord login CTA — compact */
-function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
-  return (
-    <motion.button
-      onClick={onLogin}
-      className="
-        group flex items-center justify-center gap-2.5
-        px-6 py-3 sm:py-3.5 rounded-2xl
-        bg-[#5865F2] text-white
-        font-soft font-semibold text-base sm:text-lg
-        shadow-xl shadow-[#5865F2]/30
-        sm:hover:bg-[#4752C4] sm:hover:shadow-2xl sm:hover:shadow-[#5865F2]/40
-        active:bg-[#4752C4] active:scale-[0.97]
-        focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2
-        focus-visible:ring-offset-[#5865F2] focus-visible:outline-none
-        transition-all duration-150 cursor-pointer touch-manipulation
-      "
-      whileTap={{ scale: 0.97 }}
-    >
-      <DiscordIcon className="w-5 h-5" />
-      <span>Login with Discord</span>
-      <LogIn className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-    </motion.button>
   );
 }
 
@@ -541,89 +700,168 @@ function DiscordLoginCTA({ onLogin }: { onLogin: () => void }) {
 /**
  * All Saints' Wake — Creeping fog that drifts across the bottom of the screen,
  * eerie flickering jack-o-lantern glow, and wandering ghost silhouettes.
- * 
+ *
  * PERFORMANCE: On mobile, shows only static fog + 1 ghost (instead of ~12 animated elements)
  */
 function HalloweenOverlay() {
+  // Ghost silhouettes that drift slowly across the screen
+  const ghosts = useMemo(
+    () => [
+      {
+        left: "5%",
+        delay: 0,
+        duration: 22,
+        yStart: "60%",
+        yEnd: "20%",
+        drift: 80,
+        size: 32,
+        opacity: 0.08,
+      },
+      {
+        left: "70%",
+        delay: 6,
+        duration: 26,
+        yStart: "75%",
+        yEnd: "15%",
+        drift: -60,
+        size: 28,
+        opacity: 0.06,
+      },
+      {
+        left: "35%",
+        delay: 12,
+        duration: 20,
+        yStart: "80%",
+        yEnd: "25%",
+        drift: 50,
+        size: 24,
+        opacity: 0.07,
+      },
+      {
+        left: "85%",
+        delay: 3,
+        duration: 24,
+        yStart: "55%",
+        yEnd: "10%",
+        drift: -70,
+        size: 30,
+        opacity: 0.05,
+      },
+      {
+        left: "20%",
+        delay: 9,
+        duration: 28,
+        yStart: "70%",
+        yEnd: "5%",
+        drift: 40,
+        size: 26,
+        opacity: 0.06,
+      },
+    ],
+    [],
+  );
+
   // PERFORMANCE: Minimal version for mobile
   if (IS_MOBILE_DEVICE) {
     return (
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         {/* Static fog */}
         <div
           className="absolute bottom-0 inset-x-0 h-[40%] opacity-80"
           style={{
-            background: 'linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)',
+            background:
+              "linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)",
           }}
         />
         {/* Single ghost with CSS animation */}
         <div
           className="absolute animate-float-moogle-subtle"
-          style={{ left: '15%', top: '55%', animationDuration: '8s', opacity: 0.07 }}
+          style={{
+            left: "15%",
+            top: "55%",
+            animationDuration: "8s",
+            opacity: 0.07,
+          }}
         >
-          <Ghost style={{ width: 28, height: 28 }} className="text-purple-400/60" strokeWidth={1} />
+          <Ghost
+            style={{ width: 28, height: 28 }}
+            className="text-purple-400/60"
+            strokeWidth={1}
+          />
         </div>
         {/* Vignette */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)',
+            background:
+              "radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)",
           }}
         />
       </div>
     );
   }
-  // Ghost silhouettes that drift slowly across the screen
-  const ghosts = useMemo(() => [
-    { left: '5%', delay: 0, duration: 22, yStart: '60%', yEnd: '20%', drift: 80, size: 32, opacity: 0.08 },
-    { left: '70%', delay: 6, duration: 26, yStart: '75%', yEnd: '15%', drift: -60, size: 28, opacity: 0.06 },
-    { left: '35%', delay: 12, duration: 20, yStart: '80%', yEnd: '25%', drift: 50, size: 24, opacity: 0.07 },
-    { left: '85%', delay: 3, duration: 24, yStart: '55%', yEnd: '10%', drift: -70, size: 30, opacity: 0.05 },
-    { left: '20%', delay: 9, duration: 28, yStart: '70%', yEnd: '5%', drift: 40, size: 26, opacity: 0.06 },
-  ], []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {/* Fog layers — thick gradient mist at the bottom */}
       <motion.div
         className="absolute bottom-0 inset-x-0 h-[40%]"
         style={{
-          background: 'linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)',
+          background:
+            "linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)",
         }}
         animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-0 inset-x-0 h-[25%]"
         style={{
-          background: 'linear-gradient(to top, rgba(74,222,128,0.06), rgba(34,197,94,0.03) 50%, transparent)',
+          background:
+            "linear-gradient(to top, rgba(74,222,128,0.06), rgba(34,197,94,0.03) 50%, transparent)",
         }}
         animate={{ opacity: [0.4, 0.8, 0.4] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
       />
 
       {/* Drifting fog wisps — horizontal movement */}
       <motion.div
         className="absolute bottom-[5%] h-[15%] w-[60%] rounded-full blur-3xl"
-        style={{ background: 'rgba(167,139,250,0.08)' }}
-        animate={{ x: ['-10%', '110%'], opacity: [0, 0.12, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        style={{ background: "rgba(167,139,250,0.08)" }}
+        animate={{ x: ["-10%", "110%"], opacity: [0, 0.12, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       />
       <motion.div
         className="absolute bottom-[12%] h-[10%] w-[45%] rounded-full blur-3xl"
-        style={{ background: 'rgba(249,115,22,0.06)' }}
-        animate={{ x: ['110%', '-10%'], opacity: [0, 0.10, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'linear', delay: 4 }}
+        style={{ background: "rgba(249,115,22,0.06)" }}
+        animate={{ x: ["110%", "-10%"], opacity: [0, 0.1, 0] }}
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: "linear",
+          delay: 4,
+        }}
       />
 
       {/* Eerie pulsing vignette — darker around the edges */}
       <motion.div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)',
+          background:
+            "radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)",
         }}
         animate={{ opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Wandering ghost silhouettes */}
@@ -640,7 +878,7 @@ function HalloweenOverlay() {
           transition={{
             duration: ghost.duration,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             delay: ghost.delay,
           }}
         >
@@ -654,9 +892,9 @@ function HalloweenOverlay() {
 
       {/* Flickering jack-o-lantern glow spots */}
       {[
-        { left: '10%', top: '70%', size: 120 },
-        { left: '80%', top: '65%', size: 100 },
-        { left: '45%', top: '80%', size: 140 },
+        { left: "10%", top: "70%", size: 120 },
+        { left: "80%", top: "65%", size: 100 },
+        { left: "45%", top: "80%", size: 140 },
       ].map((spot, i) => (
         <motion.div
           key={`lantern-${i}`}
@@ -666,7 +904,8 @@ function HalloweenOverlay() {
             top: spot.top,
             width: spot.size,
             height: spot.size,
-            background: 'radial-gradient(circle, rgba(249,115,22,0.15), rgba(251,191,36,0.08), transparent)',
+            background:
+              "radial-gradient(circle, rgba(249,115,22,0.15), rgba(251,191,36,0.08), transparent)",
           }}
           animate={{
             opacity: [0.3, 0.7, 0.2, 0.8, 0.3],
@@ -675,7 +914,7 @@ function HalloweenOverlay() {
           transition={{
             duration: 3 + i * 0.5,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             delay: i * 1.2,
           }}
         />
@@ -684,6 +923,18 @@ function HalloweenOverlay() {
   );
 }
 
+// Christmas string lights — colored bulbs draped in clean U-swoops across the top
+const STRING_LIGHT_COLORS = [
+  "#EF4444",
+  "#22C55E",
+  "#FBBF24",
+  "#3B82F6",
+  "#EF4444",
+  "#22C55E",
+  "#FBBF24",
+  "#3B82F6",
+];
+
 /**
  * Starlight Celebration — Gentle snowfall, twinkling christmas lights,
  * warm golden fireplace glow, and festive sparkles.
@@ -691,10 +942,53 @@ function HalloweenOverlay() {
  * PERFORMANCE: On mobile, shows 6 CSS snowflakes + static glow (instead of 60+ animated elements)
  */
 function StarlightOverlay() {
+  // Generate snowflake particles with deterministic positions
+  const snowflakes = useMemo(() => {
+    const flakes: Array<{
+      left: string;
+      size: number;
+      delay: number;
+      duration: number;
+      drift: number;
+      opacity: number;
+      variant: "flake" | "dot";
+    }> = [];
+
+    for (let i = 0; i < 35; i++) {
+      const seed = i * 37 + 13;
+      flakes.push({
+        left: `${(seed * 53) % 100}%`,
+        size: 6 + (seed % 14),
+        delay: (seed * 0.17) % 12,
+        duration: 8 + (seed % 10),
+        drift: ((seed * 11) % 60) - 30,
+        opacity: 0.15 + ((seed * 7) % 100) / 250,
+        variant: i % 4 === 0 ? "flake" : "dot",
+      });
+    }
+    return flakes;
+  }, []);
+
+  const { wirePath, stringLightBulbs } = useMemo(() => {
+    // 8 gentle swoops across the top; bulbs ride along the draped wire
+    const garland = buildDrapedGarland(8, 5, 13, 17);
+    const bulbs = garland.points.map((p, i) => ({
+      x: p.x / 10, // 0–100 (the bulb renderer multiplies x by 10)
+      y: p.y,
+      color: STRING_LIGHT_COLORS[i % STRING_LIGHT_COLORS.length],
+      delay: i * 0.22,
+      size: 8 + (i % 3) * 2, // 8–12px bulbs
+    }));
+    return { wirePath: garland.wirePath, stringLightBulbs: bulbs };
+  }, []);
+
   // PERFORMANCE: Minimal version for mobile — CSS-only, no Framer Motion
   if (IS_MOBILE_DEVICE) {
     return (
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        aria-hidden="true"
+      >
         {/* 6 simple CSS snowflakes instead of 35 Framer Motion snowflakes */}
         {[12, 28, 45, 62, 78, 90].map((left, i) => (
           <div
@@ -715,117 +1009,69 @@ function StarlightOverlay() {
         <div
           className="absolute bottom-0 inset-x-0 h-[30%] opacity-80"
           style={{
-            background: 'linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)',
+            background:
+              "linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)",
           }}
         />
         {/* Snow accumulation */}
         <div
           className="absolute bottom-0 inset-x-0 h-[3%]"
           style={{
-            background: 'linear-gradient(to top, rgba(255,255,255,0.06), transparent)',
+            background:
+              "linear-gradient(to top, rgba(255,255,255,0.06), transparent)",
           }}
         />
       </div>
     );
   }
-  // Generate snowflake particles with deterministic positions
-  const snowflakes = useMemo(() => {
-    const flakes: Array<{
-      left: string;
-      size: number;
-      delay: number;
-      duration: number;
-      drift: number;
-      opacity: number;
-      variant: 'flake' | 'dot';
-    }> = [];
-
-    for (let i = 0; i < 35; i++) {
-      const seed = i * 37 + 13;
-      flakes.push({
-        left: `${(seed * 53) % 100}%`,
-        size: 6 + (seed % 14),
-        delay: (seed * 0.17) % 12,
-        duration: 8 + (seed % 10),
-        drift: ((seed * 11) % 60) - 30,
-        opacity: 0.15 + ((seed * 7) % 100) / 250,
-        variant: i % 4 === 0 ? 'flake' : 'dot',
-      });
-    }
-    return flakes;
-  }, []);
-
-  // Christmas string lights — colored bulbs draped across the top
-  // Each segment sags between anchor points to create a natural catenary
-  const STRING_LIGHT_COLORS = ['#EF4444', '#22C55E', '#FBBF24', '#3B82F6', '#EF4444', '#22C55E', '#FBBF24', '#3B82F6'];
-
-  const stringLightBulbs = useMemo(() => {
-    // Define the draped wire shape — anchor points with sag between them
-    const anchors = [
-      { x: 0, y: 6 },
-      { x: 6, y: 18 },
-      { x: 12, y: 8 },
-      { x: 18, y: 22 },
-      { x: 25, y: 10 },
-      { x: 32, y: 24 },
-      { x: 38, y: 8 },
-      { x: 45, y: 20 },
-      { x: 52, y: 6 },
-      { x: 58, y: 22 },
-      { x: 65, y: 10 },
-      { x: 72, y: 26 },
-      { x: 78, y: 8 },
-      { x: 85, y: 20 },
-      { x: 92, y: 10 },
-      { x: 100, y: 16 },
-    ];
-
-    return anchors.map((pt, i) => ({
-      x: pt.x,
-      y: pt.y,
-      color: STRING_LIGHT_COLORS[i % STRING_LIGHT_COLORS.length],
-      delay: i * 0.25,
-      size: 8 + (i % 3) * 2, // 8–12px bulbs
-    }));
-  }, []);
-
-  // Build the SVG wire path from anchors (smooth catenary)
-  const wirePath = useMemo(() => {
-    const pts = stringLightBulbs.map(b => ({ x: b.x * 10, y: b.y })); // scale x to 0-1000
-    let d = `M ${pts[0].x} ${pts[0].y}`;
-    for (let i = 1; i < pts.length; i++) {
-      const prev = pts[i - 1];
-      const curr = pts[i];
-      const cpx = (prev.x + curr.x) / 2;
-      // Sag the control point lower for a natural drape
-      const cpy = Math.max(prev.y, curr.y) + 8;
-      d += ` Q ${cpx} ${cpy}, ${curr.x} ${curr.y}`;
-    }
-    return d;
-  }, [stringLightBulbs]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {/* Snowfall */}
       {snowflakes.map((flake, i) => (
         <motion.div
           key={i}
           className="absolute"
-          style={{ left: flake.left, top: '-5%' }}
+          style={{ left: flake.left, top: "-5%" }}
           animate={{
-            y: [0, typeof window !== 'undefined' ? window.innerHeight + 40 : 1000],
+            y: [
+              0,
+              typeof window !== "undefined" ? window.innerHeight + 40 : 1000,
+            ],
             x: [0, flake.drift, 0],
             rotate: [0, 360],
           }}
           transition={{
-            y: { duration: flake.duration, repeat: Infinity, ease: 'linear', delay: flake.delay },
-            x: { duration: flake.duration * 0.7, repeat: Infinity, ease: 'easeInOut', delay: flake.delay },
-            rotate: { duration: flake.duration * 2, repeat: Infinity, ease: 'linear', delay: flake.delay },
+            y: {
+              duration: flake.duration,
+              repeat: Infinity,
+              ease: "linear",
+              delay: flake.delay,
+            },
+            x: {
+              duration: flake.duration * 0.7,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: flake.delay,
+            },
+            rotate: {
+              duration: flake.duration * 2,
+              repeat: Infinity,
+              ease: "linear",
+              delay: flake.delay,
+            },
           }}
         >
-          {flake.variant === 'flake' ? (
+          {flake.variant === "flake" ? (
             <Snowflake
-              style={{ width: flake.size, height: flake.size, opacity: flake.opacity }}
+              style={{
+                width: flake.size,
+                height: flake.size,
+                opacity: flake.opacity,
+              }}
               className="text-blue-200"
               strokeWidth={1.5}
             />
@@ -891,11 +1137,14 @@ function StarlightOverlay() {
                 cy={cy}
                 r={r * 5}
                 fill={`url(#bulb-glow-${i})`}
-                animate={{ opacity: [0.35, 0.75, 0.35], r: [r * 4.5, r * 5.5, r * 4.5] }}
+                animate={{
+                  opacity: [0.35, 0.75, 0.35],
+                  r: [r * 4.5, r * 5.5, r * 4.5],
+                }}
                 transition={{
                   duration: 2.5 + (i % 3) * 0.6,
                   repeat: Infinity,
-                  ease: 'easeInOut',
+                  ease: "easeInOut",
                   delay: bulb.delay,
                 }}
               />
@@ -906,12 +1155,12 @@ function StarlightOverlay() {
                 r={r * 2}
                 fill={bulb.color}
                 opacity={0.35}
-                style={{ filter: 'blur(1px)' }}
+                style={{ filter: "blur(1px)" }}
                 animate={{ opacity: [0.25, 0.45, 0.25] }}
                 transition={{
                   duration: 1.8 + (i % 4) * 0.4,
                   repeat: Infinity,
-                  ease: 'easeInOut',
+                  ease: "easeInOut",
                   delay: bulb.delay + 0.1,
                 }}
               />
@@ -926,7 +1175,7 @@ function StarlightOverlay() {
                 transition={{
                   duration: 2 + (i % 3) * 0.5,
                   repeat: Infinity,
-                  ease: 'easeInOut',
+                  ease: "easeInOut",
                   delay: bulb.delay,
                 }}
               />
@@ -948,28 +1197,30 @@ function StarlightOverlay() {
       <motion.div
         className="absolute bottom-0 inset-x-0 h-[30%]"
         style={{
-          background: 'linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)',
+          background:
+            "linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)",
         }}
         animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Soft snow accumulation glow at the very bottom */}
       <div
         className="absolute bottom-0 inset-x-0 h-[3%]"
         style={{
-          background: 'linear-gradient(to top, rgba(255,255,255,0.06), transparent)',
+          background:
+            "linear-gradient(to top, rgba(255,255,255,0.06), transparent)",
         }}
       />
 
       {/* Festive sparkle bursts — brief twinkling stars scattered around */}
       {[
-        { left: '15%', top: '20%', delay: 0 },
-        { left: '75%', top: '15%', delay: 2 },
-        { left: '55%', top: '35%', delay: 4.5 },
-        { left: '25%', top: '70%', delay: 1.5 },
-        { left: '85%', top: '60%', delay: 3.5 },
-        { left: '45%', top: '85%', delay: 5.5 },
+        { left: "15%", top: "20%", delay: 0 },
+        { left: "75%", top: "15%", delay: 2 },
+        { left: "55%", top: "35%", delay: 4.5 },
+        { left: "25%", top: "70%", delay: 1.5 },
+        { left: "85%", top: "60%", delay: 3.5 },
+        { left: "45%", top: "85%", delay: 5.5 },
       ].map((sparkle, i) => (
         <motion.div
           key={`sparkle-${i}`}
@@ -983,7 +1234,7 @@ function StarlightOverlay() {
           transition={{
             duration: 3,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             delay: sparkle.delay,
             repeatDelay: 4,
           }}
@@ -1001,12 +1252,10 @@ function StarlightOverlay() {
 
 /** Floating icon particles scattered across the viewport for events */
 function EventParticles({ particles }: { particles: EventParticle[] }) {
-  // PERFORMANCE: Skip event particles on mobile — too many animated elements
-  if (IS_MOBILE_DEVICE) return null;
   // Generate stable positions for each particle
   const items = useMemo(() => {
     const result: Array<{
-      Icon: EventParticle['icon'];
+      Icon: EventParticle["icon"];
       color: string;
       left: string;
       top: string;
@@ -1023,8 +1272,12 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
         const seed = pIdx * 100 + i;
         const left = ((seed * 37 + 13) % 90) + 5;
         const top = ((seed * 53 + 7) % 85) + 5;
-        const size = config.minSize + ((seed * 17) % (config.maxSize - config.minSize + 1));
-        const opacity = config.minOpacity + ((seed * 23) % 100) / 100 * (config.maxOpacity - config.minOpacity);
+        const size =
+          config.minSize +
+          ((seed * 17) % (config.maxSize - config.minSize + 1));
+        const opacity =
+          config.minOpacity +
+          (((seed * 23) % 100) / 100) * (config.maxOpacity - config.minOpacity);
 
         result.push({
           Icon: config.icon,
@@ -1043,8 +1296,14 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
     return result;
   }, [particles]);
 
+  // PERFORMANCE: Skip event particles on mobile — too many animated elements
+  if (IS_MOBILE_DEVICE) return null;
+
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {items.map((item, i) => (
         <motion.div
           key={i}
@@ -1062,7 +1321,7 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
           transition={{
             duration: item.duration,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             delay: item.delay,
           }}
         >
@@ -1076,22 +1335,173 @@ function EventParticles({ particles }: { particles: EventParticle[] }) {
   );
 }
 
-/** Event banner — a subtle pill showing the active event name */
-function EventBanner({ event }: { event: SeasonalEvent }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Event spotlight — a bold, themed card announcing the active seasonal event
+// ─────────────────────────────────────────────────────────────────────────────
+
+const MONTH_ABBR = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+/** "Oct 20 – Nov 1" */
+function formatEventDates(range: SeasonalEvent["dateRange"]): string {
+  return `${MONTH_ABBR[range.startMonth - 1]} ${range.startDay} – ${MONTH_ABBR[range.endMonth - 1]} ${range.endDay}`;
+}
+
+/** Whole days remaining until the event's end (handles year wrap). */
+function getEventDaysLeft(range: SeasonalEvent["dateRange"]): number {
+  const now = new Date();
+  let end = new Date(
+    now.getFullYear(),
+    range.endMonth - 1,
+    range.endDay,
+    23,
+    59,
+    59,
+  );
+  if (end.getTime() < now.getTime()) {
+    end = new Date(
+      now.getFullYear() + 1,
+      range.endMonth - 1,
+      range.endDay,
+      23,
+      59,
+      59,
+    );
+  }
+  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86_400_000));
+}
+
+function eventCountdownLabel(daysLeft: number): string {
+  if (daysLeft <= 0) return "last day to celebrate!";
+  if (daysLeft === 1) return "1 day left to celebrate";
+  return `${daysLeft} days left to celebrate`;
+}
+
+/**
+ * Builds a draped "UUUU" garland: a wire that sags in repeated U-swoops between
+ * evenly spaced pegs, plus evenly spaced points along the wire to hang bulbs or
+ * pennants from. Coordinates use a 0–1000 (x) × 0–100 (y) viewBox — render the
+ * wire with preserveAspectRatio="none" and vector-effect="non-scaling-stroke".
+ */
+function buildDrapedGarland(
+  swoops: number,
+  pegY: number,
+  sagDepth: number,
+  count: number,
+) {
+  const W = 1000;
+  const segW = W / swoops;
+  const ctrlY = pegY + 2 * sagDepth; // quadratic control point so each dip reaches pegY + sagDepth
+  let wirePath = `M 0 ${pegY}`;
+  for (let i = 0; i < swoops; i++) {
+    const midX = i * segW + segW / 2;
+    wirePath += ` Q ${midX} ${ctrlY} ${(i + 1) * segW} ${pegY}`;
+  }
+  const points: Array<{ x: number; y: number }> = [];
+  for (let k = 0; k < count; k++) {
+    const x = ((k + 0.5) / count) * W;
+    const i = Math.min(swoops - 1, Math.floor(x / segW));
+    const t = (x - i * segW) / segW;
+    const y = (1 - t) * (1 - t) * pegY + 2 * (1 - t) * t * ctrlY + t * t * pegY;
+    points.push({ x, y });
+  }
+  return { wirePath, points };
+}
+
+/**
+ * EventBunting — a festive pennant garland strung across the FULL viewport during
+ * a seasonal event (mirrors how StarlightOverlay drapes its string lights), with
+ * the event name, dates, and countdown centered below. Rendered as a fixed
+ * overlay so it spans the whole width — sidebar included.
+ */
+function EventBunting({ event }: { event: SeasonalEvent }) {
   const EventIcon = event.icon;
+  const daysLeft = getEventDaysLeft(event.dateRange);
+  const dates = formatEventDates(event.dateRange);
+  const countdown = eventCountdownLabel(daysLeft);
+
   return (
-    <motion.div
-      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15"
-      initial={{ opacity: 0, y: -10, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.3 }}
+    <div
+      className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] md:top-4 z-20 pointer-events-none flex justify-center px-4 select-none"
+      role="status"
+      aria-label={`Now celebrating ${event.name}. ${dates}. ${countdown}.`}
     >
-      <EventIcon className="w-3.5 h-3.5 text-[var(--bento-primary)]" aria-hidden="true" />
-      <span className="font-soft font-semibold text-[11px] sm:text-xs text-[var(--bento-primary)]">
-        {event.name}
-      </span>
-      <CalendarDays className="w-3 h-3 text-[var(--bento-primary)]/60" aria-hidden="true" />
-    </motion.div>
+      {/* Kawaii sticker banner */}
+      <motion.div
+        className="relative -rotate-1"
+        initial={{ opacity: 0, y: -12, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", bounce: 0.4, duration: 0.7, delay: 0.3 }}
+      >
+        {/* washi tape across the top */}
+        <span
+          className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 rotate-[-3deg] rounded-[2px] opacity-80 z-10"
+          style={{
+            background:
+              "repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 50%, transparent) 0 7px, color-mix(in srgb, var(--accent) 28%, transparent) 7px 14px)",
+          }}
+          aria-hidden="true"
+        />
+        {/* star sticker corner */}
+        <KawaiiStar
+          className="absolute -top-2 -right-2 w-5 h-5 text-[var(--accent)] rotate-12 z-10"
+          aria-hidden="true"
+        />
+
+        <div
+          className="flex items-center gap-3 px-4 py-2.5 rounded-2xl"
+          style={{
+            background: "color-mix(in srgb, var(--primary) 14%, var(--card))",
+            border:
+              "2px solid color-mix(in srgb, var(--primary) 45%, var(--card))",
+            boxShadow:
+              "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 30%, transparent), 0 0 26px -6px color-mix(in srgb, var(--primary) 50%, transparent)",
+          }}
+        >
+          {/* event icon sticker */}
+          <span
+            className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full"
+            style={{
+              background: "color-mix(in srgb, var(--primary) 16%, var(--card))",
+              color: "var(--primary)",
+            }}
+          >
+            <EventIcon className="w-6 h-6" aria-hidden="true" />
+          </span>
+          <div className="text-left">
+            <p className="eyebrow-script text-base text-[var(--secondary)] leading-none">
+              Now celebrating
+            </p>
+            <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)] leading-tight">
+              {event.name}
+            </h2>
+            <p className="text-[11px] font-soft text-[var(--text-muted)] flex items-center gap-1.5 mt-0.5 flex-wrap">
+              <CalendarDays
+                className="w-3 h-3 text-[var(--text-subtle)]"
+                aria-hidden="true"
+              />
+              {dates}
+              <span className="text-[var(--text-subtle)]">·</span>
+              <span className="font-accent text-sm text-[var(--primary)]">
+                {countdown}
+              </span>
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -1100,37 +1510,37 @@ function EventBanner({ event }: { event: SeasonalEvent }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Home() {
-  const { user, isAuthenticated, isLoading, login } = useAuth();
+  const { user } = useAuth();
   const { activeEvent, isEventThemeActive } = useTheme();
 
   // Determine quotes: event-specific or default
   const kupoQuotes = useMemo(
-    () => (isEventThemeActive && activeEvent) ? activeEvent.kupoQuotes : DEFAULT_KUPO_QUOTES,
-    [isEventThemeActive, activeEvent]
+    () =>
+      isEventThemeActive && activeEvent
+        ? activeEvent.kupoQuotes
+        : DEFAULT_KUPO_QUOTES,
+    [isEventThemeActive, activeEvent],
   );
 
   const [quoteIndex, setQuoteIndex] = useState(-1);
 
-  // Time-aware values — computed once on mount
+  // Time-aware values
   const timeGreeting = useMemo(() => getTimeGreeting(), []);
-  const timeTagline = useMemo(() => getTimeTagline(), []);
+  const defaultTagline = useMemo(() => getTagline(), []);
 
-  // Personal greeting for authenticated users, time-based for visitors
   const firstGreeting = user
-    ? `Welcome home, ${user.memberName.split(' ')[0]}!`
+    ? `Welcome home, ${user.memberName.split(" ")[0]}!`
     : timeGreeting;
 
-  // -1 = personal/time greeting, 0+ = regular quote rotation
   const displayQuote = quoteIndex < 0 ? firstGreeting : kupoQuotes[quoteIndex];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length);
-    }, 4000);
+    }, 4500); // slightly slower pace for a relaxed feel
     return () => clearInterval(interval);
   }, [kupoQuotes]);
 
-  // Event-derived atmosphere
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
       return generateEventFairyLights(activeEvent.atmosphere.fairyLightColors);
@@ -1145,375 +1555,418 @@ export function Home() {
     return DEFAULT_WARM_MOTES;
   }, [isEventThemeActive, activeEvent]);
 
-  // Event tagline overrides the time-based tagline
-  const tagline = (isEventThemeActive && activeEvent)
-    ? activeEvent.tagline
-    : timeTagline;
+  // Bespoke ambient layer — soft warm light pools that gently drift (no morphing
+  // "blob" shapes) plus a few faint drifting stars, so the background reads as
+  // cozy lamplight in a nest rather than a generic SaaS gradient blob.
+  const renderCozyAtmosphere = () => {
+    const poolA =
+      isEventThemeActive && activeEvent?.id === "all-saints-wake"
+        ? "#a855f7"
+        : isEventThemeActive && activeEvent?.id === "starlight"
+          ? "#fbbf24"
+          : "var(--primary)";
+    const poolB =
+      isEventThemeActive && activeEvent?.id === "all-saints-wake"
+        ? "#f97316"
+        : isEventThemeActive && activeEvent?.id === "starlight"
+          ? "#ef4444"
+          : "var(--secondary)";
+    return (
+      <div
+        className="fixed inset-0 overflow-hidden pointer-events-none z-0"
+        aria-hidden="true"
+      >
+        {/* Warm light pool — top-left. Fixed size + position + its own GPU layer
+            so a window resize never re-rasterizes the 60px blur (the main cause
+            of resize jank was viewport-sized blurs re-blurring every frame). */}
+        <div
+          className="absolute -top-40 -left-32 w-[48rem] h-[48rem] rounded-full blur-[60px] opacity-70 [transform:translateZ(0)]"
+          style={{
+            background: `radial-gradient(circle, color-mix(in srgb, ${poolA} 20%, transparent), transparent 70%)`,
+          }}
+        />
+        {/* Warm light pool — bottom-right (static, same treatment) */}
+        <div
+          className="absolute -bottom-40 -right-32 w-[44rem] h-[44rem] rounded-full blur-[55px] opacity-65 [transform:translateZ(0)]"
+          style={{
+            background: `radial-gradient(circle, color-mix(in srgb, ${poolB} 18%, transparent), transparent 70%)`,
+          }}
+        />
+        {/* A few faint stars drifting in the deep background */}
+        {COZY_STARS.map((s, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{ left: s.left, top: s.top }}
+            animate={{
+              y: [0, s.drift, 0],
+              rotate: [0, s.spin, 0],
+              opacity: [s.op * 0.5, s.op, s.op * 0.5],
+            }}
+            transition={{
+              duration: s.dur,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: s.delay,
+            }}
+          >
+            <Star
+              style={{ width: s.size, height: s.size, color: "var(--accent)" }}
+              strokeWidth={1.25}
+            />
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div
-      className="
-        h-[100dvh] w-full overflow-hidden
-        flex flex-col relative
-        pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0
-        pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0
-      "
-    >
-      {/* ── Atmosphere ──────────────────────────────────────────────── */}
-
-      {/* Base theme gradient — uses event colors when active */}
+    <div className="h-full w-full flex flex-col relative bg-[var(--bg)] selection:bg-[var(--primary)] selection:text-white overflow-hidden">
+      {/* ── Background Atmospherics ── */}
       <div
-        className="fixed inset-0 pointer-events-none"
+        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
         style={{
-          background: (isEventThemeActive && activeEvent)
-            ? activeEvent.atmosphere.backgroundGradient
-            : undefined,
+          background:
+            isEventThemeActive && activeEvent
+              ? activeEvent.atmosphere.backgroundGradient
+              : "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)",
         }}
         aria-hidden="true"
       />
-      {/* Fallback default gradient when no event is active */}
-      {!isEventThemeActive && (
-        <div
-          className="fixed inset-0 bg-gradient-to-b from-[var(--bento-primary)]/[0.06] via-[var(--bento-accent)]/[0.03] to-[var(--bento-secondary)]/[0.05] pointer-events-none"
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Center glow — adapts to event (hidden on mobile to reduce glow overhead) */}
-      {!IS_MOBILE_DEVICE && (
-        <div
-          className="
-            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
-            w-[min(700px,100vw)] h-[min(700px,100vw)]
-            rounded-full blur-3xl pointer-events-none
-          "
-          style={{
-            background: (isEventThemeActive && activeEvent)
-              ? `radial-gradient(circle, ${activeEvent.atmosphere.centerGlowFrom}, ${activeEvent.atmosphere.centerGlowVia}, transparent)`
-              : undefined,
-          }}
-          aria-hidden="true"
-        />
-      )}
-      {/* Fallback default center glow */}
-      {!IS_MOBILE_DEVICE && !isEventThemeActive && (
-        <div
-          className="
-            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]
-            w-[min(700px,100vw)] h-[min(700px,100vw)]
-            rounded-full
-            bg-gradient-radial from-amber-400/[0.08] via-orange-300/[0.04] to-transparent
-            blur-3xl pointer-events-none
-          "
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Soft vignette — draws eye to the warm center (hidden on mobile) */}
-      {!IS_MOBILE_DEVICE && (
-        <div
-          className="fixed inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.08) 100%)',
-          }}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Fairy lights — warm twinkling dots (event-aware colors) */}
+      {/* Scrapbook polka-dot page */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+        aria-hidden="true"
+      />
+      {!IS_MOBILE_DEVICE && renderCozyAtmosphere()}
       <FairyLights lights={fairyLights} />
-
-      {/* Event particles — floating icon decorations during events */}
       {isEventThemeActive && activeEvent && (
         <EventParticles particles={activeEvent.particles} />
       )}
+      {isEventThemeActive && activeEvent?.id === "all-saints-wake" && (
+        <HalloweenOverlay />
+      )}
+      {isEventThemeActive && activeEvent?.id === "starlight" && (
+        <StarlightOverlay />
+      )}
+      <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
+      {isEventThemeActive && activeEvent && (
+        <EventBunting event={activeEvent} />
+      )}
 
-      {/* Flagship event overlays — All Saints' Wake & Starlight get the full treatment */}
-      {isEventThemeActive && activeEvent?.id === 'all-saints-wake' && <HalloweenOverlay />}
-      {isEventThemeActive && activeEvent?.id === 'starlight' && <StarlightOverlay />}
-
-      {/* Background moogles — slightly more visible for coziness */}
-      <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.12, 0.22]} />
-
-      {/* ── Content — fills viewport exactly ─────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center relative z-10 px-4 py-3 md:py-6 min-h-0">
-
-        {/* ── Cozy nest — warm pillowy card that grounds everything ── */}
-        <motion.div
-          className="
-            relative max-w-lg w-full
-            bg-gradient-to-b from-[var(--bento-card)]/40 via-[var(--bento-card)]/55 to-[var(--bento-card)]/65
-            rounded-[2rem] sm:rounded-[2.5rem]
-            px-5 sm:px-7 md:px-9
-            pt-3 sm:pt-5 md:pt-6
-            pb-5 sm:pb-6 md:pb-8
-            border border-[var(--bento-primary)]/[0.12]
-          "
-          style={{
-            boxShadow: IS_MOBILE_DEVICE
-              ? '0 2px 16px -4px rgba(0,0,0,0.10)'
-              : isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                ? '0 8px 60px -12px rgba(109,40,217,0.20), 0 0 100px -20px rgba(249,115,22,0.12), 0 0 40px -8px rgba(74,222,128,0.08), 0 2px 20px -4px rgba(0,0,0,0.10)'
-                : isEventThemeActive && activeEvent?.id === 'starlight'
-                  ? '0 8px 60px -12px rgba(220,38,38,0.15), 0 0 100px -20px rgba(251,191,36,0.12), 0 0 40px -8px rgba(22,163,74,0.08), 0 2px 20px -4px rgba(0,0,0,0.06)'
-                  : '0 8px 50px -12px rgba(251,191,36,0.10), 0 0 80px -20px rgba(251,113,133,0.05), 0 2px 20px -4px rgba(0,0,0,0.06)',
-          }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Inner glow at top — adapts to flagship events (hidden on mobile) */}
-          {!IS_MOBILE_DEVICE && (
-            <div
-              className={`absolute top-0 inset-x-0 h-44 rounded-t-[2rem] sm:rounded-t-[2.5rem] bg-gradient-to-b pointer-events-none ${
-                isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                  ? 'from-purple-500/[0.10] via-orange-400/[0.04] to-transparent'
-                  : isEventThemeActive && activeEvent?.id === 'starlight'
-                    ? 'from-amber-400/[0.10] via-red-400/[0.04] to-transparent'
-                    : 'from-amber-400/[0.07] via-amber-400/[0.03] to-transparent'
-              }`}
-              aria-hidden="true"
-            />
-          )}
-
-          {/* Corner decorations — event-aware */}
-          {isEventThemeActive && activeEvent?.id === 'all-saints-wake' ? (
-            <>
-              <Ghost className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-400/30" aria-hidden="true" />
-              <Skull className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-400/30" aria-hidden="true" />
-              <Moon className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-300/25" aria-hidden="true" />
-              <Ghost className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400/25" aria-hidden="true" />
-            </>
-          ) : isEventThemeActive && activeEvent?.id === 'starlight' ? (
-            <>
-              <Snowflake className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300/30" aria-hidden="true" />
-              <Star className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/30 fill-amber-300/30" aria-hidden="true" />
-              <TreePine className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400/25" aria-hidden="true" />
-              <Gift className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400/25" aria-hidden="true" />
-            </>
-          ) : (
-            <>
-              <Heart className="absolute top-3 left-3.5 sm:top-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-primary)]/25 fill-[var(--bento-primary)]/25" aria-hidden="true" />
-              <Heart className="absolute top-3 right-3.5 sm:top-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-secondary)]/25 fill-[var(--bento-secondary)]/25" aria-hidden="true" />
-              <Star className="absolute bottom-3 left-3.5 sm:bottom-4 sm:left-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-secondary)]/20 fill-[var(--bento-secondary)]/20" aria-hidden="true" />
-              <Star className="absolute bottom-3 right-3.5 sm:bottom-4 sm:right-5 w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--bento-primary)]/20 fill-[var(--bento-primary)]/20" aria-hidden="true" />
-            </>
-          )}
-
-          {/* Warm embers drifting upward — fireplace warmth (event-aware) */}
-          <WarmMotes motes={warmMotes} />
-
-          <div className="relative flex flex-col items-center text-center">
-
-          {/* ── Event banner (shown during active events) ──────────── */}
-          {isEventThemeActive && activeEvent && (
-            <div className="mb-1">
-              <EventBanner event={activeEvent} />
-            </div>
-          )}
-
-          {/* ── Moogle mascot with warm glow ─────────────────────────── */}
-          <motion.div
-            className="relative inline-block mb-1"
-            initial={{ opacity: 0, scale: 0.4, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 180, damping: 14, delay: 0.15 }}
+      {/* ── Main Layout ── */}
+      {/* Mobile: pad for fixed top/bottom bars. Desktop: no padding needed (sidebar handles nav) */}
+      <div
+        className={`flex-1 min-h-0 relative z-10 flex flex-col p-4 sm:p-8 lg:py-8 lg:px-12 ${
+          isEventThemeActive && activeEvent
+            ? "pt-[calc(8.5rem+env(safe-area-inset-top))]"
+            : "pt-[calc(4rem+env(safe-area-inset-top))]"
+        } md:pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4`}
+      >
+        {/* ── Hero: text column + moogle column ── */}
+        <div className="relative flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
+          {/* Scrapbook stickers scattered across the page (desktop) — fills the center */}
+          <div
+            className="hidden lg:block absolute inset-0 pointer-events-none z-0"
+            aria-hidden="true"
           >
-            <WarmMoogleAura eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
-            <MoogleCharms eventId={isEventThemeActive && activeEvent ? activeEvent.id : null} />
-
-            {/* The moogle — gently floating + happy sway */}
-            <motion.img
-              src={welcomingMoogle}
-              alt="A friendly moogle mascot welcoming you to MogTome"
-              className="relative w-32 sm:w-40 md:w-48 lg:w-56 sm:drop-shadow-2xl"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              animate={{
-                y: [0, -7, 0],
-                rotate: [-1.5, 1.5, -1.5],
-              }}
-              transition={{
-                y: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
-                rotate: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
-              }}
-            />
-          </motion.div>
-
-          {/* ── Speech bubble — cozy round shape ─────────────────────── */}
-          <motion.div
-            className="relative mb-1.5 sm:mb-2"
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.35 }}
-            role="region"
-            aria-label="Moogle greeting"
-          >
-            <div
-              className="
-                relative bg-[var(--bento-card)]/90
-                rounded-3xl px-5 sm:px-6 py-3 sm:py-3.5
-                border border-[var(--bento-primary)]/10
-                max-w-[280px] sm:max-w-[320px] mx-auto
-                ${isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                  ? 'shadow-lg shadow-purple-500/[0.12]'
-                  : isEventThemeActive && activeEvent?.id === 'starlight'
-                    ? 'shadow-lg shadow-amber-500/[0.10]'
-                    : 'shadow-lg shadow-amber-500/[0.06]'}
-              "
-            >
-              {/* Rounded bubble tail */}
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2" aria-hidden="true">
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[14px] border-b-[var(--bento-card)]" />
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={quoteIndex < 0 ? 'greeting' : quoteIndex}
-                  className="font-accent text-lg sm:text-xl md:text-2xl text-[var(--bento-text)] text-center leading-snug"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  &ldquo;{displayQuote}&rdquo;
-                </motion.p>
-              </AnimatePresence>
-            </div>
-            <p
-              className="font-accent text-xs sm:text-sm text-[var(--bento-text-muted)] mt-1.5"
-              aria-hidden="true"
-            >
-              {isEventThemeActive && activeEvent?.id === 'all-saints-wake'
-                ? '~ whispers the spooky moogle ~'
-                : isEventThemeActive && activeEvent?.id === 'starlight'
-                  ? '~ hums the festive moogle ~'
-                  : '~ says the friendly moogle ~'}
-            </p>
-          </motion.div>
-
-          {/* ── Heart divider — handmade decorative touch ────────────── */}
-          <div className="flex items-center justify-center gap-2.5 mb-2 sm:mb-3" aria-hidden="true">
-            <div className="w-10 h-px bg-gradient-to-r from-transparent to-[var(--bento-primary)]/35" />
-            <Heart className="w-3 h-3 text-[var(--bento-primary)]/45 fill-[var(--bento-primary)]/45" />
-            <div className="w-10 h-px bg-gradient-to-l from-transparent to-[var(--bento-primary)]/35" />
+            <KawaiiStar className="absolute left-[47%] top-[14%] w-7 h-7 text-[var(--accent)] rotate-12" />
+            <KawaiiHeart className="absolute left-[57%] top-[28%] w-6 h-6 text-[var(--primary)] -rotate-6" />
+            <KawaiiBow className="absolute left-[44%] top-[55%] w-9 h-9 text-[var(--secondary)] rotate-6" />
+            <KawaiiSparkle className="absolute left-[60%] top-[66%] w-6 h-6 text-[var(--accent)]" />
+            <KawaiiStar className="absolute left-[40%] top-[80%] w-5 h-5 text-[var(--primary)] -rotate-12" />
+            <KawaiiHeart className="absolute left-[63%] top-[12%] w-5 h-5 text-[var(--secondary)] rotate-12" />
+            <KawaiiSparkle className="absolute left-[51%] top-[42%] w-5 h-5 text-[var(--primary)]" />
           </div>
 
-          {/* ── Title area ───────────────────────────────────────────── */}
-          <motion.div
-            className="mb-4 sm:mb-5"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            {/* Handwritten welcome */}
-            <p className="font-accent text-base sm:text-lg md:text-xl text-[var(--bento-secondary)] mb-0.5">
-              Welcome to
-            </p>
-
-            {/* Main title with warm glow (glow hidden on mobile) */}
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-1.5"
-              style={{
-                textShadow: IS_MOBILE_DEVICE
-                  ? 'none'
-                  : '0 0 50px color-mix(in srgb, var(--bento-primary), transparent 65%), 0 0 100px rgba(251,191,36,0.08)',
-              }}
+          {/* ── Left Side: Whimsical Text & CTA ── */}
+          <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
+            <motion.div
+              initial={{ opacity: 0, x: -40, rotate: -2 }}
+              animate={{ opacity: 1, x: 0, rotate: 0 }}
+              transition={{ type: "spring", bounce: 0.4, duration: 1.2 }}
             >
-              <span className="bg-gradient-to-r from-[var(--bento-primary)] via-[var(--bento-accent)] to-[var(--bento-secondary)] bg-clip-text text-transparent">
-                MogTome
+              <p className="eyebrow-script text-2xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-2 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md inline-flex items-center gap-2">
+                Welcome to
+                <KawaiiStar
+                  className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--accent)] rotate-12"
+                  aria-hidden="true"
+                />
+              </p>
+            </motion.div>
+
+            {/* Staggered Giant Title */}
+            <motion.h1
+              className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
+            >
+              <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--primary)] flex whitespace-nowrap">
+                {Array.from("Mog").map((char, i) => (
+                  <motion.span
+                    key={`mog-${i}`}
+                    className="inline-block hover:text-[var(--primary)] transition-colors duration-200 cursor-default"
+                    whileHover={{
+                      y: -15,
+                      rotate: i % 2 === 0 ? -6 : 6,
+                      scale: 1.05,
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 12 }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
               </span>
-            </h1>
+              <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--secondary)] ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
+                {Array.from("Tome").map((char, i) => (
+                  <motion.span
+                    key={`tome-${i}`}
+                    className="inline-block hover:text-[var(--secondary)] transition-colors duration-200 cursor-default"
+                    whileHover={{
+                      y: -15,
+                      rotate: i % 2 === 0 ? 6 : -6,
+                      scale: 1.05,
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 12 }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
+            </motion.h1>
 
-            {/* Cozy tagline — event or time-based */}
-            <p className="text-sm sm:text-base text-[var(--bento-text-muted)] font-soft max-w-xs mx-auto leading-snug flex items-center justify-center gap-1.5">
-              {tagline}
-              {isEventThemeActive && activeEvent ? (
-                <activeEvent.icon className="w-3.5 h-3.5 text-[var(--bento-primary)] shrink-0" aria-hidden="true" />
-              ) : (
-                <Heart className="w-3.5 h-3.5 text-[var(--bento-primary)] fill-[var(--bento-primary)] shrink-0" aria-hidden="true" />
-              )}
-            </p>
-          </motion.div>
+            {/* Tagline */}
+            <motion.div
+              className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.6 }}
+            >
+              <p className="text-xl sm:text-2xl md:text-[1.75rem] text-[var(--text-subtle)] font-display italic tracking-wide">
+                {defaultTagline.split("Kupo Life!").map((part, i, arr) => (
+                  <span key={i}>
+                    {part}
+                    {i < arr.length - 1 && (
+                      <span className="text-[var(--primary)] font-bold">
+                        Kupo Life!
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </p>
+            </motion.div>
 
-          {/* ── CTA ─────────────────────────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.65 }}
+            {/* <motion.div
+            className="flex items-center justify-center lg:justify-start w-full lg:w-auto z-30 relative ml-0 sm:ml-8 lg:ml-20 mt-8"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.8 }}
           >
             {!isLoading && !isAuthenticated ? (
-              <DiscordLoginCTA onLogin={login} />
+              <Button size="lg" onClick={login} className="group gap-2.5 px-8 py-4 text-lg w-full sm:w-auto">
+                <DiscordIcon className="w-[1.35rem] h-[1.35rem]" />
+                <span>Login with Discord</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+              </Button>
             ) : (
               <Link to="/members">
-                <Button
-                  size="lg"
-                  className="gap-2.5 px-7 py-3.5 text-base group shadow-xl shadow-[var(--bento-primary)]/30"
-                >
-                  <Heart className="w-4 h-4" />
-                  <span className="font-soft font-semibold">Meet the Family</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <Button size="lg" className="group gap-2.5 px-8 py-4 text-lg">
+                  <Heart className="w-5 h-5 fill-white/30" />
+                  <span>Enter the Book</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </Button>
               </Link>
             )}
-          </motion.div>
+          </motion.div> */}
 
+            {/* Quick-links scrapbook card (desktop) */}
+            <motion.div
+              className="relative hidden lg:block mt-9 ml-0 lg:ml-20"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1, duration: 0.5 }}
+            >
+              {/* washi tape */}
+              <span
+                className="absolute -top-2.5 left-8 w-20 h-6 rotate-[-5deg] rounded-[2px] opacity-80 z-10"
+                style={{
+                  background:
+                    "repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 50%, transparent) 0 7px, color-mix(in srgb, var(--accent) 28%, transparent) 7px 14px)",
+                }}
+                aria-hidden="true"
+              />
+              <div className="surface inline-block -rotate-1 px-4 py-3">
+                <p className="font-display font-bold text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] mb-2 flex items-center gap-1.5">
+                  <KawaiiStar
+                    className="w-3.5 h-3.5 text-[var(--accent)]"
+                    aria-hidden="true"
+                  />
+                  Take a peek, kupo
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {[
+                    {
+                      to: "/members",
+                      label: "Family",
+                      color: "var(--secondary)",
+                    },
+                    {
+                      to: "/chronicle",
+                      label: "Chronicle",
+                      color: "var(--accent)",
+                    },
+                    { to: "/about", label: "About", color: "#a886d6" },
+                  ].map((c) => (
+                    <Link
+                      key={c.to}
+                      to={c.to}
+                      className="shrink-0 whitespace-nowrap px-3 py-1 rounded-full font-display font-bold text-sm hover-bounce"
+                      style={{
+                        background: `color-mix(in srgb, ${c.color} 18%, var(--card))`,
+                        color: c.color,
+                      }}
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* ── Bottom bar — explore + footer ──────────────────────────── */}
-        <motion.div
-          className="absolute bottom-2 sm:bottom-3 md:bottom-5 inset-x-0 text-center px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-        >
-          {/* Explore pills */}
-          <nav
-            className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap mb-2"
-            aria-label="Quick explore"
-          >
-            {EXPLORE_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
+          {/* ── Right Side: Moogle Showcase ── */}
+          <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
+            {/* Speech bubble lives ABOVE the moogle in DOM flow */}
+            <motion.div
+              className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ y: [0, -8, 0], opacity: 1, scale: 1 }}
+              transition={{
+                opacity: { delay: 1, duration: 0.4 },
+                scale: { type: "spring", delay: 1, bounce: 0.5 },
+                y: {
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.4,
+                },
+              }}
+              role="region"
+              aria-label="Moogle greeting"
+            >
+              <div
                 className="
-                  group inline-flex items-center gap-1.5 px-3 py-1.5
-                  bg-[var(--bento-card)]/50
-                  border border-[var(--bento-border)]/40
-                  rounded-full
-                  sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-card)]/80
-                  active:scale-[0.97]
-                  transition-all duration-200 touch-manipulation
-                  focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                "
+                relative bg-[var(--card)]
+                px-5 sm:px-7 py-3 sm:py-4
+                rounded-[1.9rem]
+                border-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))]
+                shadow-[0_0_0_3px_var(--card),3px_4px_0_0_color-mix(in_srgb,var(--primary)_22%,transparent)]
+                w-[16rem] sm:w-[18rem] min-h-[3.75rem] sm:min-h-[4.25rem]
+                flex items-center justify-center
+              "
               >
-                <link.icon
-                  className="w-3 h-3"
-                  style={{ color: link.color }}
+                {/* Bow tied on the bubble */}
+                <KawaiiBow
+                  className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm"
                   aria-hidden="true"
                 />
-                <span className="font-soft font-medium text-xs sm:text-sm text-[var(--bento-text-muted)]">
-                  {link.label}
-                </span>
-              </Link>
-            ))}
-          </nav>
+                {/* Speech-bubble tail — points down to the moogle. The card-colored
+                    body sits over the bubble's bottom border (hiding the seam); the
+                    two bordered outer edges form the pointed tip. */}
+                <div
+                  className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-[18px] h-[18px] bg-[var(--card)] border-b-2 border-r-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))] rotate-45 rounded-br-[6px]"
+                  aria-hidden="true"
+                />
 
-          {/* Mini footer */}
-          <p className="font-accent text-[11px] sm:text-xs text-[var(--bento-text-subtle)] flex items-center justify-center gap-1">
-            Made with
-            <Heart
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400 fill-rose-400"
-              aria-hidden="true"
-            />
-            <span className="sr-only">love</span>
-            by moogles, for moogles
-          </p>
-        </motion.div>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.p
+                    key={quoteIndex < 0 ? "greeting" : quoteIndex}
+                    className="font-accent text-base sm:text-lg md:text-xl text-[var(--primary)] text-center leading-snug font-bold"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    &ldquo;{displayQuote}&rdquo;
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Scale the moogle visually only — a CSS transform doesn't affect
+                the flex layout, so the speech bubble above stays exactly put. */}
+            <div className="origin-center scale-105 sm:scale-110 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
+              <motion.div
+                className="relative pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{
+                  type: "spring",
+                  bounce: 0.5,
+                  duration: 1.5,
+                  delay: 0.3,
+                }}
+              >
+                {/* Cute cloud the moogle floats on */}
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[116%] pointer-events-none drop-shadow-[0_12px_14px_rgba(0,0,0,0.15)]"
+                  aria-hidden="true"
+                >
+                  <KawaiiCloud className="w-full text-white" />
+                </div>
+                <WarmMoogleAura
+                  eventId={
+                    isEventThemeActive && activeEvent ? activeEvent.id : null
+                  }
+                />
+                <MoogleCharms
+                  eventId={
+                    isEventThemeActive && activeEvent ? activeEvent.id : null
+                  }
+                />
+
+                {/* The majestic floating Moogle */}
+                <motion.img
+                  src={welcomingMoogle}
+                  alt="A magical mogtome moogle"
+                  className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
+                  drag
+                  dragConstraints={{
+                    left: -20,
+                    right: 20,
+                    top: -15,
+                    bottom: 15,
+                  }}
+                  dragElastic={0.15}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95, rotate: -5 }}
+                  onClick={() =>
+                    setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
+                  }
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  animate={{
+                    y: [-8, 12, -8],
+                    rotate: [-1.5, 2.5, -1.5],
+                  }}
+                  transition={{
+                    y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+                    rotate: {
+                      duration: 7,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }}
+                />
+                <WarmMotes motes={warmMotes} />
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

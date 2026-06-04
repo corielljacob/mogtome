@@ -1,56 +1,82 @@
-import { useEffect, useState, useRef, useMemo, memo, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { AlertCircle, Loader2, Sparkles, ArrowRight } from 'lucide-react';
-import { setAuthToken, useAuth, getReturnUrl, clearReturnUrl } from '../contexts/AuthContext';
-import type { User } from '../contexts/AuthContext';
-import { MembershipCard } from '../components/MembershipCard';
-import { getTheme } from '../components/membershipCardThemes';
+import { useEffect, useState, useRef, useMemo, memo, useCallback } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { AlertCircle, Loader2, Sparkles, ArrowRight } from "lucide-react";
+import {
+  setAuthToken,
+  useAuth,
+  getReturnUrl,
+  clearReturnUrl,
+} from "../contexts/AuthContext";
+import type { User } from "../contexts/AuthContext";
+import { MembershipCard } from "../components/MembershipCard";
+import { getTheme } from "../components/membershipCardThemes";
 
-import moogleWizard from '../assets/moogles/wizard moogle.webp';
+import moogleWizard from "../assets/moogles/wizard moogle.webp";
 
-type CallbackStatus = 'processing' | 'success' | 'error';
+type CallbackStatus = "processing" | "success" | "error";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANIMATION COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Decorative particle fields — generated once at module load. These are purely
+// cosmetic, so they don't need per-mount randomness (and keeping Math.random out
+// of render keeps the components pure).
+const CELEBRATION_PARTICLES = Array.from({ length: 32 }, (_, i) => {
+  const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+  const distance = 80 + Math.random() * 120;
+  const size = 2 + Math.random() * 4;
+  const colors = [
+    "var(--primary)",
+    "var(--secondary)",
+    "var(--accent)",
+    "var(--primary)",
+    "var(--secondary)",
+  ];
+  return {
+    id: i,
+    // Start near center
+    startX: 50 + (Math.random() - 0.5) * 20,
+    startY: 50 + (Math.random() - 0.5) * 20,
+    // Burst outward
+    endX: 50 + Math.cos(angle) * distance,
+    endY: 50 + Math.sin(angle) * distance * 0.6, // Flatten vertically
+    delay: 0.02 * i + Math.random() * 0.15,
+    duration: 0.8 + Math.random() * 0.4,
+    size,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * 360,
+  };
+});
+
+const AMBIENT_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
+  id: i,
+  x: 15 + Math.random() * 70,
+  y: 20 + Math.random() * 60,
+  delay: i * 0.1,
+  size: 4 + Math.random() * 6,
+  duration: 2 + Math.random() * 1.5,
+  rise: -30 - Math.random() * 20, // upward drift distance for the float animation
+  color: i % 2 === 0 ? "var(--primary)" : "var(--secondary)",
+}));
+
 // Premium sparkle burst that emanates from the card
-const CelebrationSparkles = memo(function CelebrationSparkles({ 
-  isActive 
-}: { 
-  isActive: boolean 
+const CelebrationSparkles = memo(function CelebrationSparkles({
+  isActive,
+}: {
+  isActive: boolean;
 }) {
-  // Create particles that burst outward from center
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 32 }, (_, i) => {
-        const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-        const distance = 80 + Math.random() * 120;
-        const size = 2 + Math.random() * 4;
-        const colors = ['var(--bento-primary)', 'var(--bento-secondary)', '#FFD700', '#FF69B4', '#87CEEB'];
-        return {
-          id: i,
-          // Start near center
-          startX: 50 + (Math.random() - 0.5) * 20,
-          startY: 50 + (Math.random() - 0.5) * 20,
-          // Burst outward
-          endX: 50 + Math.cos(angle) * distance,
-          endY: 50 + Math.sin(angle) * distance * 0.6, // Flatten vertically
-          delay: 0.02 * i + Math.random() * 0.15,
-          duration: 0.8 + Math.random() * 0.4,
-          size,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-        };
-      }),
-    []
-  );
+  // Particles that burst outward from center (generated once at module load)
+  const particles = CELEBRATION_PARTICLES;
 
   if (!isActive) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
+    <div
+      className="absolute inset-0 pointer-events-none overflow-visible"
+      aria-hidden="true"
+    >
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -61,23 +87,23 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
             width: p.size,
             height: p.size,
           }}
-          initial={{ 
-            opacity: 0, 
+          initial={{
+            opacity: 0,
             scale: 0,
             x: 0,
             y: 0,
             rotate: 0,
           }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 1, 0],
             scale: [0, 1.5, 1, 0.5],
             x: `${p.endX - p.startX}%`,
             y: `${p.endY - p.startY}%`,
             rotate: p.rotation,
           }}
-          transition={{ 
-            duration: p.duration, 
-            delay: p.delay, 
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
             ease: [0.16, 1, 0.3, 1], // Custom "pop" easing
           }}
         >
@@ -87,7 +113,7 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
               <polygon points="12,2 15,9 22,9 17,14 19,22 12,17 5,22 7,14 2,9 9,9" />
             </svg>
           ) : (
-            <div 
+            <div
               className="w-full h-full rounded-full"
               style={{
                 background: `radial-gradient(circle, ${p.color} 0%, transparent 70%)`,
@@ -102,25 +128,20 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
 });
 
 // Ambient floating particles (subtle, always visible during reveal)
-const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean }) {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 12 }, (_, i) => ({
-        id: i,
-        x: 15 + Math.random() * 70,
-        y: 20 + Math.random() * 60,
-        delay: i * 0.1,
-        size: 4 + Math.random() * 6,
-        duration: 2 + Math.random() * 1.5,
-        color: i % 2 === 0 ? 'var(--bento-primary)' : 'var(--bento-secondary)',
-      })),
-    []
-  );
+const AmbientGlow = memo(function AmbientGlow({
+  isActive,
+}: {
+  isActive: boolean;
+}) {
+  const particles = AMBIENT_PARTICLES;
 
   if (!isActive) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -134,15 +155,15 @@ const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean 
             boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
           }}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 0.6, 0.4, 0],
             scale: [0, 1, 1.2, 0],
-            y: [0, -30 - Math.random() * 20],
+            y: [0, p.rise],
           }}
-          transition={{ 
-            duration: p.duration, 
+          transition={{
+            duration: p.duration,
             delay: p.delay,
-            ease: 'easeOut',
+            ease: "easeOut",
             repeat: Infinity,
             repeatDelay: 1,
           }}
@@ -153,13 +174,19 @@ const AmbientGlow = memo(function AmbientGlow({ isActive }: { isActive: boolean 
 });
 
 // Premium shine sweep with multiple waves
-function CardShine({ delay = 0, intensity = 'normal' }: { delay?: number; intensity?: 'subtle' | 'normal' | 'bright' }) {
+function CardShine({
+  delay = 0,
+  intensity = "normal",
+}: {
+  delay?: number;
+  intensity?: "subtle" | "normal" | "bright";
+}) {
   const opacityMap = { subtle: 0.2, normal: 0.4, bright: 0.6 };
   const opacity = opacityMap[intensity];
 
   return (
     <motion.div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl"
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay, duration: 0.3 }}
@@ -179,8 +206,8 @@ function CardShine({ delay = 0, intensity = 'normal' }: { delay?: number; intens
             transparent 100%
           )`,
         }}
-        initial={{ x: '0%' }}
-        animate={{ x: '100%' }}
+        initial={{ x: "0%" }}
+        animate={{ x: "100%" }}
         transition={{
           delay: delay,
           duration: 1.0,
@@ -202,8 +229,8 @@ function CardShine({ delay = 0, intensity = 'normal' }: { delay?: number; intens
             transparent 100%
           )`,
         }}
-        initial={{ x: '0%' }}
-        animate={{ x: '100%' }}
+        initial={{ x: "0%" }}
+        animate={{ x: "100%" }}
         transition={{
           delay: delay + 0.15,
           duration: 0.9,
@@ -214,7 +241,6 @@ function CardShine({ delay = 0, intensity = 'normal' }: { delay?: number; intens
   );
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // STATUS SCREENS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -223,16 +249,16 @@ function ProcessingScreen() {
   return (
     <div className="text-center py-4">
       <motion.div
-        className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-[var(--bento-primary)]/20 to-[var(--bento-secondary)]/20 flex items-center justify-center"
+        className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-[var(--primary)]/20 to-[var(--secondary)]/20 flex items-center justify-center"
         animate={{ rotate: 360 }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
       >
-        <Loader2 className="w-7 h-7 text-[var(--bento-primary)]" />
+        <Loader2 className="w-7 h-7 text-[var(--primary)]" />
       </motion.div>
-      <h2 className="font-display text-xl font-bold text-[var(--bento-text)] mb-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
         Logging you in, kupo~!
       </h2>
-      <p className="text-[var(--bento-text-muted)] font-soft text-sm">
+      <p className="text-[var(--text-muted)] font-soft text-sm">
         Completing Discord authentication...
       </p>
     </div>
@@ -240,15 +266,15 @@ function ProcessingScreen() {
 }
 
 // Storage key for tracking if user has seen the welcome screen
-const WELCOME_SEEN_KEY = 'mogtome_welcome_seen';
+const WELCOME_SEEN_KEY = "mogtome_welcome_seen";
 
 /**
  * Check if this is a first-time user who hasn't seen the welcome screen yet.
- * 
+ *
  * We use a combination of:
  * 1. The backend's firstLoginDate (set on first-ever login)
  * 2. Local storage to track if the user has already seen the welcome
- * 
+ *
  * This prevents showing the welcome screen on repeated logins within the same day.
  */
 function isFirstTimeUser(user: User): boolean {
@@ -256,7 +282,7 @@ function isFirstTimeUser(user: User): boolean {
     // No firstLoginDate means backend hasn't set it yet - treat as first time
     return true;
   }
-  
+
   // Check if we've already shown the welcome screen for this user
   // We store the firstLoginDate they've seen, so if it changes (new account), they see it again
   const seenWelcome = localStorage.getItem(WELCOME_SEEN_KEY);
@@ -264,13 +290,13 @@ function isFirstTimeUser(user: User): boolean {
     // User has already seen the welcome for this account
     return false;
   }
-  
+
   // Check if their first login date is within the last few minutes (genuinely new)
   // This handles the case where it's truly their first login
   const firstLogin = new Date(user.firstLoginDate);
   const now = new Date();
   const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-  
+
   // If their first login was within the last 5 minutes, they're a new user
   return firstLogin >= fiveMinutesAgo;
 }
@@ -289,28 +315,28 @@ function markWelcomeSeen(user: User): void {
 // FIRST-TIME WELCOME - Premium card reveal with buttery smooth animations
 // ─────────────────────────────────────────────────────────────────────────────
 
-function FirstTimeWelcome({ 
-  user, 
-  onComplete 
-}: { 
-  user: User; 
+function FirstTimeWelcome({
+  user,
+  onComplete,
+}: {
+  user: User;
   onComplete: () => void;
 }) {
   const theme = getTheme(user.memberRank);
   // Continuous animation timeline using a single progress value
   const [animationState, setAnimationState] = useState<
-    'entering' | 'card-reveal' | 'celebrating' | 'complete'
-  >('entering');
+    "entering" | "card-reveal" | "celebrating" | "complete"
+  >("entering");
 
   // Smooth orchestrated timeline - each stage flows into the next
   useEffect(() => {
     const timers = [
       // Brief pause for anticipation, then reveal card
-      setTimeout(() => setAnimationState('card-reveal'), 400),
+      setTimeout(() => setAnimationState("card-reveal"), 400),
       // Celebration burst after card settles
-      setTimeout(() => setAnimationState('celebrating'), 1200),
+      setTimeout(() => setAnimationState("celebrating"), 1200),
       // Show button and complete state
-      setTimeout(() => setAnimationState('complete'), 1900),
+      setTimeout(() => setAnimationState("complete"), 1900),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -321,24 +347,25 @@ function FirstTimeWelcome({
     onComplete();
   }, [onComplete, user]);
 
-  const firstName = user.memberName?.split(' ')[0] || 'Adventurer';
-  
+  const firstName = user.memberName?.split(" ")[0] || "Adventurer";
+
   // Derived state for cleaner JSX
-  const showCard = animationState !== 'entering';
-  const showCelebration = animationState === 'celebrating' || animationState === 'complete';
-  const showButton = animationState === 'complete';
+  const showCard = animationState !== "entering";
+  const showCelebration =
+    animationState === "celebrating" || animationState === "complete";
+  const showButton = animationState === "complete";
 
   return (
     <motion.div
       className="text-center py-2"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ 
+      exit={{
         opacity: 0,
         scale: 0.95,
-        filter: 'blur(8px)',
+        filter: "blur(8px)",
       }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
       {/* Welcome header - elegant staggered entrance */}
       <motion.div
@@ -347,12 +374,12 @@ function FirstTimeWelcome({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <motion.p 
-          className="text-[var(--bento-text-muted)] font-soft text-sm mb-2"
+        <motion.p
+          className="text-[var(--text-muted)] font-soft text-sm mb-2"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.6, 
+          transition={{
+            duration: 0.6,
             delay: 0.1,
             ease: [0.16, 1, 0.3, 1], // Smooth deceleration
           }}
@@ -360,11 +387,11 @@ function FirstTimeWelcome({
           Welcome to the family, {firstName}
         </motion.p>
         <motion.p
-          className="font-accent text-2xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ 
-            duration: 0.7, 
+          className="font-accent text-2xl text-[var(--primary)]"
+          initial={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{
+            duration: 0.7,
             delay: 0.2,
             ease: [0.16, 1, 0.3, 1],
           }}
@@ -380,34 +407,38 @@ function FirstTimeWelcome({
           className="absolute -inset-16 rounded-[3rem] pointer-events-none"
           style={{
             background: `radial-gradient(ellipse at center, ${theme.glow} 0%, transparent 65%)`,
-            filter: 'blur(50px)',
+            filter: "blur(50px)",
           }}
           initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ 
+          animate={{
             opacity: showCard ? 0.4 : 0,
             scale: showCard ? 1 : 0.5,
           }}
-          transition={{ 
+          transition={{
             duration: 0.8,
             ease: [0.16, 1, 0.3, 1],
           }}
         />
-        
+
         {/* Pulsing glow layer (only after card is revealed) */}
         <motion.div
           className="absolute -inset-10 rounded-[2.5rem] pointer-events-none"
           style={{
             background: `radial-gradient(ellipse at center, ${theme.glow} 0%, transparent 70%)`,
-            filter: 'blur(35px)',
+            filter: "blur(35px)",
           }}
           initial={{ opacity: 0 }}
-          animate={showCard ? { 
-            opacity: [0.25, 0.45, 0.25],
-            scale: [0.95, 1.02, 0.95],
-          } : { opacity: 0 }}
-          transition={{ 
+          animate={
+            showCard
+              ? {
+                  opacity: [0.25, 0.45, 0.25],
+                  scale: [0.95, 1.02, 0.95],
+                }
+              : { opacity: 0 }
+          }
+          transition={{
             duration: 3,
-            ease: 'easeInOut',
+            ease: "easeInOut",
             repeat: Infinity,
           }}
         />
@@ -415,50 +446,54 @@ function FirstTimeWelcome({
         {/* The membership card with cinematic entrance */}
         <motion.div
           className="relative"
-          initial={{ 
-            opacity: 0, 
-            y: 80, 
+          initial={{
+            opacity: 0,
+            y: 80,
             scale: 0.75,
             rotateX: 35,
           }}
-          animate={showCard ? { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1,
-            rotateX: 0,
-          } : undefined}
-          transition={{ 
+          animate={
+            showCard
+              ? {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  rotateX: 0,
+                }
+              : undefined
+          }
+          transition={{
             duration: 0.9,
             ease: [0.16, 1, 0.3, 1], // Smooth spring-like curve
           }}
-          style={{ 
-            perspective: '1200px',
-            transformStyle: 'preserve-3d',
+          style={{
+            perspective: "1200px",
+            transformStyle: "preserve-3d",
           }}
         >
           {/* Blur wrapper - separates blur animation for smoother rendering */}
           <motion.div
-            initial={{ filter: 'blur(12px)' }}
-            animate={showCard ? { filter: 'blur(0px)' } : undefined}
-            transition={{ 
-              duration: 0.6, 
+            initial={{ filter: "blur(12px)" }}
+            animate={showCard ? { filter: "blur(0px)" } : undefined}
+            transition={{
+              duration: 0.6,
               delay: 0.15,
-              ease: 'easeOut',
+              ease: "easeOut",
             }}
           >
             <MembershipCard
-              name={user.memberName || 'Adventurer'}
-              rank={user.memberRank || 'Member'}
-              avatarUrl={user.memberPortraitUrl || ''}
+              name={user.memberName || "Adventurer"}
+              rank={user.memberRank || "Member"}
+              avatarUrl={user.memberPortraitUrl || ""}
               memberSince={user.firstLoginDate}
               compact
             />
           </motion.div>
-          
+
           {/* Shine sweep overlay - triggers after card lands */}
           {showCard && <CardShine delay={0.5} intensity="bright" />}
         </motion.div>
-        
+
         {/* Celebration effects */}
         <CelebrationSparkles isActive={showCelebration} />
         <AmbientGlow isActive={showCelebration} />
@@ -470,12 +505,12 @@ function FirstTimeWelcome({
           {showCelebration && (
             <motion.p
               key="celebration-text"
-              className="font-accent text-base text-[var(--bento-secondary)]"
+              className="font-accent text-base text-[var(--secondary)]"
               initial={{ opacity: 0, y: 16, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
-              transition={{ 
-                duration: 0.5, 
+              transition={{
+                duration: 0.5,
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
@@ -495,25 +530,25 @@ function FirstTimeWelcome({
               initial={{ opacity: 0, y: 20, scale: 0.85 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              whileHover={{ 
-                scale: 1.04, 
+              whileHover={{
+                scale: 1.04,
                 y: -3,
-                boxShadow: '0 25px 50px -12px rgba(199, 91, 122, 0.5)',
+                boxShadow: "0 25px 50px -12px rgba(199, 91, 122, 0.5)",
               }}
               whileTap={{ scale: 0.96 }}
-              transition={{ 
-                type: 'spring',
+              transition={{
+                type: "spring",
                 stiffness: 400,
                 damping: 25,
               }}
               onClick={handleContinue}
               className="
-                px-8 py-3 rounded-2xl
-                bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)]
+                px-8 py-3 rounded-lg
+                bg-[var(--primary)]
                 text-white font-soft font-semibold text-sm
-                shadow-xl shadow-[var(--bento-primary)]/30
+                shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
                 cursor-pointer
-                focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bento-primary)] focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary)] focus-visible:outline-none
               "
             >
               <span className="inline-flex items-center gap-2">
@@ -532,18 +567,18 @@ function FirstTimeWelcome({
 // RETURNING USER - Quick welcome back
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ReturningUserWelcome({ 
-  user, 
-  onComplete 
-}: { 
-  user: User; 
+function ReturningUserWelcome({
+  user,
+  onComplete,
+}: {
+  user: User;
   onComplete: () => void;
 }) {
-  const [phase, setPhase] = useState<'enter' | 'display' | 'exit'>('enter');
+  const [phase, setPhase] = useState<"enter" | "display" | "exit">("enter");
 
   useEffect(() => {
-    const displayTimer = setTimeout(() => setPhase('display'), 400);
-    const exitTimer = setTimeout(() => setPhase('exit'), 2400);
+    const displayTimer = setTimeout(() => setPhase("display"), 400);
+    const exitTimer = setTimeout(() => setPhase("exit"), 2400);
     const completeTimer = setTimeout(() => onComplete(), 2900);
 
     return () => {
@@ -556,8 +591,8 @@ function ReturningUserWelcome({
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: phase === 'exit' ? 0 : 1 }}
-      transition={{ duration: phase === 'exit' ? 0.4 : 0.3 }}
+      animate={{ opacity: phase === "exit" ? 0 : 1 }}
+      transition={{ duration: phase === "exit" ? 0.4 : 0.3 }}
       className="text-center py-2"
     >
       <motion.div
@@ -566,11 +601,11 @@ function ReturningUserWelcome({
         transition={{ delay: 0.1 }}
         className="mb-4"
       >
-        <p className="text-[var(--bento-text-muted)] font-soft text-sm mb-1">
+        <p className="text-[var(--text-muted)] font-soft text-sm mb-1">
           Welcome back, kupo!
         </p>
         <motion.p
-          className="font-accent text-lg text-[var(--bento-primary)]"
+          className="font-accent text-lg text-[var(--primary)]"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
         >
@@ -582,26 +617,26 @@ function ReturningUserWelcome({
         className="mb-5 text-left"
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 250, damping: 22, delay: 0.1 }}
+        transition={{ type: "spring", stiffness: 250, damping: 22, delay: 0.1 }}
       >
         <MembershipCard
-          name={user.memberName || 'Adventurer'}
-          rank={user.memberRank || 'Member'}
-          avatarUrl={user.memberPortraitUrl || ''}
+          name={user.memberName || "Adventurer"}
+          rank={user.memberRank || "Member"}
+          avatarUrl={user.memberPortraitUrl || ""}
           memberSince={user.firstLoginDate}
           compact
         />
       </motion.div>
 
-      <motion.div 
-        className="flex items-center justify-center gap-1.5 text-xs text-[var(--bento-text-subtle)]"
+      <motion.div
+        className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--bento-success)] opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--bento-success)]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]" />
         </span>
         <span className="font-soft">Taking you home...</span>
       </motion.div>
@@ -613,7 +648,13 @@ function ReturningUserWelcome({
 // SUCCESS SCREEN - Routes to appropriate experience
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SuccessScreen({ user, onComplete }: { user: User; onComplete: () => void }) {
+function SuccessScreen({
+  user,
+  onComplete,
+}: {
+  user: User;
+  onComplete: () => void;
+}) {
   const isFirstTime = useMemo(() => isFirstTimeUser(user), [user]);
 
   if (isFirstTime) {
@@ -623,24 +664,30 @@ function SuccessScreen({ user, onComplete }: { user: User; onComplete: () => voi
   return <ReturningUserWelcome user={user} onComplete={onComplete} />;
 }
 
-function ErrorScreen({ error, onReturnHome }: { error: string; onReturnHome: () => void }) {
+function ErrorScreen({
+  error,
+  onReturnHome,
+}: {
+  error: string;
+  onReturnHome: () => void;
+}) {
   return (
     <div className="text-center py-4">
       <motion.div
         className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-red-500/20 to-rose-500/20 flex items-center justify-center"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
         <AlertCircle className="w-8 h-8 text-red-500" />
       </motion.div>
-      <h2 className="font-display text-xl font-bold text-[var(--bento-text)] mb-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
         Oh no, kupo!
       </h2>
-      <p className="text-[var(--bento-text-muted)] font-soft text-sm mb-5">{error}</p>
+      <p className="text-[var(--text-muted)] font-soft text-sm mb-5">{error}</p>
       <button
         onClick={onReturnHome}
-        className="px-5 py-2 rounded-xl bg-gradient-to-r from-[var(--bento-primary)] to-[var(--bento-secondary)] text-white font-soft font-semibold text-sm shadow-lg shadow-[var(--bento-primary)]/20 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+        className="px-5 py-2 rounded-lg bg-[var(--primary)] text-white font-soft font-semibold text-sm shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)] hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)] active:scale-[0.98] transition-all"
       >
         Return Home
       </button>
@@ -656,45 +703,47 @@ export function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { refreshUser, user } = useAuth();
-  const [status, setStatus] = useState<CallbackStatus>('processing');
-  const [error, setError] = useState<string>('');
+  const [status, setStatus] = useState<CallbackStatus>("processing");
+  const [error, setError] = useState<string>("");
 
   // Capture return URL on first render (before effects)
   const returnUrlRef = useRef<string | null>(null);
   if (returnUrlRef.current === null) {
-    returnUrlRef.current = getReturnUrl() || '/';
+    returnUrlRef.current = getReturnUrl() || "/";
     clearReturnUrl();
   }
 
   useEffect(() => {
     async function handleCallback() {
-      const errorParam = searchParams.get('error');
-      const errorDescription = searchParams.get('error_description');
+      const errorParam = searchParams.get("error");
+      const errorDescription = searchParams.get("error_description");
 
       if (errorParam) {
-        setStatus('error');
-        setError(errorDescription || 'Authentication was cancelled or failed');
+        setStatus("error");
+        setError(errorDescription || "Authentication was cancelled or failed");
         return;
       }
 
-      const token = searchParams.get('token');
+      const token = searchParams.get("token");
 
       if (token) {
         setAuthToken(token);
         await refreshUser();
-        setStatus('success');
+        setStatus("success");
         // Navigation is now handled by the SuccessScreen's onCardStored callback
         return;
       }
 
-      setStatus('error');
-      setError('No authentication token received. Please try logging in again.');
+      setStatus("error");
+      setError(
+        "No authentication token received. Please try logging in again.",
+      );
     }
 
     handleCallback();
   }, [searchParams, navigate, refreshUser]);
 
-  const handleReturnHome = () => navigate('/', { replace: true });
+  const handleReturnHome = () => navigate("/", { replace: true });
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
@@ -705,25 +754,31 @@ export function AuthCallback() {
         aria-hidden="true"
         className="absolute bottom-24 right-6 md:right-20 w-20 md:w-28 object-contain opacity-[0.08]"
         animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Card */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg relative z-10"
       >
-        <div className={`bg-[var(--bento-card)] rounded-2xl p-6 shadow-xl border border-[var(--bento-border)] relative overflow-hidden transition-all duration-300 ${status === 'success' ? 'max-w-lg' : 'max-w-sm'}`}>
-          {status === 'processing' && <ProcessingScreen />}
-          {status === 'success' && user && (
-            <SuccessScreen 
-              user={user} 
-              onComplete={() => navigate(returnUrlRef.current!, { replace: true })}
+        <div
+          className={`bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] relative overflow-hidden transition-all duration-300 ${status === "success" ? "max-w-lg" : "max-w-sm"}`}
+        >
+          {status === "processing" && <ProcessingScreen />}
+          {status === "success" && user && (
+            <SuccessScreen
+              user={user}
+              onComplete={() =>
+                navigate(returnUrlRef.current!, { replace: true })
+              }
             />
           )}
-          {status === 'error' && <ErrorScreen error={error} onReturnHome={handleReturnHome} />}
+          {status === "error" && (
+            <ErrorScreen error={error} onReturnHome={handleReturnHome} />
+          )}
         </div>
       </motion.div>
     </div>

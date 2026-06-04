@@ -1,65 +1,58 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
-import { 
-  Settings as SettingsIcon,
-  Sun, 
-  Moon, 
+import { useState, type ReactNode, type CSSProperties } from "react";
+import {
+  Sun,
+  Moon,
   Monitor,
   Palette,
-  Eye,
-  Type,
-  Zap,
-  Focus,
-  BookOpen,
-  Contrast,
   LogOut,
-  User,
-  ChevronRight,
-  Check,
-  Sparkles,
-  Paintbrush,
+  ChevronDown,
   CalendarDays,
-  PartyPopper,
   Ban,
-  Wrench,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useAccessibility, COLORBLIND_MODES, type ColorblindMode, type ToggleableSettingKey } from '../contexts/AccessibilityContext';
-import { useTheme, THEME_DEFINITIONS, type ColorMode, type EventOverride } from '../contexts/ThemeContext';
-import { SEASONAL_EVENTS } from '../constants/seasonalEvents';
-import { ContentCard } from '../components';
-import { IS_MOBILE } from '../utils';
+  Accessibility,
+  Eye,
+  User,
+  Check,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  useAccessibility,
+  COLORBLIND_MODES,
+  type ColorblindMode,
+  type ToggleableSettingKey,
+} from "../contexts/AccessibilityContext";
+import {
+  useTheme,
+  THEME_DEFINITIONS,
+  type ColorMode,
+  type EventOverride,
+} from "../contexts/ThemeContext";
+import { SEASONAL_EVENTS } from "../constants/seasonalEvents";
+import {
+  PageLayout,
+  KawaiiSparkle,
+  KawaiiBow,
+  KawaiiHeart,
+} from "../components";
 
+import gamingMoogle from "../assets/moogles/gaming moogle.webp";
+import musicMoogle from "../assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section Components
+// Shared candy pieces
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SectionHeader({ icon: Icon, title, description }: { 
-  icon: typeof SettingsIcon; 
-  title: string; 
-  description?: string;
-}) {
-  return (
-    <div className="flex items-start gap-2.5 sm:gap-3 mb-3 sm:mb-4">
-      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)]" aria-hidden="true" />
-      </div>
-      <div>
-        <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--bento-text)]">{title}</h2>
-        {description && (
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] mt-0.5">{description}</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ToggleSwitch({ enabled, onChange, disabled = false }: { 
-  enabled: boolean; 
+function ToggleSwitch({
+  enabled,
+  onChange,
+  disabled = false,
+  label,
+}: {
+  enabled: boolean;
   onChange: () => void;
   disabled?: boolean;
+  label?: string;
 }) {
   return (
     <button
@@ -67,320 +60,356 @@ function ToggleSwitch({ enabled, onChange, disabled = false }: {
       disabled={disabled}
       role="switch"
       aria-checked={enabled}
-      className={`
-        relative w-[52px] h-[32px] sm:w-[52px] sm:h-[31px] rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0
-        focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-        touch-manipulation active:scale-95
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-        ${enabled ? 'bg-[var(--bento-primary)]' : 'bg-[var(--bento-text-subtle)]/40'}
-      `}
+      aria-label={label}
+      className={`relative w-[50px] h-[28px] rounded-full shrink-0 cursor-pointer transition-colors duration-200
+        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+        ${enabled ? "bg-[var(--primary)]" : "bg-[color:color-mix(in_srgb,var(--text-subtle)_28%,transparent)]"}`}
+      style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.18)" }}
     >
-      {/* Using CSS transform instead of motion to avoid reduced-motion conflicts */}
-      <div 
-        className={`
-          absolute top-[2px] left-[2px] w-[28px] h-[28px] sm:w-[27px] sm:h-[27px] rounded-full bg-white shadow-md
-          transition-transform duration-200 ease-out
-          ${enabled ? 'translate-x-[20px] sm:translate-x-[21px]' : 'translate-x-0'}
-        `}
+      <span
+        className={`absolute top-[3px] left-[3px] w-[22px] h-[22px] rounded-full bg-white shadow-md transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${enabled ? "translate-x-[22px]" : "translate-x-0"}`}
       />
     </button>
   );
 }
 
-function SettingRow({ 
-  icon: Icon, 
-  label, 
-  description, 
+function SettingRow({
+  label,
+  description,
   children,
-  disabled = false
-}: { 
-  icon: typeof Eye; 
-  label: string; 
-  description: string; 
-  children: React.ReactNode;
+  disabled = false,
+}: {
+  label: string;
+  description: string;
+  children: ReactNode;
   disabled?: boolean;
 }) {
   return (
-    <div className={`flex items-center justify-between gap-3 sm:gap-4 py-2.5 sm:py-3 ${disabled ? 'opacity-50' : ''}`}>
-      <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-bg)] flex items-center justify-center flex-shrink-0">
-          <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[var(--bento-text-muted)]" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <p className="font-soft font-semibold text-xs sm:text-sm text-[var(--bento-text)]">{label}</p>
-          <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] mt-0.5 leading-relaxed">{description}</p>
-        </div>
+    <div
+      className={`flex items-center justify-between gap-4 py-3 ${disabled ? "opacity-50" : ""}`}
+    >
+      <div className="min-w-0">
+        <p className="font-display font-bold text-sm text-[var(--text)]">
+          {label}
+        </p>
+        <p className="font-soft text-xs text-[var(--text-muted)] leading-relaxed">
+          {description}
+        </p>
       </div>
-      <div className="flex-shrink-0">
-        {children}
-      </div>
+      <div className="shrink-0">{children}</div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Theme Section
-// ─────────────────────────────────────────────────────────────────────────────
-
-function ThemeSection() {
-  const { settings, setColorMode, setColorTheme } = useTheme();
-  const [themesExpanded, setThemesExpanded] = useState(false);
-
-  const modeOptions: { value: ColorMode; label: string; icon: typeof Sun }[] = [
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'system', label: 'System', icon: Monitor },
-  ];
-
-  const currentTheme = THEME_DEFINITIONS.find(t => t.id === settings.colorTheme);
-
+/** Kawaii collapsible sub-section with a dashed divider above it. */
+function Collapsible({
+  icon: Icon,
+  label,
+  value,
+  accent = "var(--primary)",
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value?: string;
+  accent?: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <ContentCard>
-      <SectionHeader 
-        icon={Palette} 
-        title="Appearance" 
-        description="Choose how MogTome looks to you"
-      />
-      
-      {/* Light/Dark/System Mode */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-2 mb-4">
-        {modeOptions.map(({ value, label, icon: Icon }) => {
-          const isSelected = settings.colorMode === value;
-          return (
-            <button
-              key={value}
-              onClick={() => setColorMode(value)}
-              className={`
-                relative flex flex-col items-center gap-2.5 sm:gap-2 p-4 sm:p-4 rounded-2xl sm:rounded-xl border-2 transition-all cursor-pointer
-                focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-                touch-manipulation active:scale-[0.97]
-                ${isSelected 
-                  ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
-                  : 'border-[var(--bento-border)] active:border-[var(--bento-primary)]/30 active:bg-[var(--bento-bg)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
-                }
-              `}
-              aria-pressed={isSelected}
-            >
-              <div className={`
-                w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
-                ${isSelected 
-                  ? 'bg-[var(--bento-primary)] text-white' 
-                  : 'bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
-                }
-              `}>
-                <Icon className="w-7 h-7 sm:w-6 sm:h-6" />
-              </div>
-              <span className={`font-soft font-semibold text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
-                {label}
-              </span>
-              {isSelected && (
-                <motion.div
-                  className="absolute top-2.5 right-2.5 sm:top-2 sm:right-2"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                >
-                  <Check className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
-                </motion.div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent my-4" />
-
-      {/* Color Theme Selector */}
-      <div>
-        <button
-          onClick={() => setThemesExpanded(!themesExpanded)}
-          className="w-full flex items-center justify-between gap-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
-          aria-expanded={themesExpanded}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[var(--bento-primary)]/15 to-[var(--bento-secondary)]/15 flex items-center justify-center flex-shrink-0">
-              <Paintbrush className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--bento-primary)]" aria-hidden="true" />
-            </div>
-            <div className="text-left">
-              <p className="font-soft font-semibold text-sm text-[var(--bento-text)]">
-                Color Theme
-              </p>
-              <div className="flex items-center gap-2 mt-0.5">
-                {/* Theme color preview dots */}
-                {currentTheme && (
-                  <div className="flex items-center gap-1">
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: currentTheme.preview.primary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: currentTheme.preview.secondary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: currentTheme.preview.accent }}
-                    />
-                  </div>
-                )}
-                <span className="text-xs text-[var(--bento-primary)] font-medium">
-                  {currentTheme?.name || 'Pom-Pom Classic'}
-                </span>
-              </div>
-            </div>
-          </div>
-          <ChevronRight 
-            className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform ${themesExpanded ? 'rotate-90' : ''}`}
-            aria-hidden="true"
-          />
-        </button>
-
-        {themesExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            className="mt-4 grid grid-cols-2 gap-3"
-            role="radiogroup"
-            aria-label="Color theme options"
-          >
-            {THEME_DEFINITIONS.map((theme) => {
-              const isSelected = settings.colorTheme === theme.id;
-              return (
-                <button
-                  key={theme.id}
-                  onClick={() => setColorTheme(theme.id)}
-                  className={`
-                    relative flex flex-col gap-2.5 p-4 sm:p-3 rounded-2xl sm:rounded-xl text-left cursor-pointer
-                    transition-all border-2 touch-manipulation
-                    active:scale-[0.97]
-                    focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                    ${isSelected 
-                      ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]/10' 
-                      : 'border-[var(--bento-border)] active:border-[var(--bento-primary)]/30 active:bg-[var(--bento-bg)] sm:hover:border-[var(--bento-primary)]/30 sm:hover:bg-[var(--bento-bg)]'
-                    }
-                  `}
-                  role="radio"
-                  aria-checked={isSelected}
-                >
-                  {/* Color preview - larger dots on mobile */}
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 sm:w-5 sm:h-5 rounded-full border-2 border-white shadow-sm" 
-                      style={{ backgroundColor: theme.preview.primary }}
-                    />
-                    <div 
-                      className="w-5 h-5 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm" 
-                      style={{ backgroundColor: theme.preview.secondary }}
-                    />
-                    <div 
-                      className="w-4 h-4 sm:w-3 sm:h-3 rounded-full border-2 border-white shadow-sm" 
-                      style={{ backgroundColor: theme.preview.accent }}
-                    />
-                  </div>
-                  
-                  {/* Theme info */}
-                  <div>
-                    <p className={`font-soft font-semibold text-sm sm:text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
-                      {theme.name}
-                    </p>
-                    <p className="text-xs sm:text-xs text-[var(--bento-text-muted)] leading-snug mt-0.5">
-                      {theme.description}
-                    </p>
-                  </div>
-
-                  {/* Selected indicator */}
-                  {isSelected && (
-                    <motion.div
-                      className="absolute top-3 right-3 sm:top-2 sm:right-2"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                    >
-                      <Check className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--bento-primary)]" />
-                    </motion.div>
-                  )}
-                </button>
-              );
-            })}
-          </motion.div>
+    <div className="border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_15%,transparent)] mt-4 pt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 cursor-pointer rounded-xl py-0.5 text-left focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
+      >
+        <Icon
+          className="w-4 h-4 shrink-0"
+          style={{ color: accent }}
+          aria-hidden="true"
+        />
+        <span className="font-display font-bold text-sm text-[var(--text)]">
+          {label}
+        </span>
+        {value && (
+          <span className="font-soft text-xs text-[var(--primary)] truncate">
+            {value}
+          </span>
         )}
+        <ChevronDown
+          className={`w-4 h-4 ml-auto shrink-0 text-[var(--text-muted)] transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <div className="mt-3 animate-[fadeSlideIn_0.25s_ease-out]">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** A pinned paper section card with a sticker-style header. */
+function SettingsCard({
+  icon: Icon,
+  title,
+  accent,
+  pinColor,
+  tilt = 0,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  accent: string;
+  pinColor: string;
+  tilt?: number;
+  children: ReactNode;
+}) {
+  return (
+    <section
+      className="paper relative"
+      style={tilt ? { transform: `rotate(${tilt}deg)` } : undefined}
+    >
+      <span
+        className="pushpin absolute -top-2 left-8 z-10"
+        style={{ "--pin": pinColor } as CSSProperties}
+        aria-hidden="true"
+      />
+      <div className="surface p-5 sm:p-6">
+        <div className="flex items-center gap-2.5 mb-4">
+          <span
+            className="flex items-center justify-center w-9 h-9 rounded-full shrink-0"
+            style={{
+              backgroundColor: `color-mix(in srgb, ${accent} 18%, var(--card))`,
+              border: `2px solid color-mix(in srgb, ${accent} 32%, var(--card))`,
+            }}
+          >
+            <Icon
+              className="w-5 h-5"
+              style={{ color: accent }}
+              aria-hidden="true"
+            />
+          </span>
+          <h2 className="font-display font-bold text-lg text-[var(--text)]">
+            {title}
+          </h2>
+        </div>
+        {children}
       </div>
-    </ContentCard>
+    </section>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Seasonal Events Section
+// Appearance
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ThemeSection() {
+  const { settings, setColorMode, setColorTheme } = useTheme();
+  const modeOptions: { value: ColorMode; label: string; icon: LucideIcon }[] = [
+    { value: "light", label: "Light", icon: Sun },
+    { value: "dark", label: "Dark", icon: Moon },
+    { value: "system", label: "System", icon: Monitor },
+  ];
+  const currentTheme = THEME_DEFINITIONS.find(
+    (t) => t.id === settings.colorTheme,
+  );
+
+  return (
+    <SettingsCard
+      icon={Palette}
+      title="Appearance"
+      accent="var(--primary)"
+      pinColor="var(--secondary)"
+      tilt={-0.5}
+    >
+      <fieldset aria-label="Color mode">
+        <legend className="font-soft text-xs text-[var(--text-muted)] mb-2">
+          Mode
+        </legend>
+        <div className="grid grid-cols-3 gap-2">
+          {modeOptions.map(({ value, label, icon: Icon }) => {
+            const sel = settings.colorMode === value;
+            return (
+              <button
+                key={value}
+                onClick={() => setColorMode(value)}
+                aria-pressed={sel}
+                className={`flex flex-col items-center gap-1 py-2.5 rounded-2xl border-2 font-display font-bold text-xs cursor-pointer transition-all
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+                  ${
+                    sel
+                      ? "bg-[var(--primary)] text-white border-transparent"
+                      : "bg-[var(--bg)] border-[var(--border)] text-[var(--text-muted)] hover:border-[color:color-mix(in_srgb,var(--primary)_35%,var(--border))] hover:text-[var(--text)]"
+                  }`}
+                style={
+                  sel
+                    ? {
+                        boxShadow:
+                          "0 3px 0 0 color-mix(in srgb, var(--primary) 55%, #000)",
+                      }
+                    : undefined
+                }
+              >
+                <Icon className="w-4 h-4" aria-hidden="true" />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <Collapsible
+        icon={Palette}
+        label="Color Theme"
+        value={currentTheme?.name}
+        accent="var(--secondary)"
+      >
+        <div
+          className="grid grid-cols-2 gap-2"
+          role="radiogroup"
+          aria-label="Color theme options"
+        >
+          {THEME_DEFINITIONS.map((theme) => {
+            const sel = settings.colorTheme === theme.id;
+            return (
+              <button
+                key={theme.id}
+                onClick={() => setColorTheme(theme.id)}
+                role="radio"
+                aria-checked={sel}
+                className={`flex items-center gap-2.5 p-2.5 rounded-2xl border-2 text-left cursor-pointer transition-all
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+                  ${
+                    sel
+                      ? "border-[var(--primary)] bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]"
+                      : "border-[var(--border)] hover:border-[color:color-mix(in_srgb,var(--primary)_30%,var(--border))]"
+                  }`}
+              >
+                <span className="flex items-center gap-0.5 shrink-0">
+                  <span
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: theme.preview.primary }}
+                  />
+                  <span
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: theme.preview.secondary }}
+                  />
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: theme.preview.accent }}
+                  />
+                </span>
+                <span
+                  className={`font-soft text-sm flex-1 truncate ${sel ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
+                >
+                  {theme.name}
+                </span>
+                {sel && (
+                  <Check
+                    className="w-4 h-4 text-[var(--primary)] shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </Collapsible>
+    </SettingsCard>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Seasonal Events
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Dev-only event override options for the switcher */
-const EVENT_OVERRIDE_OPTIONS: { value: EventOverride; label: string; Icon: LucideIcon }[] = [
-  { value: 'auto', label: 'Auto (Real Date)', Icon: CalendarDays },
-  { value: 'none', label: 'No Event', Icon: Ban },
-  ...SEASONAL_EVENTS.map(e => ({ value: e.id as EventOverride, label: e.name, Icon: e.icon })),
+const EVENT_OVERRIDE_OPTIONS: {
+  value: EventOverride;
+  label: string;
+  Icon: LucideIcon;
+}[] = [
+  { value: "auto", label: "Auto (Real Date)", Icon: CalendarDays },
+  { value: "none", label: "No Event", Icon: Ban },
+  ...SEASONAL_EVENTS.map((e) => ({
+    value: e.id as EventOverride,
+    label: e.name,
+    Icon: e.icon,
+  })),
 ];
+
+function formatDateRange(
+  startMonth: number,
+  startDay: number,
+  endMonth: number,
+  endDay: number,
+): string {
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  if (startMonth === endMonth)
+    return `${months[startMonth]} ${startDay}–${endDay}`;
+  return `${months[startMonth]} ${startDay} – ${months[endMonth]} ${endDay}`;
+}
 
 function SeasonalEventSection() {
   const {
-    activeEvent, nextEvent, isEventThemeActive, settings,
-    setEventThemingDisabled, eventOverride, setEventOverride,
+    activeEvent,
+    nextEvent,
+    isEventThemeActive,
+    settings,
+    setEventThemingDisabled,
+    eventOverride,
+    setEventOverride,
   } = useTheme();
-  const [eventsExpanded, setEventsExpanded] = useState(false);
-
-  /** Format a date range for display */
-  const formatDateRange = (startMonth: number, startDay: number, endMonth: number, endDay: number): string => {
-    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    if (startMonth === endMonth) {
-      return `${months[startMonth]} ${startDay}–${endDay}`;
-    }
-    return `${months[startMonth]} ${startDay} – ${months[endMonth]} ${endDay}`;
-  };
 
   return (
-    <ContentCard>
-      <SectionHeader 
-        icon={PartyPopper} 
-        title="Seasonal Events" 
-        description="FFXIV-inspired event themes throughout the year"
-      />
-
-      {/* ── Dev-only: Event Override Switcher ───────────────────────── */}
+    <SettingsCard
+      icon={CalendarDays}
+      title="Seasonal Events"
+      accent="var(--accent)"
+      pinColor="var(--primary)"
+      tilt={0.5}
+    >
+      {/* Dev override switcher */}
       {import.meta.env.DEV && (
-        <div className="mb-4 p-3 sm:p-4 rounded-2xl border-2 border-dashed border-amber-500/40 bg-amber-500/5">
-          <div className="flex items-center gap-2 mb-2.5">
-            <Wrench className="w-4 h-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-            <p className="font-soft font-bold text-xs sm:text-sm text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-              Dev: Event Override
-            </p>
-            {eventOverride !== 'auto' && (
-              <span className="ml-auto px-1.5 py-0.5 rounded-full bg-amber-500/20 text-[10px] font-soft font-semibold text-amber-600 dark:text-amber-400">
-                Override Active
+        <div className="mb-4 p-3 rounded-2xl border-2 border-dashed border-amber-500/40 bg-amber-500/5">
+          <p className="font-display font-bold text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-2">
+            Dev: Event Override
+            {eventOverride !== "auto" && (
+              <span className="ml-1.5 font-soft normal-case tracking-normal text-amber-500">
+                ({eventOverride})
               </span>
             )}
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
+          </p>
+          <div className="flex flex-wrap gap-1.5">
             {EVENT_OVERRIDE_OPTIONS.map(({ value, label, Icon }) => {
-              const isSelected = eventOverride === value;
+              const sel = eventOverride === value;
               return (
                 <button
                   key={value}
                   onClick={() => setEventOverride(value)}
-                  className={`
-                    flex items-center gap-2 px-2.5 py-2 rounded-xl text-left cursor-pointer
-                    transition-all text-xs font-soft touch-manipulation
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-soft cursor-pointer transition-colors
                     focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none
-                    ${isSelected
-                      ? 'bg-amber-500/20 border border-amber-500/40 font-semibold text-amber-700 dark:text-amber-300'
-                      : 'border border-transparent hover:bg-[var(--bento-bg)] text-[var(--bento-text-muted)]'
-                    }
-                  `}
+                    ${sel ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold" : "text-[var(--text-muted)] hover:bg-[var(--bg)]"}`}
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                  <span className="truncate">{label}</span>
-                  {isSelected && (
-                    <Check className="w-3.5 h-3.5 ml-auto flex-shrink-0 text-amber-600 dark:text-amber-400" />
-                  )}
+                  <Icon className="w-3 h-3" aria-hidden="true" />
+                  <span>{label}</span>
                 </button>
               );
             })}
@@ -388,428 +417,381 @@ function SeasonalEventSection() {
         </div>
       )}
 
-      {/* Active event banner */}
+      {/* Active / next event note */}
       {activeEvent ? (
-        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15 mb-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--bento-primary)]/15 flex items-center justify-center flex-shrink-0">
-            <activeEvent.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--bento-primary)]" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-primary)]">
+        <div className="mb-3 flex items-start gap-2.5 p-3 rounded-2xl bg-[color:color-mix(in_srgb,var(--primary)_9%,var(--card))]">
+          <activeEvent.icon
+            className="w-4 h-4 mt-0.5 shrink-0 text-[var(--primary)]"
+            aria-hidden="true"
+          />
+          <p className="font-soft text-sm text-[var(--text-muted)]">
+            <strong className="text-[var(--primary)] font-bold">
               {activeEvent.name}
-              <span className="ml-2 px-1.5 py-0.5 rounded-full bg-[var(--bento-primary)]/15 text-[10px] font-soft uppercase tracking-wide">
-                Active
-              </span>
-            </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">{activeEvent.description}</p>
-          </div>
+            </strong>{" "}
+            is here, kupo — {activeEvent.description}
+          </p>
         </div>
       ) : nextEvent ? (
-        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-[var(--bento-bg)] border border-[var(--bento-border)] mb-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--bento-text-muted)]/10 flex items-center justify-center flex-shrink-0 opacity-60">
-            <nextEvent.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--bento-text-muted)]" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-text)]">
-              Next: {nextEvent.name}
-            </p>
-            <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
-              {formatDateRange(nextEvent.dateRange.startMonth, nextEvent.dateRange.startDay, nextEvent.dateRange.endMonth, nextEvent.dateRange.endDay)}
-            </p>
-          </div>
-        </div>
+        <p className="mb-3 font-soft text-sm text-[var(--text-muted)]">
+          Next up:{" "}
+          <strong className="text-[var(--text)] font-semibold">
+            {nextEvent.name}
+          </strong>{" "}
+          (
+          {formatDateRange(
+            nextEvent.dateRange.startMonth,
+            nextEvent.dateRange.startDay,
+            nextEvent.dateRange.endMonth,
+            nextEvent.dateRange.endDay,
+          )}
+          )
+        </p>
       ) : null}
 
-      {/* Event theme toggle */}
       <SettingRow
-        icon={CalendarDays}
         label="Event Themes"
-        description={isEventThemeActive ? 'Seasonal theme is active' : 'Enable automatic seasonal theming'}
+        description={
+          isEventThemeActive
+            ? "A seasonal theme is dressing up the site"
+            : "Automatically dress up the site for events"
+        }
       >
         <ToggleSwitch
+          label="Event themes"
           enabled={!settings.eventThemingDisabled}
-          onChange={() => setEventThemingDisabled(!settings.eventThemingDisabled)}
+          onChange={() =>
+            setEventThemingDisabled(!settings.eventThemingDisabled)
+          }
         />
       </SettingRow>
 
-      {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-[var(--bento-border)] to-transparent my-2" />
-
-      {/* Event calendar expandable */}
-      <div className="pt-1">
-        <button
-          onClick={() => setEventsExpanded(!eventsExpanded)}
-          className="w-full flex items-center justify-between gap-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
-          aria-expanded={eventsExpanded}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--bento-bg)] flex items-center justify-center flex-shrink-0">
-              <CalendarDays className="w-4 h-4 text-[var(--bento-text-muted)]" aria-hidden="true" />
-            </div>
-            <div className="text-left">
-              <p className="font-soft font-semibold text-xs sm:text-sm text-[var(--bento-text)]">
-                Event Calendar
-              </p>
-              <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)] mt-0.5">
-                View all seasonal events and their dates
-              </p>
-            </div>
-          </div>
-          <ChevronRight 
-            className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform ${eventsExpanded ? 'rotate-90' : ''}`}
-            aria-hidden="true"
-          />
-        </button>
-
-        {eventsExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            className="mt-3 space-y-1.5"
-          >
-            {SEASONAL_EVENTS.map((event) => {
-              const isActive = activeEvent?.id === event.id;
-              const EventIcon = event.icon;
-              return (
-                <div
-                  key={event.id}
-                  className={`
-                    flex items-center gap-3 p-2.5 sm:p-3 rounded-xl
-                    ${isActive ? 'bg-[var(--bento-primary)]/10 border border-[var(--bento-primary)]/15' : 'bg-[var(--bento-bg)]/50'}
-                  `}
+      <Collapsible
+        icon={CalendarDays}
+        label="Event Calendar"
+        accent="var(--accent)"
+      >
+        <ul className="space-y-1">
+          {SEASONAL_EVENTS.map((event) => {
+            const isActive = activeEvent?.id === event.id;
+            const EventIcon = event.icon;
+            return (
+              <li
+                key={event.id}
+                className={`flex items-center gap-2.5 py-1.5 px-2.5 rounded-xl text-sm ${isActive ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]" : ""}`}
+              >
+                <EventIcon
+                  className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                  aria-hidden="true"
+                />
+                <span
+                  className={`font-soft ${isActive ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
                 >
-                  <EventIcon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text-muted)]'}`} aria-hidden="true" />
-                  <div className="min-w-0 flex-1">
-                    <p className={`font-soft font-semibold text-xs sm:text-sm ${isActive ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
-                      {event.name}
-                    </p>
-                    <p className="text-[10px] sm:text-xs text-[var(--bento-text-muted)]">
-                      {formatDateRange(event.dateRange.startMonth, event.dateRange.startDay, event.dateRange.endMonth, event.dateRange.endDay)}
-                    </p>
-                  </div>
-                  {/* Theme preview dots */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: event.preview.primary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: event.preview.secondary }}
-                    />
-                    <div 
-                      className="w-3 h-3 rounded-full border border-white/50 shadow-sm" 
-                      style={{ backgroundColor: event.preview.accent }}
-                    />
-                  </div>
-                  {isActive && (
-                    <div className="flex-shrink-0">
-                      <div className="w-2 h-2 rounded-full bg-[var(--bento-primary)] animate-pulse" />
-                    </div>
+                  {event.name}
+                </span>
+                <span className="font-soft text-xs text-[var(--text-muted)] ml-auto">
+                  {formatDateRange(
+                    event.dateRange.startMonth,
+                    event.dateRange.startDay,
+                    event.dateRange.endMonth,
+                    event.dateRange.endDay,
                   )}
-                </div>
-              );
-            })}
-          </motion.div>
-        )}
-      </div>
-    </ContentCard>
+                </span>
+                <span className="flex items-center gap-0.5 shrink-0">
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.primary }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.secondary }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: event.preview.accent }}
+                  />
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </Collapsible>
+    </SettingsCard>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Accessibility Section
+// Accessibility
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface AccessibilityOption {
   key: ToggleableSettingKey;
   label: string;
   description: string;
-  icon: typeof Eye;
   requiresDark?: boolean;
 }
 
 const ACCESSIBILITY_OPTIONS: AccessibilityOption[] = [
   {
-    key: 'highContrast',
-    label: 'High Contrast',
-    description: 'Increases color contrast for better visibility',
-    icon: Contrast,
+    key: "highContrast",
+    label: "High Contrast",
+    description: "Increases color contrast for better visibility",
   },
   {
-    key: 'extraDark',
-    label: 'Extra Dark',
-    description: 'Deeper blacks for OLED screens',
-    icon: Moon,
+    key: "extraDark",
+    label: "Extra Dark",
+    description: "Deeper blacks for OLED screens",
     requiresDark: true,
   },
   {
-    key: 'largeText',
-    label: 'Large Text',
-    description: 'Increases font size across the site',
-    icon: Type,
+    key: "largeText",
+    label: "Large Text",
+    description: "Increases font size across the site",
   },
   {
-    key: 'reducedMotion',
-    label: 'Reduce Motion',
-    description: 'Minimizes animations and transitions',
-    icon: Zap,
+    key: "reducedMotion",
+    label: "Reduce Motion",
+    description: "Minimizes animations and transitions",
   },
   {
-    key: 'enhancedFocus',
-    label: 'Enhanced Focus',
-    description: 'More visible focus indicators',
-    icon: Focus,
+    key: "enhancedFocus",
+    label: "Enhanced Focus",
+    description: "More visible focus indicators",
   },
   {
-    key: 'dyslexiaFont',
-    label: 'Dyslexia-Friendly',
-    description: 'Easier-to-read font spacing',
-    icon: BookOpen,
+    key: "dyslexiaFont",
+    label: "Dyslexia-Friendly",
+    description: "Easier-to-read font spacing",
   },
 ];
 
 function AccessibilitySection() {
   const { settings, toggleSetting, updateSetting } = useAccessibility();
   const { isDarkMode } = useTheme();
-  const [colorblindExpanded, setColorblindExpanded] = useState(false);
 
   return (
-    <ContentCard>
-      <SectionHeader 
-        icon={Eye} 
-        title="Accessibility" 
-        description="Customize your experience for better usability"
-      />
-      
-      <div className="divide-y divide-[var(--bento-border)]">
-        {ACCESSIBILITY_OPTIONS.map(({ key, label, description, icon, requiresDark }) => {
-          const isDisabled = requiresDark && !isDarkMode;
-          return (
-            <SettingRow 
-              key={key} 
-              icon={icon} 
-              label={label} 
-              description={isDisabled ? `${description} (requires dark mode)` : description}
-              disabled={isDisabled}
-            >
-              <ToggleSwitch 
-                enabled={settings[key]} 
-                onChange={() => toggleSetting(key)}
+    <SettingsCard
+      icon={Accessibility}
+      title="Accessibility"
+      accent="var(--secondary)"
+      pinColor="var(--accent)"
+      tilt={-0.4}
+    >
+      <div className="divide-y divide-[color:color-mix(in_srgb,var(--text-subtle)_16%,transparent)]">
+        {ACCESSIBILITY_OPTIONS.map(
+          ({ key, label, description, requiresDark }) => {
+            const isDisabled = requiresDark && !isDarkMode;
+            return (
+              <SettingRow
+                key={key}
+                label={label}
+                description={
+                  isDisabled ? `${description} (needs dark mode)` : description
+                }
                 disabled={isDisabled}
-              />
-            </SettingRow>
-          );
-        })}
-
-        {/* Colorblind Mode */}
-        <div className="py-3">
-          <button
-            onClick={() => setColorblindExpanded(!colorblindExpanded)}
-            className="w-full flex items-center justify-between gap-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none rounded-lg"
-            aria-expanded={colorblindExpanded}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[var(--bento-bg)] flex items-center justify-center flex-shrink-0">
-                <Palette className="w-4.5 h-4.5 text-[var(--bento-text-muted)]" aria-hidden="true" />
-              </div>
-              <div className="text-left">
-                <p className="font-soft font-semibold text-sm text-[var(--bento-text)]">
-                  Colorblind Mode
-                  {settings.colorblindMode !== 'none' && (
-                    <span className="ml-2 text-xs text-[var(--bento-primary)]">
-                      ({COLORBLIND_MODES.find(m => m.value === settings.colorblindMode)?.label})
-                    </span>
-                  )}
-                </p>
-                <p className="text-xs text-[var(--bento-text-muted)] mt-0.5">
-                  Adjust colors for color vision deficiency
-                </p>
-              </div>
-            </div>
-            <ChevronRight 
-              className={`w-5 h-5 text-[var(--bento-text-muted)] transition-transform ${colorblindExpanded ? 'rotate-90' : ''}`}
-              aria-hidden="true"
-            />
-          </button>
-
-          {colorblindExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              className="mt-3 ml-12 space-y-1"
-              role="radiogroup"
-              aria-label="Colorblind mode options"
-            >
-              {COLORBLIND_MODES.map(({ value, label, description }) => {
-                const isSelected = settings.colorblindMode === value;
-                return (
-                  <button
-                    key={value}
-                    onClick={() => updateSetting('colorblindMode', value as ColorblindMode)}
-                    className={`
-                      w-full flex items-center gap-3 p-3 rounded-lg text-left cursor-pointer
-                      transition-colors focus-visible:ring-2 focus-visible:ring-[var(--bento-primary)] focus-visible:outline-none
-                      ${isSelected ? 'bg-[var(--bento-primary)]/10' : 'hover:bg-[var(--bento-bg)]'}
-                    `}
-                    role="radio"
-                    aria-checked={isSelected}
-                  >
-                    <div className={`
-                      w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                      ${isSelected ? 'border-[var(--bento-primary)] bg-[var(--bento-primary)]' : 'border-[var(--bento-text-muted)]'}
-                    `}>
-                      {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                    </div>
-                    <div>
-                      <p className={`font-soft font-medium text-sm ${isSelected ? 'text-[var(--bento-primary)]' : 'text-[var(--bento-text)]'}`}>
-                        {label}
-                      </p>
-                      <p className="text-xs text-[var(--bento-text-muted)]">{description}</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
-        </div>
+              >
+                <ToggleSwitch
+                  label={label}
+                  enabled={settings[key]}
+                  onChange={() => toggleSetting(key)}
+                  disabled={isDisabled}
+                />
+              </SettingRow>
+            );
+          },
+        )}
       </div>
-    </ContentCard>
+
+      <Collapsible
+        icon={Eye}
+        label="Colorblind Mode"
+        accent="var(--secondary)"
+        value={
+          settings.colorblindMode !== "none"
+            ? COLORBLIND_MODES.find((m) => m.value === settings.colorblindMode)
+                ?.label
+            : undefined
+        }
+      >
+        <div
+          className="space-y-1"
+          role="radiogroup"
+          aria-label="Colorblind mode options"
+        >
+          {COLORBLIND_MODES.map(({ value, label, description }) => {
+            const sel = settings.colorblindMode === value;
+            return (
+              <button
+                key={value}
+                onClick={() =>
+                  updateSetting("colorblindMode", value as ColorblindMode)
+                }
+                role="radio"
+                aria-checked={sel}
+                className={`w-full flex items-center gap-2.5 py-2 px-2.5 rounded-xl text-left cursor-pointer transition-colors
+                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
+                  ${sel ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]" : "hover:bg-[var(--bg)]"}`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[color:color-mix(in_srgb,var(--text-muted)_45%,transparent)]"}`}
+                >
+                  {sel && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                  )}
+                </span>
+                <span className="min-w-0">
+                  <span
+                    className={`font-soft text-sm ${sel ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
+                  >
+                    {label}
+                  </span>
+                  <span className="font-soft text-xs text-[var(--text-muted)] ml-1">
+                    — {description}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </Collapsible>
+    </SettingsCard>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Account Section
+// Account
 // ─────────────────────────────────────────────────────────────────────────────
 
 function AccountSection() {
   const { user, logout, isLoading, isAuthenticated } = useAuth();
 
-  if (isLoading) {
-    return (
-      <ContentCard>
-        <SectionHeader icon={User} title="Account" />
-        <div className="flex items-center justify-center py-6 sm:py-8">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[var(--bento-primary)]/20 border-t-[var(--bento-primary)] animate-spin" />
-        </div>
-      </ContentCard>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return (
-      <ContentCard>
-        <SectionHeader 
-          icon={User} 
-          title="Account" 
-          description="Sign in to access member features"
-        />
-        <div className="flex items-center justify-center py-4 sm:py-6">
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)] text-center px-2">
-            Use the login button in the navigation bar to sign in with Discord.
-          </p>
-        </div>
-      </ContentCard>
-    );
-  }
-
   return (
-    <ContentCard>
-      <SectionHeader icon={User} title="Account" />
-      
-      {/* User info */}
-      <div className="flex items-center gap-3 sm:gap-4 py-2">
-        <img
-          src={user.memberPortraitUrl}
-          alt=""
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover ring-2 ring-[var(--bento-primary)]/20"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="font-display font-semibold text-sm sm:text-base text-[var(--bento-text)] truncate">
-            {user.memberName}
-          </p>
-          <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">{user.memberRank}</p>
-        </div>
-        {/* Connected status */}
-        <div className="flex items-center gap-1.5 text-xs text-[var(--bento-text-muted)]">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="hidden sm:inline">Connected via Discord</span>
-        </div>
-      </div>
+    <SettingsCard
+      icon={User}
+      title="Account"
+      accent="var(--primary)"
+      pinColor="var(--secondary)"
+      tilt={0.5}
+    >
+      {isLoading ? (
+        <p className="font-soft text-sm text-[var(--text-muted)]">Loading…</p>
+      ) : !isAuthenticated || !user ? (
+        <p className="font-soft text-sm text-[var(--text-muted)]">
+          Sign in with Discord using the button in the navigation bar, kupo~
+        </p>
+      ) : (
+        <>
+          <div className="flex items-center gap-3.5 mb-4">
+            <div className="paper shrink-0 -rotate-3">
+              <div className="surface p-1.5">
+                <img
+                  src={user.memberPortraitUrl}
+                  alt=""
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
+              </div>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-display font-bold text-base text-[var(--text)] truncate">
+                {user.memberName}
+              </p>
+              <p className="font-soft text-sm text-[var(--text-muted)]">
+                {user.memberRank}
+              </p>
+            </div>
+          </div>
 
-      <div className="mt-4 pt-4 border-t border-[var(--bento-border)]">
-        <button
-          onClick={logout}
-          className="flex items-center justify-center gap-3 sm:gap-3 px-4 sm:px-4 py-3.5 sm:py-3 rounded-xl text-red-500 sm:hover:bg-red-500/10 active:bg-red-500/15 active:scale-[0.98] transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none w-full touch-manipulation"
-        >
-          <LogOut className="w-5 h-5 sm:w-5 sm:h-5" aria-hidden="true" />
-          <span className="font-soft font-semibold text-base sm:text-base">Sign Out</span>
-        </button>
-      </div>
-    </ContentCard>
+          <button
+            onClick={logout}
+            className="gel hover-bounce inline-flex items-center gap-2 px-4 py-2 font-display font-bold text-sm text-white cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
+            style={{ "--gel-color": "#e8607a" } as CSSProperties}
+          >
+            <LogOut className="w-4 h-4" aria-hidden="true" />
+            Sign Out
+          </button>
+        </>
+      )}
+    </SettingsCard>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Main Settings Page
+// Main Settings Page — pinned to a cork board
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Settings() {
   return (
-    <div className="min-h-[100dvh] pt-[calc(4rem+env(safe-area-inset-top)+1.5rem)] sm:pt-[calc(4rem+env(safe-area-inset-top)+2rem)] md:pt-8 pb-[calc(5rem+env(safe-area-inset-bottom)+1.5rem)] sm:pb-[calc(5rem+env(safe-area-inset-bottom)+2rem)] md:pb-8 px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Page Header */}
-        <motion.div
-          className="mb-6 sm:mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[var(--bento-primary)] to-[var(--bento-secondary)] flex items-center justify-center ${IS_MOBILE ? '' : 'shadow-lg shadow-[var(--bento-primary)]/25'}`}>
-              <SettingsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-[var(--bento-text)]">
-                Settings
-              </h1>
-              <p className="text-xs sm:text-sm text-[var(--bento-text-muted)]">
-                Customize your MogTome experience
-              </p>
-            </div>
-          </div>
-          
-          {/* Decorative divider */}
-          <div className="flex items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
-            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--bento-secondary)]" aria-hidden="true" />
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--bento-primary)]/20 to-transparent" />
-          </div>
-        </motion.div>
+    <PageLayout
+      moogles={{ primary: gamingMoogle, secondary: musicMoogle }}
+      maxWidth="max-w-2xl"
+    >
+      <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
+        {/* Corner pins */}
+        <span
+          className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
+          style={{ "--pin": "var(--accent)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
+        />
 
-        {/* Settings Sections */}
-        <motion.div
-          className="space-y-4 sm:space-y-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
+        {/* Corner-peek moogle */}
+        <img
+          src={lilGuyMoogle}
+          alt=""
+          aria-hidden="true"
+          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
+        />
+
+        {/* Pinned title sign */}
+        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
+          <span
+            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
+            aria-hidden="true"
+          />
+          <div className="surface paper -rotate-1 px-8 sm:px-12 py-5 sm:py-6">
+            <div
+              className="flex items-center justify-center gap-1.5 mb-1.5"
+              aria-hidden="true"
+            >
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+            </div>
+            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
+              ~ make it yours, kupo ~
+            </p>
+            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
+              <span className="text-highlight">Settings</span>
+            </h1>
+          </div>
+        </header>
+
+        {/* Section cards */}
+        <div className="space-y-7 sm:space-y-9">
           <ThemeSection />
           <SeasonalEventSection />
           <AccessibilitySection />
           <AccountSection />
-        </motion.div>
+        </div>
 
         {/* Footer note */}
-        <motion.p
-          className="text-center text-[10px] sm:text-xs text-[var(--bento-text-subtle)] mt-6 sm:mt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Settings are saved automatically to your browser
-        </motion.p>
+        <p className="flex items-center justify-center gap-1.5 text-center font-soft text-xs text-[var(--text-subtle)] mt-9">
+          <KawaiiHeart className="w-3.5 h-3.5 text-[var(--primary)]" />
+          Everything saves to your browser automatically, kupo~
+        </p>
       </div>
-    </div>
+    </PageLayout>
   );
 }

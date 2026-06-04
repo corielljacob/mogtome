@@ -1,54 +1,49 @@
-import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, AlertTriangle } from 'lucide-react';
-import { Button } from './Button';
+import { useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "motion/react";
+import { X, AlertTriangle } from "lucide-react";
+import { Button } from "./Button";
 
-import deadMoogle from '../assets/moogles/dead moogle.webp';
+import deadMoogle from "../assets/moogles/dead moogle.webp";
 
 export function MissingUserDataDialog() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
+  // Derive open state directly from the URL — the dialog shows whenever the
+  // `missingUserData` flag is present, so there's no state to sync.
+  const isOpen = searchParams.get("missingUserData") === "true";
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    // Check if missingUserData param is in URL
-    if (searchParams.get('missingUserData') === 'true') {
-      setIsOpen(true);
-    }
-  }, [searchParams]);
-
-  const handleClose = () => {
-    setIsOpen(false);
-    // Remove the query param from URL
-    searchParams.delete('missingUserData');
+  const handleClose = useCallback(() => {
+    // Drop the query param; isOpen re-derives to false and AnimatePresence
+    // plays the exit animation.
+    searchParams.delete("missingUserData");
     setSearchParams(searchParams, { replace: true });
-  };
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (isOpen) {
       // Focus the dialog when it opens
       closeButtonRef.current?.focus();
       // Prevent body scroll when dialog is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         handleClose();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, handleClose]);
 
   return (
@@ -63,7 +58,7 @@ export function MissingUserDataDialog() {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -78,7 +73,7 @@ export function MissingUserDataDialog() {
             aria-modal="true"
             aria-labelledby="missing-data-title"
             aria-describedby="missing-data-desc"
-            className="relative w-full max-w-md bg-[var(--bento-card)] rounded-3xl shadow-2xl shadow-amber-500/20 border border-amber-500/20 overflow-hidden"
+            className="relative w-full max-w-md bg-[var(--card)] rounded-lg shadow-sm border border-[var(--border)] overflow-hidden"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -91,7 +86,11 @@ export function MissingUserDataDialog() {
             <div className="absolute top-4 left-6 opacity-70">
               <motion.div
                 animate={{ rotate: [-5, 5, -5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
               </motion.div>
@@ -99,7 +98,12 @@ export function MissingUserDataDialog() {
             <div className="absolute top-16 right-8 opacity-50 pointer-events-none">
               <motion.div
                 animate={{ rotate: [5, -5, 5] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.3,
+                }}
               >
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
               </motion.div>
@@ -109,10 +113,10 @@ export function MissingUserDataDialog() {
             <button
               ref={closeButtonRef}
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-[var(--bento-bg)] transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-[var(--bg)] transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               aria-label="Close dialog"
             >
-              <X className="w-5 h-5 text-[var(--bento-text-muted)]" />
+              <X className="w-5 h-5 text-[var(--text-muted)]" />
             </button>
 
             {/* Content */}
@@ -139,13 +143,15 @@ export function MissingUserDataDialog() {
 
               {/* Message */}
               <div id="missing-data-desc" className="space-y-4 text-center">
-                <p className="text-[var(--bento-text)] leading-relaxed">
+                <p className="text-[var(--text)] leading-relaxed">
                   Your Discord has not yet been linked to your character.
                 </p>
-                <p className="text-[var(--bento-text-muted)] leading-relaxed">
-                  Please try logging in again in a few hours. If you still see this message, 
-                  shoot a message to{' '}
-                  <span className="font-semibold text-[var(--bento-primary)]">Plane Donut</span>{' '}
+                <p className="text-[var(--text-muted)] leading-relaxed">
+                  Please try logging in again in a few hours. If you still see
+                  this message, shoot a message to{" "}
+                  <span className="font-semibold text-[var(--primary)]">
+                    Plane Donut
+                  </span>{" "}
                   on Discord!
                 </p>
               </div>

@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 import {
   PartyPopper,
   HeartHandshake,
@@ -6,7 +6,7 @@ import {
   Crown,
   Scroll,
   Sparkles,
-} from 'lucide-react';
+} from "lucide-react";
 
 /**
  * Configuration for event type display (icon, colors).
@@ -15,6 +15,8 @@ export interface EventTypeConfig {
   Icon: LucideIcon;
   color: string;
   bgColor: string;
+  /** A CSS color (hex or token) for hairline tags / cozy tinting. */
+  hex: string;
   label: string;
 }
 
@@ -23,35 +25,40 @@ export interface EventTypeConfig {
  * Keys match the backend's PascalCase type values.
  */
 export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
-  MemberJoined: { 
-    Icon: PartyPopper, 
-    color: 'text-green-500', 
-    bgColor: 'bg-green-500/10',
-    label: 'Member Joined',
+  MemberJoined: {
+    Icon: PartyPopper,
+    color: "text-green-500",
+    bgColor: "bg-green-500/10",
+    hex: "#4CA05A",
+    label: "Member Joined",
   },
-  MemberRejoined: { 
-    Icon: HeartHandshake, 
-    color: 'text-emerald-500', 
-    bgColor: 'bg-emerald-500/10',
-    label: 'Welcome Back',
+  MemberRejoined: {
+    Icon: HeartHandshake,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    hex: "#3FA88C",
+    label: "Welcome Back",
   },
-  NameChanged: { 
-    Icon: Wand2, 
-    color: 'text-violet-500', 
-    bgColor: 'bg-violet-500/10',
-    label: 'Name Changed',
+  NameChanged: {
+    Icon: Wand2,
+    color: "text-violet-500",
+    bgColor: "bg-violet-500/10",
+    hex: "#8E72C2",
+    label: "Name Changed",
   },
-  RankPromoted: { 
-    Icon: Crown, 
-    color: 'text-amber-500', 
-    bgColor: 'bg-amber-500/10',
-    label: 'Rank Up!',
+  RankPromoted: {
+    Icon: Crown,
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    hex: "#D2A24A",
+    label: "Rank Up!",
   },
-  Announcement: { 
-    Icon: Scroll, 
-    color: 'text-[var(--bento-primary)]', 
-    bgColor: 'bg-[var(--bento-primary)]/10',
-    label: 'Announcement',
+  Announcement: {
+    Icon: Scroll,
+    color: "text-[var(--primary)]",
+    bgColor: "bg-[var(--primary)]/10",
+    hex: "var(--primary)",
+    label: "Announcement",
   },
 };
 
@@ -60,9 +67,10 @@ export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
  */
 export const DEFAULT_EVENT_TYPE_CONFIG: EventTypeConfig = {
   Icon: Sparkles,
-  color: 'text-[var(--bento-text-muted)]',
-  bgColor: 'bg-[var(--bento-bg)]',
-  label: 'Event',
+  color: "text-[var(--text-muted)]",
+  bgColor: "bg-[var(--bg)]",
+  hex: "var(--text-muted)",
+  label: "Event",
 };
 
 /**

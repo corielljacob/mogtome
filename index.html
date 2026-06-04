@@ -3,75 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="MogTome - Your cozy FFXIV Free Company hub" />
-    <!-- Theme color for browser chrome - matches page background -->
-    <meta name="theme-color" content="#FFF9F5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1A1722" media="(prefers-color-scheme: dark)" />
-    <!-- PWA: Transparent status bar when added to home screen -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="MogTome - Your cozy FFXIV Free Company hub"
+    />
+    <!-- Theme color for browser chrome — a single meta kept in sync with the
+         active theme's --bg (set from first paint below, then by ThemeContext). -->
+    <meta name="theme-color" content="#FFF6F4" />
+    <!-- PWA / native: standalone-capable + transparent status bar -->
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <title>MogTome</title>
     <style>
       /* Prevent FOUC - initial background before CSS loads */
-      html, body { margin: 0; padding: 0; min-height: 100%; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+      }
     </style>
-    
+
     <!-- Performance: DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://na.finalfantasyxiv.com" />
-    
+
     <!-- Performance: Preconnect to Google Fonts (early connection) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Google Fonts - trimmed to actually-used weights for smaller payload -->
-    <!-- PERFORMANCE: Reduced from 5 families x 4 weights to minimal set -->
-    <!-- Fredoka: headings (600, 700), Nunito: body (400, 500, 600, 700), Caveat: accents (400, 600), Righteous: numbers (400 only) -->
-    <!-- Inter removed entirely - Nunito serves as the primary font, system-ui as fallback -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@400;600&family=Righteous&display=swap" rel="stylesheet" />
+
+    <!-- Cozy type pairing: storybook rounded display, clean sans body, handwritten accent.
+         Yusei Magic is a marker-handwritten JP face used only on the member card. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&family=Yusei+Magic&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <script>
       // Apply theme before React loads to prevent flash
-      (function() {
+      (function () {
         // Read theme settings from localStorage
         var themeSettings = null;
         try {
-          var stored = localStorage.getItem('mogtome-theme');
+          var stored = localStorage.getItem("mogtome-theme");
           if (stored) {
             themeSettings = JSON.parse(stored);
           }
         } catch (e) {}
-        
+
         // Fallback to old theme key for migration
         if (!themeSettings) {
-          var oldTheme = localStorage.getItem('theme');
-          if (oldTheme === 'light' || oldTheme === 'dark') {
-            themeSettings = { colorMode: oldTheme, colorTheme: 'pom-pom' };
+          var oldTheme = localStorage.getItem("theme");
+          if (oldTheme === "light" || oldTheme === "dark") {
+            themeSettings = { colorMode: oldTheme, colorTheme: "pom-pom" };
           }
         }
-        
+
         // Determine dark mode
-        var colorMode = themeSettings?.colorMode || 'system';
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var isDark = colorMode === 'dark' || (colorMode === 'system' && prefersDark);
-        
+        var colorMode = themeSettings?.colorMode || "system";
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        var isDark =
+          colorMode === "dark" || (colorMode === "system" && prefersDark);
+
         // Apply dark class
         if (isDark) {
-          document.documentElement.classList.add('dark');
+          document.documentElement.classList.add("dark");
         }
-        
+
         // Apply color theme class
-        var colorTheme = themeSettings?.colorTheme || 'pom-pom';
-        if (colorTheme && colorTheme !== 'pom-pom') {
-          document.documentElement.classList.add('theme-' + colorTheme);
+        var colorTheme = themeSettings?.colorTheme || "pom-pom";
+        if (colorTheme && colorTheme !== "pom-pom") {
+          document.documentElement.classList.add("theme-" + colorTheme);
         }
-        
+
         // Set background color that will be enhanced by CSS gradients
-        var bgColor = isDark ? '#1A1722' : '#FFF9F5';
+        var bgColor = isDark ? "#16131F" : "#FFF6F4";
         document.documentElement.style.backgroundColor = bgColor;
         document.body.style.backgroundColor = bgColor;
+
+        // Match the browser chrome (address/status bar) from the very first paint
+        var tcMeta = document.querySelector('meta[name="theme-color"]');
+        if (tcMeta) tcMeta.setAttribute("content", bgColor);
       })();
     </script>
     <div id="root"></div>

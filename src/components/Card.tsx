@@ -1,49 +1,48 @@
-import { type ReactNode } from 'react';
+import { type ReactNode } from "react";
 
 interface CardProps {
   children: ReactNode;
   className?: string;
-  variant?: 'default' | 'glass' | 'flat';
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  variant?: "default" | "flat";
+  padding?: "none" | "sm" | "md" | "lg";
   hover?: boolean;
 }
 
 /**
- * Card - Soft Bento design system card component.
- * Clean, modern cards with subtle shadows and optional hover effects.
+ * Card - Base card component.
+ * Clean cards with subtle shadows and optional hover effects.
  */
-export function Card({ 
-  children, 
-  className = '', 
-  variant = 'default',
-  padding = 'md',
+export function Card({
+  children,
+  className = "",
+  variant = "default",
+  padding = "md",
   hover = true,
 }: CardProps) {
   const variantClasses = {
-    default: 'bg-[var(--bento-card)]/80 border border-[var(--bento-border)] shadow-sm',
-    glass: 'bento-glass',
-    flat: 'bg-[var(--bento-bg)]/50 border border-[var(--bento-border)]',
+    default: "surface",
+    flat: "surface surface-flat",
   };
 
   const paddingClasses = {
-    none: '',
-    sm: 'p-3 md:p-4',
-    md: 'p-4 md:p-6',
-    lg: 'p-6 md:p-8',
+    none: "",
+    sm: "p-3 md:p-4",
+    md: "p-4 md:p-6",
+    lg: "p-6 md:p-8",
   };
 
-  const hoverClasses = hover 
-    ? 'hover:shadow-lg hover:shadow-[var(--bento-primary)]/5 hover:-translate-y-0.5 transition-all duration-300' 
-    : '';
+  const hoverClasses = hover ? "hover-bounce" : "";
 
   return (
-    <div className={`
-      rounded-2xl
+    <div
+      className={`
+      relative isolate
       ${variantClasses[variant]}
       ${paddingClasses[padding]}
       ${hoverClasses}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -54,19 +53,25 @@ interface CardBodyProps {
   className?: string;
 }
 
-export function CardBody({ children, className = '' }: CardBodyProps) {
+export function CardBody({ children, className = "" }: CardBodyProps) {
   return <div className={`space-y-3 ${className}`}>{children}</div>;
 }
 
 interface CardTitleProps {
   children: ReactNode;
   className?: string;
-  as?: 'h1' | 'h2' | 'h3' | 'h4';
+  as?: "h1" | "h2" | "h3" | "h4";
 }
 
-export function CardTitle({ children, className = '', as: Tag = 'h3' }: CardTitleProps) {
+export function CardTitle({
+  children,
+  className = "",
+  as: Tag = "h3",
+}: CardTitleProps) {
   return (
-    <Tag className={`font-display font-bold text-lg text-[var(--bento-text)] ${className}`}>
+    <Tag
+      className={`font-display text-[1.18rem] font-bold tracking-[-0.03em] text-[var(--text)] ${className}`}
+    >
       {children}
     </Tag>
   );
@@ -75,19 +80,25 @@ export function CardTitle({ children, className = '', as: Tag = 'h3' }: CardTitl
 interface CardActionsProps {
   children: ReactNode;
   className?: string;
-  justify?: 'start' | 'end' | 'center' | 'between';
+  justify?: "start" | "end" | "center" | "between";
 }
 
-export function CardActions({ children, className = '', justify = 'end' }: CardActionsProps) {
+export function CardActions({
+  children,
+  className = "",
+  justify = "end",
+}: CardActionsProps) {
   const justifyClass = {
-    start: 'justify-start',
-    end: 'justify-end',
-    center: 'justify-center',
-    between: 'justify-between',
+    start: "justify-start",
+    end: "justify-end",
+    center: "justify-center",
+    between: "justify-between",
   }[justify];
 
   return (
-    <div className={`flex items-center gap-3 pt-4 ${justifyClass} ${className}`}>
+    <div
+      className={`flex items-center gap-3 pt-5 ${justifyClass} ${className}`}
+    >
       {children}
     </div>
   );
@@ -98,9 +109,11 @@ interface CardHeaderProps {
   className?: string;
 }
 
-export function CardHeader({ children, className = '' }: CardHeaderProps) {
+export function CardHeader({ children, className = "" }: CardHeaderProps) {
   return (
-    <div className={`flex items-center justify-between pb-4 border-b border-[var(--bento-border)] ${className}`}>
+    <div
+      className={`flex items-center justify-between pb-4 border-b border-[color:color-mix(in_srgb,var(--primary)_10%,var(--border))] ${className}`}
+    >
       {children}
     </div>
   );

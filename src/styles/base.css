@@ -1,0 +1,261 @@
+/* base — resets + native-app feel (@layer base)
+   Split out of the old monolithic index.css; imported in order from src/index.css. */
+
+/* Base Styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    height: 100dvh;
+    /* Background color - gradients applied via page-bg on content */
+    background-color: var(--bg);
+    transition: background-color 0.3s ease;
+  }
+
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    /* Body never scrolls - content column is the scroll container */
+    overflow: hidden;
+    /* Transparent to let html background show through */
+    background: transparent;
+    color: var(--text);
+  }
+
+  /* Root element - strict height to prevent body scroll */
+  #root {
+    height: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.18;
+    font-optical-sizing: auto;
+    color: var(--text);
+  }
+
+  p {
+    color: var(--text-muted);
+  }
+
+  /* Prevent iOS Safari zoom on input focus (requires font-size >= 16px) */
+  @media screen and (max-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Improve touch targets - minimum 44x44px for accessibility */
+  @media (pointer: coarse) {
+    button,
+    a,
+    [role="button"],
+    input[type="checkbox"],
+    input[type="radio"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Allow smaller inline buttons/links that are part of text */
+    .inline,
+    p a,
+    span a {
+      min-height: auto;
+      min-width: auto;
+    }
+
+    /* Toggle switches have their own sizing */
+    [role="switch"] {
+      min-height: auto;
+      min-width: auto;
+    }
+  }
+
+  /* Better touch feedback */
+  @media (hover: none) {
+    button:active,
+    a:active,
+    [role="button"]:active {
+      opacity: 0.8;
+    }
+  }
+
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent text selection on interactive elements for better UX */
+  button,
+  a,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Custom Selection Color */
+  ::selection {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  /* MOBILE PERFORMANCE: Optimize touch interactions */
+  /* touch-action prevents browser delays on touch gestures */
+  button,
+  a,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"] {
+    touch-action: manipulation; /* Disables double-tap zoom for faster response */
+  }
+
+  /* Glassmorphism is intentionally disabled site-wide. */
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl,
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* MOBILE PERFORMANCE: Hardware acceleration for animated elements */
+  /* will-change hints help browser optimize these elements */
+  [class*="animate-"],
+  [data-motion] {
+    will-change: transform;
+  }
+
+  /* Remove will-change after animation completes to free resources */
+  [class*="animate-"]:not(:hover):not(:active):not(:focus) {
+    will-change: auto;
+  }
+
+  /* 
+   * NOTE: -webkit-overflow-scrolling: touch removed from overflow elements.
+   * Momentum scrolling is the default on iOS 13+. The old property created
+   * unnecessary compositing layers that hurt mobile performance.
+   */
+
+  /* MOBILE PERFORMANCE: Reduce paint areas during scroll */
+  /* 
+   * NOTE: CSS containment (contain: layout style paint) was removed from cards
+   * because it breaks hover effects like translate-y, scale, and shadow animations.
+   * The containment creates a new stacking context that clips visual overflow.
+   * For performance, we rely on will-change hints on animated elements instead.
+   */
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * NATIVE MOBILE APP FEEL
+   * These styles make the web app feel more like a native iOS/Android app
+   * ───────────────────────────────────────────────────────────────────────────── */
+
+  /* Prevent overscroll bounce on the whole page (iOS) */
+  html {
+    overscroll-behavior: none;
+  }
+
+  /* Allow overscroll bounce only within scrollable containers */
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* Native-like active states for interactive elements */
+  @media (hover: none) and (pointer: coarse) {
+    /* Slightly scale down on tap for buttons */
+    button:not([disabled]):active,
+    [role="button"]:not([disabled]):active {
+      transform: scale(0.97);
+    }
+
+    /* Cards and links get a subtle opacity change */
+    a:active,
+    article:active {
+      opacity: 0.9;
+    }
+  }
+
+  /* 
+   * NOTE: Removed `* { -webkit-overflow-scrolling: touch }` — this property
+   * is deprecated and no longer needed on iOS 13+. On older iOS, it was
+   * applied to every element in the DOM, forcing unnecessary layer creation.
+   * Momentum scrolling is now the default behavior.
+   */
+
+  /* Hide scrollbars on mobile for cleaner look (content is still scrollable) */
+  @media (max-width: 768px) {
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
+
+  /* Custom Scrollbar for Desktop */
+  @media (min-width: 769px) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--border);
+      border-radius: 4px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--text-subtle);
+    }
+  }
+
+  /* Pull-to-refresh prevention (we handle our own refresh) */
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent text selection on UI elements for app-like feel */
+  nav,
+  header,
+  footer,
+  button,
+  [role="button"],
+  [role="tab"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection in content areas */
+  article,
+  main,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}

@@ -1,5 +1,5 @@
 // Main component
-export { CharacterMapping } from './CharacterMapping';
+export { CharacterMapping } from "./CharacterMapping";
 
 // Sub-components (for potential reuse/testing)
 export {
@@ -8,22 +8,21 @@ export {
   SearchInput,
   CharacterItem,
   DiscordUserItem,
-  MatchPairCard,
-  AutoMatchesTab,
-  ManualPickerTab,
-} from './components';
+} from "./components";
 
 // Hooks
-export { useCharacterMapping, useManualPicker, pairKey } from './hooks';
-export type { UseCharacterMappingResult, UseManualPickerResult } from './hooks';
+export { useCharacterMapping, useSmartPicker, pairKey } from "./hooks";
+export type {
+  UseCharacterMappingResult,
+  UseSmartPickerResult,
+} from "./hooks";
 
 // Types
 export type {
-  TabId,
   MatchInfo,
   MatchConfidence,
   MatchPair,
   UnmappedCharacter,
   UnmappedDiscordUser,
-} from './types';
-export { confidenceConfig } from './types';
+} from "./types";
+export { confidenceConfig } from "./types";

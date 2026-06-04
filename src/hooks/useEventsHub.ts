@@ -1,15 +1,20 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import * as signalR from '@microsoft/signalr';
-import type { ChronicleEvent } from '../types';
+import { useEffect, useRef, useState, useCallback } from "react";
+import * as signalR from "@microsoft/signalr";
+import type { ChronicleEvent } from "../types";
 
 // Base URL for the SignalR hub
 // In development, use the Vite proxy to avoid CORS issues
 // In production, connect directly to the API
 const EVENTS_HUB_URL = import.meta.env.DEV
-  ? '/eventsHub'
-  : `${import.meta.env.VITE_API_BASE_URL || 'https://api.mogtome.com'}/eventsHub`;
+  ? "/eventsHub"
+  : `${import.meta.env.VITE_API_BASE_URL || "https://api.mogtome.com"}/eventsHub`;
 
-export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error';
+export type ConnectionStatus =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "error";
 
 interface UseEventsHubResult {
   /** Current connection status */
@@ -34,7 +39,7 @@ export function useEventsHub(): UseEventsHubResult {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const isMountedRef = useRef(true);
   const isConnectingRef = useRef(false);
-  const [status, setStatus] = useState<ConnectionStatus>('disconnected');
+  const [status, setStatus] = useState<ConnectionStatus>("disconnected");
   const [realtimeEvents, setRealtimeEvents] = useState<ChronicleEvent[]>([]);
   const [unseenCount, setUnseenCount] = useState(0);
 
@@ -60,7 +65,7 @@ export function useEventsHub(): UseEventsHubResult {
     }
 
     isConnectingRef.current = true;
-    setStatus('connecting');
+    setStatus("connecting");
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(EVENTS_HUB_URL)
@@ -70,7 +75,10 @@ export function useEventsHub(): UseEventsHubResult {
           if (retryContext.previousRetryCount >= 10) {
             return null; // Stop retrying after 10 attempts
           }
-          return Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000);
+          return Math.min(
+            1000 * Math.pow(2, retryContext.previousRetryCount),
+            30000,
+          );
         },
       })
       .configureLogging(signalR.LogLevel.Warning)
@@ -79,25 +87,25 @@ export function useEventsHub(): UseEventsHubResult {
     // Handle connection state changes
     connection.onreconnecting(() => {
       if (isMountedRef.current) {
-        setStatus('reconnecting');
+        setStatus("reconnecting");
       }
     });
 
     connection.onreconnected(() => {
       if (isMountedRef.current) {
-        setStatus('connected');
+        setStatus("connected");
       }
     });
 
     connection.onclose((error) => {
       if (isMountedRef.current) {
         // Only set error if it's a real error, not a manual disconnect
-        setStatus(error ? 'error' : 'disconnected');
+        setStatus(error ? "error" : "disconnected");
       }
     });
 
     // Listen for chronicle events from the server
-    connection.on('informclient', (data: ChronicleEvent | ChronicleEvent[]) => {
+    connection.on("informclient", (data: ChronicleEvent | ChronicleEvent[]) => {
       if (isMountedRef.current) {
         const events = Array.isArray(data) ? data : [data];
         setRealtimeEvents((prev) => [...events, ...prev]);
@@ -111,21 +119,23 @@ export function useEventsHub(): UseEventsHubResult {
       await connection.start();
       isConnectingRef.current = false;
       if (isMountedRef.current) {
-        setStatus('connected');
+        setStatus("connected");
       }
     } catch (err) {
       isConnectingRef.current = false;
       if (isMountedRef.current) {
         const errorMessage = err instanceof Error ? err.message : String(err);
         // Don't treat abort during negotiation as an error (happens in Strict Mode)
-        if (errorMessage.includes('stopped during negotiation')) {
-          setStatus('disconnected');
+        if (errorMessage.includes("stopped during negotiation")) {
+          setStatus("disconnected");
         } else {
           // Only warn in dev, don't spam console - backend may just be unavailable
           if (import.meta.env.DEV) {
-            console.warn('[EventsHub] Connection unavailable - will retry on reconnect');
+            console.warn(
+              "[EventsHub] Connection unavailable - will retry on reconnect",
+            );
           }
-          setStatus('error');
+          setStatus("error");
         }
       }
     }
@@ -147,7 +157,7 @@ export function useEventsHub(): UseEventsHubResult {
   // Start connection on mount
   useEffect(() => {
     isMountedRef.current = true;
-    
+
     // Small delay to let React Strict Mode's double-mount settle
     // This prevents the "stopped during negotiation" error
     const timeoutId = setTimeout(() => {

@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
-import type { RefObject } from 'react';
+import { useEffect, useState, useRef } from "react";
+import type { RefObject } from "react";
 
 interface IntersectionObserverOptions {
   threshold?: number | number[];
@@ -11,18 +11,18 @@ interface IntersectionObserverOptions {
 
 /**
  * useIntersectionObserver - Performance hook for detecting when an element is visible
- * 
+ *
  * PERFORMANCE BENEFITS:
  * - Lazy load images/content when they enter viewport
  * - Defer expensive animations until element is visible
  * - Reduce initial bundle size by code-splitting below-fold content
  * - Improve mobile performance by not rendering off-screen content
- * 
+ *
  * @example
  * ```tsx
  * const ref = useRef(null);
  * const isVisible = useIntersectionObserver(ref, { threshold: 0.1, triggerOnce: true });
- * 
+ *
  * return (
  *   <div ref={ref}>
  *     {isVisible && <ExpensiveComponent />}
@@ -32,12 +32,12 @@ interface IntersectionObserverOptions {
  */
 export function useIntersectionObserver<T extends Element = HTMLDivElement>(
   elementRef: RefObject<T | null>,
-  options: IntersectionObserverOptions = {}
+  options: IntersectionObserverOptions = {},
 ): boolean {
   const {
     threshold = 0,
     root = null,
-    rootMargin = '0px',
+    rootMargin = "0px",
     triggerOnce = false,
   } = options;
 
@@ -60,7 +60,7 @@ export function useIntersectionObserver<T extends Element = HTMLDivElement>(
           hasTriggered.current = true;
         }
       },
-      { threshold, root, rootMargin }
+      { threshold, root, rootMargin },
     );
 
     observer.observe(element);
@@ -75,13 +75,13 @@ export function useIntersectionObserver<T extends Element = HTMLDivElement>(
 
 /**
  * useLazyImage - Hook for lazy loading images with intersection observer
- * 
+ *
  * @example
  * ```tsx
  * const [ref, shouldLoad] = useLazyImage<HTMLImageElement>();
- * 
+ *
  * return (
- *   <img 
+ *   <img
  *     ref={ref}
  *     src={shouldLoad ? actualSrc : placeholderSrc}
  *     loading="lazy"
@@ -90,13 +90,13 @@ export function useIntersectionObserver<T extends Element = HTMLDivElement>(
  * ```
  */
 export function useLazyImage<T extends Element = HTMLImageElement>(
-  options: IntersectionObserverOptions = {}
+  options: IntersectionObserverOptions = {},
 ): [RefObject<T | null>, boolean] {
   const ref = useRef<T | null>(null);
   const shouldLoad = useIntersectionObserver(ref, {
     ...options,
     triggerOnce: true,
-    rootMargin: options.rootMargin || '50px', // Start loading slightly before visible
+    rootMargin: options.rootMargin || "50px", // Start loading slightly before visible
   });
 
   return [ref, shouldLoad];

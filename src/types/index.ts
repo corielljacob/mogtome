@@ -34,27 +34,27 @@ export interface StaffResponse {
 
 // FC ranks plus presentation metadata
 export const FC_RANKS = [
-  { name: 'Moogle Guardian', color: 'rank-guardian', order: 0 },
-  { name: 'Moogle Knight', color: 'rank-knight', order: 1 },
-  { name: 'Paissa Trainer', color: 'rank-paissa', order: 2 },
-  { name: 'Coeurl Hunter', color: 'rank-hunter', order: 3 },
-  { name: 'Mandragora', color: 'rank-mandragora', order: 4 },
-  { name: 'Apkallu Seeker', color: 'rank-seeker', order: 5 },
-  { name: 'Kupo Shelf', color: 'rank-shelf', order: 6 },
-  { name: 'Bom Boko', color: 'rank-bom-boko', order: 7 },
+  { name: "Moogle Guardian", color: "rank-guardian", order: 0 },
+  { name: "Moogle Knight", color: "rank-knight", order: 1 },
+  { name: "Paissa Trainer", color: "rank-paissa", order: 2 },
+  { name: "Coeurl Hunter", color: "rank-hunter", order: 3 },
+  { name: "Mandragora", color: "rank-mandragora", order: 4 },
+  { name: "Apkallu Seeker", color: "rank-seeker", order: 5 },
+  { name: "Kupo Shelf", color: "rank-shelf", order: 6 },
+  { name: "Bom Boko", color: "rank-bom-boko", order: 7 },
 ] as const;
 
-export type FCRankName = typeof FC_RANKS[number]['name'];
+export type FCRankName = (typeof FC_RANKS)[number]["name"];
 
 // Timeline event taxonomy
-export type TimelineEventType = 
-  | 'member_joined'
-  | 'member_left'
-  | 'name_change'
-  | 'rank_change'
-  | 'fc_announcement'
-  | 'achievement'
-  | 'other';
+export type TimelineEventType =
+  | "member_joined"
+  | "member_left"
+  | "name_change"
+  | "rank_change"
+  | "fc_announcement"
+  | "achievement"
+  | "other";
 
 export interface TimelineEvent {
   id: string;
@@ -95,11 +95,11 @@ export interface ChronicleEventsResponse {
 
 /** Available event type filters matching the API's filter enum */
 export type ChronicleEventFilter =
-  | 'MemberJoined'
-  | 'MemberRejoined'
-  | 'Announcement'
-  | 'RankPromoted'
-  | 'NameChanged';
+  | "MemberJoined"
+  | "MemberRejoined"
+  | "Announcement"
+  | "RankPromoted"
+  | "NameChanged";
 
 // Params for fetching chronicle events
 export interface GetChronicleEventsParams {
@@ -136,6 +136,44 @@ export interface User {
   /** User's Discord ID */
   discordId: string;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile
+// Normalized profile model + viewer permissions. One shape drives the Profile
+// view whether it's rendering your own profile ("me") or — later — someone
+// else's (by characterId), so the presentation layer never reads auth directly.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Everything the Profile view needs to render an identity, source-agnostic. */
+export interface ProfileData {
+  /** Lodestone character id (absent for accounts not yet mapped to a character) */
+  characterId?: string;
+  name: string;
+  rank: string;
+  avatarUrl: string;
+  biography?: string;
+  /** When this member first signed in to MogTome (own profile only; not the FC join date) */
+  memberSince?: Date;
+  discordId?: string;
+  /** True when this member appears in the staff/leadership list (only staff carry bios today) */
+  isStaff: boolean;
+  /** Pre-built Lodestone URL, centralized here instead of recomputed per component */
+  lodestoneUrl?: string;
+}
+
+/** Who is looking, and what they're allowed to do on this profile. */
+export interface ProfileViewer {
+  /** The viewer is looking at their own profile */
+  isOwnProfile: boolean;
+  isAuthenticated: boolean;
+  /** May edit the biography (own profile, while authenticated) */
+  canEditBio: boolean;
+  /** May set the biography directly without review (permanent knights) */
+  canSetBioDirectly: boolean;
+}
+
+/** Which profile to load: the signed-in user, or a specific character. */
+export type ProfileTarget = "me" | { characterId: string };
 
 // Common paginated response wrapper
 export interface PaginatedResponse<T> {

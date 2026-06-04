@@ -11,22 +11,20 @@ export function EmptyState({
   title,
   subtitle,
   action,
-  className = '',
+  className = "",
 }: EmptyStateProps) {
   return (
     <div
       className={`flex flex-col items-center justify-center py-8 sm:py-12 text-center ${className}`}
     >
-      <div className="w-14 h-14 rounded-2xl bg-[var(--bento-primary)]/10 flex items-center justify-center mb-3">
+      <div className="w-14 h-14 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center mb-3">
         {icon}
       </div>
-      <p className="text-sm text-[var(--bento-text)] font-soft font-semibold mb-1">
+      <p className="text-sm text-[var(--text)] font-soft font-semibold mb-1">
         {title}
       </p>
       {subtitle && (
-        <p className="text-xs text-[var(--bento-text-muted)] max-w-xs">
-          {subtitle}
-        </p>
+        <p className="text-xs text-[var(--text-muted)] max-w-xs">{subtitle}</p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>

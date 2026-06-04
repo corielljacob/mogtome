@@ -1,0 +1,170 @@
+/* palette — default :root / .dark tokens + flagship seasonal events (un-layered)
+   Split out of the old monolithic index.css; imported in order from src/index.css. */
+
+/* Design System Variables — Enchanted Garden Palette */
+:root {
+  color-scheme: light;
+  /* Cozy type system — storybook rounded display, clean body, handwritten accent */
+  --font-display:
+    "Zen Maru Gothic", "Fredoka", "Manrope", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-script: "Caveat", cursive;
+  /* Pop-kawaii "Pom-Pom" palette (default). Candy-bright pastels on a milk-pink
+     cream; --primary stays saturated enough for white-on-primary buttons. */
+  --bg: #fff6f4;
+  --card: #ffffff;
+  --text: #1f1a2e;
+  --text-muted: #635b70;
+  --text-subtle: #9890a3;
+  --primary: #e25d88;
+  --secondary: #9f80da;
+  --accent: #f4be4c;
+  --success: #4fb877;
+  --warning: #eaa53a;
+  --border: rgba(31, 26, 46, 0.08);
+  --shadow: rgba(31, 26, 46, 0.06);
+  --glass: #ffffff;
+  /* Soft "die-cut sticker" float — surfaces lift gently off the page */
+  --panel-shadow:
+    0 2px 4px -1px rgba(31, 26, 46, 0.05),
+    0 10px 22px -8px rgba(31, 26, 46, 0.11);
+  --panel-shadow-strong:
+    0 4px 8px -2px rgba(31, 26, 46, 0.07),
+    0 18px 34px -10px rgba(31, 26, 46, 0.16);
+  --panel-inset: none;
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(159, 128, 218, 0.08);
+  --gradient-2: rgba(217, 160, 78, 0.08);
+  --gradient-3: rgba(199, 93, 115, 0.06);
+  --gradient-4: rgba(152, 144, 163, 0.06);
+
+  /* Noise Texture - base64 SVG */
+  --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #16131f;
+  --card: #211e30;
+  --text: #eee9f3;
+  --text-muted: #b3adc2;
+  --text-subtle: #7b7590;
+  --primary: #f48bae;
+  --secondary: #bba4ef;
+  --accent: #ffcf79;
+  --success: #7fc493;
+  --warning: #f0b840;
+  --border: rgba(238, 233, 243, 0.07);
+  --shadow: rgba(0, 0, 0, 0.4);
+  --glass: #1c1a2b;
+  /* Soft "die-cut sticker" float (dark) */
+  --panel-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.24), 0 10px 22px -8px rgba(0, 0, 0, 0.36);
+  --panel-shadow-strong:
+    0 4px 8px -2px rgba(0, 0, 0, 0.3), 0 18px 34px -10px rgba(0, 0, 0, 0.46);
+  --panel-inset: none;
+  /* Gradient colors for background mesh */
+  --gradient-1: rgba(187, 164, 239, 0.06);
+  --gradient-2: rgba(240, 197, 124, 0.06);
+  --gradient-3: rgba(232, 137, 154, 0.05);
+  --gradient-4: rgba(123, 117, 144, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * COLOR THEMES
+ * These palettes provide different color schemes while maintaining the same
+ * semantic meaning (primary, secondary, accent, etc.)
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Pom-Pom Classic (the default) lives in :root above. Every OTHER theme's
+   .theme-* block — and the simple .event-* blocks — are GENERATED from
+   src/styles/themePalettes.ts (served as virtual:theme.css, imported in main.tsx),
+   so the palette lives in exactly one place. Only the two flagship events below and
+   the high-contrast a11y variants are hand-tuned here. */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * SEASONAL EVENT THEMES
+ * These palettes activate automatically during FFXIV seasonal events and
+ * override the user's chosen color theme. Each event has light and dark
+ * variants. The event class is applied alongside the theme class.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* The simple events (Heavensturn, Valentione's, Little Ladies', Hatching-tide,
+   Make It Rain, Moonfire Faire, The Rising) are GENERATED  see themePalettes.ts.
+   The two flagship events below restyle bg/card/text wholesale, so they stay here. */
+
+/* ── All Saints' Wake (October) — Haunted Purple, Pumpkin & Eerie Green ────── */
+/* This is a flagship event — the theme is intentionally dramatic */
+.event-all-saints-wake {
+  --bg: #f8f3f0;
+  --card: rgba(255, 255, 255, 0.88);
+  --text: #2d1b3d;
+  --text-muted: #4a3660;
+  --text-subtle: #6b5580;
+  --primary: #d94f0f;
+  --secondary: #6d28d9;
+  --accent: #16a34a;
+  --shadow: rgba(109, 40, 217, 0.22);
+  --border: rgba(109, 40, 217, 0.12);
+  --glass: rgba(255, 255, 255, 0.85);
+  --gradient-1: rgba(109, 40, 217, 0.18);
+  --gradient-2: rgba(217, 79, 15, 0.16);
+  --gradient-3: rgba(22, 163, 74, 0.08);
+  --gradient-4: rgba(109, 40, 217, 0.14);
+}
+
+.dark.event-all-saints-wake {
+  --bg: #0c0814;
+  --card: rgba(16, 10, 26, 0.96);
+  --text: #ede6f5;
+  --text-muted: #c4b4d8;
+  --text-subtle: #8a7aa0;
+  --primary: #fb923c;
+  --secondary: #a78bfa;
+  --accent: #4ade80;
+  --shadow: rgba(167, 139, 250, 0.3);
+  --border: rgba(167, 139, 250, 0.12);
+  --glass: rgba(16, 10, 26, 0.94);
+  --gradient-1: rgba(167, 139, 250, 0.18);
+  --gradient-2: rgba(251, 146, 60, 0.14);
+  --gradient-3: rgba(74, 222, 128, 0.06);
+  --gradient-4: rgba(167, 139, 250, 0.12);
+}
+
+/* ── Starlight Celebration (December) — Festive Red, Evergreen & Gold ──────── */
+/* This is a flagship event — the theme is intentionally dramatic */
+.event-starlight {
+  --bg: #fffbf5;
+  --card: rgba(255, 255, 255, 0.9);
+  --text: #3d2020;
+  --text-muted: #5c3838;
+  --text-subtle: #846060;
+  --primary: #be1a1a;
+  --secondary: #15803d;
+  --accent: #d97706;
+  --shadow: rgba(190, 26, 26, 0.2);
+  --border: rgba(190, 26, 26, 0.1);
+  --glass: rgba(255, 255, 255, 0.88);
+  --gradient-1: rgba(190, 26, 26, 0.16);
+  --gradient-2: rgba(21, 128, 61, 0.14);
+  --gradient-3: rgba(217, 119, 6, 0.12);
+  --gradient-4: rgba(190, 26, 26, 0.1);
+}
+
+.dark.event-starlight {
+  --bg: #0f0a14;
+  --card: rgba(18, 12, 24, 0.96);
+  --text: #f5ede8;
+  --text-muted: #d4c4bc;
+  --text-subtle: #a09088;
+  --primary: #f87171;
+  --secondary: #4ade80;
+  --accent: #fde68a;
+  --shadow: rgba(248, 113, 113, 0.25);
+  --border: rgba(248, 113, 113, 0.1);
+  --glass: rgba(18, 12, 24, 0.94);
+  --gradient-1: rgba(248, 113, 113, 0.16);
+  --gradient-2: rgba(74, 222, 128, 0.12);
+  --gradient-3: rgba(253, 230, 138, 0.1);
+  --gradient-4: rgba(248, 113, 113, 0.08);
+}
