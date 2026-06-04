@@ -55,7 +55,6 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const AUTH_TOKEN_KEY = "mogtome_auth_token";
 const RETURN_URL_KEY = "mogtome_return_url";
 
-// Helper to get/set the auth token in localStorage
 export const getAuthToken = (): string | null => {
   return localStorage.getItem(AUTH_TOKEN_KEY);
 };
@@ -68,9 +67,8 @@ export const clearAuthToken = (): void => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
 };
 
-// Helper to get/set the return URL for post-login redirect
-// Uses localStorage instead of sessionStorage because the OAuth redirect
-// to Discord and back can cause sessionStorage to be lost in some browsers
+// localStorage, not sessionStorage: the Discord OAuth round-trip can drop
+// sessionStorage in some browsers
 export const getReturnUrl = (): string | null => {
   return localStorage.getItem(RETURN_URL_KEY);
 };
@@ -83,7 +81,7 @@ export const clearReturnUrl = (): void => {
   localStorage.removeItem(RETURN_URL_KEY);
 };
 
-// Decode JWT payload (without verification - server already verified it)
+// no signature verification needed; the server already verified it
 function decodeJwtPayload(token: string): JwtPayload | null {
   try {
     const parts = token.split(".");
@@ -105,14 +103,12 @@ function decodeJwtPayload(token: string): JwtPayload | null {
   }
 }
 
-// Check if token is expired
 function isTokenExpired(payload: JwtPayload): boolean {
   const now = Math.floor(Date.now() / 1000);
   return payload.exp < now;
 }
 
-// Check if token will expire within the given threshold (in seconds)
-// Default threshold: 5 minutes before expiration
+// threshold defaults to 5 minutes before expiration
 function isTokenExpiringSoon(
   payload: JwtPayload,
   thresholdSeconds: number = 300,
@@ -132,12 +128,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: false,
   });
 
-  // Track the refresh timer so we can clean it up
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Track if a refresh is in progress to prevent duplicate calls
+  // guards against overlapping refresh calls
   const isRefreshingRef = useRef(false);
 
-  // Clear any existing refresh timer
   const clearRefreshTimer = useCallback(() => {
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
@@ -145,8 +139,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // Schedule a proactive token refresh before it expires
-  // Also stores the expected refresh time so we can detect missed timers
+  // schedule a proactive refresh before expiry, recording the expected time so
+  // the visibility handler can detect a timer that never fired
   const scheduleTokenRefresh = useCallback(
     (payload: JwtPayload) => {
       clearRefreshTimer();
@@ -154,12 +148,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const now = Math.floor(Date.now() / 1000);
       const expiresIn = payload.exp - now;
 
-      // Schedule refresh 5 minutes before expiration, or immediately if less than 5 min left
-      // Minimum delay of 10 seconds to prevent tight loops
+      // 5 min before expiry, with a 10s floor to avoid a tight loop near expiry
       const refreshInSeconds = Math.max(10, expiresIn - 300);
       const refreshIn = refreshInSeconds * 1000;
 
-      // Store when we expect the next refresh, so visibility change handler can detect missed timers
       const expectedRefreshTime = Date.now() + refreshIn;
       sessionStorage.setItem(
         "mogtome_expected_refresh",
@@ -173,11 +165,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
           const newToken = await refreshAuthToken();
           if (newToken) {
-            // Token refreshed successfully - refreshUser will be called by the event listener
+            // the listener below picks this up and calls refreshUser
             window.dispatchEvent(new CustomEvent("auth-token-refreshed"));
           }
         } catch {
-          // Refresh failed silently - the user will be logged out when the token expires
+          // let it lapse; user gets logged out when the token expires
         } finally {
           isRefreshingRef.current = false;
         }
@@ -186,23 +178,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [clearRefreshTimer],
   );
 
-  // Load user from stored JWT token
+  // load the user from the stored JWT, refreshing via cookie when needed
   const refreshUser = useCallback(async () => {
     const token = getAuthToken();
     if (!token) {
-      // No token in localStorage - try to get a new one using refresh token cookie
+      // no token stored, but the refresh-token cookie may still get us one
       if (!isRefreshingRef.current) {
         isRefreshingRef.current = true;
         try {
           const newToken = await refreshAuthToken();
           if (newToken) {
-            // Successfully got a new token from refresh endpoint
-            // Recursively call refreshUser to process the new token
+            // re-run to process the freshly minted token
             isRefreshingRef.current = false;
             return refreshUser();
           }
         } catch {
-          // Refresh failed silently
+          // refresh failed silently
         } finally {
           isRefreshingRef.current = false;
         }
@@ -220,7 +211,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const payload = decodeJwtPayload(token);
 
     if (!payload || isTokenExpired(payload)) {
-      // Token invalid or expired - try to refresh it using the refresh token cookie
+      // invalid or expired; fall back to the refresh-token cookie
       clearAuthToken();
 
       if (!isRefreshingRef.current) {
@@ -228,13 +219,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
           const newToken = await refreshAuthToken();
           if (newToken) {
-            // Successfully got a new token from refresh endpoint
-            // Recursively call refreshUser to process the new token
+            // re-run to process the freshly minted token
             isRefreshingRef.current = false;
             return refreshUser();
           }
         } catch {
-          // Refresh failed silently
+          // refresh failed silently
         } finally {
           isRefreshingRef.current = false;
         }
@@ -249,9 +239,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // If token is expiring soon, trigger a refresh in the background
+    // expiring soon: refresh in the background, don't block this load
     if (isTokenExpiringSoon(payload)) {
-      // Don't block - refresh in background
       if (!isRefreshingRef.current) {
         isRefreshingRef.current = true;
         refreshAuthToken()
@@ -265,11 +254,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           });
       }
     } else {
-      // Schedule proactive refresh before token expires
       scheduleTokenRefresh(payload);
     }
 
-    // Extract user info from JWT payload
     setState({
       user: {
         memberName: payload.memberName,
@@ -287,12 +274,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, [clearRefreshTimer, scheduleTokenRefresh]);
 
-  // Initial load - check if user is authenticated
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
 
-  // Listen for token refresh/expiry events from the API client
+  // token refresh/expiry events come from the API client
   useEffect(() => {
     const handleTokenRefreshed = () => {
       refreshUser();
@@ -318,19 +304,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [refreshUser, clearRefreshTimer]);
 
-  // Re-check auth when the page becomes visible again (user returns to tab)
-  // This handles cases where the browser was sleeping, tab was in background,
-  // or the user closed and reopened the browser. The scheduled timer might not
-  // fire reliably in these cases, so we proactively check on visibility change.
+  // re-check on tab visible / back online: a sleeping or backgrounded tab can
+  // miss the scheduled refresh timer, so verify auth proactively here
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        // User returned to the tab - verify auth is still valid
         refreshUser();
       }
     };
 
-    // Also refresh when the browser comes back online
     const handleOnline = () => {
       refreshUser();
     };
@@ -344,17 +326,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [refreshUser]);
 
-  // Redirect to Discord OAuth login
   const login = useCallback(() => {
-    // Save the current URL so we can redirect back after login
-    // Only save if we're not already on the auth callback page
+    // remember where to land after login (skip auth pages to avoid a loop)
     const currentPath =
       window.location.pathname + window.location.search + window.location.hash;
     if (!currentPath.startsWith("/auth/")) {
       setReturnUrl(currentPath);
     }
 
-    // Redirect back to the auth callback on the current origin (localhost, mogtome.com, etc.)
+    // use the current origin so this works on localhost, mogtome.com, etc.
     const redirectUrl = `${window.location.origin}/auth/callback`;
 
     const loginUrl = new URL("https://api.mogtome.com/auth/discord/login");
@@ -363,7 +343,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     window.location.href = loginUrl.toString();
   }, []);
 
-  // Logout the user
   const logout = useCallback(() => {
     clearAuthToken();
     setState({

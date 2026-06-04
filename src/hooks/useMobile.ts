@@ -1,17 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 
-// PERFORMANCE: Module-level touch detection (never changes during session)
+// touch capability never changes mid-session, so detect once at module load
 const HAS_TOUCH =
   typeof window !== "undefined" &&
   ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
 /**
- * useIsMobile - Hook to detect mobile devices based on viewport width
- * Uses the md breakpoint (768px) to match Tailwind's responsive design
- *
- * PERFORMANCE: Initializes with correct value from matchMedia to prevent
- * a flash/re-render on mobile (previously initialized as false, causing
- * desktop layout to render first, then switch to mobile).
+ * Detect mobile by viewport width; default breakpoint matches Tailwind's md (768px).
+ * Seeds from matchMedia so mobile doesn't flash the desktop layout on first render.
  */
 export function useIsMobile(breakpoint: number = 768): boolean {
   const [isMobile, setIsMobile] = useState(() => {
@@ -30,19 +26,10 @@ export function useIsMobile(breakpoint: number = 768): boolean {
   return isMobile;
 }
 
-/**
- * useHasTouch - Hook to detect if device has touch capability
- * Useful for enabling/disabling touch-specific features
- *
- * PERFORMANCE: Uses module-level constant (touch capability never changes during session)
- */
 export function useHasTouch(): boolean {
   return HAS_TOUCH;
 }
 
-/**
- * useReducedMotion - Hook to detect user's motion preferences
- */
 export function useReducedMotion(): boolean {
   const [reducedMotion, setReducedMotion] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -60,17 +47,13 @@ export function useReducedMotion(): boolean {
   return reducedMotion;
 }
 
-/**
- * useHapticFeedback - Hook to trigger haptic feedback on supported devices
- * Falls back to visual feedback on devices without haptic support
- */
 export function useHapticFeedback() {
   const vibrate = useCallback((pattern: number | number[] = 10) => {
     if ("vibrate" in navigator) {
       try {
         navigator.vibrate(pattern);
       } catch {
-        // Vibration not supported or blocked
+        // vibration not supported or blocked
       }
     }
   }, []);
@@ -84,9 +67,7 @@ export function useHapticFeedback() {
   return { vibrate, lightTap, mediumTap, heavyTap, success, error };
 }
 
-/**
- * useLockBodyScroll - Hook to lock body scroll (useful for modals/sheets)
- */
+/** Lock body scroll while a modal/sheet is open. */
 export function useLockBodyScroll(lock: boolean): void {
   useEffect(() => {
     if (!lock) return;
@@ -95,7 +76,7 @@ export function useLockBodyScroll(lock: boolean): void {
     const originalPosition = window.getComputedStyle(document.body).position;
     const scrollY = window.scrollY;
 
-    // Lock scroll while preserving scroll position
+    // position:fixed + top offset preserves scroll position while locked
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
@@ -112,11 +93,8 @@ export function useLockBodyScroll(lock: boolean): void {
 }
 
 /**
- * useSafeAreaInsets - Hook to get safe area inset values
- *
- * PERFORMANCE: Only reads insets once on mount + on orientation change,
- * not on every resize event. Safe area insets only change on device
- * rotation, not window resize.
+ * Read the safe-area inset CSS vars. Insets only change on device rotation, so
+ * this listens for orientation changes rather than every resize.
  */
 export function useSafeAreaInsets() {
   const [insets, setInsets] = useState({
@@ -151,7 +129,6 @@ export function useSafeAreaInsets() {
 
     updateInsets();
 
-    // Only listen for orientation changes, not all resizes
     const orientationQuery = window.matchMedia("(orientation: portrait)");
     orientationQuery.addEventListener("change", updateInsets);
 

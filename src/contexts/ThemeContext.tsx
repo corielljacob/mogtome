@@ -16,11 +16,6 @@ import {
 } from "../constants/seasonalEvents";
 import { THEME_META, THEME_PALETTES } from "../styles/themePalettes";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Available color themes */
 export type ColorTheme =
   | "pom-pom" // Classic red/purple (default)
   | "crystal" // Blue/cyan crystal theme
@@ -31,15 +26,11 @@ export type ColorTheme =
   | "midnight" // Deep indigo/purple night theme
   | "sunset"; // Orange/coral warm theme
 
-/** Light/Dark/System mode */
 export type ColorMode = "light" | "dark" | "system";
 
 export interface ThemeSettings {
-  /** The selected color theme palette */
   colorTheme: ColorTheme;
-  /** Light/Dark/System mode */
   colorMode: ColorMode;
-  /** Whether the user has opted out of seasonal event themes */
   eventThemingDisabled: boolean;
 }
 
@@ -53,26 +44,19 @@ export type EventOverride = "auto" | "none" | SeasonalEventId;
 
 interface ThemeContextType {
   settings: ThemeSettings;
-  /** Whether dark mode is currently active (resolved from mode + system preference) */
+  /** resolved from colorMode + system preference */
   isDarkMode: boolean;
   setColorTheme: (theme: ColorTheme) => void;
   setColorMode: (mode: ColorMode) => void;
-  /** Seasonal event state */
   activeEvent: SeasonalEvent | null;
   nextEvent: SeasonalEvent | null;
-  /** Whether the event theme is currently being applied */
+  /** event active and user hasn't opted out */
   isEventThemeActive: boolean;
-  /** Toggle event theming on/off */
   setEventThemingDisabled: (disabled: boolean) => void;
-  /** Dev-only: override which event is active for testing */
+  /** dev-only: override which event is active */
   eventOverride: EventOverride;
-  /** Dev-only: set the event override */
   setEventOverride: (override: EventOverride) => void;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Theme Definitions
-// ─────────────────────────────────────────────────────────────────────────────
 
 export interface ThemeDefinition {
   id: ColorTheme;
@@ -101,14 +85,10 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = THEME_META.map((meta) => {
   };
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
-
 const STORAGE_KEY = "mogtome-theme";
 const DEV_EVENT_OVERRIDE_KEY = "mogtome-dev-event-override";
 
-/** How often to re-check the active event (every 5 minutes) */
+/** re-check the active event every 5 minutes */
 const EVENT_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 const defaultSettings: ThemeSettings = {
@@ -117,15 +97,7 @@ const defaultSettings: ThemeSettings = {
   eventThemingDisabled: false,
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Context
-// ─────────────────────────────────────────────────────────────────────────────
-
 const ThemeContext = createContext<ThemeContextType | null>(null);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper Functions
-// ─────────────────────────────────────────────────────────────────────────────
 
 function getSystemPrefersDark(): boolean {
   if (typeof window === "undefined") return false;
@@ -141,10 +113,6 @@ function resolveIsDarkMode(
   }
   return mode === "dark";
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Provider
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<ThemeSettings>(() => {
@@ -175,7 +143,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     useState(getSystemPrefersDark);
   const isDarkMode = resolveIsDarkMode(settings.colorMode, systemPrefersDark);
 
-  // ── Dev-only Event Override ────────────────────────────────────────────────
   const [eventOverride, setEventOverrideState] = useState<EventOverride>(() => {
     if (!import.meta.env.DEV || typeof window === "undefined") return "auto";
     try {
@@ -205,13 +172,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // ── Seasonal Event State ──────────────────────────────────────────────────
-  // Resolve the real date-based event
   const [realActiveEvent, setRealActiveEvent] = useState<SeasonalEvent | null>(
     () => getActiveEvent(),
   );
 
-  // Periodically check for event changes (handles midnight rollovers)
+  // re-check periodically to catch midnight rollovers
   useEffect(() => {
     const check = () => {
       setRealActiveEvent(getActiveEvent());
@@ -221,7 +186,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Resolve the effective active event (override takes precedence in dev)
+  // dev override takes precedence over the real date-based event
   const activeEvent = useMemo(() => {
     if (import.meta.env.DEV && eventOverride !== "auto") {
       if (eventOverride === "none") return null;
@@ -240,20 +205,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [activeEvent, settings.eventThemingDisabled],
   );
 
-  // Apply theme classes to document
+  // apply theme classes to document
   useEffect(() => {
     const root = document.documentElement;
 
-    // Apply dark class (isDarkMode is derived above)
     root.classList.toggle("dark", isDarkMode);
 
-    // Remove all theme classes, then add selected
     THEME_DEFINITIONS.forEach((t) => {
       root.classList.remove(`theme-${t.id}`);
     });
     root.classList.add(`theme-${settings.colorTheme}`);
 
-    // Remove all event classes, then add active event if enabled
     SEASONAL_EVENTS.forEach((e) => {
       root.classList.remove(e.cssClass);
     });
@@ -261,8 +223,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.add(activeEvent.cssClass);
     }
 
-    // Update background color for flash prevention
-    // Small delay to let CSS variables update first
+    // defer a frame so CSS variables update before we read --bg (flash prevention)
     requestAnimationFrame(() => {
       const bgColor =
         getComputedStyle(root).getPropertyValue("--bg").trim() ||
@@ -274,18 +235,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       if (themeColorMeta) themeColorMeta.setAttribute("content", bgColor);
     });
 
-    // Persist to localStorage
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-      // Remove old theme key if it exists
-      localStorage.removeItem("theme");
+      localStorage.removeItem("theme"); // drop pre-migration key
     } catch {
-      // Storage might be full or disabled
+      // storage might be full or disabled
     }
   }, [settings, activeEvent, isDarkMode]);
 
-  // Track the OS colour-scheme preference. isDarkMode derives from it (in 'system'
-  // mode), and the effect above re-applies the `dark` class when it changes.
+  // track the OS colour-scheme preference; isDarkMode derives from it in 'system' mode
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => setSystemPrefersDark(mediaQuery.matches);
@@ -305,9 +263,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => ({ ...prev, eventThemingDisabled: disabled }));
   }, []);
 
-  // PERFORMANCE: Memoize the context value to prevent all consumers from re-rendering
-  // when unrelated parent state changes. Without this, every component using useTheme()
-  // re-renders on any ThemeProvider parent re-render.
+  // memoize so consumers don't re-render on every ThemeProvider parent re-render
   const contextValue = useMemo<ThemeContextType>(
     () => ({
       settings,
@@ -341,10 +297,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     </ThemeContext.Provider>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function useTheme() {
   const context = useContext(ThemeContext);

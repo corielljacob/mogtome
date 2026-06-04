@@ -5,17 +5,12 @@ import {
   type SeasonalEvent,
 } from "../constants/seasonalEvents";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
-
 const STORAGE_KEY = "mogtome-seasonal-event";
 
-/** How often to re-check the active event (every 5 minutes) */
+/** re-check the active event every 5 minutes */
 const CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 interface SeasonalEventPreferences {
-  /** Whether the user has opted out of event theming */
   eventThemingDisabled: boolean;
 }
 
@@ -23,20 +18,13 @@ const defaultPreferences: SeasonalEventPreferences = {
   eventThemingDisabled: false,
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface UseSeasonalEventReturn {
-  /** The currently active event, or null if no event is active */
   activeEvent: SeasonalEvent | null;
-  /** The next upcoming event (when no event is active) */
+  /** next upcoming event, only set when none is currently active */
   nextEvent: SeasonalEvent | null;
-  /** Whether event theming is enabled (event active + user hasn't opted out) */
+  /** event active and user hasn't opted out */
   isEventThemeActive: boolean;
-  /** Whether the user has disabled event theming */
   eventThemingDisabled: boolean;
-  /** Toggle event theming on/off */
   setEventThemingDisabled: (disabled: boolean) => void;
 }
 
@@ -63,7 +51,7 @@ export function useSeasonalEvent(): UseSeasonalEventReturn {
     },
   );
 
-  // Periodically check for event changes (handles midnight rollovers)
+  // re-check periodically to catch midnight rollovers
   useEffect(() => {
     const check = () => {
       const current = getActiveEvent();
@@ -75,7 +63,6 @@ export function useSeasonalEvent(): UseSeasonalEventReturn {
     return () => clearInterval(interval);
   }, []);
 
-  // Persist preferences
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));

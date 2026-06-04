@@ -10,12 +10,10 @@ export { useSeasonalEvent } from "./useSeasonalEvent";
 export type { ConnectionStatus } from "./useEventsHub";
 export type { UseSeasonalEventReturn } from "./useSeasonalEvent";
 
-// Re-export character mapping hooks from feature module
 export { useCharacterMapping } from "../features/characterMapping";
 export type { UseCharacterMappingResult } from "../features/characterMapping";
 export type { MatchInfo } from "../features/characterMapping";
 
-// Mobile utilities
 export {
   useIsMobile,
   useHasTouch,

@@ -2,9 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
 import type { ChronicleEvent } from "../types";
 
-// Base URL for the SignalR hub
-// In development, use the Vite proxy to avoid CORS issues
-// In production, connect directly to the API
+// dev goes through the Vite proxy to dodge CORS; prod hits the API directly
 const EVENTS_HUB_URL = import.meta.env.DEV
   ? "/eventsHub"
   : `${import.meta.env.VITE_API_BASE_URL || "https://api.mogtome.com"}/eventsHub`;
@@ -44,22 +42,20 @@ export function useEventsHub(): UseEventsHubResult {
   const [unseenCount, setUnseenCount] = useState(0);
 
   const startConnection = useCallback(async (isManualReconnect = false) => {
-    // Prevent concurrent connection attempts
     if (isConnectingRef.current && !isManualReconnect) {
       return;
     }
 
-    // Cleanup existing connection if any
     if (connectionRef.current) {
       try {
         await connectionRef.current.stop();
       } catch {
-        // Ignore stop errors
+        // ignore stop errors
       }
       connectionRef.current = null;
     }
 
-    // Don't start if unmounted (React Strict Mode cleanup)
+    // bail if Strict Mode already unmounted us
     if (!isMountedRef.current) {
       return;
     }
@@ -71,9 +67,9 @@ export function useEventsHub(): UseEventsHubResult {
       .withUrl(EVENTS_HUB_URL)
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          // Exponential backoff: 0s, 2s, 4s, 8s, 16s, then cap at 30s
+          // exponential backoff capped at 30s; give up after 10 attempts
           if (retryContext.previousRetryCount >= 10) {
-            return null; // Stop retrying after 10 attempts
+            return null;
           }
           return Math.min(
             1000 * Math.pow(2, retryContext.previousRetryCount),
@@ -84,7 +80,6 @@ export function useEventsHub(): UseEventsHubResult {
       .configureLogging(signalR.LogLevel.Warning)
       .build();
 
-    // Handle connection state changes
     connection.onreconnecting(() => {
       if (isMountedRef.current) {
         setStatus("reconnecting");
@@ -99,12 +94,11 @@ export function useEventsHub(): UseEventsHubResult {
 
     connection.onclose((error) => {
       if (isMountedRef.current) {
-        // Only set error if it's a real error, not a manual disconnect
+        // a manual disconnect has no error; only flag real failures
         setStatus(error ? "error" : "disconnected");
       }
     });
 
-    // Listen for chronicle events from the server
     connection.on("informclient", (data: ChronicleEvent | ChronicleEvent[]) => {
       if (isMountedRef.current) {
         const events = Array.isArray(data) ? data : [data];
@@ -125,11 +119,11 @@ export function useEventsHub(): UseEventsHubResult {
       isConnectingRef.current = false;
       if (isMountedRef.current) {
         const errorMessage = err instanceof Error ? err.message : String(err);
-        // Don't treat abort during negotiation as an error (happens in Strict Mode)
+        // Strict Mode aborts negotiation on the throwaway mount; not a real error
         if (errorMessage.includes("stopped during negotiation")) {
           setStatus("disconnected");
         } else {
-          // Only warn in dev, don't spam console - backend may just be unavailable
+          // dev-only warn; backend may just be down, don't spam the console
           if (import.meta.env.DEV) {
             console.warn(
               "[EventsHub] Connection unavailable - will retry on reconnect",
@@ -154,12 +148,10 @@ export function useEventsHub(): UseEventsHubResult {
     setUnseenCount(0);
   }, []);
 
-  // Start connection on mount
   useEffect(() => {
     isMountedRef.current = true;
 
-    // Small delay to let React Strict Mode's double-mount settle
-    // This prevents the "stopped during negotiation" error
+    // let Strict Mode's double-mount settle first; avoids "stopped during negotiation"
     const timeoutId = setTimeout(() => {
       if (isMountedRef.current) {
         startConnection();

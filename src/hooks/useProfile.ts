@@ -9,8 +9,7 @@ import type {
   BiographySubmission,
 } from "../types";
 
-const LODESTONE_BASE =
-  "https://na.finalfantasyxiv.com/lodestone/character/";
+const LODESTONE_BASE = "https://na.finalfantasyxiv.com/lodestone/character/";
 
 function buildLodestoneUrl(characterId?: string): string | undefined {
   return characterId ? `${LODESTONE_BASE}${characterId}` : undefined;
@@ -25,7 +24,7 @@ export interface UseProfileResult {
   submission: BiographySubmission | null;
   /** Whole-page loading (auth for "me", the member fetch for a character) */
   isLoading: boolean;
-  /** The biography (staff list) is still loading — bio section shows its own state */
+  /** The biography (staff list) is still loading - bio section shows its own state */
   isBioLoading: boolean;
   /** The submission is still loading */
   isSubmissionLoading: boolean;
@@ -34,12 +33,12 @@ export interface UseProfileResult {
 }
 
 /**
- * useProfile — the single data source for the Profile view.
+ * useProfile - the single data source for the Profile view.
  *
  * Composes the existing queries into one normalized {@link ProfileData} +
  * {@link ProfileViewer}, so the presentation layer never reads auth or the raw
  * APIs. Pass `"me"` for the signed-in user (today's only wired path) or
- * `{ characterId }` for any member — the latter is fully implemented so the
+ * `{ characterId }` for any member - the latter is fully implemented so the
  * public profile route can be switched on later with no changes here.
  *
  * Reuses the app's existing query keys (`["staff"]`, `["user-submission", id]`)
@@ -56,7 +55,7 @@ export function useProfile(target: ProfileTarget): UseProfileResult {
 
   // Staff list carries biographies + character ids. Both paths read it: the "me"
   // path matches by name, the character path matches by id (to attach a bio if
-  // that member happens to be staff — only staff have bios today).
+  // that member happens to be staff - only staff have bios today).
   const {
     data: staffData,
     isLoading: isStaffLoading,
@@ -107,7 +106,7 @@ export function useProfile(target: ProfileTarget): UseProfileResult {
         rank: user.memberRank,
         avatarUrl: user.memberPortraitUrl,
         biography: ownStaff?.biography || undefined,
-        // MogTome's own first-login date (NOT the FC join date — we don't have that).
+        // MogTome's own first-login date (NOT the FC join date - we don't have that).
         memberSince: user.firstLoginDate
           ? new Date(user.firstLoginDate)
           : undefined,
@@ -150,7 +149,7 @@ export function useProfile(target: ProfileTarget): UseProfileResult {
     isLoading: isMe ? isAuthLoading : isMemberLoading,
     isBioLoading: isStaffLoading,
     isSubmissionLoading,
-    error: isMe ? undefined : memberError ?? staffError,
+    error: isMe ? undefined : (memberError ?? staffError),
     refetchSubmission,
   };
 }

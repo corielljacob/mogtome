@@ -10,25 +10,8 @@ interface IntersectionObserverOptions {
 }
 
 /**
- * useIntersectionObserver - Performance hook for detecting when an element is visible
- *
- * PERFORMANCE BENEFITS:
- * - Lazy load images/content when they enter viewport
- * - Defer expensive animations until element is visible
- * - Reduce initial bundle size by code-splitting below-fold content
- * - Improve mobile performance by not rendering off-screen content
- *
- * @example
- * ```tsx
- * const ref = useRef(null);
- * const isVisible = useIntersectionObserver(ref, { threshold: 0.1, triggerOnce: true });
- *
- * return (
- *   <div ref={ref}>
- *     {isVisible && <ExpensiveComponent />}
- *   </div>
- * );
- * ```
+ * Tracks whether an element is in the viewport, for lazy-loading and deferring
+ * off-screen work.
  */
 export function useIntersectionObserver<T extends Element = HTMLDivElement>(
   elementRef: RefObject<T | null>,
@@ -48,7 +31,7 @@ export function useIntersectionObserver<T extends Element = HTMLDivElement>(
     const element = elementRef.current;
     if (!element) return;
 
-    // Skip if already triggered and triggerOnce is enabled
+    // in triggerOnce mode, never re-observe after the first hit
     if (triggerOnce && hasTriggered.current) return;
 
     const observer = new IntersectionObserver(
@@ -73,22 +56,7 @@ export function useIntersectionObserver<T extends Element = HTMLDivElement>(
   return isIntersecting;
 }
 
-/**
- * useLazyImage - Hook for lazy loading images with intersection observer
- *
- * @example
- * ```tsx
- * const [ref, shouldLoad] = useLazyImage<HTMLImageElement>();
- *
- * return (
- *   <img
- *     ref={ref}
- *     src={shouldLoad ? actualSrc : placeholderSrc}
- *     loading="lazy"
- *   />
- * );
- * ```
- */
+/** Lazy-load an image once it nears the viewport. */
 export function useLazyImage<T extends Element = HTMLImageElement>(
   options: IntersectionObserverOptions = {},
 ): [RefObject<T | null>, boolean] {
@@ -96,7 +64,7 @@ export function useLazyImage<T extends Element = HTMLImageElement>(
   const shouldLoad = useIntersectionObserver(ref, {
     ...options,
     triggerOnce: true,
-    rootMargin: options.rootMargin || "50px", // Start loading slightly before visible
+    rootMargin: options.rootMargin || "50px", // start loading just before it scrolls in
   });
 
   return [ref, shouldLoad];
