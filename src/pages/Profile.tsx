@@ -14,14 +14,9 @@ import type { ProfileTarget } from "../types";
 import mailMoogle from "../assets/moogles/moogle mail.webp";
 import illustratedMoogle from "../assets/moogles/illustrated moogle.webp";
 
-/**
- * Profile — a member's page in the Kupo Life scrapbook.
- *
- * Thin by design: it reads the route (an optional `:characterId`, absent on
- * `/profile` today → your own profile), hands the target to {@link useProfile},
- * and renders the source-agnostic {@link ProfileView}. Switching on public
- * profiles later is just registering `/profile/:characterId` and linking to it.
- */
+// thin by design: reads the route (optional `:characterId`, absent → own
+// profile), hands the target to useProfile, renders the source-agnostic
+// ProfileView. public profiles later = register `/profile/:characterId` + link.
 export function Profile() {
   const { characterId } = useParams<{ characterId?: string }>();
   const target: ProfileTarget = characterId ? { characterId } : "me";

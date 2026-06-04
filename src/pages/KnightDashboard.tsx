@@ -22,20 +22,10 @@ import { useAuth } from "../contexts/AuthContext";
 import { useCharacterMapping } from "../features/characterMapping";
 import { biographyApi } from "../api/biography";
 
-/**
- * Knight Dashboard — knight-only command center.
- *
- * Leads with a live "Needs Attention" overview (what a knight should act on),
- * then the actual tools stacked full-width. Reuses the shared page kit so it
- * matches the rest of the site.
- */
-
-// ─── Small count badge for section labels ────────────────────────────────────
 function CountBadge({ n }: { n: number }) {
   return <Tag color="var(--primary)">{n}</Tag>;
 }
 
-// ─── A single "needs attention" stat tile — jumps to its section on click ─────
 interface StatTileProps {
   icon: React.ReactNode;
   count: number;
@@ -71,7 +61,7 @@ function StatTile({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       className="surface hover-lift p-4 sm:p-5 flex items-center gap-4 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
-      aria-label={`${count} ${label} — ${hint}. Jump to section.`}
+      aria-label={`${count} ${label} - ${hint}. Jump to section.`}
     >
       <span className="icon-badge w-11 h-11 shrink-0 text-[var(--primary)]">
         {icon}
@@ -104,8 +94,8 @@ export function KnightDashboard() {
   const { user } = useAuth();
   const firstName = user?.memberName?.split(" ")[0] ?? "Knight";
 
-  // Pending biography submissions — shares the ['biography-submissions'] cache
-  // with <PendingSubmissions />, so this doesn't add a network request.
+  // shares the ['biography-submissions'] cache with <PendingSubmissions />, so
+  // no extra request.
   const {
     data: pendingBios,
     isLoading: isLoadingBios,
@@ -117,7 +107,7 @@ export function KnightDashboard() {
   });
   const pendingCount = pendingBios?.length ?? 0;
 
-  // Character mapping counts — shares cache with the <CharacterMapping /> tool.
+  // shares cache with the <CharacterMapping /> tool
   const {
     allCharacters,
     totalMatches,
@@ -139,7 +129,6 @@ export function KnightDashboard() {
   return (
     <PageLayout maxWidth="max-w-4xl">
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-        {/* Corner pins — content sits on the board, never the bare page */}
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
           aria-hidden="true"
@@ -166,7 +155,6 @@ export function KnightDashboard() {
           subtitle={`Welcome back, ${firstName}`}
         />
 
-        {/* ── Needs Attention overview ── */}
         <section className="mb-12">
           <SectionLabel
             label="Needs Attention"
@@ -215,7 +203,6 @@ export function KnightDashboard() {
           )}
         </section>
 
-        {/* ── Biography Submissions ── */}
         <section id="submissions" className="mb-12 scroll-mt-24">
           <SectionLabel
             label="Biography Submissions"
@@ -227,7 +214,6 @@ export function KnightDashboard() {
           <PendingSubmissions />
         </section>
 
-        {/* ── Character Mapping ── */}
         <section id="mapping" className="mb-12 scroll-mt-24">
           <SectionLabel
             label="Character Mapping"
@@ -239,7 +225,6 @@ export function KnightDashboard() {
           <CharacterMapping />
         </section>
 
-        {/* ── Cozy footer note (demoted "Have an Idea?") ── */}
         <div className="text-center pb-2">
           <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
             <Lightbulb

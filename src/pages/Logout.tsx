@@ -32,15 +32,13 @@ export function Logout() {
   const [displayUser] = useState(user);
 
   useEffect(() => {
-    // Perform logout
     logout();
 
-    // Start fade after showing the message
     const fadeTimer = setTimeout(() => {
       setPhase("fading");
     }, 2000);
 
-    // Redirect home after animation
+    // redirect after the fade finishes
     const redirectTimer = setTimeout(() => {
       navigate("/", { replace: true });
     }, 2800);
@@ -53,7 +51,6 @@ export function Logout() {
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
-      {/* Floating stars background */}
       <div
         className="absolute inset-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
@@ -81,7 +78,6 @@ export function Logout() {
         ))}
       </div>
 
-      {/* Main content */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{
@@ -93,7 +89,6 @@ export function Logout() {
         className="w-full max-w-sm relative z-10"
       >
         <div className="bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] text-center relative overflow-hidden">
-          {/* Waving moogle */}
           <motion.div
             className="w-24 h-24 mx-auto mb-4"
             initial={{ scale: 0, rotate: -10 }}
@@ -114,7 +109,6 @@ export function Logout() {
             />
           </motion.div>
 
-          {/* Goodbye message */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,7 +123,6 @@ export function Logout() {
             </p>
           </motion.div>
 
-          {/* Redirect notice */}
           <motion.div
             className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)]"
             initial={{ opacity: 0 }}

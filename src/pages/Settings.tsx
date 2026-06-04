@@ -39,10 +39,6 @@ import gamingMoogle from "../assets/moogles/gaming moogle.webp";
 import musicMoogle from "../assets/moogles/moogle playing music.webp";
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared candy pieces
-// ─────────────────────────────────────────────────────────────────────────────
-
 function ToggleSwitch({
   enabled,
   onChange,
@@ -102,7 +98,6 @@ function SettingRow({
   );
 }
 
-/** Kawaii collapsible sub-section with a dashed divider above it. */
 function Collapsible({
   icon: Icon,
   label,
@@ -151,7 +146,6 @@ function Collapsible({
   );
 }
 
-/** A pinned paper section card with a sticker-style header. */
 function SettingsCard({
   icon: Icon,
   title,
@@ -201,10 +195,6 @@ function SettingsCard({
     </section>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Appearance
-// ─────────────────────────────────────────────────────────────────────────────
 
 function ThemeSection() {
   const { settings, setColorMode, setColorTheme } = useTheme();
@@ -322,11 +312,7 @@ function ThemeSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Seasonal Events
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Dev-only event override options for the switcher */
+// dev-only event override options for the switcher
 const EVENT_OVERRIDE_OPTIONS: {
   value: EventOverride;
   label: string;
@@ -386,7 +372,6 @@ function SeasonalEventSection() {
       pinColor="var(--primary)"
       tilt={0.5}
     >
-      {/* Dev override switcher */}
       {import.meta.env.DEV && (
         <div className="mb-4 p-3 rounded-2xl border-2 border-dashed border-amber-500/40 bg-amber-500/5">
           <p className="font-display font-bold text-[10px] text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-2">
@@ -417,7 +402,6 @@ function SeasonalEventSection() {
         </div>
       )}
 
-      {/* Active / next event note */}
       {activeEvent ? (
         <div className="mb-3 flex items-start gap-2.5 p-3 rounded-2xl bg-[color:color-mix(in_srgb,var(--primary)_9%,var(--card))]">
           <activeEvent.icon
@@ -428,7 +412,7 @@ function SeasonalEventSection() {
             <strong className="text-[var(--primary)] font-bold">
               {activeEvent.name}
             </strong>{" "}
-            is here, kupo — {activeEvent.description}
+            is here, kupo - {activeEvent.description}
           </p>
         </div>
       ) : nextEvent ? (
@@ -518,10 +502,6 @@ function SeasonalEventSection() {
     </SettingsCard>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Accessibility
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface AccessibilityOption {
   key: ToggleableSettingKey;
@@ -645,7 +625,7 @@ function AccessibilitySection() {
                     {label}
                   </span>
                   <span className="font-soft text-xs text-[var(--text-muted)] ml-1">
-                    — {description}
+                    - {description}
                   </span>
                 </span>
               </button>
@@ -656,10 +636,6 @@ function AccessibilitySection() {
     </SettingsCard>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Account
-// ─────────────────────────────────────────────────────────────────────────────
 
 function AccountSection() {
   const { user, logout, isLoading, isAuthenticated } = useAuth();
@@ -714,10 +690,6 @@ function AccountSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Settings Page — pinned to a cork board
-// ─────────────────────────────────────────────────────────────────────────────
-
 export function Settings() {
   return (
     <PageLayout
@@ -725,7 +697,6 @@ export function Settings() {
       maxWidth="max-w-2xl"
     >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-        {/* Corner pins */}
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
           aria-hidden="true"
@@ -746,7 +717,6 @@ export function Settings() {
           aria-hidden="true"
         />
 
-        {/* Corner-peek moogle */}
         <img
           src={lilGuyMoogle}
           alt=""
@@ -754,7 +724,6 @@ export function Settings() {
           className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
         />
 
-        {/* Pinned title sign */}
         <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
           <span
             className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
@@ -778,7 +747,6 @@ export function Settings() {
           </div>
         </header>
 
-        {/* Section cards */}
         <div className="space-y-7 sm:space-y-9">
           <ThemeSection />
           <SeasonalEventSection />
@@ -786,7 +754,6 @@ export function Settings() {
           <AccountSection />
         </div>
 
-        {/* Footer note */}
         <p className="flex items-center justify-center gap-1.5 text-center font-soft text-xs text-[var(--text-subtle)] mt-9">
           <KawaiiHeart className="w-3.5 h-3.5 text-[var(--primary)]" />
           Everything saves to your browser automatically, kupo~

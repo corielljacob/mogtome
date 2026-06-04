@@ -12,7 +12,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
 import { Wifi, Loader2, Search, X } from "lucide-react";
 
-// Shared components
 import {
   PageLayout,
   PageHeader,
@@ -29,17 +28,11 @@ import {
 import type { ComponentType } from "react";
 import { useEventsHub, type ConnectionStatus } from "../hooks";
 
-// Utils & Constants
 import { formatRelativeTime } from "../utils";
 import { getEventTypeConfig, EVENT_TYPE_CONFIG } from "../constants";
 
-// API
 import { eventsApi } from "../api/events";
 import type { ChronicleEvent, ChronicleEventFilter } from "../types";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Filter options derived from the event type config
-// ─────────────────────────────────────────────────────────────────────────────
 
 const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]
@@ -48,18 +41,12 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   label: EVENT_TYPE_CONFIG[key].label,
 }));
 
-// Assets
 import flyingMoogles from "../assets/moogles/moogles flying.webp";
 import moogleMail from "../assets/moogles/moogle mail.webp";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper Functions
-// ─────────────────────────────────────────────────────────────────────────────
 
 const PLACEHOLDER_TIMESTAMP = 0;
 const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";
 
-/** Check if an event has a valid (non-placeholder) ID */
 function hasValidId(event: ChronicleEvent): boolean {
   return (
     event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
@@ -67,33 +54,29 @@ function hasValidId(event: ChronicleEvent): boolean {
   );
 }
 
-/** Get a signature for deduplication (createdAt + type + text) */
+// dedup key for events that lack a real ID
 function getEventSignature(event: ChronicleEvent): string {
   return `${event.createdAt}-${event.type}-${event.text}`;
 }
 
-/** Get unique key for React list rendering */
 function getEventKey(event: ChronicleEvent, index: number): string {
   if (hasValidId(event)) {
     return `${event.id.timestamp}-${event.id.creationTime}`;
   }
-  // Fallback for placeholder IDs: use signature + index
+  // placeholder IDs collide, so disambiguate with the index
   return `${getEventSignature(event)}-${index}`;
 }
-
-// ── Day grouping ──────────────────────────────────────────────────────────────
 
 function startOfDay(d: Date): number {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-/** Stable key for the calendar day an event belongs to. */
 function getDayKey(dateString: string): string {
   const d = new Date(dateString);
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
 
-/** Friendly label for a day: Today / Yesterday / weekday / full date. */
+// Today / Yesterday / weekday / full date
 function getDayLabel(dateString: string): string {
   const d = new Date(dateString);
   const now = new Date();
@@ -118,7 +101,7 @@ interface DayGroup {
   items: EntryItem[];
 }
 
-/** Bucket an ordered (newest-first) list of entries into day groups. */
+// input must already be newest-first; preserves that order within each group
 function buildDayGroups(items: EntryItem[]): DayGroup[] {
   const groups: DayGroup[] = [];
   const index = new Map<string, DayGroup>();
@@ -135,11 +118,6 @@ function buildDayGroups(items: EntryItem[]): DayGroup[] {
   return groups;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Quiet, theme-tinted "live" indicator (replaces the old status pill). */
 const LiveStatus = memo(function LiveStatus({
   status,
 }: {
@@ -185,7 +163,6 @@ const LiveStatus = memo(function LiveStatus({
   );
 });
 
-/** A single diary line on the logbook page: a little type icon + the entry. */
 const JournalEntry = memo(function JournalEntry({ item }: { item: EntryItem }) {
   const { event, isRealtime, isUnseen } = item;
   const { Icon, hex, label } = getEventTypeConfig(event.type);
@@ -231,8 +208,6 @@ const JournalEntry = memo(function JournalEntry({ item }: { item: EntryItem }) {
   );
 });
 
-// ── Scrapbook bits ─────────────────────────────────────────────────────────────
-
 type Motif = ComponentType<{ className?: string; color?: string }>;
 const DAY_STICKERS: Motif[] = [
   KawaiiHeart,
@@ -242,7 +217,6 @@ const DAY_STICKERS: Motif[] = [
 ];
 const STICKER_COLORS = ["var(--primary)", "var(--secondary)", "var(--accent)"];
 
-/** A strip of striped washi tape. Tint with `color`; place with `className`. */
 function WashiTape({
   className = "",
   color = "var(--accent)",
@@ -261,7 +235,7 @@ function WashiTape({
   );
 }
 
-/** Stable per-day tilt + sticker + tape colour (a hash, so it never jitters on re-render). */
+// hashed off the day key so the look is stable across re-renders
 function dayDecor(key: string, index: number) {
   let h = 0;
   for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
@@ -273,10 +247,6 @@ function dayDecor(key: string, index: number) {
   };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Component
-// ─────────────────────────────────────────────────────────────────────────────
-
 export function Chronicle() {
   const [searchInput, setSearchInput] = useState("");
   const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(
@@ -285,16 +255,14 @@ export function Chronicle() {
   const deferredSearchQuery = useDeferredValue(searchInput);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Derived booleans
   const isSearching = deferredSearchQuery.trim().length > 0;
   const hasActiveFilter = activeFilter !== null;
   const hasActiveQuery = isSearching || hasActiveFilter;
 
-  // Realtime events (SignalR)
+  // realtime feed over SignalR
   const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen } =
     useEventsHub();
 
-  // ── API query ─────────────────────────────────────────────────────────
   const {
     data,
     isLoading,
@@ -318,7 +286,7 @@ export function Chronicle() {
     staleTime: 1000 * 60 * 2,
   });
 
-  // ── Infinity scroll via callback ref ──────────────────────────────────
+  // infinite scroll via a callback-ref IntersectionObserver
   const [sentinelVisible, setSentinelVisible] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -351,9 +319,7 @@ export function Chronicle() {
     }
   }, [sentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // ── Derived event lists ───────────────────────────────────────────────
-  // Flatten all pages from the API into a single array, deduplicating
-  // events that may appear on multiple pages due to cursor shifts.
+  // flatten pages, dropping dups that cursor shifts can surface across pages
   const apiEvents = useMemo(() => {
     if (!data?.pages) return [];
     const seen = new Set<string>();
@@ -369,25 +335,22 @@ export function Chronicle() {
       });
   }, [data]);
 
-  // When searching or filtering, display ONLY the API results.
-  // On the default view, deduplicate against realtime events so items
-  // don't appear twice.
+  // filtered/searching: API results only. default view: drop API events that
+  // the realtime feed already covers so they don't show twice.
   const displayedEvents = useMemo(() => {
     if (hasActiveQuery) return apiEvents;
     const rtSignatures = new Set(realtimeEvents.map(getEventSignature));
     return apiEvents.filter((e) => !rtSignatures.has(getEventSignature(e)));
   }, [apiEvents, hasActiveQuery, realtimeEvents]);
 
-  // Realtime events are only shown on the default (unfiltered) view. Memoized so
-  // the reference stays stable for the dayGroups dependency list below.
+  // only on the default view; memoized for a stable ref in dayGroups' deps
   const visibleRealtimeEvents = useMemo(
     () => (hasActiveQuery ? [] : realtimeEvents),
     [hasActiveQuery, realtimeEvents],
   );
   const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
 
-  // Merge realtime (newest) + historical into one ordered list, then bucket
-  // into day groups. Live items sit at the top of "Today" with a gentle marker.
+  // realtime (newest) ahead of historical, then bucketed by day
   const dayGroups = useMemo(() => {
     const items: EntryItem[] = [
       ...visibleRealtimeEvents.map((event, i) => ({
@@ -404,10 +367,9 @@ export function Chronicle() {
     return buildDayGroups(items);
   }, [visibleRealtimeEvents, displayedEvents, unseenCount]);
 
-  // True while the search input is ahead of the deferred value
+  // true while the input is ahead of the deferred (debounced) value
   const isTransitioning = searchInput !== deferredSearchQuery;
 
-  // ── Handlers ──────────────────────────────────────────────────────────
   const handleClearSearch = useCallback(() => {
     setSearchInput("");
     searchInputRef.current?.focus();
@@ -429,7 +391,6 @@ export function Chronicle() {
       maxWidth="max-w-3xl"
     >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-        {/* Corner pins — the logbook is pinned to the board */}
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
           aria-hidden="true"
@@ -456,7 +417,6 @@ export function Chronicle() {
           subtitle="what the FC has been up to lately"
         />
 
-        {/* Search & filters */}
         <motion.section
           className="surface p-3 sm:p-5 mb-5"
           initial={{ opacity: 0, y: 8 }}
@@ -501,7 +461,6 @@ export function Chronicle() {
             )}
           </div>
 
-          {/* Filter chips — hairline toggles tinted per event type */}
           <div
             className="mt-4 flex flex-wrap gap-2"
             role="group"
@@ -551,7 +510,6 @@ export function Chronicle() {
             )}
           </div>
 
-          {/* Search/filter results count */}
           {hasActiveQuery && !isLoading && (
             <p
               className="mt-3 px-1 font-soft text-sm text-[var(--text-muted)]"
@@ -576,7 +534,6 @@ export function Chronicle() {
               )}
             </p>
           )}
-          {/* Live status + reconnect / mark-as-read — kept on the card, not the bare page */}
           <div className="mt-4 pt-3 border-t border-[var(--border)] flex items-center justify-between gap-3 min-h-6">
             <LiveStatus status={status} />
             <div className="flex items-center gap-4">
@@ -601,7 +558,6 @@ export function Chronicle() {
           </div>
         </motion.section>
 
-        {/* Timeline */}
         <AnimatePresence mode="wait">
           {isLoading && apiEvents.length === 0 ? (
             <motion.div
@@ -673,7 +629,6 @@ export function Chronicle() {
               role="feed"
               aria-label="Chronicle timeline"
             >
-              {/* the page, taped into the scrapbook */}
               <WashiTape
                 color="var(--accent)"
                 className="absolute -top-3 left-10 w-20 h-7 -rotate-3 opacity-85 z-10"
@@ -698,7 +653,6 @@ export function Chronicle() {
                     }
                     aria-label={`Entries from ${group.label}`}
                   >
-                    {/* Taped, tilted handwritten diary date + a sticker doodle */}
                     <header className="relative mb-5 sm:mb-6 flex items-center gap-2.5">
                       <div
                         className="relative inline-flex items-center gap-1.5"
@@ -729,7 +683,6 @@ export function Chronicle() {
                       />
                     </header>
 
-                    {/* Diary lines — hairline rule between each entry */}
                     <ol className="divide-y divide-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]">
                       {group.items.map((item, i) => (
                         <JournalEntry
@@ -742,7 +695,6 @@ export function Chronicle() {
                 );
               })}
 
-              {/* Infinity scroll sentinel + loading indicator */}
               {hasNextPage && (
                 <div
                   ref={sentinelRef}

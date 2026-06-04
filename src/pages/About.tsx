@@ -28,26 +28,18 @@ import { useAuth } from "../contexts/AuthContext";
 import type { StaffMember } from "../types";
 import { FC_RANKS } from "../types";
 
-// Rank order lookup for sorting (same as Members page)
+// rank -> sort index (same ordering as the Members page)
 const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
 
-// Assets
 import wizardMoogle from "../assets/moogles/wizard moogle.webp";
 import flyingMoogles from "../assets/moogles/moogles flying.webp";
 import moogleMail from "../assets/moogles/moogle mail.webp";
 import illustratedMoogle from "../assets/moogles/illustrated moogle.webp";
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// StickyBioNote — the member's description as a fixed-size Post-it (so every card
-// stays the same size). Pale + handwritten, tinted toward the member's rank. On
-// the current user's own card (when their role allows it) it edits inline.
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Deterministic per-member tilt so each photo + note sits at its own jaunty
-// angle, stable across renders (a hash, not Math.random, so it never jitters).
-// Photo + note tilt independently in BOTH directions for a messy, hand-pinned
-// scatter (like the Members cards) rather than an orderly opposing lean.
+// deterministic per-member tilt, stable across renders (a hash, not Math.random,
+// so it never jitters). photo + note tilt independently in both directions for a
+// messy hand-pinned scatter rather than an orderly opposing lean.
 function scrapbookTilt(seed: string): { photo: number; note: number } {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i++) {
@@ -225,11 +217,6 @@ function StickyBioNote({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// StaffCard — a scrapbook entry: a pinned polaroid portrait (avatar + name + rank)
-// next to the member's sticky-note description.
-// ─────────────────────────────────────────────────────────────────────────────
-
 const StaffCard = memo(function StaffCard({
   member,
   isLeader = false,
@@ -250,7 +237,7 @@ const StaffCard = memo(function StaffCard({
 
   return (
     <article className="relative flex items-start">
-      {/* ── Polaroid ──────────────────────────────────────────────────────── */}
+      {/* polaroid */}
       <a
         href={lodestoneUrl}
         target="_blank"
@@ -332,7 +319,6 @@ const StaffCard = memo(function StaffCard({
         </div>
       </a>
 
-      {/* ── Sticky-note description ────────────────────────────────────────── */}
       <StickyBioNote
         bio={member.biography}
         rankHex={rankColor.hex}
@@ -342,10 +328,6 @@ const StaffCard = memo(function StaffCard({
     </article>
   );
 });
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Main About Page — the whole thing pinned to a cork board
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function About() {
   const { user, isAuthenticated } = useAuth();
@@ -357,8 +339,8 @@ export function About() {
   });
 
   const currentUserName = isAuthenticated ? user?.memberName : undefined;
-  // Let the current user edit their own note inline only when their role allows
-  // setting the biography directly (same gate as the Profile editor).
+  // inline note editing only when the role can set its own biography (same gate
+  // as the Profile editor).
   const canEditOwn = isAuthenticated && user?.hasKnighthood === true;
 
   const staff = useMemo(() => {
@@ -384,7 +366,6 @@ export function About() {
       maxWidth="max-w-5xl"
     >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
-        {/* Corner pins */}
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
           aria-hidden="true"
@@ -405,7 +386,6 @@ export function About() {
           aria-hidden="true"
         />
 
-        {/* Corner-peek moogle */}
         <img
           src={lilGuyMoogle}
           alt=""
@@ -413,7 +393,6 @@ export function About() {
           className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
         />
 
-        {/* ── Pinned title sign ─────────────────────────────────────────────── */}
         <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
           <span
             className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
@@ -437,7 +416,6 @@ export function About() {
           </div>
         </header>
 
-        {/* ── Welcome note (the intro) ──────────────────────────────────────── */}
         <motion.section
           className="relative mb-9 sm:mb-12 max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 12 }}
@@ -498,7 +476,6 @@ export function About() {
           </div>
         </motion.section>
 
-        {/* ── The folks — section label (sticker tab) ───────────────────────── */}
         <div className="flex items-center gap-3 mb-6 sm:mb-8">
           <div
             className="sticker px-3 py-1.5"
@@ -533,7 +510,6 @@ export function About() {
           <KawaiiStar className="w-4 h-4 text-[var(--accent)]" />
         </div>
 
-        {/* ── Staff scrapbook ───────────────────────────────────────────────── */}
         {isLoading ? (
           <div className="paper">
             <LoadingState message="Rounding everyone up, kupo..." />
@@ -567,7 +543,6 @@ export function About() {
           </div>
         )}
 
-        {/* ── Closing note ──────────────────────────────────────────────────── */}
         {hasStaff && (
           <div className="text-center mt-12 sm:mt-14 pt-2">
             <p className="eyebrow-script text-2xl text-[var(--text-muted)] inline-flex items-center justify-center gap-2.5">

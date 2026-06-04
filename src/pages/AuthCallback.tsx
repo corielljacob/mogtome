@@ -16,13 +16,8 @@ import moogleWizard from "../assets/moogles/wizard moogle.webp";
 
 type CallbackStatus = "processing" | "success" | "error";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ANIMATION COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Decorative particle fields — generated once at module load. These are purely
-// cosmetic, so they don't need per-mount randomness (and keeping Math.random out
-// of render keeps the components pure).
+// generated once at module load - cosmetic, so no per-mount randomness needed,
+// and keeping Math.random out of render keeps the components pure.
 const CELEBRATION_PARTICLES = Array.from({ length: 32 }, (_, i) => {
   const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
   const distance = 80 + Math.random() * 120;
@@ -36,12 +31,10 @@ const CELEBRATION_PARTICLES = Array.from({ length: 32 }, (_, i) => {
   ];
   return {
     id: i,
-    // Start near center
     startX: 50 + (Math.random() - 0.5) * 20,
     startY: 50 + (Math.random() - 0.5) * 20,
-    // Burst outward
     endX: 50 + Math.cos(angle) * distance,
-    endY: 50 + Math.sin(angle) * distance * 0.6, // Flatten vertically
+    endY: 50 + Math.sin(angle) * distance * 0.6, // flatten vertically
     delay: 0.02 * i + Math.random() * 0.15,
     duration: 0.8 + Math.random() * 0.4,
     size,
@@ -61,13 +54,11 @@ const AMBIENT_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   color: i % 2 === 0 ? "var(--primary)" : "var(--secondary)",
 }));
 
-// Premium sparkle burst that emanates from the card
 const CelebrationSparkles = memo(function CelebrationSparkles({
   isActive,
 }: {
   isActive: boolean;
 }) {
-  // Particles that burst outward from center (generated once at module load)
   const particles = CELEBRATION_PARTICLES;
 
   if (!isActive) return null;
@@ -104,10 +95,9 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
           transition={{
             duration: p.duration,
             delay: p.delay,
-            ease: [0.16, 1, 0.3, 1], // Custom "pop" easing
+            ease: [0.16, 1, 0.3, 1],
           }}
         >
-          {/* Star shape for some particles */}
           {p.id % 3 === 0 ? (
             <svg viewBox="0 0 24 24" className="w-full h-full" fill={p.color}>
               <polygon points="12,2 15,9 22,9 17,14 19,22 12,17 5,22 7,14 2,9 9,9" />
@@ -127,7 +117,6 @@ const CelebrationSparkles = memo(function CelebrationSparkles({
   );
 });
 
-// Ambient floating particles (subtle, always visible during reveal)
 const AmbientGlow = memo(function AmbientGlow({
   isActive,
 }: {
@@ -173,7 +162,6 @@ const AmbientGlow = memo(function AmbientGlow({
   );
 });
 
-// Premium shine sweep with multiple waves
 function CardShine({
   delay = 0,
   intensity = "normal",
@@ -191,7 +179,6 @@ function CardShine({
       animate={{ opacity: 1 }}
       transition={{ delay, duration: 0.3 }}
     >
-      {/* Primary shine wave */}
       <motion.div
         className="absolute inset-y-0 w-[250%] -left-[150%]"
         style={{
@@ -211,10 +198,9 @@ function CardShine({
         transition={{
           delay: delay,
           duration: 1.0,
-          ease: [0.25, 0.46, 0.45, 0.94], // Smooth deceleration
+          ease: [0.25, 0.46, 0.45, 0.94],
         }}
       />
-      {/* Secondary subtle shine (offset) */}
       <motion.div
         className="absolute inset-y-0 w-[200%] -left-full"
         style={{
@@ -241,10 +227,6 @@ function CardShine({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STATUS SCREENS
-// ─────────────────────────────────────────────────────────────────────────────
-
 function ProcessingScreen() {
   return (
     <div className="text-center py-4">
@@ -265,55 +247,35 @@ function ProcessingScreen() {
   );
 }
 
-// Storage key for tracking if user has seen the welcome screen
 const WELCOME_SEEN_KEY = "mogtome_welcome_seen";
 
-/**
- * Check if this is a first-time user who hasn't seen the welcome screen yet.
- *
- * We use a combination of:
- * 1. The backend's firstLoginDate (set on first-ever login)
- * 2. Local storage to track if the user has already seen the welcome
- *
- * This prevents showing the welcome screen on repeated logins within the same day.
- */
+// gated on backend firstLoginDate AND a localStorage marker, so the welcome
+// doesn't replay on repeat logins. stored value is the firstLoginDate seen, so
+// a new account (new date) replays it.
 function isFirstTimeUser(user: User): boolean {
   if (!user.firstLoginDate) {
-    // No firstLoginDate means backend hasn't set it yet - treat as first time
+    // backend hasn't stamped it yet - treat as first time
     return true;
   }
 
-  // Check if we've already shown the welcome screen for this user
-  // We store the firstLoginDate they've seen, so if it changes (new account), they see it again
   const seenWelcome = localStorage.getItem(WELCOME_SEEN_KEY);
   if (seenWelcome === user.firstLoginDate) {
-    // User has already seen the welcome for this account
     return false;
   }
 
-  // Check if their first login date is within the last few minutes (genuinely new)
-  // This handles the case where it's truly their first login
+  // genuinely new only if the first login landed in the last 5 minutes
   const firstLogin = new Date(user.firstLoginDate);
   const now = new Date();
   const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
-  // If their first login was within the last 5 minutes, they're a new user
   return firstLogin >= fiveMinutesAgo;
 }
 
-/**
- * Mark that the user has seen the welcome screen.
- * Called when the first-time welcome animation completes.
- */
 function markWelcomeSeen(user: User): void {
   if (user.firstLoginDate) {
     localStorage.setItem(WELCOME_SEEN_KEY, user.firstLoginDate);
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FIRST-TIME WELCOME - Premium card reveal with buttery smooth animations
-// ─────────────────────────────────────────────────────────────────────────────
 
 function FirstTimeWelcome({
   user,
@@ -323,33 +285,27 @@ function FirstTimeWelcome({
   onComplete: () => void;
 }) {
   const theme = getTheme(user.memberRank);
-  // Continuous animation timeline using a single progress value
   const [animationState, setAnimationState] = useState<
     "entering" | "card-reveal" | "celebrating" | "complete"
   >("entering");
 
-  // Smooth orchestrated timeline - each stage flows into the next
+  // orchestrated timeline - each stage flows into the next
   useEffect(() => {
     const timers = [
-      // Brief pause for anticipation, then reveal card
       setTimeout(() => setAnimationState("card-reveal"), 400),
-      // Celebration burst after card settles
       setTimeout(() => setAnimationState("celebrating"), 1200),
-      // Show button and complete state
       setTimeout(() => setAnimationState("complete"), 1900),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
 
   const handleContinue = useCallback(() => {
-    // Mark that this user has seen the welcome screen
     markWelcomeSeen(user);
     onComplete();
   }, [onComplete, user]);
 
   const firstName = user.memberName?.split(" ")[0] || "Adventurer";
 
-  // Derived state for cleaner JSX
   const showCard = animationState !== "entering";
   const showCelebration =
     animationState === "celebrating" || animationState === "complete";
@@ -367,7 +323,6 @@ function FirstTimeWelcome({
       }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      {/* Welcome header - elegant staggered entrance */}
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
@@ -381,7 +336,7 @@ function FirstTimeWelcome({
           transition={{
             duration: 0.6,
             delay: 0.1,
-            ease: [0.16, 1, 0.3, 1], // Smooth deceleration
+            ease: [0.16, 1, 0.3, 1],
           }}
         >
           Welcome to the family, {firstName}
@@ -400,9 +355,7 @@ function FirstTimeWelcome({
         </motion.p>
       </motion.div>
 
-      {/* Card container with layered effects */}
       <div className="relative mb-6 text-left">
-        {/* Deep ambient glow - builds up smoothly */}
         <motion.div
           className="absolute -inset-16 rounded-[3rem] pointer-events-none"
           style={{
@@ -420,7 +373,6 @@ function FirstTimeWelcome({
           }}
         />
 
-        {/* Pulsing glow layer (only after card is revealed) */}
         <motion.div
           className="absolute -inset-10 rounded-[2.5rem] pointer-events-none"
           style={{
@@ -443,7 +395,6 @@ function FirstTimeWelcome({
           }}
         />
 
-        {/* The membership card with cinematic entrance */}
         <motion.div
           className="relative"
           initial={{
@@ -464,14 +415,14 @@ function FirstTimeWelcome({
           }
           transition={{
             duration: 0.9,
-            ease: [0.16, 1, 0.3, 1], // Smooth spring-like curve
+            ease: [0.16, 1, 0.3, 1],
           }}
           style={{
             perspective: "1200px",
             transformStyle: "preserve-3d",
           }}
         >
-          {/* Blur wrapper - separates blur animation for smoother rendering */}
+          {/* separate blur into its own layer for smoother rendering */}
           <motion.div
             initial={{ filter: "blur(12px)" }}
             animate={showCard ? { filter: "blur(0px)" } : undefined}
@@ -490,16 +441,13 @@ function FirstTimeWelcome({
             />
           </motion.div>
 
-          {/* Shine sweep overlay - triggers after card lands */}
           {showCard && <CardShine delay={0.5} intensity="bright" />}
         </motion.div>
 
-        {/* Celebration effects */}
         <CelebrationSparkles isActive={showCelebration} />
         <AmbientGlow isActive={showCelebration} />
       </div>
 
-      {/* Bottom section - message and button with smooth stagger */}
       <div className="min-h-[5.5rem] flex flex-col items-center justify-center gap-4">
         <AnimatePresence mode="wait">
           {showCelebration && (
@@ -562,10 +510,6 @@ function FirstTimeWelcome({
     </motion.div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RETURNING USER - Quick welcome back
-// ─────────────────────────────────────────────────────────────────────────────
 
 function ReturningUserWelcome({
   user,
@@ -644,10 +588,6 @@ function ReturningUserWelcome({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUCCESS SCREEN - Routes to appropriate experience
-// ─────────────────────────────────────────────────────────────────────────────
-
 function SuccessScreen({
   user,
   onComplete,
@@ -695,10 +635,6 @@ function ErrorScreen({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-
 export function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -706,7 +642,7 @@ export function AuthCallback() {
   const [status, setStatus] = useState<CallbackStatus>("processing");
   const [error, setError] = useState<string>("");
 
-  // Capture return URL on first render (before effects)
+  // capture return URL on first render, before effects can clear it
   const returnUrlRef = useRef<string | null>(null);
   if (returnUrlRef.current === null) {
     returnUrlRef.current = getReturnUrl() || "/";
@@ -730,7 +666,7 @@ export function AuthCallback() {
         setAuthToken(token);
         await refreshUser();
         setStatus("success");
-        // Navigation is now handled by the SuccessScreen's onCardStored callback
+        // SuccessScreen drives navigation via its onComplete callback
         return;
       }
 
@@ -747,7 +683,6 @@ export function AuthCallback() {
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
-      {/* Background decoration */}
       <motion.img
         src={moogleWizard}
         alt=""
@@ -757,7 +692,6 @@ export function AuthCallback() {
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Card */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

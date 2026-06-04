@@ -31,13 +31,11 @@ import wizardMoogle from "../assets/moogles/wizard moogle.webp";
 import musicMoogle from "../assets/moogles/moogle playing music.webp";
 import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
 
-// Valid rank names for URL validation (typed as Set<string> for flexibility)
+// for validating rank names that arrive via the URL
 const VALID_RANK_NAMES: Set<string> = new Set(FC_RANKS.map((r) => r.name));
 
-// Rank order lookup for sorting
 const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
 
-// Sort options
 type SortOption = "name-asc" | "name-desc" | "rank-asc";
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "rank-asc", label: "Rank" },
@@ -50,23 +48,20 @@ export function Members() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Read search/filter/sort state from URL
+  // search/filter/sort state lives in the URL
   const searchQuery = searchParams.get("q") || "";
   const ranksParam = searchParams.get("ranks");
 
   const selectedRanks = useMemo(() => {
     if (!ranksParam) return [];
-    // Validate that ranks are valid FC ranks
     return ranksParam.split(",").filter((r) => VALID_RANK_NAMES.has(r));
   }, [ranksParam]);
 
   const sortBy = (searchParams.get("sort") as SortOption) || DEFAULT_SORT;
-  // Validate sort option
   const validSortBy = SORT_OPTIONS.some((o) => o.value === sortBy)
     ? sortBy
     : DEFAULT_SORT;
 
-  // Update URL when search changes (debounced via input)
   const setSearchQuery = useCallback(
     (query: string) => {
       setSearchParams(
@@ -77,7 +72,7 @@ export function Members() {
           } else {
             next.delete("q");
           }
-          // Reset page when searching
+          // back to page 1 when the result set changes
           next.delete("page");
           return next;
         },
@@ -87,7 +82,6 @@ export function Members() {
     [setSearchParams],
   );
 
-  // Update URL when ranks change
   const setSelectedRanks = useCallback(
     (updater: string[] | ((prev: string[]) => string[])) => {
       setSearchParams(
@@ -106,7 +100,6 @@ export function Members() {
           } else {
             next.delete("ranks");
           }
-          // Reset page when filtering
           next.delete("page");
           return next;
         },
@@ -116,18 +109,16 @@ export function Members() {
     [setSearchParams],
   );
 
-  // Update URL when sort changes
   const setSortBy = useCallback(
     (sort: SortOption) => {
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
           if (sort === DEFAULT_SORT) {
-            next.delete("sort"); // Keep URL clean for default
+            next.delete("sort"); // omit default to keep the URL clean
           } else {
             next.set("sort", sort);
           }
-          // Reset page when sorting changes
           next.delete("page");
           return next;
         },
@@ -137,15 +128,14 @@ export function Members() {
     [setSearchParams],
   );
 
-  // For input field, we use local state that syncs to URL on change
+  // local state for snappy typing; debounced into the URL below
   const [inputValue, setInputValue] = useState(searchQuery);
 
-  // Sync input value when URL changes (e.g., back button)
+  // re-sync when the URL changes out from under us (e.g. back button)
   useEffect(() => {
     setInputValue(searchQuery);
   }, [searchQuery]);
 
-  // Debounce search input to URL
   useEffect(() => {
     const timer = setTimeout(() => {
       if (inputValue !== searchQuery) {
@@ -191,7 +181,6 @@ export function Members() {
   const filteredMembers = useMemo(() => {
     let result = allMembers;
 
-    // Filter by search query
     if (deferredSearchQuery.trim()) {
       const query = deferredSearchQuery.toLowerCase();
       result = result.filter(
@@ -201,14 +190,12 @@ export function Members() {
       );
     }
 
-    // Filter by selected ranks
     if (deferredSelectedRanks.length > 0) {
       result = result.filter((member) =>
         deferredSelectedRanks.includes(member.freeCompanyRank),
       );
     }
 
-    // Sort results
     result = [...result].sort((a, b) => {
       switch (validSortBy) {
         case "name-asc":
@@ -217,7 +204,7 @@ export function Members() {
           return b.name.localeCompare(a.name);
         case "rank-asc":
         default: {
-          // Sort by rank hierarchy, then alphabetically within each rank
+          // rank hierarchy, then alphabetical within a rank
           const rankDiff =
             (RANK_ORDER.get(a.freeCompanyRank) ?? 999) -
             (RANK_ORDER.get(b.freeCompanyRank) ?? 999);
@@ -229,14 +216,12 @@ export function Members() {
     return result;
   }, [allMembers, deferredSearchQuery, deferredSelectedRanks, validSortBy]);
 
-  // Single-pass grouping: O(n) instead of O(n * ranks)
+  // single-pass grouping: O(n) instead of O(n * ranks)
   const membersByRank = useMemo(() => {
-    // Build a lookup for rank order (use string key for type safety)
     const rankOrder = new Map<string, number>(
       FC_RANKS.map((r, i) => [r.name, i]),
     );
 
-    // Group members in a single pass
     const grouped = new Map<string, typeof filteredMembers>();
     for (const member of filteredMembers) {
       const existing = grouped.get(member.freeCompanyRank);
@@ -247,7 +232,7 @@ export function Members() {
       }
     }
 
-    // Sort the map by rank order (Map iteration order is insertion order)
+    // rebuild in rank order - Map preserves insertion order
     const sorted = new Map<string, typeof filteredMembers>();
     const sortedEntries = Array.from(grouped.entries()).sort(
       ([a], [b]) => (rankOrder.get(a) ?? 999) - (rankOrder.get(b) ?? 999),
@@ -286,7 +271,7 @@ export function Members() {
 
   const hasActiveFilters = searchQuery || selectedRanks.length > 0;
 
-  // PERFORMANCE: Single-pass O(n) instead of O(n * ranks)
+  // single-pass O(n) instead of O(n * ranks)
   const rankCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const member of allMembers) {
@@ -299,7 +284,6 @@ export function Members() {
   return (
     <PageLayout moogles={{ primary: wizardMoogle, secondary: musicMoogle }}>
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
-        {/* Corner pins holding the board to the wall */}
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
           aria-hidden="true"
@@ -320,7 +304,6 @@ export function Members() {
           aria-hidden="true"
         />
 
-        {/* Corner-peek moogle */}
         <img
           src={lilGuyMoogle}
           alt=""
@@ -328,7 +311,6 @@ export function Members() {
           className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
         />
 
-        {/* ── Pinned title sign ───────────────────────────────────────────── */}
         <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
           <span
             className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
@@ -364,7 +346,7 @@ export function Members() {
           </div>
         </header>
 
-        {/* ═══ Sticky search + sort bar (stays slim; shelf scrolls under it) ═══ */}
+        {/* sticky so the shelf scrolls under it */}
         <motion.section
           className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 mb-4 sm:mb-5"
           initial={{ opacity: 0, y: 8 }}
@@ -382,7 +364,6 @@ export function Members() {
             aria-hidden="true"
           />
           <div className="surface paper p-3 sm:p-4">
-            {/* Search pill + sort */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <label htmlFor="member-search" className="sr-only">
@@ -434,7 +415,6 @@ export function Members() {
                 )}
               </div>
 
-              {/* Sort */}
               <div className="flex items-center gap-2 shrink-0">
                 <span className="hidden sm:flex items-center gap-1.5 text-sm font-display font-bold text-[var(--text-muted)] pl-1">
                   <ArrowUpDown
@@ -457,7 +437,6 @@ export function Members() {
           </div>
         </motion.section>
 
-        {/* ═══ Rank shelf — scrolls away (not sticky) ═══ */}
         <section className="relative mb-7 sm:mb-9">
           <span
             className="pushpin absolute -top-2 left-8 z-10"
@@ -562,7 +541,6 @@ export function Members() {
           </div>
         </section>
 
-        {/* ═══ CONTENT — Loading, Error, Empty, or the pinned member grid ═══ */}
         {isLoading ? (
           <div className="paper">
             <LoadingState message="Fetching members, kupo..." />

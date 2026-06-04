@@ -5,7 +5,6 @@ import { MembershipCard } from "../components/MembershipCard";
 import { getTheme } from "../components/membershipCardThemes";
 import { ContentCard } from "../components";
 
-// Mock user data for testing
 const MOCK_USER = {
   memberName: "Agility Rabbit",
   memberRank: "Moogle Knight",
@@ -15,12 +14,8 @@ const MOCK_USER = {
   createdAt: new Date().toISOString(),
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ANIMATION COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Decorative sparkle field — generated once at module load (purely cosmetic, so
-// per-mount randomness isn't needed and Math.random stays out of render).
+// generated once at module load - cosmetic, so no per-mount randomness and
+// Math.random stays out of render.
 const DEBUG_SPARKLES = Array.from({ length: 24 }, (_, i) => ({
   id: i,
   x: 10 + Math.random() * 80,
@@ -37,7 +32,6 @@ const DEBUG_SPARKLES = Array.from({ length: 24 }, (_, i) => ({
         : "var(--accent)",
 }));
 
-// Elegant floating sparkles
 const Sparkles = memo(function Sparkles() {
   const particles = DEBUG_SPARKLES;
 
@@ -75,7 +69,6 @@ const Sparkles = memo(function Sparkles() {
   );
 });
 
-// Shine sweep effect for the card
 function CardShine({ delay = 0 }: { delay?: number }) {
   return (
     <motion.div
@@ -102,29 +95,25 @@ function CardShine({ delay = 0 }: { delay?: number }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CARD REVEAL PREVIEW
-// ─────────────────────────────────────────────────────────────────────────────
-
 function CardRevealPreview({ onClose }: { onClose: () => void }) {
   const theme = getTheme(MOCK_USER.memberRank);
   const [phase, setPhase] = useState(0); // 0: initial, 1: card visible, 2: shine, 3: sparkles, 4: complete
   const [runCount, setRunCount] = useState(0);
 
-  // Orchestrated timeline (phase is reset to 0 by the replay handler / initial state)
+  // re-runs on replay via runCount; phase resets to 0 in the replay handler
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 300), // Card starts appearing
-      setTimeout(() => setPhase(2), 900), // Shine sweeps
-      setTimeout(() => setPhase(3), 1400), // Sparkles appear
-      setTimeout(() => setPhase(4), 2000), // Button appears
+      setTimeout(() => setPhase(1), 300),
+      setTimeout(() => setPhase(2), 900),
+      setTimeout(() => setPhase(3), 1400),
+      setTimeout(() => setPhase(4), 2000),
     ];
 
     return () => timers.forEach(clearTimeout);
   }, [runCount]);
 
   const replay = useCallback(() => {
-    setPhase(0); // restart the timeline from the beginning
+    setPhase(0);
     setRunCount((c) => c + 1);
   }, []);
 
@@ -137,7 +126,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Close button */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 p-2 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer z-10"
@@ -145,7 +133,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
         <X className="w-5 h-5 text-[var(--text)]" />
       </button>
 
-      {/* Replay button */}
       <button
         onClick={replay}
         className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer z-10"
@@ -154,7 +141,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
         <span className="text-sm font-soft text-[var(--text)]">Replay</span>
       </button>
 
-      {/* Phase indicator */}
       <div className="absolute top-16 left-4 text-xs text-[var(--text-muted)] font-mono">
         Phase: {phase}
       </div>
@@ -165,7 +151,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {/* Welcome header - elegant fade with blur */}
           <motion.div
             className="mb-8"
             initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
@@ -197,9 +182,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
             </motion.p>
           </motion.div>
 
-          {/* Card container */}
           <div className="relative mb-6 text-left">
-            {/* Ambient glow - pulses subtly */}
             <motion.div
               className="absolute -inset-12 rounded-[2rem] pointer-events-none"
               style={{
@@ -221,7 +204,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               }}
             />
 
-            {/* The membership card with premium entrance */}
             <motion.div
               className="relative"
               initial={{
@@ -256,15 +238,12 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
                 compact
               />
 
-              {/* Shine sweep overlay */}
               {phase >= 2 && <CardShine delay={0} />}
             </motion.div>
 
-            {/* Sparkles */}
             <AnimatePresence>{phase >= 3 && <Sparkles />}</AnimatePresence>
           </div>
 
-          {/* Bottom section - message and button */}
           <div className="min-h-[5.5rem] flex flex-col items-center justify-center gap-4">
             <AnimatePresence mode="wait">
               {phase >= 3 && (
@@ -309,10 +288,6 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
     </motion.div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DEBUG PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function Debug() {
   const [showPreview, setShowPreview] = useState(false);
@@ -372,7 +347,6 @@ export function Debug() {
         </ContentCard>
       </div>
 
-      {/* Preview overlay */}
       <AnimatePresence>
         {showPreview && (
           <CardRevealPreview onClose={() => setShowPreview(false)} />
