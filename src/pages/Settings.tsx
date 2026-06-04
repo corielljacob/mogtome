@@ -5,12 +5,10 @@ import {
   KawaiiBow,
   KawaiiHeart,
 } from "../components";
-import {
-  ThemeSection,
-  SeasonalEventSection,
-  AccessibilitySection,
-  AccountSection,
-} from "../components/settings";
+import { ThemeSection } from "../components/settings/ThemeSection";
+import { SeasonalEventSection } from "../components/settings/SeasonalEventSection";
+import { AccessibilitySection } from "../components/settings/AccessibilitySection";
+import { AccountSection } from "../components/settings/AccountSection";
 
 import gamingMoogle from "../assets/moogles/gaming moogle.webp";
 import musicMoogle from "../assets/moogles/moogle playing music.webp";
