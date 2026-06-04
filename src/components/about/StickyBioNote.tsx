@@ -74,6 +74,15 @@ export function StickyBioNote({
     boxShadow:
       "2px 5px 13px -3px rgba(0, 0, 0, 0.30), inset 0 -14px 18px -14px rgba(90, 70, 25, 0.18)",
   };
+  // iOS Safari won't touch-scroll an overflow container nested inside a
+  // transform (the note's rotate), so opt this one back into momentum scrolling
+  // and keep the gesture contained to the note.
+  const scrollerStyle: CSSProperties = {
+    ...stickyStyle,
+    WebkitOverflowScrolling: "touch",
+    touchAction: "pan-y",
+    overscrollBehavior: "contain",
+  };
 
   // Same overlap + tilt in both states so the note keeps its scrapbook spot,
   // tucked over the polaroid's edge. Fixed size keeps every note consistent;
@@ -137,7 +146,7 @@ export function StickyBioNote({
           ref={scrollRef}
           onScroll={updateScroll}
           className="h-48 sm:h-56 overflow-y-auto rounded-[3px] p-3.5 sm:p-4"
-          style={stickyStyle}
+          style={scrollerStyle}
         >
           <p
             className={`font-accent text-[17px] sm:text-lg leading-snug whitespace-pre-line ${bio ? "text-[#463c2e]" : "text-[#463c2e]/55"}`}
