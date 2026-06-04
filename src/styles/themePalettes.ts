@@ -1,24 +1,18 @@
 /**
- * Single source of truth for the candy colour palettes.
+ * Single source of truth for the candy colour palettes - each theme/simple event
+ * as just its three identity colours (+ optional bg) for light + dark. Derived
+ * from here: the `.theme-*` / `.event-*` CSS blocks (themeCss.ts → virtual:theme.css),
+ * the Settings swatches (ThemeContext), and the seasonal-event swatches.
  *
- * Every user theme and every "simple" seasonal event lives here as just its three
- * identity colours (primary / secondary / accent) for light + dark, plus an
- * optional page-background tint. From this one file:
- *   • the `.theme-*` / `.event-*` CSS variable blocks are GENERATED at build time
- *     (see `themeCss.ts` + the `themeCssPlugin` in vite.config.ts → `virtual:theme.css`)
- *   • the Settings preview swatches + `THEME_DEFINITIONS` are derived (ThemeContext)
- *   • the seasonal-event preview swatches are derived (constants/seasonalEvents.ts)
- *
- * Intentionally NOT here (kept hand-tuned in index.css): the accessibility
- * high-contrast variants (tuned for 7:1 contrast) and the two flagship events
- * (All Saints' Wake, Starlight) which restyle bg/card/text wholesale.
+ * NOT here (hand-tuned in index.css): the 7:1 high-contrast a11y variants and the
+ * two flagship events (All Saints' Wake, Starlight) that restyle bg/card/text wholesale.
  */
 
 export interface Palette {
   primary: string;
   secondary: string;
   accent: string;
-  /** Optional page background tint (some events wash the page in their colour). */
+  /** some events wash the whole page in their colour */
   bg?: string;
 }
 
@@ -27,7 +21,7 @@ export interface ModePalette {
   dark: Palette;
 }
 
-/** Display metadata for the user-selectable themes (order = Settings order). */
+/** order here drives Settings order */
 export const THEME_META: { id: string; name: string; description: string }[] = [
   {
     id: "pom-pom",
@@ -67,7 +61,7 @@ export const THEME_META: { id: string; name: string; description: string }[] = [
   { id: "sunset", name: "Costa del Sol", description: "Sunset orange & coral" },
 ];
 
-/** User-selectable colour themes. "pom-pom" is the default (lives in :root). */
+/** "pom-pom" is the default and lives in :root */
 export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
     light: { primary: "#e25d88", secondary: "#9f80da", accent: "#f4be4c" },
@@ -103,11 +97,7 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
   },
 };
 
-/**
- * Simple seasonal events (override primary/secondary/accent, sometimes the page
- * background). The flagship events (all-saints-wake, starlight) are NOT here —
- * they keep their bespoke palettes in index.css.
- */
+/** flagship events (all-saints-wake, starlight) are NOT here - bespoke palettes in index.css */
 export const EVENT_PALETTES: Record<string, ModePalette> = {
   heavensturn: {
     light: { primary: "#e0503f", secondary: "#e8a634", accent: "#f5cf5c" },

@@ -1,10 +1,9 @@
 import { THEME_PALETTES, EVENT_PALETTES, type Palette } from "./themePalettes";
 
 /**
- * Emit one `.theme-*` / `.event-*` variable block. Themes/events only carry their
- * three identity colours (+ optional bg); the derived tokens (--shadow, the
- * gradient mesh) are computed from them with color-mix, identically for every
- * palette, so they never have to be repeated by hand.
+ * Palettes carry only their three identity colours (+ optional bg); the derived
+ * tokens (--shadow, the gradient mesh) are computed via color-mix the same way
+ * for every palette, so they never have to be repeated by hand.
  */
 function paletteBlock(selector: string, p: Palette, isDark: boolean): string {
   const shadowPct = isDark ? 24 : 18;
@@ -36,20 +35,19 @@ function paletteBlock(selector: string, p: Palette, isDark: boolean): string {
   return `${selector} {\n${lines.join("\n")}\n}`;
 }
 
-/** Build the full generated stylesheet (served as `virtual:theme.css`). */
+/** served as `virtual:theme.css` */
 export function generateThemeCss(): string {
   const out: string[] = [
-    "/* GENERATED from src/styles/themePalettes.ts — do not edit by hand. */",
+    "/* GENERATED from src/styles/themePalettes.ts - do not edit by hand. */",
   ];
 
-  // User themes (pom-pom is the default and lives in :root, so it's skipped).
+  // pom-pom is the default and lives in :root, so skip it
   for (const [id, modes] of Object.entries(THEME_PALETTES)) {
     if (id === "pom-pom") continue;
     out.push(paletteBlock(`.theme-${id}`, modes.light, false));
     out.push(paletteBlock(`.dark.theme-${id}`, modes.dark, true));
   }
 
-  // Simple seasonal events.
   for (const [id, modes] of Object.entries(EVENT_PALETTES)) {
     out.push(paletteBlock(`.event-${id}`, modes.light, false));
     out.push(paletteBlock(`.dark.event-${id}`, modes.dark, true));

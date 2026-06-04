@@ -1,7 +1,6 @@
-/* base — resets + native-app feel (@layer base)
+/* base - resets + native-app feel (@layer base)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-/* Base Styles */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -104,7 +103,6 @@
     user-select: none;
   }
 
-  /* Custom Selection Color */
   ::selection {
     background-color: var(--primary);
     color: white;
@@ -158,10 +156,7 @@
    * For performance, we rely on will-change hints on animated elements instead.
    */
 
-  /* ─────────────────────────────────────────────────────────────────────────────
-   * NATIVE MOBILE APP FEEL
-   * These styles make the web app feel more like a native iOS/Android app
-   * ───────────────────────────────────────────────────────────────────────────── */
+  /* Native mobile app feel - make the web app feel more like a native iOS/Android app. */
 
   /* Prevent overscroll bounce on the whole page (iOS) */
   html {
@@ -189,7 +184,7 @@
   }
 
   /* 
-   * NOTE: Removed `* { -webkit-overflow-scrolling: touch }` — this property
+   * NOTE: Removed `* { -webkit-overflow-scrolling: touch }` - this property
    * is deprecated and no longer needed on iOS 13+. On older iOS, it was
    * applied to every element in the DOM, forcing unnecessary layer creation.
    * Momentum scrolling is now the default behavior.

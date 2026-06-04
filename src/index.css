@@ -1,19 +1,17 @@
 /* PERFORMANCE: Font import removed from CSS - loaded via <link> in HTML for better control */
 @import "tailwindcss";
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * Style layers, split out of what used to be one ~2000-line index.css.
+/* Style layers, split out of what used to be one ~2000-line index.css.
  *
  * Import ORDER matters for the un-layered cascade: palette/events/accessibility
  * define the CSS variables that everything downstream consumes. The generated
  * theme + simple-event palettes load separately via `virtual:theme.css`
- * (imported after this file in main.tsx) — see src/styles/themePalettes.ts.
+ * (imported after this file in main.tsx) - see src/styles/themePalettes.ts.
  *
  * Cascade tiers (low → high precedence): @layer base < @layer components <
  * Tailwind @layer utilities < un-layered. Component classes live in
  * @layer components so utilities can override them; the accessibility palette
- * stays un-layered + high-specificity so it always wins.
- * ───────────────────────────────────────────────────────────────────────────── */
+ * stays un-layered + high-specificity so it always wins. */
 @import "./styles/config.css"; /* Tailwind variants + @theme radius tokens */
 @import "./styles/base.css"; /* @layer base: resets + native-app feel */
 @import "./styles/palette.css"; /* default :root/.dark tokens + flagship events */

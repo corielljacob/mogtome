@@ -1,10 +1,10 @@
-/* palette — default :root / .dark tokens + flagship seasonal events (un-layered)
+/* palette - default :root / .dark tokens + flagship seasonal events (un-layered)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-/* Design System Variables — Enchanted Garden Palette */
+/* Design System Variables - Enchanted Garden Palette */
 :root {
   color-scheme: light;
-  /* Cozy type system — storybook rounded display, clean body, handwritten accent */
+  /* Cozy type system - storybook rounded display, clean body, handwritten accent */
   --font-display:
     "Zen Maru Gothic", "Fredoka", "Manrope", system-ui, sans-serif;
   --font-body: "Manrope", system-ui, sans-serif;
@@ -24,7 +24,7 @@
   --border: rgba(31, 26, 46, 0.08);
   --shadow: rgba(31, 26, 46, 0.06);
   --glass: #ffffff;
-  /* Soft "die-cut sticker" float — surfaces lift gently off the page */
+  /* Soft "die-cut sticker" float - surfaces lift gently off the page */
   --panel-shadow:
     0 2px 4px -1px rgba(31, 26, 46, 0.05),
     0 10px 22px -8px rgba(31, 26, 46, 0.11);
@@ -70,31 +70,25 @@
   --gradient-4: rgba(123, 117, 144, 0.06);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * COLOR THEMES
- * These palettes provide different color schemes while maintaining the same
- * semantic meaning (primary, secondary, accent, etc.)
- * ───────────────────────────────────────────────────────────────────────────── */
+/* color themes - different schemes sharing the same semantic token meanings
+ * (primary, secondary, accent, etc.) */
 
 /* Pom-Pom Classic (the default) lives in :root above. Every OTHER theme's
-   .theme-* block — and the simple .event-* blocks — are GENERATED from
+   .theme-* block - and the simple .event-* blocks - are GENERATED from
    src/styles/themePalettes.ts (served as virtual:theme.css, imported in main.tsx),
    so the palette lives in exactly one place. Only the two flagship events below and
    the high-contrast a11y variants are hand-tuned here. */
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * SEASONAL EVENT THEMES
- * These palettes activate automatically during FFXIV seasonal events and
- * override the user's chosen color theme. Each event has light and dark
- * variants. The event class is applied alongside the theme class.
- * ───────────────────────────────────────────────────────────────────────────── */
+/* seasonal event themes - activate automatically during FFXIV seasonal events
+ * and override the user's chosen color theme. Each event has light and dark
+ * variants; the event class is applied alongside the theme class. */
 
 /* The simple events (Heavensturn, Valentione's, Little Ladies', Hatching-tide,
    Make It Rain, Moonfire Faire, The Rising) are GENERATED  see themePalettes.ts.
    The two flagship events below restyle bg/card/text wholesale, so they stay here. */
 
-/* ── All Saints' Wake (October) — Haunted Purple, Pumpkin & Eerie Green ────── */
-/* This is a flagship event — the theme is intentionally dramatic */
+/* All Saints' Wake (October) - Haunted Purple, Pumpkin & Eerie Green */
+/* flagship event - the theme is intentionally dramatic */
 .event-all-saints-wake {
   --bg: #f8f3f0;
   --card: rgba(255, 255, 255, 0.88);
@@ -131,8 +125,8 @@
   --gradient-4: rgba(167, 139, 250, 0.12);
 }
 
-/* ── Starlight Celebration (December) — Festive Red, Evergreen & Gold ──────── */
-/* This is a flagship event — the theme is intentionally dramatic */
+/* Starlight Celebration (December) - Festive Red, Evergreen & Gold */
+/* flagship event - the theme is intentionally dramatic */
 .event-starlight {
   --bg: #fffbf5;
   --card: rgba(255, 255, 255, 0.9);

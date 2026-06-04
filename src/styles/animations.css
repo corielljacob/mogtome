@@ -1,7 +1,6 @@
-/* animations — keyframes + animate-* helpers (+ .glass-card @layer components)
+/* animations - keyframes + animate-* helpers (+ .glass-card @layer components)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-/* Glass Card */
 @layer components {
   .glass-card {
     background: var(--card);
@@ -10,7 +9,7 @@
     box-shadow: var(--panel-shadow);
   }
 
-  /* glass-card: styled via border/shadow only — backdrop-blur removed for performance
+  /* glass-card: styled via border/shadow only - backdrop-blur removed for performance
      since glass cards don't overlap scrollable content */
 
   .dark .glass-card {
@@ -19,7 +18,6 @@
   }
 }
 
-/* Shimmer Animation */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
@@ -74,13 +72,10 @@
   animation: float-gentle 1.5s ease-in-out infinite;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * PERFORMANCE: CSS Animations for decorative floating elements
+/* PERFORMANCE: CSS animations for decorative floating elements.
  * These run on the compositor thread, avoiding main thread work.
- * 
- * Mobile optimization: On touch devices, we use simpler transform-only 
- * animations (no opacity changes) for better performance on Android.
- * ───────────────────────────────────────────────────────────────────────────── */
+ * Mobile optimization: on touch devices we use simpler transform-only
+ * animations (no opacity changes) for better performance on Android. */
 
 /* Mobile-optimized: transform only, no opacity animation */
 @keyframes float-moogle-simple {
@@ -240,7 +235,6 @@
   }
 }
 
-/* 3D Card Effects - Perspective utilities */
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -254,15 +248,12 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * RESIZE FREEZE
- * While the window is actively being resized, kill transitions and pause
- * animations. Spring/overshoot transitions (and the many transform layers on
- * the Home view) can otherwise render a transient oversized/stale frame mid-
- * resize that only corrects on the next forced reflow. Freezing lets the layout
- * settle in one clean pass when resizing stops — and keeps resizing cheap.
- * The `data-resizing` attribute is toggled in App (see AppContent).
- * ───────────────────────────────────────────────────────────────────────────── */
+/* Resize freeze - while the window is actively being resized, kill transitions
+ * and pause animations. Spring/overshoot transitions (and the many transform
+ * layers on the Home view) can otherwise render a transient oversized/stale frame
+ * mid-resize that only corrects on the next forced reflow. Freezing lets the
+ * layout settle in one clean pass when resizing stops - and keeps resizing cheap.
+ * The `data-resizing` attribute is toggled in App (see AppContent). */
 html[data-resizing] *,
 html[data-resizing] *::before,
 html[data-resizing] *::after {

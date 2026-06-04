@@ -1,7 +1,6 @@
-/* typography — font + text helpers (un-layered)
+/* typography - font + text helpers (un-layered)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-/* Typography */
 .font-inter {
   font-family: var(--font-body);
 }
@@ -21,7 +20,7 @@
 .font-title {
   font-family: var(--font-display);
 }
-/* Latin rounded display — for the giant home title; Latin metrics keep hover
+/* Latin rounded display - for the giant home title; Latin metrics keep hover
    hitboxes aligned (Zen Maru's CJK ascent pushed them too high). */
 .font-title-latin {
   font-family: "Fredoka", "Manrope", system-ui, sans-serif;
@@ -46,7 +45,7 @@
   z-index: 0;
 }
 
-/* Elegant text underline highlight — gradient marker stroke */
+/* Elegant text underline highlight - gradient marker stroke */
 .text-highlight::after {
   content: "";
   position: absolute;
@@ -72,7 +71,7 @@
   background: var(--border);
 }
 
-/* Decorative tape-style divider — used in section labels */
+/* Decorative tape-style divider - used in section labels */
 .washi-tape-strip {
   height: 1px;
   border: none;

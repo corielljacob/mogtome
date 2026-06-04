@@ -1,18 +1,16 @@
-/* components — cards, nav, gel, journal, corkboard. In @layer components so Tailwind utilities can override them.
+/* components - cards, nav, gel, journal, corkboard. In @layer components so Tailwind utilities can override them.
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
 @layer components {
-  /* ─────────────────────────────────────────────────────────────────────────────
-   * KAWAII SURFACE — matte "puffy sticker" card (pop kawaii).
+  /* Kawaii surface - matte "puffy sticker" card (pop kawaii).
    * Shared base for cards, nav, dropdowns and pills. Solid, soft, chunky-rounded,
-   * with a candy outline + a little drop. No gloss, no frost. See docs/DESIGN.md.
-   * ───────────────────────────────────────────────────────────────────────────── */
+   * with a candy outline + a little drop. No gloss, no frost. See docs/DESIGN.md. */
   .surface {
     position: relative;
     isolation: isolate;
     border-radius: var(--radius-2xl);
     background-color: var(--card);
-    /* Faint paper grain so cards aren't perfectly flat — soft-light blended with
+    /* Faint paper grain so cards aren't perfectly flat - soft-light blended with
        the card colour, so it adapts to light/dark cards. Reset in high-contrast. */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23cg)' opacity='0.6'/%3E%3C/svg%3E");
     background-blend-mode: soft-light;
@@ -29,7 +27,7 @@
   }
 
   .dark .surface {
-    /* No candy "lip" in dark mode — it reads as a bright glow. Just a faint candy
+    /* No candy "lip" in dark mode - it reads as a bright glow. Just a faint candy
        edge + a soft neutral drop shadow for a little depth. */
     border-color: color-mix(in srgb, var(--primary) 14%, var(--border));
     box-shadow:
@@ -37,8 +35,8 @@
       0 6px 16px -8px rgba(0, 0, 0, 0.42);
   }
 
-  /* Matte "candy" button — solid pastel, pill, chunky offset lip, squishy press.
-     Set --gel-color to a theme color. (No gloss — pop kawaii is matte.) */
+  /* Matte "candy" button - solid pastel, pill, chunky offset lip, squishy press.
+     Set --gel-color to a theme color. (No gloss - pop kawaii is matte.) */
   .gel {
     position: relative;
     color: #fff;
@@ -83,7 +81,7 @@
     filter: none;
   }
 
-  /* Sticker-book polka dots — soft two-tone background pattern (theme-tinted) */
+  /* Sticker-book polka dots - soft two-tone background pattern (theme-tinted) */
   .kawaii-dots {
     background-image:
       radial-gradient(
@@ -129,19 +127,17 @@
       );
   }
 
-  /* ─── Page pattern (gingham check) ─────────────────────────────────────────────
-   * A soft gingham check for the page background. Placed on the scroll container
-   * (#app-scroll). Two perpendicular translucent stripe sets overlap into the
-   * classic 3-tone check, tinted from the theme so it recolours per palette. Hidden
-   * in high-contrast for a clean a11y bg.
-   * ─────────────────────────────────────────────────────────────────────────────── */
+  /* Page pattern (gingham check) - a soft gingham check for the page background.
+   * Placed on the scroll container (#app-scroll). Two perpendicular translucent
+   * stripe sets overlap into the classic 3-tone check, tinted from the theme so it
+   * recolours per palette. Hidden in high-contrast for a clean a11y bg. */
   .page-pattern {
     --gp: color-mix(in srgb, var(--primary) 9%, transparent);
     background-color: var(--bg);
     background-image:
       repeating-linear-gradient(90deg, var(--gp) 0 16px, transparent 16px 32px),
       repeating-linear-gradient(0deg, var(--gp) 0 16px, transparent 16px 32px);
-    /* Default (scroll) attachment, pinned to the viewport — NOT "local". The check
+    /* Default (scroll) attachment, pinned to the viewport - NOT "local". The check
        is uniform, so there's no visible difference while scrolling, but it no longer
        rides the overscroll bounce / content reflow, which made it jitter. */
   }
@@ -153,10 +149,10 @@
     background-image: none;
   }
 
-  /* ─── Cork bulletin board ──────────────────────────────────────────────────────
+  /* Cork bulletin board.
    * Light: a warm cream speckled cork (cards pop as white polaroids on cream).
-   * Dark: a board pitched between the page bg and the cards — darker than the cards
-   * so the polaroids pop, lighter than the page so the board stands out — warmed by
+   * Dark: a board pitched between the page bg and the cards - darker than the cards
+   * so the polaroids pop, lighter than the page so the board stands out - warmed by
    * a faint theme wash and lit with light speckles so the grain reads (no muddy
    * brown). Frame is the candy --primary border; pin cards with the .pushpin nub. */
   .corkboard {
@@ -168,7 +164,7 @@
     border: 6px solid color-mix(in srgb, var(--primary) 30%, var(--card));
     background-color: var(--cork-base);
     /* Flat-ish kawaii cork: two-tone candy polka dots over a flat theme-tinted base,
-       with just a faint SVG fractal-noise grain (soft-light) for a hint of cork —
+       with just a faint SVG fractal-noise grain (soft-light) for a hint of cork -
        no blobby mottling/highlights. */
     background-image:
       radial-gradient(circle, var(--cork-dot-a) 0 2px, transparent 3.1px),
@@ -210,7 +206,7 @@
     box-shadow: none;
   }
 
-  /* Push-pin — a tiny domed pin for "pinning" cards to the cork board. Set --pin. */
+  /* Push-pin - a tiny domed pin for "pinning" cards to the cork board. Set --pin. */
   .pushpin {
     display: inline-block;
     width: 0.9rem;
@@ -232,8 +228,8 @@
     box-shadow: 0 0 0 1.5px var(--border);
   }
 
-  /* "Journal" — a warm logbook page for the Chronicle: clean paper with a coloured
-     margin stripe down the left (no horizontal rules — page-wide rules can't line
+  /* "Journal" - a warm logbook page for the Chronicle: clean paper with a coloured
+     margin stripe down the left (no horizontal rules - page-wide rules can't line
      up with the variable-height entries, so they read as messy). Uses theme tokens,
      so it's light paper in light mode and a dark notebook in dark mode. */
   .journal {
@@ -269,12 +265,12 @@
     display: none;
   }
 
-  /* Sticker text — chunky cream outline + soft drop, for big display headings.
+  /* Sticker text - chunky cream outline + soft drop, for big display headings.
      Color the fill with a normal text color class; the outline sits behind it. */
   .sticker-text {
     -webkit-text-stroke: 0.05em var(--card);
     paint-order: stroke fill;
-    /* text-shadow instead of filter: drop-shadow — cheaper, no extra paint layer */
+    /* text-shadow instead of filter: drop-shadow - cheaper, no extra paint layer */
     text-shadow: 2px 4px 1px color-mix(in srgb, var(--text) 16%, transparent);
   }
   .dark .sticker-text {

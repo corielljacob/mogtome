@@ -1,4 +1,4 @@
-/* utilities — sr-only, focus ring, skip link, safe-area insets, page-bg (un-layered)
+/* utilities - sr-only, focus ring, skip link, safe-area insets, page-bg (un-layered)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
 /* Screen reader only - visually hidden but accessible to screen readers */

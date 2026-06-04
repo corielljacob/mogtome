@@ -1,20 +1,15 @@
-/* accessibility — high-contrast, colorblind, reduced-motion, dyslexia, focus (un-layered, high specificity)
+/* accessibility - high-contrast, colorblind, reduced-motion, dyslexia, focus (un-layered, high specificity)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * ACCESSIBILITY MODES
- * These classes are applied to the root element by AccessibilityContext
- * Using :root prefix to ensure these always override theme color palettes
- * ───────────────────────────────────────────────────────────────────────────── */
+/* accessibility modes - applied to the root element by AccessibilityContext.
+ * :root prefix ensures these always override theme color palettes. */
 
-/* 
- * HIGH CONTRAST MODE - Theme-Aware
+/* high contrast mode - theme-aware.
  * Each theme gets its own high-contrast variant that preserves the theme's
  * character while boosting contrast to meet WCAG AAA standards (7:1 ratio).
- * Colors are darkened for light mode and brightened for dark mode.
- */
+ * Colors are darkened for light mode and brightened for dark mode. */
 
-/* Base high contrast settings (shared across all themes) */
+/* base high-contrast tokens shared across all themes */
 :root.high-contrast {
   --bg: #ffffff;
   --card: #ffffff;
@@ -177,7 +172,7 @@
   --border: rgba(255, 255, 255, 0.5);
 }
 
-/* Large Text Mode */
+/* large text mode */
 .large-text {
   font-size: 118%;
 }
@@ -214,7 +209,7 @@
   box-shadow: 0 0 0 6px var(--shadow) !important;
 }
 
-/* Dyslexia-friendly Font Mode */
+/* dyslexia-friendly font mode */
 .dyslexia-font {
   font-family:
     "OpenDyslexic", "Comic Sans MS", "Manrope", system-ui, sans-serif !important;
@@ -234,22 +229,19 @@
   letter-spacing: 0.02em;
 }
 
-/* Reduced Motion Mode - controlled via class for manual toggle */
-/* Reduced Motion Mode - Comprehensive disable of all animations */
+/* Reduced motion mode - class-toggled (manual override of the media query),
+   comprehensively disables all animations/transitions. */
 .reduce-motion,
 .reduce-motion *,
 .reduce-motion *::before,
 .reduce-motion *::after {
-  /* Disable CSS animations */
   animation-duration: 0.001ms !important;
   animation-delay: 0ms !important;
   animation-iteration-count: 1 !important;
 
-  /* Disable CSS transitions */
   transition-duration: 0.001ms !important;
   transition-delay: 0ms !important;
 
-  /* Disable scroll behavior */
   scroll-behavior: auto !important;
 }
 
@@ -280,12 +272,8 @@
   transform: none !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * COLORBLIND MODES
- * These palettes are designed to be distinguishable for different types of
- * color vision deficiency. Colors are carefully chosen to maintain meaning
- * while being accessible.
- * ───────────────────────────────────────────────────────────────────────────── */
+/* colorblind modes - palettes chosen to stay distinguishable for different types
+ * of color vision deficiency while keeping each token's meaning. */
 
 /* Protanopia (Red-Blind) - Uses blue/yellow palette */
 :root.colorblind-protanopia {
@@ -361,13 +349,10 @@
   --text-subtle: #909090;
 }
 
-/* 
- * Monochromacy - Full grayscale mode
- * We use a backdrop filter approach with a fixed overlay to catch ALL elements,
- * including those rendered in portals outside the main React tree.
- * 
- * The overlay is pointer-events:none so it doesn't block interactions.
- */
+/* Monochromacy - full grayscale mode.
+ * Uses a fixed overlay with a backdrop filter to catch ALL elements, including
+ * those rendered in portals outside the main React tree.
+ * The overlay is pointer-events:none so it doesn't block interactions. */
 .colorblind-monochromacy::before {
   content: "";
   position: fixed;
