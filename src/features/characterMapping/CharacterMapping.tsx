@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -7,63 +7,71 @@ import {
   AlertCircle,
   RefreshCw,
   Check,
-  Search,
-  Zap,
-  X,
-  Sparkles,
   ArrowLeft,
+  ArrowRight,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { ContentCard } from "../../components/ContentCard";
-import { useCharacterMapping, useManualPicker } from "./hooks";
-import { EmptyState, AutoMatchesTab, ManualPickerTab } from "./components";
-import type { TabId } from "./types";
+import { Button, IconButton } from "../../components/Button";
+import { DiscordIcon } from "../../components/DiscordIcon";
+import { useCharacterMapping, useSmartPicker } from "./hooks";
+import {
+  EmptyState,
+  CharacterItem,
+  DiscordUserItem,
+  SearchInput,
+} from "./components";
+import FfxivIcon from "../../assets/icons/ffxiv.png";
 
 export function CharacterMapping() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>("matches");
-
-  // -- Custom hooks -----------------------------------------------------------
 
   const {
     allCharacters,
     allDiscordUsers,
-    matchResults,
     visibleExactMatches,
     visibleSuggestedMatches,
     totalMatches,
     isLoading,
     isError,
-    confirmPair,
-    dismissPair,
     mapManually,
-    refresh,
-    confirmingPairKey,
+    confirmAllExact,
+    isConfirmingAll,
     isMapping,
-    mappingError,
+    refresh,
+    getRankedDiscordUsers,
+    getRankedCharacters,
   } = useCharacterMapping();
+
+  const suggestedPairs = useMemo(
+    () => [...visibleExactMatches, ...visibleSuggestedMatches],
+    [visibleExactMatches, visibleSuggestedMatches],
+  );
 
   const {
     selectedCharacter,
     selectedDiscordUser,
-    canConfirm,
+    canLink,
     characterSearch,
     discordSearch,
     setCharacterSearch,
     setDiscordSearch,
-    sortedCharacters,
-    sortedDiscordUsers,
+    characterRows,
+    discordRows,
     selectCharacter,
     selectDiscordUser,
     reset: resetPicker,
-  } = useManualPicker({
+  } = useSmartPicker({
     allCharacters,
     allDiscordUsers,
+    suggestedPairs,
+    getRankedDiscordUsers,
+    getRankedCharacters,
   });
 
   // -- Effects ----------------------------------------------------------------
 
-  // Lock body scroll when overlay is open
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
@@ -73,7 +81,6 @@ export function CharacterMapping() {
     };
   }, [isOpen]);
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
@@ -85,7 +92,12 @@ export function CharacterMapping() {
 
   // -- Handlers ---------------------------------------------------------------
 
-  const handleManualConfirm = useCallback(async () => {
+  const handleRefresh = useCallback(() => {
+    resetPicker();
+    refresh();
+  }, [resetPicker, refresh]);
+
+  const handleLink = useCallback(async () => {
     if (!selectedCharacter || !selectedDiscordUser) return;
     try {
       await mapManually(
@@ -94,22 +106,14 @@ export function CharacterMapping() {
       );
       resetPicker();
     } catch {
-      // Error is surfaced via mappingError from the hook
+      // surfaced via the hook's mapping state
     }
   }, [selectedCharacter, selectedDiscordUser, mapManually, resetPicker]);
 
-  const handleRefresh = useCallback(() => {
-    resetPicker();
-    refresh();
-  }, [resetPicker, refresh]);
-
-  const handleSwitchToManual = useCallback(() => {
-    setActiveTab("manual");
-  }, []);
-
   const hasAnyUnmapped = allCharacters.length > 0 || allDiscordUsers.length > 0;
+  const exactCount = visibleExactMatches.length;
 
-  // -- Render: Trigger card (sits in the dashboard grid) -------------------------
+  // -- Render: Trigger card ---------------------------------------------------
 
   const triggerCard = (
     <div
@@ -128,14 +132,11 @@ export function CharacterMapping() {
       <ContentCard className="h-full flex flex-col group-hover:border-[var(--primary)]/25 transition-colors">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
-              <Link2
-                className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]"
-                aria-hidden="true"
-              />
-            </div>
+            <span className="icon-badge w-10 h-10 shrink-0 text-[var(--primary)]">
+              <Link2 className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+            </span>
             <div>
-              <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
+              <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)]">
                 Character Mapping
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
@@ -170,7 +171,7 @@ export function CharacterMapping() {
                   {allCharacters.length}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] font-soft">
-                  Unmapped Characters
+                  To Link
                 </p>
               </div>
               {totalMatches > 0 && (
@@ -181,7 +182,7 @@ export function CharacterMapping() {
                       {totalMatches}
                     </p>
                     <p className="text-xs text-[var(--text-muted)] font-soft">
-                      Auto Matches
+                      Suggested
                     </p>
                   </div>
                 </>
@@ -195,6 +196,12 @@ export function CharacterMapping() {
 
   // -- Render: Full-screen overlay --------------------------------------------
 
+  const countPill = (n: number) => (
+    <span className="px-2 py-0.5 rounded-full text-xs font-soft font-bold bg-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))] text-[var(--text-muted)]">
+      {n}
+    </span>
+  );
+
   const overlay = (
     <AnimatePresence>
       {isOpen && (
@@ -205,34 +212,26 @@ export function CharacterMapping() {
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex flex-col bg-[var(--bg)]"
         >
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/[0.04] via-transparent to-[var(--secondary)]/[0.03] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/[0.05] via-transparent to-[var(--secondary)]/[0.04] pointer-events-none" />
 
           {/* Header */}
           <div className="relative z-10 flex-shrink-0 border-b border-[var(--border)]/50 bg-[var(--bg)]/80">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="
-                    p-2 -ml-2 rounded-xl
-                    text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--card)]
-                    transition-colors cursor-pointer
-                    focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  "
+                <IconButton
+                  variant="ghost"
+                  size="md"
+                  icon={<ArrowLeft className="w-5 h-5" />}
                   aria-label="Close"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
+                  onClick={() => setIsOpen(false)}
+                  className="-ml-1"
+                />
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
-                    <Link2
-                      className="w-4 h-4 text-[var(--primary)]"
-                      aria-hidden="true"
-                    />
-                  </div>
+                  <span className="icon-badge w-9 h-9 shrink-0 text-[var(--primary)]">
+                    <Link2 className="w-4 h-4" aria-hidden="true" />
+                  </span>
                   <div>
-                    <h1 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
+                    <h1 className="font-display font-bold text-base sm:text-lg text-[var(--text)]">
                       Character Mapping
                     </h1>
                     <p className="text-xs text-[var(--text-muted)] hidden sm:block">
@@ -242,30 +241,26 @@ export function CharacterMapping() {
                 </div>
               </div>
 
-              <button
+              <IconButton
+                variant="ghost"
+                size="md"
+                icon={
+                  <RefreshCw
+                    className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+                  />
+                }
+                aria-label="Refresh unmapped lists"
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="
-                  p-2.5 sm:p-2 rounded-xl sm:rounded-lg
-                  bg-[var(--card)] hover:bg-[var(--primary)]/10
-                  text-[var(--text-muted)] hover:text-[var(--primary)]
-                  transition-colors cursor-pointer touch-manipulation disabled:opacity-50
-                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                "
-                aria-label="Refresh unmapped lists"
-              >
-                <RefreshCw
-                  className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-              </button>
+              />
             </div>
           </div>
 
-          {/* Content area — fills remaining viewport */}
-          <div className="relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6 w-full flex-1 flex flex-col min-h-0">
+          {/* Content */}
+          <div className="relative z-10 flex-1 flex flex-col min-h-0">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-5 w-full flex-1 flex flex-col min-h-0">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-16">
+                <div className="flex flex-col items-center justify-center flex-1 py-16">
                   <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mb-3" />
                   <p className="text-sm text-[var(--text-muted)] font-soft">
                     Loading unmapped accounts...
@@ -277,13 +272,10 @@ export function CharacterMapping() {
                   title="Failed to load unmapped accounts"
                   subtitle="Something went wrong, kupo..."
                   action={
-                    <button
-                      onClick={handleRefresh}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary)] text-white font-soft font-semibold text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none"
-                    >
-                      <RefreshCw className="w-4 h-4" />
+                    <Button variant="primary" size="sm" onClick={handleRefresh}>
+                      <RefreshCw className="w-4 h-4" aria-hidden="true" />
                       Try Again
-                    </button>
+                    </Button>
                   }
                 />
               ) : !hasAnyUnmapped ? (
@@ -294,163 +286,158 @@ export function CharacterMapping() {
                 />
               ) : (
                 <div className="flex-1 flex flex-col min-h-0">
-                  {/* Tab bar */}
-                  <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--card)]/50 mb-4 sm:mb-6 max-w-xs flex-shrink-0">
-                    <button
-                      onClick={() => setActiveTab("matches")}
-                      className={`
-                        flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
-                        text-sm font-soft font-medium transition-all cursor-pointer
-                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                        ${
-                          activeTab === "matches"
-                            ? "bg-[var(--card)] text-[var(--text)] shadow-sm"
-                            : "text-[var(--text-muted)] hover:text-[var(--text)]"
-                        }
-                      `}
-                    >
-                      <Zap className="w-4 h-4" />
-                      Auto
-                      {totalMatches > 0 && (
-                        <span className="px-1.5 py-0.5 rounded-md border border-green-500/40 text-xs text-green-600 dark:text-green-400">
-                          {totalMatches}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("manual")}
-                      className={`
-                        flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
-                        text-sm font-soft font-medium transition-all cursor-pointer
-                        focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                        ${
-                          activeTab === "manual"
-                            ? "bg-[var(--card)] text-[var(--text)] shadow-sm"
-                            : "text-[var(--text-muted)] hover:text-[var(--text)]"
-                        }
-                      `}
-                    >
-                      <Search className="w-4 h-4" />
-                      Manual
-                    </button>
+                  {/* Action bar */}
+                  <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4 flex-shrink-0">
+                    <p className="text-sm font-soft text-[var(--text-muted)]">
+                      Pick a character, then its Discord account, kupo~
+                    </p>
+                    {exactCount > 0 && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        isLoading={isConfirmingAll}
+                        onClick={() => confirmAllExact()}
+                        className="shrink-0"
+                      >
+                        {!isConfirmingAll && (
+                          <Check className="w-4 h-4" aria-hidden="true" />
+                        )}
+                        Confirm {exactCount} exact{" "}
+                        {exactCount === 1 ? "match" : "matches"}
+                      </Button>
+                    )}
                   </div>
 
-                  {/* Tab content */}
-                  {activeTab === "matches" && (
-                    <AutoMatchesTab
-                      visibleExactMatches={visibleExactMatches}
-                      visibleSuggestedMatches={visibleSuggestedMatches}
-                      totalMatches={totalMatches}
-                      unmatchedCharacters={matchResults.unmatchedCharacters}
-                      unmatchedDiscordUsers={matchResults.unmatchedDiscordUsers}
-                      confirmingPairKey={confirmingPairKey}
-                      onConfirmPair={confirmPair}
-                      onDismissPair={dismissPair}
-                      onSwitchToManual={handleSwitchToManual}
-                    />
-                  )}
+                  {/* Two columns */}
+                  <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-y-auto lg:overflow-visible">
+                    {/* Characters */}
+                    <div className="flex flex-col min-h-0">
+                      <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                        <img src={FfxivIcon} alt="" className="w-5 h-5" />
+                        <h3 className="font-display font-bold text-sm text-[var(--text)]">
+                          Characters
+                        </h3>
+                        {countPill(characterRows.length)}
+                      </div>
+                      <SearchInput
+                        value={characterSearch}
+                        onChange={setCharacterSearch}
+                        placeholder="Search characters..."
+                      />
+                      <div className="space-y-2 lg:flex-1 lg:overflow-y-auto lg:min-h-0 pr-1">
+                        {characterRows.length === 0 ? (
+                          <p className="text-sm text-[var(--text-muted)] font-soft text-center py-6">
+                            {characterSearch
+                              ? "No characters match, kupo~"
+                              : "Every character is linked, kupo!"}
+                          </p>
+                        ) : (
+                          characterRows.map(({ character, matchInfo }) => (
+                            <CharacterItem
+                              key={character.characterId}
+                              character={character}
+                              isSelected={
+                                selectedCharacter?.characterId ===
+                                character.characterId
+                              }
+                              matchInfo={matchInfo}
+                              onClick={() => selectCharacter(character)}
+                              disabled={isMapping}
+                            />
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-                  {activeTab === "manual" && (
-                    <ManualPickerTab
-                      selectedCharacter={selectedCharacter}
-                      selectedDiscordUser={selectedDiscordUser}
-                      characterSearch={characterSearch}
-                      discordSearch={discordSearch}
-                      onCharacterSearchChange={setCharacterSearch}
-                      onDiscordSearchChange={setDiscordSearch}
-                      sortedCharacters={sortedCharacters}
-                      sortedDiscordUsers={sortedDiscordUsers}
-                      onSelectCharacter={selectCharacter}
-                      onSelectDiscordUser={selectDiscordUser}
-                    />
-                  )}
+                    {/* Discord accounts */}
+                    <div className="flex flex-col min-h-0">
+                      <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                        <DiscordIcon
+                          className="h-4 text-[#5865F2]"
+                          aria-hidden="true"
+                        />
+                        <h3 className="font-display font-bold text-sm text-[var(--text)]">
+                          Discord Accounts
+                        </h3>
+                        {countPill(discordRows.length)}
+                      </div>
+                      <SearchInput
+                        value={discordSearch}
+                        onChange={setDiscordSearch}
+                        placeholder="Search Discord users..."
+                      />
+                      <div className="space-y-2 lg:flex-1 lg:overflow-y-auto lg:min-h-0 pr-1">
+                        {discordRows.length === 0 ? (
+                          <p className="text-sm text-[var(--text-muted)] font-soft text-center py-6">
+                            {discordSearch
+                              ? "No accounts match, kupo~"
+                              : "Every account is linked, kupo!"}
+                          </p>
+                        ) : (
+                          discordRows.map(({ user, matchInfo }) => (
+                            <DiscordUserItem
+                              key={user.discordId}
+                              user={user}
+                              isSelected={
+                                selectedDiscordUser?.discordId === user.discordId
+                              }
+                              matchInfo={matchInfo}
+                              onClick={() => selectDiscordUser(user)}
+                              disabled={isMapping}
+                            />
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Fixed bottom bar — selection indicator + Link button */}
+          {/* Link bar */}
           <AnimatePresence>
             {(selectedCharacter || selectedDiscordUser) && (
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/50 bg-[var(--bg)]/80"
+                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/60 bg-[var(--bg)]/90"
               >
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Sparkles className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-                      <p className="text-sm text-[var(--text)] truncate">
-                        {selectedCharacter && selectedDiscordUser ? (
-                          <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
-                            <strong>
-                              {selectedDiscordUser.serverNickName}
-                            </strong>
-                          </>
-                        ) : selectedCharacter ? (
-                          <>
-                            <strong>{selectedCharacter.name}</strong> &rarr;{" "}
-                            Pick a Discord account
-                          </>
-                        ) : (
-                          <>
-                            <strong>
-                              {selectedDiscordUser!.serverNickName}
-                            </strong>{" "}
-                            &rarr; Pick a character
-                          </>
-                        )}
-                      </p>
-                    </div>
-                    <button
-                      onClick={resetPicker}
-                      className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors cursor-pointer"
-                      aria-label="Clear selection"
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 text-sm">
+                    <span className="font-display font-semibold text-[var(--text)] truncate">
+                      {selectedCharacter?.name ?? "Pick a character"}
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-[var(--text-subtle)] shrink-0" />
+                    <span
+                      className={`font-display font-semibold truncate ${selectedDiscordUser ? "text-[var(--text)]" : "text-[var(--text-subtle)]"}`}
                     >
-                      <X className="w-4 h-4" />
-                    </button>
+                      {selectedDiscordUser?.serverNickName ??
+                        "Pick a Discord account"}
+                    </span>
                   </div>
-
-                  {canConfirm && (
-                    <div>
-                      <button
-                        onClick={handleManualConfirm}
-                        disabled={isMapping}
-                        className="
-                          w-full flex items-center justify-center gap-2
-                          px-4 py-3.5 sm:py-3 rounded-xl
-                          bg-[var(--primary)] sm:hover:brightness-95 active:brightness-90
-                          text-white font-soft font-semibold text-sm
-                          transition-all cursor-pointer touch-manipulation
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-                          shadow-[0_2px_8px_-2px_color-mix(in_srgb,var(--primary)_40%,transparent)]
-                        "
-                      >
-                        {isMapping ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Creating Link...
-                          </>
-                        ) : (
-                          <>
-                            <Link2 className="w-5 h-5" />
-                            Link {selectedCharacter?.name} to{" "}
-                            {selectedDiscordUser?.serverNickName}
-                          </>
-                        )}
-                      </button>
-                      {mappingError && (
-                        <p className="mt-2 text-sm text-red-500 text-center">
-                          Failed to create link. Please try again.
-                        </p>
-                      )}
-                    </div>
-                  )}
+                  <IconButton
+                    variant="ghost"
+                    size="sm"
+                    icon={<X className="w-4 h-4" />}
+                    aria-label="Clear selection"
+                    onClick={resetPicker}
+                  />
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    isLoading={isMapping}
+                    disabled={!canLink}
+                    onClick={handleLink}
+                    className="shrink-0"
+                  >
+                    {!isMapping && (
+                      <Link2 className="w-4 h-4" aria-hidden="true" />
+                    )}
+                    Link
+                  </Button>
                 </div>
               </motion.div>
             )}

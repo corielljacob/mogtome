@@ -11,14 +11,8 @@ export type { ConnectionStatus } from "./useEventsHub";
 export type { UseSeasonalEventReturn } from "./useSeasonalEvent";
 
 // Re-export character mapping hooks from feature module
-export {
-  useCharacterMapping,
-  useManualPicker,
-} from "../features/characterMapping";
-export type {
-  UseCharacterMappingResult,
-  UseManualPickerResult,
-} from "../features/characterMapping";
+export { useCharacterMapping } from "../features/characterMapping";
+export type { UseCharacterMappingResult } from "../features/characterMapping";
 export type { MatchInfo } from "../features/characterMapping";
 
 // Mobile utilities

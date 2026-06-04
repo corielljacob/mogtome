@@ -79,51 +79,50 @@ export function PageHeader({
   title,
   subtitle,
   showHeart = true,
-  dividerSize = "sm",
   children,
 }: PageHeaderProps) {
   return (
-    <header className="relative text-center mb-6 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]">
+    <header className="relative w-fit mx-auto mb-6 sm:mb-10 text-center animate-[fadeSlideIn_0.4s_ease-out]">
       {/* Corner-peeking moogle (desktop) */}
       <img
         src={lilGuyMoogle}
         alt=""
         aria-hidden="true"
-        className="hidden lg:block absolute -top-4 right-0 w-16 object-contain rotate-[8deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none"
+        className="hidden lg:block absolute -top-7 -right-5 w-16 object-contain rotate-[8deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-10"
       />
 
-      {/* Kawaii bow + sparkles accent */}
-      <div
-        className="flex items-center justify-center gap-1.5 mb-2"
-        aria-hidden="true"
-      >
-        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-        <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+      {/* The title sits on a pinned polaroid so it never floats on the bare page */}
+      <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
+        <div
+          className="flex items-center justify-center gap-1.5 mb-1.5"
+          aria-hidden="true"
+        >
+          <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+          <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+        </div>
+
+        {opener && (
+          <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
+            {opener}
+          </p>
+        )}
+
+        <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
+          <span className="text-highlight">{title}</span>
+        </h1>
+
+        {subtitle && (
+          <p className="text-base sm:text-lg text-[var(--text-muted)] font-soft flex items-center justify-center gap-2 mt-3">
+            {subtitle}
+            {showHeart && (
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)] fill-[var(--primary)]/90" />
+            )}
+          </p>
+        )}
+
+        {children}
       </div>
-
-      {opener && (
-        <p className="eyebrow-script text-xl sm:text-2xl md:text-3xl text-[var(--secondary)]/90 mb-3 sm:mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]">
-          {opener}
-        </p>
-      )}
-
-      <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-3 sm:mb-4 text-[var(--text)]">
-        <span className="text-highlight">{title}</span>
-      </h1>
-
-      {subtitle && (
-        <p className="text-base sm:text-lg text-[var(--text-muted)] font-soft flex items-center justify-center gap-2 mb-4 sm:mb-5">
-          {subtitle}
-          {showHeart && (
-            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)] fill-[var(--primary)]/90" />
-          )}
-        </p>
-      )}
-
-      {children}
-
-      <StoryDivider className="mx-auto mt-3 sm:mt-0" size={dividerSize} />
     </header>
   );
 }
@@ -142,20 +141,22 @@ interface PageFooterProps {
 export function PageFooter({ message, closing = "~ fin ~" }: PageFooterProps) {
   return (
     <footer
-      className="text-center mt-16 pt-8"
+      className="mt-12"
       style={{
-        paddingBottom: "calc(2rem + var(--safe-area-inset-bottom, 0px))",
+        paddingBottom: "calc(1rem + var(--safe-area-inset-bottom, 0px))",
       }}
     >
-      <StoryDivider className="mx-auto mb-6" size="sm" />
-      <p className="eyebrow-script text-2xl text-[var(--text-muted)] flex items-center justify-center gap-2">
-        <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
-        {message}
-        <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
-      </p>
-      <p className="eyebrow-script text-xl text-[var(--secondary)] mt-2">
-        {closing}
-      </p>
+      <div className="surface px-6 py-6 text-center">
+        <StoryDivider className="mx-auto mb-4" size="sm" />
+        <p className="eyebrow-script text-2xl text-[var(--text-muted)] flex items-center justify-center gap-2">
+          <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
+          {message}
+          <Heart className="w-5 h-5 text-[var(--primary)] fill-[var(--primary)]" />
+        </p>
+        <p className="eyebrow-script text-xl text-[var(--secondary)] mt-2">
+          {closing}
+        </p>
+      </div>
     </footer>
   );
 }

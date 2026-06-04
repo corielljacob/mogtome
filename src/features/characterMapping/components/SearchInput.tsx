@@ -13,18 +13,24 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className="relative mb-3 flex-shrink-0">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+      <Search
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--primary)]/70 pointer-events-none"
+        aria-hidden="true"
+      />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="
-          w-full pl-9 pr-4 py-2 rounded-xl
-          bg-[var(--bg)]/50 border border-[var(--border)]
-          text-sm text-[var(--text)] placeholder:text-[var(--text-muted)]
-          focus:outline-none focus:border-[var(--primary)]/40 transition-colors
+          w-full pl-10 pr-4 py-2.5 rounded-xl
+          bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
+          border-2 border-[color:color-mix(in_srgb,var(--primary)_14%,var(--card))]
+          text-sm font-soft text-[var(--text)] placeholder:text-[var(--text-subtle)]
+          transition-all duration-200
+          focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 focus:bg-[var(--card)]
         "
+        style={{ fontSize: "16px" }}
       />
     </div>
   );

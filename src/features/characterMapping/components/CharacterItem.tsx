@@ -24,16 +24,16 @@ export const CharacterItem = memo(function CharacterItem({
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full flex items-center gap-3 p-3 rounded-xl
-        border transition-colors cursor-pointer touch-manipulation text-left
+        w-full flex items-center gap-3 p-3 rounded-2xl
+        bg-[var(--card)] border-2 transition-colors cursor-pointer touch-manipulation text-left
         focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         ${
           isSelected
-            ? "bg-[var(--primary)]/15 border-[var(--primary)]/40"
+            ? "border-[var(--primary)] bg-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))]"
             : matchInfo
-              ? "bg-amber-500/10 border-amber-500/30 hover:border-amber-500/50"
-              : "bg-[var(--bg)]/50 border-[var(--border)] hover:border-[var(--primary)]/30"
+              ? "border-[color:color-mix(in_srgb,#f59e0b_36%,var(--card))] bg-[color:color-mix(in_srgb,#f59e0b_10%,var(--card))] hover:border-[color:color-mix(in_srgb,#f59e0b_52%,var(--card))]"
+              : "border-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))] hover:border-[color:color-mix(in_srgb,var(--primary)_30%,var(--card))]"
         }
       `}
     >
@@ -41,22 +41,19 @@ export const CharacterItem = memo(function CharacterItem({
         <img
           src={character.avatarLink}
           alt=""
-          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+          className="w-10 h-10 rounded-xl object-cover flex-shrink-0 border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]"
         />
       ) : (
-        <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))] flex items-center justify-center flex-shrink-0">
           <img src={FfxivIcon} alt="" className="w-9 h-9" />
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="font-soft font-semibold text-sm text-[var(--text)] truncate">
+        <p className="font-display font-semibold text-sm text-[var(--text)] truncate">
           {character.name}
         </p>
-        <p className="text-[10px] font-mono text-[var(--text-muted)]/50 truncate">
-          {character.characterId}
-        </p>
         {character.freeCompanyRank && (
-          <p className="text-xs text-[var(--text-muted)] truncate">
+          <p className="text-xs text-[var(--text-subtle)] truncate">
             {character.freeCompanyRank}
           </p>
         )}

@@ -80,7 +80,7 @@ describe("CharacterMapping", () => {
     });
   });
 
-  it("shows tab bar with Auto and Manual tabs", async () => {
+  it("shows the Characters and Discord columns when opened", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -100,18 +100,17 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Auto")).toBeInTheDocument();
-      expect(screen.getByText("Manual")).toBeInTheDocument();
+      expect(screen.getByText("Characters")).toBeInTheDocument();
+      expect(screen.getByText("Discord Accounts")).toBeInTheDocument();
     });
   });
 
-  it("renders character and Discord lists on the Manual tab", async () => {
+  it("renders the character and Discord lists side by side", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -133,16 +132,9 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
-
-    // Switch to manual tab
-    await waitFor(() => {
-      expect(screen.getByText("Manual")).toBeInTheDocument();
-    });
-    await user.click(screen.getByText("Manual"));
 
     await waitFor(() => {
       expect(screen.getByText("Characters")).toBeInTheDocument();
@@ -153,7 +145,7 @@ describe("CharacterMapping", () => {
     expect(screen.getByText("TestDiscordUser")).toBeInTheDocument();
   });
 
-  it("shows exact match pairs when names match", async () => {
+  it("surfaces an exact match with a bulk-confirm button + badge", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -173,19 +165,20 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
 
-    // Auto tab is the default
     await waitFor(() => {
-      expect(screen.getByText("Exact Matches")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /confirm 1 exact match/i }),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByText("Exact Match")).toBeInTheDocument();
+    // The matched character/account tiles carry an "Exact Match" confidence badge.
+    expect(screen.getAllByText("Exact Match").length).toBeGreaterThan(0);
   });
 
-  it("shows search inputs on the Manual tab", async () => {
+  it("shows both column search inputs", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -205,15 +198,9 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
-
-    await waitFor(() => {
-      expect(screen.getByText("Manual")).toBeInTheDocument();
-    });
-    await user.click(screen.getByText("Manual"));
 
     await waitFor(() => {
       expect(
@@ -238,7 +225,6 @@ describe("CharacterMapping", () => {
 
     render(<CharacterMapping />);
 
-    // Open the overlay
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );

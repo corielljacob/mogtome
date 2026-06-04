@@ -2,7 +2,6 @@
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
 @layer components {
-
   /* ─────────────────────────────────────────────────────────────────────────────
    * KAWAII SURFACE — matte "puffy sticker" card (pop kawaii).
    * Shared base for cards, nav, dropdowns and pills. Solid, soft, chunky-rounded,
@@ -75,7 +74,11 @@
   }
   :root.high-contrast .gel {
     background: var(--gel-color, var(--primary));
-    border-color: color-mix(in srgb, var(--gel-color, var(--primary)) 60%, black);
+    border-color: color-mix(
+      in srgb,
+      var(--gel-color, var(--primary)) 60%,
+      black
+    );
     box-shadow: none;
     filter: none;
   }
@@ -227,17 +230,6 @@
   :root.high-contrast .pushpin {
     background: var(--pin, var(--primary));
     box-shadow: 0 0 0 1.5px var(--border);
-  }
-
-  /* "Paper" — cards pinned to the cork board. In dark mode they stay on-theme dark
-     (not cream): lifted just a touch off the page background so they read as raised
-     panels on the darkened cork. Derived from --bg (NOT --card): a color-mix that
-     references --card is self-referential and computes to invalid, which blanks the
-     surface to transparent. Candy accents (--primary etc.), .gel buttons and the
-     bright sticky notes are untouched. No-op in light mode (cards are already light)
-     and skipped in high-contrast so the a11y palette wins. */
-  .dark:not(.high-contrast) .paper {
-    --card: color-mix(in srgb, var(--bg) 92%, #ffffff);
   }
 
   /* "Journal" — a warm logbook page for the Chronicle: clean paper with a coloured

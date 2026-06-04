@@ -8,18 +8,17 @@ export {
   SearchInput,
   CharacterItem,
   DiscordUserItem,
-  MatchPairCard,
-  AutoMatchesTab,
-  ManualPickerTab,
 } from "./components";
 
 // Hooks
-export { useCharacterMapping, useManualPicker, pairKey } from "./hooks";
-export type { UseCharacterMappingResult, UseManualPickerResult } from "./hooks";
+export { useCharacterMapping, useSmartPicker, pairKey } from "./hooks";
+export type {
+  UseCharacterMappingResult,
+  UseSmartPickerResult,
+} from "./hooks";
 
 // Types
 export type {
-  TabId,
   MatchInfo,
   MatchConfidence,
   MatchPair,

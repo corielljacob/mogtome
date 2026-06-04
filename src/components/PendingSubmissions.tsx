@@ -17,6 +17,7 @@ import { membersApi } from "../api/members";
 import type { BiographySubmission, StaffMember } from "../types";
 import { ContentCard } from "./ContentCard";
 import { Tag } from "./Tag";
+import { Button, IconButton } from "./Button";
 
 interface SubmissionCardProps {
   submission: BiographySubmission;
@@ -60,13 +61,7 @@ function SubmissionCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="
-        bg-[var(--bg)]/50 
-        border border-[var(--border)] 
-        rounded-lg sm:rounded-xl p-4 sm:p-4
-        sm:hover:border-[var(--primary)]/20
-        transition-colors touch-manipulation
-      "
+      className="surface p-4 touch-manipulation"
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
@@ -133,66 +128,30 @@ function SubmissionCard({
         </button>
       </div>
 
-      {/* Action buttons - larger touch targets on mobile */}
-      <div className="flex items-center gap-3 sm:gap-2">
-        <button
+      {/* Action buttons */}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="success"
+          size="sm"
+          isLoading={isApproving}
+          disabled={isApproving || isRejecting}
           onClick={() => onApprove(submission.submissionId)}
-          disabled={isApproving || isRejecting}
-          className="
-            flex-1 flex items-center justify-center gap-2
-            px-4 py-3.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-lg
-            bg-green-500 active:bg-green-600 sm:hover:bg-green-600 
-            text-white font-soft font-semibold text-sm
-            transition-colors cursor-pointer touch-manipulation
-            active:scale-[0.97] sm:active:scale-100
-            disabled:opacity-50 disabled:cursor-not-allowed
-            focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:outline-none
-          "
+          className="flex-1"
         >
-          {isApproving ? (
-            <>
-              <Loader2
-                className="w-5 h-5 sm:w-4 sm:h-4 animate-spin"
-                aria-hidden="true"
-              />
-              <span className="sm:inline">Approving...</span>
-            </>
-          ) : (
-            <>
-              <Check className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
-              Approve
-            </>
-          )}
-        </button>
-        <button
+          {!isApproving && <Check className="w-4 h-4" aria-hidden="true" />}
+          {isApproving ? "Approving..." : "Approve"}
+        </Button>
+        <Button
+          variant="danger"
+          size="sm"
+          isLoading={isRejecting}
+          disabled={isApproving || isRejecting}
           onClick={() => onReject(submission.submissionId)}
-          disabled={isApproving || isRejecting}
-          className="
-            flex-1 flex items-center justify-center gap-2
-            px-4 py-3.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-lg
-            bg-red-500 active:bg-red-600 sm:hover:bg-red-600 
-            text-white font-soft font-semibold text-sm
-            transition-colors cursor-pointer touch-manipulation
-            active:scale-[0.97] sm:active:scale-100
-            disabled:opacity-50 disabled:cursor-not-allowed
-            focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none
-          "
+          className="flex-1"
         >
-          {isRejecting ? (
-            <>
-              <Loader2
-                className="w-5 h-5 sm:w-4 sm:h-4 animate-spin"
-                aria-hidden="true"
-              />
-              <span className="sm:inline">Rejecting...</span>
-            </>
-          ) : (
-            <>
-              <X className="w-5 h-5 sm:w-4 sm:h-4" aria-hidden="true" />
-              Reject
-            </>
-          )}
-        </button>
+          {!isRejecting && <X className="w-4 h-4" aria-hidden="true" />}
+          {isRejecting ? "Rejecting..." : "Reject"}
+        </Button>
       </div>
     </motion.div>
   );
@@ -286,14 +245,11 @@ export function PendingSubmissions() {
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex items-start gap-2.5 sm:gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center flex-shrink-0">
-            <FileText
-              className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]"
-              aria-hidden="true"
-            />
-          </div>
+          <span className="icon-badge w-10 h-10 shrink-0 text-[var(--primary)]">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+          </span>
           <div>
-            <h2 className="font-display font-semibold text-base sm:text-lg text-[var(--text)]">
+            <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)]">
               Pending Biography Submissions
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
@@ -302,24 +258,18 @@ export function PendingSubmissions() {
           </div>
         </div>
 
-        {/* Refresh button - larger on mobile */}
-        <button
+        <IconButton
+          variant="ghost"
+          size="md"
+          icon={
+            <RefreshCw
+              className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+            />
+          }
+          aria-label="Refresh submissions"
           onClick={() => refetch()}
           disabled={isLoading}
-          className="
-            p-3 sm:p-2 rounded-xl sm:rounded-lg
-            bg-[var(--bg)] active:bg-[var(--primary)]/10 sm:hover:bg-[var(--primary)]/10
-            text-[var(--text-muted)] active:text-[var(--primary)] sm:hover:text-[var(--primary)]
-            transition-colors cursor-pointer touch-manipulation
-            disabled:opacity-50
-            focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-          "
-          aria-label="Refresh submissions"
-        >
-          <RefreshCw
-            className={`w-5 h-5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
-          />
-        </button>
+        />
       </div>
 
       {/* Content */}
@@ -339,24 +289,15 @@ export function PendingSubmissions() {
           <p className="text-xs text-[var(--text-muted)] mb-4">
             Something went wrong, kupo...
           </p>
-          <button
-            onClick={() => refetch()}
-            className="
-              flex items-center gap-2 px-4 py-2 rounded-lg
-              bg-[var(--primary)] text-white
-              font-soft font-semibold text-sm
-              cursor-pointer
-              focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:outline-none
-            "
-          >
-            <RefreshCw className="w-4 h-4" />
+          <Button variant="primary" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="w-4 h-4" aria-hidden="true" />
             Try Again
-          </button>
+          </Button>
         </div>
       ) : pendingSubmissions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-          <div className="w-16 h-16 rounded-lg bg-[var(--secondary)]/10 flex items-center justify-center mb-4">
-            <Inbox className="w-8 h-8 text-[var(--secondary)]" />
+          <div className="icon-badge w-16 h-16 mb-4 text-[var(--secondary)]">
+            <Inbox className="w-8 h-8" />
           </div>
           <p className="text-sm text-[var(--text)] font-soft font-semibold mb-1">
             All caught up!

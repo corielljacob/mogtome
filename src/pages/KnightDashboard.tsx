@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import {
@@ -137,94 +138,119 @@ export function KnightDashboard() {
 
   return (
     <PageLayout maxWidth="max-w-4xl">
-      <PageHeader
-        opener="~ Tend to the realm ~"
-        title="Knight Dashboard"
-        subtitle={`Welcome back, ${firstName}`}
-      />
-
-      {/* ── Needs Attention overview ── */}
-      <section className="mb-12">
-        <SectionLabel
-          label="Needs Attention"
-          icon={<Inbox className="w-4 h-4" aria-hidden="true" />}
+      <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
+        {/* Corner pins — content sits on the board, never the bare page */}
+        <span
+          className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
+          style={{ "--pin": "var(--accent)" } as CSSProperties}
+          aria-hidden="true"
+        />
+        <span
+          className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
+          style={{ "--pin": "var(--secondary)" } as CSSProperties}
+          aria-hidden="true"
         />
 
-        {allClear ? (
-          <div className="surface p-6 sm:p-8 text-center">
-            <p className="font-accent text-2xl sm:text-3xl text-[var(--primary)]">
-              All caught up, kupo! ✦
-            </p>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              Nothing needs a knight&apos;s attention right now.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <StatTile
-              icon={<FileText className="w-5 h-5" aria-hidden="true" />}
-              count={pendingCount}
-              label="Biographies"
-              hint="awaiting review"
-              targetId="submissions"
-              isLoading={isLoadingBios}
-              delay={0.05}
-            />
-            <StatTile
-              icon={<Link2 className="w-5 h-5" aria-hidden="true" />}
-              count={unmappedCount}
-              label="Characters"
-              hint="left to link"
-              targetId="mapping"
-              isLoading={isLoadingMapping}
-              delay={0.1}
-            />
-            <StatTile
-              icon={<Sparkles className="w-5 h-5" aria-hidden="true" />}
-              count={autoMatchCount}
-              label="Auto-matches"
-              hint="ready to confirm"
-              targetId="mapping"
-              isLoading={isLoadingMapping}
-              delay={0.15}
-            />
-          </div>
-        )}
-      </section>
-
-      {/* ── Biography Submissions ── */}
-      <section id="submissions" className="mb-12 scroll-mt-24">
-        <SectionLabel
-          label="Biography Submissions"
-          icon={<FileText className="w-4 h-4" aria-hidden="true" />}
-          badge={pendingCount > 0 ? <CountBadge n={pendingCount} /> : undefined}
+        <PageHeader
+          opener="~ Tend to the realm ~"
+          title="Knight Dashboard"
+          subtitle={`Welcome back, ${firstName}`}
         />
-        <PendingSubmissions />
-      </section>
 
-      {/* ── Character Mapping ── */}
-      <section id="mapping" className="mb-12 scroll-mt-24">
-        <SectionLabel
-          label="Character Mapping"
-          icon={<Link2 className="w-4 h-4" aria-hidden="true" />}
-          badge={
-            unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined
-          }
-        />
-        <CharacterMapping />
-      </section>
-
-      {/* ── Cozy footer note (demoted "Have an Idea?") ── */}
-      <div className="text-center pb-2">
-        <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
-          <Lightbulb
-            className="w-4 h-4 text-[var(--accent)]"
-            aria-hidden="true"
+        {/* ── Needs Attention overview ── */}
+        <section className="mb-12">
+          <SectionLabel
+            label="Needs Attention"
+            icon={<Inbox className="w-4 h-4" aria-hidden="true" />}
           />
-          Have an idea for the dashboard? Ping{" "}
-          <span className="text-[var(--primary)] font-semibold">Plane</span>,
-          kupo~
-        </p>
+
+          {allClear ? (
+            <div className="surface p-6 sm:p-8 text-center">
+              <p className="font-accent text-2xl sm:text-3xl text-[var(--primary)]">
+                All caught up, kupo! ✦
+              </p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">
+                Nothing needs a knight&apos;s attention right now.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <StatTile
+                icon={<FileText className="w-5 h-5" aria-hidden="true" />}
+                count={pendingCount}
+                label="Biographies"
+                hint="awaiting review"
+                targetId="submissions"
+                isLoading={isLoadingBios}
+                delay={0.05}
+              />
+              <StatTile
+                icon={<Link2 className="w-5 h-5" aria-hidden="true" />}
+                count={unmappedCount}
+                label="Characters"
+                hint="left to link"
+                targetId="mapping"
+                isLoading={isLoadingMapping}
+                delay={0.1}
+              />
+              <StatTile
+                icon={<Sparkles className="w-5 h-5" aria-hidden="true" />}
+                count={autoMatchCount}
+                label="Auto-matches"
+                hint="ready to confirm"
+                targetId="mapping"
+                isLoading={isLoadingMapping}
+                delay={0.15}
+              />
+            </div>
+          )}
+        </section>
+
+        {/* ── Biography Submissions ── */}
+        <section id="submissions" className="mb-12 scroll-mt-24">
+          <SectionLabel
+            label="Biography Submissions"
+            icon={<FileText className="w-4 h-4" aria-hidden="true" />}
+            badge={
+              pendingCount > 0 ? <CountBadge n={pendingCount} /> : undefined
+            }
+          />
+          <PendingSubmissions />
+        </section>
+
+        {/* ── Character Mapping ── */}
+        <section id="mapping" className="mb-12 scroll-mt-24">
+          <SectionLabel
+            label="Character Mapping"
+            icon={<Link2 className="w-4 h-4" aria-hidden="true" />}
+            badge={
+              unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined
+            }
+          />
+          <CharacterMapping />
+        </section>
+
+        {/* ── Cozy footer note (demoted "Have an Idea?") ── */}
+        <div className="text-center pb-2">
+          <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
+            <Lightbulb
+              className="w-4 h-4 text-[var(--accent)]"
+              aria-hidden="true"
+            />
+            Have an idea for the dashboard? Ping{" "}
+            <span className="text-[var(--primary)] font-semibold">Plane</span>,
+            kupo~
+          </p>
+        </div>
       </div>
     </PageLayout>
   );

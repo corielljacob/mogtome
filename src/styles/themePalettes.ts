@@ -32,7 +32,7 @@ export const THEME_META: { id: string; name: string; description: string }[] = [
   {
     id: "pom-pom",
     name: "Pom-Pom Classic",
-    description: "Candy pink, mint & butter",
+    description: "Candy pink, moogle lavender & butter",
   },
   {
     id: "crystal",
@@ -70,8 +70,8 @@ export const THEME_META: { id: string; name: string; description: string }[] = [
 /** User-selectable colour themes. "pom-pom" is the default (lives in :root). */
 export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
-    light: { primary: "#e25d88", secondary: "#3fae95", accent: "#f4be4c" },
-    dark: { primary: "#f48bae", secondary: "#66cdb4", accent: "#ffcf79" },
+    light: { primary: "#e25d88", secondary: "#9f80da", accent: "#f4be4c" },
+    dark: { primary: "#f48bae", secondary: "#bba4ef", accent: "#ffcf79" },
   },
   crystal: {
     light: { primary: "#3a8ed2", secondary: "#34bfd6", accent: "#f4be4c" },
@@ -163,10 +163,10 @@ export const EVENT_PALETTES: Record<string, ModePalette> = {
       bg: "#fffbeb",
     },
     dark: {
-      primary: "#f0c63e",
+      primary: "#f0b441",
       secondary: "#b491ec",
-      accent: "#f8de7a",
-      bg: "#1a1810",
+      accent: "#f6d06a",
+      bg: "#18151e",
     },
   },
   "moonfire-faire": {

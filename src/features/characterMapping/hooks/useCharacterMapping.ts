@@ -34,11 +34,13 @@ export interface UseCharacterMappingResult {
   confirmPair: (pair: MatchPair) => void;
   dismissPair: (pair: MatchPair) => void;
   mapManually: (characterId: string, discordId: string) => Promise<void>;
+  confirmAllExact: () => Promise<void>;
   refresh: () => void;
 
   // Mutation state
   confirmingPairKey: string | null;
   isMapping: boolean;
+  isConfirmingAll: boolean;
   mappingError: Error | null;
 
   // Per-selection ranking for manual picker
@@ -71,11 +73,24 @@ function dedupeById<T extends { characterId: string } | { discordId: string }>(
 export function useCharacterMapping(): UseCharacterMappingResult {
   const queryClient = useQueryClient();
 
-  // Track dismissed pairs locally (doesn't persist across refreshes)
+  // Track dismissed (skipped) pairs locally (doesn't persist across refreshes)
   const [dismissedPairs, setDismissedPairs] = useState<Set<string>>(new Set());
   const [confirmingPairKey, setConfirmingPairKey] = useState<string | null>(
     null,
   );
+  // Track linked ids so a row vanishes instantly on link (before the refetch lands).
+  const [linkedCharacterIds, setLinkedCharacterIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [linkedDiscordIds, setLinkedDiscordIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [isConfirmingAll, setIsConfirmingAll] = useState(false);
+
+  const markLinked = useCallback((characterId: string, discordId: string) => {
+    setLinkedCharacterIds((prev) => new Set(prev).add(characterId));
+    setLinkedDiscordIds((prev) => new Set(prev).add(discordId));
+  }, []);
 
   // -- Data fetching ----------------------------------------------------------
 
@@ -114,8 +129,8 @@ export function useCharacterMapping(): UseCharacterMappingResult {
         ...charactersData.unmappedCharacters,
       ],
       (c) => c.characterId,
-    );
-  }, [charactersData]);
+    ).filter((c) => !linkedCharacterIds.has(c.characterId));
+  }, [charactersData, linkedCharacterIds]);
 
   const allDiscordUsers = useMemo(() => {
     if (!discordUsersData) return [];
@@ -125,8 +140,8 @@ export function useCharacterMapping(): UseCharacterMappingResult {
         ...discordUsersData.unmappedDiscordUsers,
       ],
       (u) => u.discordId,
-    );
-  }, [discordUsersData]);
+    ).filter((u) => !linkedDiscordIds.has(u.discordId));
+  }, [discordUsersData, linkedDiscordIds]);
 
   // -- Matching ---------------------------------------------------------------
 
@@ -203,13 +218,13 @@ export function useCharacterMapping(): UseCharacterMappingResult {
         {
           onSettled: () => setConfirmingPairKey(null),
           onSuccess: () => {
-            // Dismiss immediately to avoid flash while query invalidates
-            setDismissedPairs((prev) => new Set(prev).add(key));
+            // Remove the row immediately, before the refetch lands.
+            markLinked(pair.character.characterId, pair.discordUser.discordId);
           },
         },
       );
     },
-    [mapMutation],
+    [mapMutation, markLinked],
   );
 
   const dismissPair = useCallback((pair: MatchPair) => {
@@ -219,12 +234,36 @@ export function useCharacterMapping(): UseCharacterMappingResult {
   const mapManually = useCallback(
     async (characterId: string, discordId: string) => {
       await mapMutation.mutateAsync({ characterId, discordId });
+      markLinked(characterId, discordId);
     },
-    [mapMutation],
+    [mapMutation, markLinked],
   );
+
+  // Bulk-confirm every (visible, exact) match in one go.
+  const confirmAllExact = useCallback(async () => {
+    if (isConfirmingAll) return;
+    setIsConfirmingAll(true);
+    try {
+      for (const pair of visibleExactMatches) {
+        try {
+          await mapMutation.mutateAsync({
+            characterId: pair.character.characterId,
+            discordId: pair.discordUser.discordId,
+          });
+          markLinked(pair.character.characterId, pair.discordUser.discordId);
+        } catch {
+          // Skip a failed pair and keep going with the rest.
+        }
+      }
+    } finally {
+      setIsConfirmingAll(false);
+    }
+  }, [isConfirmingAll, visibleExactMatches, mapMutation, markLinked]);
 
   const refresh = useCallback(() => {
     setDismissedPairs(new Set());
+    setLinkedCharacterIds(new Set());
+    setLinkedDiscordIds(new Set());
     refetchCharacters();
     refetchDiscordUsers();
   }, [refetchCharacters, refetchDiscordUsers]);
@@ -243,6 +282,8 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     confirmPair,
     dismissPair,
     mapManually,
+    confirmAllExact,
+    isConfirmingAll,
     refresh,
     confirmingPairKey,
     isMapping: mapMutation.isPending,

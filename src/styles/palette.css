@@ -17,7 +17,7 @@
   --text-muted: #635b70;
   --text-subtle: #9890a3;
   --primary: #e25d88;
-  --secondary: #3fae95;
+  --secondary: #9f80da;
   --accent: #f4be4c;
   --success: #4fb877;
   --warning: #eaa53a;
@@ -33,7 +33,7 @@
     0 18px 34px -10px rgba(31, 26, 46, 0.16);
   --panel-inset: none;
   /* Gradient colors for background mesh */
-  --gradient-1: rgba(90, 138, 127, 0.08);
+  --gradient-1: rgba(159, 128, 218, 0.08);
   --gradient-2: rgba(217, 160, 78, 0.08);
   --gradient-3: rgba(199, 93, 115, 0.06);
   --gradient-4: rgba(152, 144, 163, 0.06);
@@ -50,7 +50,7 @@
   --text-muted: #b3adc2;
   --text-subtle: #7b7590;
   --primary: #f48bae;
-  --secondary: #66cdb4;
+  --secondary: #bba4ef;
   --accent: #ffcf79;
   --success: #7fc493;
   --warning: #f0b840;
@@ -64,7 +64,7 @@
     0 4px 8px -2px rgba(0, 0, 0, 0.3), 0 18px 34px -10px rgba(0, 0, 0, 0.46);
   --panel-inset: none;
   /* Gradient colors for background mesh */
-  --gradient-1: rgba(126, 196, 184, 0.06);
+  --gradient-1: rgba(187, 164, 239, 0.06);
   --gradient-2: rgba(240, 197, 124, 0.06);
   --gradient-3: rgba(232, 137, 154, 0.05);
   --gradient-4: rgba(123, 117, 144, 0.06);

@@ -12,10 +12,6 @@ export type {
   UnmappedDiscordUser,
 };
 
-// --- Tab types ---------------------------------------------------------------
-
-export type TabId = "matches" | "manual";
-
 // --- Match info --------------------------------------------------------------
 
 export interface MatchInfo {

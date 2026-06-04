@@ -214,7 +214,7 @@ export function MembershipCard({
                   <div className="leading-none">
                     <p className="text-lg text-[var(--text)]">MogTome</p>
                     <p className="text-[10px] text-[var(--text-muted)] -mt-0.5">
-                      メンバーズカード · Member's Card
+                      Member's Card
                     </p>
                   </div>
                 </div>
@@ -269,7 +269,7 @@ export function MembershipCard({
                 <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                   <div>
                     <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                      なまえ / Name
+                      Name
                     </span>
                     <span className="block text-[var(--text)] text-xl leading-tight truncate">
                       {name}
@@ -279,7 +279,7 @@ export function MembershipCard({
                   <div className="flex gap-4">
                     <div className="min-w-0">
                       <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                        ランク / Rank
+                        Rank
                       </span>
                       <span
                         className="flex items-center gap-1 text-sm leading-tight truncate"
@@ -295,7 +295,7 @@ export function MembershipCard({
                     {since && (
                       <div className="shrink-0">
                         <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                          なかま歴 / Since
+                          Since
                         </span>
                         <span className="block text-sm text-[var(--text)] leading-tight">
                           {since}
