@@ -1,12 +1,6 @@
-/**
- * Date formatting utilities for consistent time display across the app.
- * Note: Times are approximate due to Lodestone data delays.
- */
+// all times are approximate - Lodestone data lags reality
 
-/**
- * Format a date as a relative time string (e.g., "today", "2h ago", "3d ago").
- * Uses hours as the smallest unit since Lodestone has sync delays.
- */
+/** hours is the smallest unit, since Lodestone sync delays make minutes noise */
 export function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
@@ -21,10 +15,7 @@ export function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/**
- * Format a date as a day string without exact time (e.g., "Mon, Jan 15").
- * Excludes time since Lodestone data has delays.
- */
+/** day only, no clock time - Lodestone timestamps aren't precise enough */
 export function formatFullDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {
     weekday: "short",
@@ -33,10 +24,7 @@ export function formatFullDate(dateString: string): string {
   });
 }
 
-/**
- * Format a date as a full month/day/year date (e.g., "June 3, 2026").
- * Returns "" for missing/invalid dates so callers can fall back gracefully.
- */
+/** returns "" for missing/invalid dates so callers can fall back gracefully */
 export function formatMemberSince(date: Date | string): string {
   const d = date instanceof Date ? date : new Date(date);
   if (isNaN(d.getTime())) return "";
@@ -47,10 +35,6 @@ export function formatMemberSince(date: Date | string): string {
   });
 }
 
-/**
- * Format a timestamp as "last updated" text (e.g., "just now", "2m ago").
- * Uses shorter format for UI indicators.
- */
 export function formatLastUpdated(timestamp: number): string {
   const now = Date.now();
   const diffMs = now - timestamp;

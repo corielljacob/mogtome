@@ -1,32 +1,25 @@
 /**
- * Icon adapter — maps the app's icon API (Lucide-compatible names) to
- * Iconify icons, primarily from the `pepicons-pencil` pack (hand-sketched)
- * with `game-icons` for fantasy/RPG icons that need more illustrative flair.
- *
- * The Vite alias `lucide-react` → this file means every component that
- * `import { Heart } from 'lucide-react'` transparently gets sketchy icons.
+ * Maps Lucide-compatible icon names to Iconify icons (mostly the hand-sketched
+ * `pepicons-pencil` pack, `game-icons` for RPG flair). The Vite alias
+ * `lucide-react` → this file means every `import { Heart } from 'lucide-react'`
+ * transparently gets the sketchy icons.
  */
 
 import { Icon as IconifyIcon } from "@iconify/react";
 import type { ComponentProps, ReactElement, SVGAttributes } from "react";
 
-/* ── Public types (consumed by the rest of the app) ────────────────────────── */
-
 export interface IconProps extends SVGAttributes<SVGElement> {
-  /** Accessible title – when absent the icon is aria-hidden */
+  /** when absent the icon is aria-hidden */
   title?: string;
-  /** Ignored (Lucide compat) */
+  /** ignored - Lucide compat */
   strokeWidth?: number;
-  /** Phosphor compat – ignored in Iconify but keeps TS happy */
+  /** ignored - Phosphor compat, keeps TS happy */
   weight?: string;
-  /** Iconify compat — passed through to the underlying icon */
   fill?: string;
   size?: number | string;
 }
 
 export type LucideIcon = (props: IconProps) => ReactElement;
-
-/* ── Adapter factory ───────────────────────────────────────────────────────── */
 
 function adapt(displayName: string, iconName: string): LucideIcon {
   const Wrapped = ({
@@ -40,13 +33,12 @@ function adapt(displayName: string, iconName: string): LucideIcon {
     style,
     ...rest
   }: IconProps) => {
-    // Derive dimensions: explicit size > explicit w/h > CSS-only (via className)
+    // dimension precedence: explicit size > w/h > CSS-only (via className)
     const w = size ?? width;
     const h = size ?? height;
 
-    // `rest` is SVG-typed; Iconify re-types a few shared props (`mode`, `onLoad`,
-    // `rotate`, …) more narrowly, so forward it through the component's own props
-    // type. These are pass-through DOM attributes the wrappers don't otherwise use.
+    // `rest` is SVG-typed but Iconify re-types a few shared props (`mode`,
+    // `onLoad`, `rotate`) more narrowly, so cast to its own props type
     const passthrough = rest as Omit<
       ComponentProps<typeof IconifyIcon>,
       "icon"
@@ -70,13 +62,7 @@ function adapt(displayName: string, iconName: string): LucideIcon {
   return Wrapped;
 }
 
-/* ── Icon exports ──────────────────────────────────────────────────────────── */
-/* Primary pack: pepicons-pencil  —  hand-sketched pencil aesthetic ✏️
- * Fallbacks:    game-icons       —  fantasy/RPG illustrated icons
- *               pepicons-pop     —  bubbly variant when pencil lacks coverage
- */
-
-// ── Navigation & UI chrome ────────────────────────────────────────────────
+// primary pack is pepicons-pencil; game-icons / pepicons-pop fill gaps
 export const Home = adapt("Home", "pepicons-pencil:house");
 export const Settings = adapt("Settings", "pepicons-pencil:gear");
 export const Search = adapt("Search", "pepicons-pencil:loop");
@@ -109,14 +95,12 @@ export const SlidersHorizontal = adapt(
 export const Monitor = adapt("Monitor", "pepicons-pencil:monitor");
 export const Eye = adapt("Eye", "pepicons-pencil:eye");
 
-// ── User & people ─────────────────────────────────────────────────────────
 export const User = adapt("User", "pepicons-pencil:person");
 export const UserCircle = adapt("UserCircle", "pepicons-pencil:person");
 export const Users = adapt("Users", "pepicons-pencil:people");
 export const LogIn = adapt("LogIn", "pepicons-pencil:enter");
 export const LogOut = adapt("LogOut", "pepicons-pencil:leave");
 
-// ── Content & documents ───────────────────────────────────────────────────
 export const BookOpen = adapt("BookOpen", "pepicons-pencil:book");
 export const FileText = adapt("FileText", "pepicons-pencil:file");
 export const Scroll = adapt("Scroll", "pepicons-pencil:book");
@@ -137,7 +121,6 @@ export const MessageCircleHeart = adapt(
   "pepicons-pencil:text-bubble",
 );
 
-// ── Actions & feedback ────────────────────────────────────────────────────
 export const RefreshCw = adapt("RefreshCw", "pepicons-pencil:repeat");
 export const RotateCcw = adapt("RotateCcw", "pepicons-pencil:rewind-time");
 export const Play = adapt("Play", "pepicons-pencil:play");
@@ -156,7 +139,6 @@ export const Globe = adapt("Globe", "pepicons-pencil:internet");
 export const Wifi = adapt("Wifi", "pepicons-pencil:wifi");
 export const WifiOff = adapt("WifiOff", "pepicons-pencil:wifi-off");
 
-// ── Decorative & emotional ────────────────────────────────────────────────
 export const Heart = adapt("Heart", "pepicons-pencil:heart");
 export const HeartHandshake = adapt("HeartHandshake", "pepicons-pencil:heart");
 export const Star = adapt("Star", "pepicons-pencil:star");
@@ -167,7 +149,6 @@ export const Flame = adapt("Flame", "pepicons-pencil:fire");
 export const FlameKindling = adapt("FlameKindling", "pepicons-pencil:fire");
 export const PartyPopper = adapt("PartyPopper", "pepicons-pencil:gift");
 
-// ── Fantasy / RPG ─────────────────────────────────────────────────────────
 export const Crown = adapt("Crown", "pepicons-pencil:crown");
 export const Shield = adapt("Shield", "pepicons-pencil:shield");
 export const Sword = adapt("Sword", "pepicons-pencil:sword");
@@ -176,7 +157,6 @@ export const Wand2 = adapt("Wand2", "game-icons:fairy-wand");
 export const Gem = adapt("Gem", "pepicons-pencil:coins");
 export const Compass = adapt("Compass", "pepicons-pencil:map");
 
-// ── Nature & animals ──────────────────────────────────────────────────────
 export const Leaf = adapt("Leaf", "pepicons-pencil:leaf");
 export const Flower = adapt("Flower", "pepicons-pencil:flower");
 export const Flower2 = adapt("Flower2", "pepicons-pencil:flower-bud");
@@ -188,7 +168,6 @@ export const Egg = adapt("Egg", "game-icons:egg");
 export const Shell = adapt("Shell", "game-icons:nautilus-shell");
 export const Waves = adapt("Waves", "pepicons-pencil:water-drop");
 
-// ── Weather & time ────────────────────────────────────────────────────────
 export const Sun = adapt("Sun", "pepicons-pencil:sun");
 export const Moon = adapt("Moon", "pepicons-pencil:moon");
 export const Snowflake = adapt("Snowflake", "pepicons-pencil:comet");
@@ -199,13 +178,11 @@ export const Ghost = adapt("Ghost", "game-icons:ghost");
 export const Skull = adapt("Skull", "game-icons:skull-crossed-bones");
 export const Gift = adapt("Gift", "pepicons-pencil:gift");
 
-// ── Accessibility ─────────────────────────────────────────────────────────
 export const Accessibility = adapt("Accessibility", "pepicons-pencil:person");
 export const Contrast = adapt("Contrast", "pepicons-pencil:circle-filled");
 export const Type = adapt("Type", "pepicons-pencil:label");
 export const Focus = adapt("Focus", "pepicons-pencil:pinpoint");
 
-// ── Financial ─────────────────────────────────────────────────────────────
 export const Coins = adapt("Coins", "pepicons-pencil:coins");
 export const CircleDollarSign = adapt(
   "CircleDollarSign",
@@ -213,7 +190,6 @@ export const CircleDollarSign = adapt(
 );
 export const Dices = adapt("Dices", "game-icons:perspective-dice-six");
 
-// ── Misc ──────────────────────────────────────────────────────────────────
 export const Handshake = adapt("Handshake", "pepicons-pencil:handshake");
 export const Ribbon = adapt("Ribbon", "pepicons-pencil:trophy");
 export const Palette = adapt("Palette", "pepicons-pencil:paint-pallet");

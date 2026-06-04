@@ -1,7 +1,11 @@
-import apiClient from './client';
-import type { FreeCompanyMember, PaginatedResponse, StaffResponse } from '../types';
+import apiClient from "./client";
+import type {
+  FreeCompanyMember,
+  PaginatedResponse,
+  StaffResponse,
+} from "../types";
 
-// Shape returned by the Azure API
+// shape returned by the Azure API
 interface MembersApiResponse {
   totalCount: number;
   members: FreeCompanyMember[];
@@ -15,35 +19,43 @@ export interface GetMembersParams {
 }
 
 type GetAllMembersOptions = {
-  /**
-   * Bypass the in-memory cache and re-fetch.
-   * (React Query caching still applies at the call-site.)
-   */
+  /** bypass the in-module cache (React Query caching still applies at the call-site) */
   force?: boolean;
 };
 
-// Tiny in-module cache so multiple hooks/calls don't refetch the full list.
-// This is intentionally short-lived; React Query should remain the main cache.
+// short-lived dedupe so concurrent hooks don't all refetch the full list;
+// React Query remains the real cache
 const MEMBERS_CACHE_TTL_MS = 30_000;
 let membersCache: { data: MembersApiResponse; fetchedAt: number } | null = null;
 let inFlight: Promise<MembersApiResponse> | null = null;
 
 async function fetchAllMembersFromApi(): Promise<MembersApiResponse> {
-  const response = await apiClient.get<MembersApiResponse>('/members');
-  const members = Array.isArray(response.data?.members) ? response.data.members : [];
-  const apiTotalCount = typeof response.data?.totalCount === 'number' ? response.data.totalCount : members.length;
+  const response = await apiClient.get<MembersApiResponse>("/members");
+  const members = Array.isArray(response.data?.members)
+    ? response.data.members
+    : [];
+  const apiTotalCount =
+    typeof response.data?.totalCount === "number"
+      ? response.data.totalCount
+      : members.length;
 
-  // Prefer the actual list length if the API's totalCount is missing/mismatched.
+  // trust the actual list length when the API's totalCount is missing/mismatched
   const totalCount = Math.max(members.length, apiTotalCount || 0);
 
   return { members, totalCount };
 }
 
-async function getAllMembers(options?: GetAllMembersOptions): Promise<MembersApiResponse> {
+async function getAllMembers(
+  options?: GetAllMembersOptions,
+): Promise<MembersApiResponse> {
   const now = Date.now();
   const force = options?.force === true;
 
-  if (!force && membersCache && now - membersCache.fetchedAt < MEMBERS_CACHE_TTL_MS) {
+  if (
+    !force &&
+    membersCache &&
+    now - membersCache.fetchedAt < MEMBERS_CACHE_TTL_MS
+  ) {
     return membersCache.data;
   }
 
@@ -64,13 +76,16 @@ async function getAllMembers(options?: GetAllMembersOptions): Promise<MembersApi
 }
 
 export const membersApi = {
-  // Fetch all members (cached) and adapt to the frontend's pagination expectations
-  getMembers: async (params?: GetMembersParams): Promise<PaginatedResponse<FreeCompanyMember>> => {
+  // fetch-all (cached) then adapt to the frontend's pagination shape
+  getMembers: async (
+    params?: GetMembersParams,
+  ): Promise<PaginatedResponse<FreeCompanyMember>> => {
     const { members } = await getAllMembers();
 
-    // Optional client-side filtering (until the backend supports server-side filtering)
+    // client-side filtering until the backend supports it server-side
     const search = params?.search?.trim().toLowerCase();
-    const rankSet = params?.ranks && params.ranks.length > 0 ? new Set(params.ranks) : null;
+    const rankSet =
+      params?.ranks && params.ranks.length > 0 ? new Set(params.ranks) : null;
 
     const filtered = members.filter((m) => {
       if (rankSet && !rankSet.has(m.freeCompanyRank)) return false;
@@ -83,7 +98,7 @@ export const membersApi = {
 
     const totalCount = filtered.length;
 
-    // Handle empty dataset explicitly (avoids NaN totalPages from division by 0)
+    // handle empty set explicitly - avoids NaN totalPages from div-by-zero
     if (totalCount === 0) {
       return {
         items: [],
@@ -95,7 +110,10 @@ export const membersApi = {
     }
 
     const requestedPageSize = params?.pageSize;
-    const pageSize = requestedPageSize && requestedPageSize > 0 ? requestedPageSize : totalCount; // Default to all
+    const pageSize =
+      requestedPageSize && requestedPageSize > 0
+        ? requestedPageSize
+        : totalCount; // default: all on one page
     const totalPages = Math.ceil(totalCount / pageSize);
     const rawPage = params?.page ?? 1;
     const page = Math.min(Math.max(rawPage, 1), totalPages);
@@ -107,18 +125,23 @@ export const membersApi = {
     return { items, totalCount, page, pageSize, totalPages };
   },
 
-  // Convenience lookup by character ID
-  getMemberByCharacterId: async (characterId: string): Promise<FreeCompanyMember | undefined> => {
+  getMemberByCharacterId: async (
+    characterId: string,
+  ): Promise<FreeCompanyMember | undefined> => {
     if (!characterId) return undefined;
     const { members } = await getAllMembers();
     return members.find((m) => m.characterId === characterId);
   },
 
-  // Fetch staff/leadership members
   getStaff: async (): Promise<StaffResponse> => {
-    const response = await apiClient.get<StaffResponse>('/members/staff');
-    const staff = Array.isArray(response.data?.staff) ? response.data.staff : [];
-    const totalCount = typeof response.data?.totalCount === 'number' ? response.data.totalCount : staff.length;
+    const response = await apiClient.get<StaffResponse>("/members/staff");
+    const staff = Array.isArray(response.data?.staff)
+      ? response.data.staff
+      : [];
+    const totalCount =
+      typeof response.data?.totalCount === "number"
+        ? response.data.totalCount
+        : staff.length;
     return { staff, totalCount };
   },
 };

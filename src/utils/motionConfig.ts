@@ -1,44 +1,26 @@
-/**
- * Motion Configuration Utilities
- *
- * PERFORMANCE: Optimizes Framer Motion animations for mobile devices
- * - Reduces animation complexity on low-powered devices
- * - Disables expensive effects on mobile
- * - Provides simplified variants for better performance
- */
+// tones down Framer Motion on mobile / low-powered devices
 
 import type { Transition, Variants } from "motion/react";
 
-// Detect if device is likely mobile/low-powered
 const isMobile = () => {
   if (typeof window === "undefined") return false;
 
-  // Check if touch device
   const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-  // Check viewport width (mobile typically < 768px)
+  // mobile is typically < 768px
   const isSmallScreen = window.innerWidth < 768;
 
   return isTouch && isSmallScreen;
 };
 
-/**
- * PERFORMANCE: Cached mobile detection evaluated once at module load.
- * Use this for gating expensive visual effects (backdrop-blur, glow layers, etc.)
- * to avoid repeated checks in render paths.
- */
+/** cached at module load; gate expensive effects (backdrop-blur, glow) on this to avoid re-checks in render */
 export const IS_MOBILE: boolean = isMobile();
 
-// Detect if device prefers reduced motion
 const prefersReducedMotion = () => {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
-/**
- * Get optimized transition config based on device capabilities
- * Mobile devices get simpler, faster transitions
- */
 export function getOptimizedTransition(
   desktopTransition: Transition = { duration: 0.3 },
   mobileTransition?: Transition,
@@ -59,13 +41,9 @@ export function getOptimizedTransition(
   return desktopTransition;
 }
 
-/**
- * Create motion variants optimized for mobile
- * Reduces scale/rotate/complex transforms on mobile devices
- */
+/** drops scale/rotate/complex transforms on mobile */
 export function createOptimizedVariants(variants: Variants): Variants {
   if (prefersReducedMotion()) {
-    // No animation for reduced motion
     return Object.keys(variants).reduce(
       (acc, key) => ({
         ...acc,
@@ -82,7 +60,6 @@ export function createOptimizedVariants(variants: Variants): Variants {
     return variants;
   }
 
-  // Simplify animations for mobile
   return Object.keys(variants).reduce((acc, key) => {
     const variant = variants[key];
     if (typeof variant !== "object") return { ...acc, [key]: variant };
@@ -91,14 +68,12 @@ export function createOptimizedVariants(variants: Variants): Variants {
       ...acc,
       [key]: {
         ...variant,
-        // Remove expensive transforms on mobile
+        // drop expensive transforms, keep the cheap ones
         scale: variant.scale ? 1 : undefined,
         rotate: variant.rotate ? 0 : undefined,
-        // Keep simple transforms
         opacity: variant.opacity,
         x: variant.x,
         y: variant.y,
-        // Faster transitions
         transition: {
           ...(variant.transition as Transition),
           duration:
@@ -110,10 +85,7 @@ export function createOptimizedVariants(variants: Variants): Variants {
   }, {});
 }
 
-/**
- * Simplified motion props for hover effects
- * Disables hover animations on touch devices (they don't work well anyway)
- */
+/** hover doesn't work well on touch devices, so skip it there */
 export function getHoverProps(hoverScale: number = 1.05) {
   if (isMobile() || prefersReducedMotion()) {
     return {};
@@ -126,28 +98,18 @@ export function getHoverProps(hoverScale: number = 1.05) {
   };
 }
 
-/**
- * Get animation delay multiplier based on device
- * Reduces stagger delays on mobile for faster perceived performance
- */
+/** shorter stagger on mobile for snappier perceived load */
 export function getDelayMultiplier(): number {
   if (prefersReducedMotion()) return 0;
   if (isMobile()) return 0.5; // 2x faster stagger on mobile
   return 1;
 }
 
-/**
- * Check if complex animations should be enabled
- * Returns false on mobile or reduced motion preference
- */
 export function shouldUseComplexAnimations(): boolean {
   return !isMobile() && !prefersReducedMotion();
 }
 
-/**
- * Get layout animation props
- * Disables layout animations on mobile (expensive)
- */
+/** layout animations are expensive, so skip them on mobile */
 export function getLayoutProps() {
   if (isMobile() || prefersReducedMotion()) {
     return {};

@@ -1,9 +1,6 @@
 import apiClient from './client';
 import type { ChronicleEventsResponse, GetChronicleEventsParams } from '../types';
 
-/**
- * Fetch chronicle events with cursor-based pagination.
- */
 async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEventsResponse> {
   const searchParams = new URLSearchParams();
   
@@ -26,9 +23,7 @@ async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEv
   const response = await apiClient.get(url);
   const body = response.data;
 
-  // The API may return either:
-  //   - A wrapped object: { events: [...], nextCursor, hasMore }
-  //   - A flat array of events: [...]
+  // API returns either a wrapped { events, nextCursor, hasMore } or a bare array
   if (Array.isArray(body)) {
     return {
       events: body,

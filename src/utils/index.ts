@@ -1,4 +1,3 @@
-// Date utilities
 export {
   formatRelativeTime,
   formatFullDate,
@@ -6,7 +5,6 @@ export {
   formatMemberSince,
 } from "./dateFormatters";
 
-// Motion/Animation performance utilities
 export {
   IS_MOBILE,
   getOptimizedTransition,

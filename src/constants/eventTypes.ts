@@ -8,22 +8,16 @@ import {
   Sparkles,
 } from "lucide-react";
 
-/**
- * Configuration for event type display (icon, colors).
- */
 export interface EventTypeConfig {
   Icon: LucideIcon;
   color: string;
   bgColor: string;
-  /** A CSS color (hex or token) for hairline tags / cozy tinting. */
+  /** CSS color (hex or token) for hairline tags / cozy tinting */
   hex: string;
   label: string;
 }
 
-/**
- * Map of event types to their display configuration.
- * Keys match the backend's PascalCase type values.
- */
+// keys match the backend's PascalCase type values
 export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
   MemberJoined: {
     Icon: PartyPopper,
@@ -62,9 +56,7 @@ export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
   },
 };
 
-/**
- * Default configuration for unknown event types.
- */
+/** fallback for unknown event types */
 export const DEFAULT_EVENT_TYPE_CONFIG: EventTypeConfig = {
   Icon: Sparkles,
   color: "text-[var(--text-muted)]",
@@ -73,9 +65,6 @@ export const DEFAULT_EVENT_TYPE_CONFIG: EventTypeConfig = {
   label: "Event",
 };
 
-/**
- * Get the display configuration for an event type.
- */
 export function getEventTypeConfig(type: string): EventTypeConfig {
   return EVENT_TYPE_CONFIG[type] ?? DEFAULT_EVENT_TYPE_CONFIG;
 }

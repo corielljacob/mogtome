@@ -10,41 +10,26 @@ import {
   Sword,
 } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// UNIFIED RANK COLOR CONFIG
-//
-// Single source of truth for FC rank colors used across all UI surfaces.
-//
-// COLOR GUIDELINES:
-// - All hex values sit in the medium-bright range (~50-65% lightness) so they
-//   read well on BOTH light (#FFF9F5) and dark (#1A1722) backgrounds.
-// - Hues are spread across the spectrum so no two ranks look alike.
-// - Colors are chosen to remain distinguishable across all 8 color themes
-//   (pom-pom, crystal, chocobo, tonberry, cactuar, moogle-cloud, midnight,
-//   sunset) in both light and dark modes.
-// ─────────────────────────────────────────────────────────────────────────────
+// single source of truth for FC rank colors across every UI surface.
+// hexes sit ~50-65% lightness so they read on both the light (#FFF9F5) and
+// dark (#1A1722) backgrounds, and stay distinguishable across all 8 themes
+// in both modes.
 
 export interface RankColor {
-  /** Hex color for inline styles */
   hex: string;
-  /** Tailwind text color class */
   text: string;
   /** Tailwind background/10 class */
   bg: string;
   /** RGBA glow for hover/shadow effects */
   glow: string;
-  /** Lucide icon component */
   icon: typeof Crown;
-  /** Human-readable label (e.g. "FC Leader") */
+  /** e.g. "FC Leader" */
   label: string;
-  /** Description of the rank */
   description: string;
-  /** Singular/plural member term */
   memberTerm: { singular: string; plural: string };
 }
 
 export const RANK_COLORS: Record<string, RankColor> = {
-  // ── Cyan — bright aqua, distinctive leader color ──────────────────────────
   "Moogle Guardian": {
     hex: "#22D3EE",
     text: "text-[#22D3EE]",
@@ -55,7 +40,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Our Moogle Guardian who leads Kupo Life",
     memberTerm: { singular: "leader", plural: "leaders" },
   },
-  // ── Violet — rich purple, elevated from the old darker shade ──────────────
   "Moogle Knight": {
     hex: "#A855F7",
     text: "text-[#A855F7]",
@@ -66,7 +50,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Our trusted officers who keep things running smoothly",
     memberTerm: { singular: "knight", plural: "knights" },
   },
-  // ── Teal — warm emerald-teal, brighter than the old dark teal ─────────────
   "Paissa Trainer": {
     hex: "#14B8A6",
     text: "text-[#14B8A6]",
@@ -78,7 +61,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
       "Exemplary community members hoping to make your day a little brighter",
     memberTerm: { singular: "trainer", plural: "trainers" },
   },
-  // ── Green — true green, significantly brighter than the old forest green ──
   "Coeurl Hunter": {
     hex: "#22C55E",
     text: "text-[#22C55E]",
@@ -89,7 +71,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Seasoned adventurers of the FC",
     memberTerm: { singular: "hunter", plural: "hunters" },
   },
-  // ── Amber — warm golden-orange, similar to original but richer ────────────
   Mandragora: {
     hex: "#F59E0B",
     text: "text-[#F59E0B]",
@@ -100,7 +81,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Growing members of the FC",
     memberTerm: { singular: "member", plural: "members" },
   },
-  // ── Blue — vivid sky blue, brighter than the original steel blue ──────────
   "Apkallu Seeker": {
     hex: "#60A5FA",
     text: "text-[#60A5FA]",
@@ -111,7 +91,7 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Curious explorers of the FC",
     memberTerm: { singular: "seeker", plural: "seekers" },
   },
-  // ── Lime — yellow-green, shifted slightly warm to separate from Hunter ────
+  // lime shifted warm so it doesn't read as Hunter's green
   "Kupo Shelf": {
     hex: "#84CC16",
     text: "text-[#84CC16]",
@@ -122,7 +102,6 @@ export const RANK_COLORS: Record<string, RankColor> = {
     description: "Valued members of the FC",
     memberTerm: { singular: "member", plural: "members" },
   },
-  // ── Gray — cool neutral, barely changed ───────────────────────────────────
   "Bom Boko": {
     hex: "#9CA3AF",
     text: "text-[#9CA3AF]",
@@ -146,7 +125,6 @@ export const DEFAULT_RANK_COLOR: RankColor = {
   memberTerm: { singular: "member", plural: "members" },
 };
 
-/** Get rank color config, falling back to the default */
 export function getRankColor(rank: string | undefined): RankColor {
   return rank ? (RANK_COLORS[rank] ?? DEFAULT_RANK_COLOR) : DEFAULT_RANK_COLOR;
 }

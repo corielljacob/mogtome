@@ -1,8 +1,5 @@
 import apiClient from './client';
 
-/**
- * Unmapped character from the API
- */
 export interface UnmappedCharacter {
   characterId: string;
   name: string;
@@ -10,42 +7,27 @@ export interface UnmappedCharacter {
   freeCompanyRank: string;
 }
 
-/**
- * Unmapped Discord user from the API
- */
 export interface UnmappedDiscordUser {
   discordId: string;
   serverNickName: string;
 }
 
-/**
- * Response from get unmapped characters endpoint
- */
 export interface UnmappedCharactersResponse {
   suggestedCharacters: UnmappedCharacter[];
   unmappedCharacters: UnmappedCharacter[];
 }
 
-/**
- * Response from get unmapped Discord users endpoint
- */
 export interface UnmappedDiscordUsersResponse {
   suggestedDiscordUsers: UnmappedDiscordUser[];
   unmappedDiscordUsers: UnmappedDiscordUser[];
 }
 
-/**
- * Request body for mapping a character to a Discord user
- */
 export interface MapCharacterRequest {
   characterId: string;
   discordId: string;
 }
 
-/**
- * Get unmapped characters, optionally filtered by Discord username for suggestions.
- * @param discordUsername - Optional Discord username to find suggested character matches
- */
+/** optional discordUsername narrows the result to suggested matches */
 async function getUnmappedCharacters(
   discordUsername?: string
 ): Promise<UnmappedCharactersResponse> {
@@ -60,10 +42,7 @@ async function getUnmappedCharacters(
   };
 }
 
-/**
- * Get unmapped Discord users, optionally filtered by character name for suggestions.
- * @param characterName - Optional character name (first and last with space) to find suggested Discord matches
- */
+/** optional characterName ("First Last", space-separated) narrows to suggested matches */
 async function getUnmappedDiscordUsers(
   characterName?: string
 ): Promise<UnmappedDiscordUsersResponse> {
@@ -78,11 +57,6 @@ async function getUnmappedDiscordUsers(
   };
 }
 
-/**
- * Create a mapping between a character and a Discord account.
- * @param characterId - The character ID to map
- * @param discordId - The Discord ID to map
- */
 async function mapCharacter(
   characterId: string,
   discordId: string

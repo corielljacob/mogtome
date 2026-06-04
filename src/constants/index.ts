@@ -1,4 +1,3 @@
-// Event types
 export {
   EVENT_TYPE_CONFIG,
   DEFAULT_EVENT_TYPE_CONFIG,
@@ -6,7 +5,6 @@ export {
   type EventTypeConfig,
 } from "./eventTypes";
 
-// Seasonal events
 export {
   SEASONAL_EVENTS,
   getActiveEvent,
@@ -20,7 +18,6 @@ export {
   type EventAtmosphere,
 } from "./seasonalEvents";
 
-// Rank colors
 export {
   RANK_COLORS,
   DEFAULT_RANK_COLOR,

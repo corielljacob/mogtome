@@ -8,8 +8,6 @@ import type {
   UnmappedDiscordUser,
 } from "../api/characterMapping";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 export type MatchConfidence = "exact" | "high" | "medium" | "low";
 
 export interface MatchPair {
@@ -20,23 +18,16 @@ export interface MatchPair {
 }
 
 export interface MatchResults {
-  /** Pairs where the FE is very confident (exact or near-exact name match) */
   exactMatches: MatchPair[];
-  /** Pairs with partial / fuzzy overlap — likely but not certain */
+  /** partial / fuzzy overlap - likely but not certain */
   suggestedMatches: MatchPair[];
-  /** Characters that didn't match any Discord user */
   unmatchedCharacters: UnmappedCharacter[];
-  /** Discord users that didn't match any character */
   unmatchedDiscordUsers: UnmappedDiscordUser[];
 }
 
-// ─── Normalization ───────────────────────────────────────────────────────────
-
-/** Regex that matches most emoji and symbol Unicode ranges */
 const EMOJI_RE =
   /[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{2700}-\u{27BF}\u{2B50}\u{2B55}\u{231A}-\u{231B}\u{23E9}-\u{23F3}\u{23F8}-\u{23FA}\u{25AA}-\u{25AB}\u{25B6}\u{25C0}\u{25FB}-\u{25FE}\u{2934}-\u{2935}\u{2B05}-\u{2B07}\u{3030}\u{303D}\u{3297}\u{3299}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu;
 
-/** Strip emojis, decorative Unicode, and common decorative punctuation */
 function stripDecorative(s: string): string {
   return s
     .replace(EMOJI_RE, "")
@@ -48,15 +39,13 @@ function stripDecorative(s: string): string {
     .trim();
 }
 
-/** Normalise a name for comparison: strip decorative chars, collapse whitespace, lowercase */
 export function normalizeName(raw: string): string {
   let n = stripDecorative(raw);
-  // Collapse multiple spaces / special whitespace
   n = n.replace(/\s+/g, " ").trim().toLowerCase();
   return n;
 }
 
-/** Split into lowercase tokens (handles apostrophes in FFXIV names like A'lina) */
+/** handles apostrophes in FFXIV names like A'lina */
 function tokenize(normalized: string): string[] {
   return normalized
     .split(/\s+/)
@@ -64,9 +53,6 @@ function tokenize(normalized: string): string[] {
     .filter(Boolean);
 }
 
-// ─── Similarity helpers ──────────────────────────────────────────────────────
-
-/** Generate character bigrams from a string */
 function bigrams(s: string): Set<string> {
   const set = new Set<string>();
   for (let i = 0; i < s.length - 1; i++) {
@@ -75,7 +61,7 @@ function bigrams(s: string): Set<string> {
   return set;
 }
 
-/** Sørensen-Dice coefficient between two strings (0–1) */
+/** Sørensen-Dice coefficient (0–1) */
 function diceCoefficient(a: string, b: string): number {
   if (a === b) return 1;
   if (a.length < 2 || b.length < 2) return 0;
@@ -88,10 +74,7 @@ function diceCoefficient(a: string, b: string): number {
   return (2 * overlap) / (biA.size + biB.size);
 }
 
-/**
- * Check if all tokens of `subset` appear somewhere inside `superset` tokens.
- * Returns 1 if every token is found, otherwise fraction of tokens found.
- */
+/** fraction of subset tokens found anywhere inside the superset (1 = all) */
 function tokenContainment(
   subsetTokens: string[],
   supersetTokens: string[],
@@ -105,15 +88,10 @@ function tokenContainment(
   return found / subsetTokens.length;
 }
 
-// ─── Scoring ─────────────────────────────────────────────────────────────────
-
 const EXACT_THRESHOLD = 0.92; // score >= this → exact
 const SUGGESTED_THRESHOLD = 0.35; // score >= this → suggested
 
-/**
- * Score how well a character name matches a Discord nickname.
- * Returns a number 0–1 where 1 is a perfect match.
- */
+/** 0–1, where 1 is a perfect match */
 export function scoreMatch(characterName: string, discordNick: string): number {
   const cNorm = normalizeName(characterName);
   const dNorm = normalizeName(discordNick);
@@ -135,7 +113,7 @@ export function scoreMatch(characterName: string, discordNick: string): number {
     return 0.88;
   }
 
-  // 3. Discord nick contains the full character name (with other stuff around it)
+  // 3. Discord nick contains the full character name (surrounded by other text)
   if (dNorm.includes(cNorm) && cNorm.length >= 5) {
     return 0.95;
   }
@@ -155,28 +133,21 @@ export function scoreMatch(characterName: string, discordNick: string): number {
   const containment = Math.max(charInDiscord, discordInChar);
   if (containment >= 0.8) return 0.7;
 
-  // 6. Dice coefficient for fuzzy similarity
+  // 6. fuzzy fallback: dice weighted slightly above containment
   const dice = diceCoefficient(cNorm, dNorm);
-  // Weighted combination: favour containment slightly
   const combined = containment * 0.4 + dice * 0.6;
 
   return Math.min(combined, 0.89); // cap below exact threshold
 }
 
-// ─── Main matcher ────────────────────────────────────────────────────────────
-
 /**
- * Run the FE matching engine across all unmapped characters and Discord users.
- * Produces exact matches, suggested matches, and leftovers for manual pairing.
- *
- * The algorithm is O(characters × discordUsers). With a few hundred of each
- * this completes in < 50 ms on modern hardware.
+ * O(characters × discordUsers); fine for a few hundred of each.
+ * Leftovers come back for manual pairing.
  */
 export function computeMatches(
   characters: UnmappedCharacter[],
   discordUsers: UnmappedDiscordUser[],
 ): MatchResults {
-  // Score every possible pair
   const scores: { charIdx: number; discIdx: number; score: number }[] = [];
 
   for (let ci = 0; ci < characters.length; ci++) {
@@ -191,7 +162,7 @@ export function computeMatches(
     }
   }
 
-  // Sort descending by score so we greedily assign best matches first
+  // greedily assign best matches first
   scores.sort((a, b) => b.score - a.score);
 
   const usedChars = new Set<number>();
@@ -224,8 +195,8 @@ export function computeMatches(
       usedDisc.add(discIdx);
     } else {
       suggestedMatches.push(pair);
-      // Don't mark as "used" — user might prefer a different pairing
-      // But still track so we don't duplicate a pair in the list
+      // still tracked so the same pair can't appear twice, even though the
+      // user may ultimately prefer a different pairing
       usedChars.add(charIdx);
       usedDisc.add(discIdx);
     }
@@ -242,10 +213,7 @@ export function computeMatches(
   };
 }
 
-/**
- * For a single selected item, find and rank matches from the opposite list.
- * Returns items sorted by score descending, annotated with confidence.
- */
+/** ranks the opposite list against one selected item, best score first */
 export function rankMatchesForCharacter(
   character: UnmappedCharacter,
   discordUsers: UnmappedDiscordUser[],

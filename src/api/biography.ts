@@ -1,58 +1,46 @@
-import apiClient from './client';
-import type { BiographySubmission } from '../types';
+import apiClient from "./client";
+import type { BiographySubmission } from "../types";
 
-/**
- * Set biography directly (for Knights and above).
- * @param biography - The biography text to set
- */
+/** sets bio directly - Knights and above only */
 async function setBiography(biography: string): Promise<void> {
-  await apiClient.post('/profile/biography', { biography });
+  await apiClient.post("/profile/biography", { biography });
 }
 
-/**
- * Submit a biography for approval (for Paissa rank members).
- * @param biography - The biography text to submit for review
- */
+/** submits for approval - Paissa rank path */
 async function submitBiography(biography: string): Promise<void> {
-  await apiClient.post('/profile/biography/submission', { biography });
+  await apiClient.post("/profile/biography/submission", { biography });
 }
 
-/**
- * Retrieve all pending biography submissions (for Knights and above).
- */
+/** Knights and above only */
 async function getPendingSubmissions(): Promise<BiographySubmission[]> {
-  const response = await apiClient.get<BiographySubmission[]>('/profile/biography/submission');
+  const response = await apiClient.get<BiographySubmission[]>(
+    "/profile/biography/submission",
+  );
   return Array.isArray(response.data) ? response.data : [];
 }
 
-/**
- * Approve a pending biography submission (for Knights and above).
- * @param submissionId - The submissionId of the submission to approve (NOT the id field)
- */
+/** Knights and above only. takes submissionId, NOT the id field */
 async function approveSubmission(submissionId: string): Promise<void> {
   await apiClient.post(`/profile/biography/submission/approve/${submissionId}`);
 }
 
-/**
- * Reject a pending biography submission (for Knights and above).
- * @param submissionId - The submissionId of the submission to reject (NOT the id field)
- */
+/** Knights and above only. takes submissionId, NOT the id field */
 async function rejectSubmission(submissionId: string): Promise<void> {
   await apiClient.post(`/profile/biography/submission/reject/${submissionId}`);
 }
 
-/**
- * Get the last pending submission for a user, or their most recently approved one if no pending.
- * @param memberId - The member ID to get submission for
- */
-async function getSubmission(memberId: string): Promise<BiographySubmission | null> {
+/** last pending submission, or the most recently approved one if none pending */
+async function getSubmission(
+  memberId: string,
+): Promise<BiographySubmission | null> {
   try {
-    const response = await apiClient.get<BiographySubmission>(`/profile/biography/submission/${memberId}`);
+    const response = await apiClient.get<BiographySubmission>(
+      `/profile/biography/submission/${memberId}`,
+    );
     return response.data ?? null;
   } catch (error) {
-    // Return null if no submission found (404) or other errors
-    // This allows the UI to gracefully handle the "no submission" case
-    if (error && typeof error === 'object' && 'response' in error) {
+    // 404 means no submission yet - let the UI treat that as an empty state
+    if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { status?: number } };
       if (axiosError.response?.status === 404) {
         return null;
@@ -62,13 +50,13 @@ async function getSubmission(memberId: string): Promise<BiographySubmission | nu
   }
 }
 
-/**
- * Edit a pending submission.
- * @param submissionId - The submissionId of the submission to edit
- * @param biography - The updated biography text
- */
-async function editSubmission(submissionId: string, biography: string): Promise<void> {
-  await apiClient.post(`/profile/biography/submission/edit/${submissionId}`, { biography });
+async function editSubmission(
+  submissionId: string,
+  biography: string,
+): Promise<void> {
+  await apiClient.post(`/profile/biography/submission/edit/${submissionId}`, {
+    biography,
+  });
 }
 
 export const biographyApi = {

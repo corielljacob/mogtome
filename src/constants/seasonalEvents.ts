@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// FFXIV Seasonal Events
-// Defines all seasonal events with date ranges, theme overrides, and
-// home page customizations. Events automatically activate based on the
-// current date and layer on top of the user's chosen color theme.
-// ─────────────────────────────────────────────────────────────────────────────
+// events auto-activate by current date and layer on top of the user's chosen theme
 
 import type { LucideIcon } from "lucide-react";
 import {
@@ -33,7 +28,6 @@ import {
 } from "lucide-react";
 import { EVENT_PALETTES } from "../styles/themePalettes";
 
-/** Unique identifier for each seasonal event */
 export type SeasonalEventId =
   | "heavensturn"
   | "valentiones"
@@ -53,7 +47,6 @@ export interface EventDateRange {
   endDay: number;
 }
 
-/** Preview colors for the event theme picker / indicator */
 export interface EventThemePreview {
   primary: string;
   secondary: string;
@@ -61,77 +54,51 @@ export interface EventThemePreview {
 }
 
 /**
- * Pull a simple event's preview swatch from the single palette source
- * (src/styles/themePalettes.ts) so the indicator always matches the generated
- * CSS. The two flagship events keep their own literals below.
+ * pulls the swatch from the palette source so the indicator always matches the
+ * generated CSS. flagship events keep their own literals below.
  */
 function eventPreview(id: keyof typeof EVENT_PALETTES): EventThemePreview {
   const { primary, secondary, accent } = EVENT_PALETTES[id].light;
   return { primary, secondary, accent };
 }
 
-/** Decorative particle configuration for the home page */
 export interface EventParticle {
-  /** Lucide icon component to render */
   icon: LucideIcon;
-  /** Color for the particle icon */
   color: string;
-  /** Number of particles */
   count: number;
-  /** Min size in px */
   minSize: number;
-  /** Max size in px */
   maxSize: number;
-  /** Min opacity (0-1) */
+  /** 0-1 */
   minOpacity: number;
-  /** Max opacity (0-1) */
+  /** 0-1 */
   maxOpacity: number;
 }
 
-/** Home page atmosphere configuration during an event */
 export interface EventAtmosphere {
-  /** CSS gradient for the fixed background overlay */
   backgroundGradient: string;
-  /** Center glow color (CSS value with alpha) */
+  /** CSS color, with alpha */
   centerGlowFrom: string;
   centerGlowVia: string;
-  /** Fairy light color palette */
   fairyLightColors: string[];
-  /** Warm mote color palette */
   moteColors: string[];
 }
 
-/** Full definition of a seasonal event */
 export interface SeasonalEvent {
   id: SeasonalEventId;
-  /** Display name */
   name: string;
-  /** Short tagline shown on the home page */
   tagline: string;
-  /** Longer description for settings / tooltips */
   description: string;
-  /** Lucide icon component representing this event */
   icon: LucideIcon;
-  /** When the event is active */
   dateRange: EventDateRange;
-  /** Theme preview colors */
   preview: EventThemePreview;
-  /** Kupo quotes specific to this event */
   kupoQuotes: string[];
-  /** Decorative particles for the home page */
   particles: EventParticle[];
-  /** Home page atmosphere overrides */
   atmosphere: EventAtmosphere;
-  /** CSS class applied to <html> when event is active */
+  /** applied to <html> while the event is active */
   cssClass: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Event Definitions
-// ─────────────────────────────────────────────────────────────────────────────
-
 export const SEASONAL_EVENTS: SeasonalEvent[] = [
-  // ── Heavensturn (January) ─────────────────────────────────────────────────
   {
     id: "heavensturn",
     name: "Heavensturn",
@@ -199,7 +166,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-heavensturn",
   },
 
-  // ── Valentione's Day (February) ───────────────────────────────────────────
   {
     id: "valentiones",
     name: "Valentione's Day",
@@ -276,7 +242,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-valentiones",
   },
 
-  // ── Little Ladies' Day (March) ────────────────────────────────────────────
   {
     id: "little-ladies",
     name: "Little Ladies' Day",
@@ -343,7 +308,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-little-ladies",
   },
 
-  // ── Hatching-tide (April) ─────────────────────────────────────────────────
   {
     id: "hatching-tide",
     name: "Hatching-tide",
@@ -420,7 +384,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-hatching-tide",
   },
 
-  // ── Make It Rain Campaign (June) ──────────────────────────────────────────
   {
     id: "make-it-rain",
     name: "Make It Rain Campaign",
@@ -497,7 +460,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-make-it-rain",
   },
 
-  // ── Moonfire Faire (August, early) ────────────────────────────────────────
   {
     id: "moonfire-faire",
     name: "Moonfire Faire",
@@ -574,7 +536,6 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-moonfire-faire",
   },
 
-  // ── The Rising (August, late) ─────────────────────────────────────────────
   {
     id: "the-rising",
     name: "The Rising",
@@ -642,7 +603,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-the-rising",
   },
 
-  // ── All Saints' Wake (October) — FLAGSHIP EVENT ────────────────────────────
+  // flagship: bespoke palette lives in index.css, not themePalettes.ts
   {
     id: "all-saints-wake",
     name: "All Saints' Wake",
@@ -733,7 +694,7 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
     cssClass: "event-all-saints-wake",
   },
 
-  // ── Starlight Celebration (December) — FLAGSHIP EVENT ─────────────────────
+  // flagship: bespoke palette lives in index.css, not themePalettes.ts
   {
     id: "starlight",
     name: "Starlight Celebration",
@@ -825,29 +786,18 @@ export const SEASONAL_EVENTS: SeasonalEvent[] = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Checks whether a given date falls within an event's date range.
- * Handles events that don't cross year boundaries (all current events are
- * contained within a single year cycle).
- */
 export function isDateInEventRange(date: Date, range: EventDateRange): boolean {
   const month = date.getMonth() + 1; // getMonth() is 0-indexed
   const day = date.getDate();
 
-  // Same month range
   if (range.startMonth === range.endMonth) {
     return (
       month === range.startMonth && day >= range.startDay && day <= range.endDay
     );
   }
 
-  // Cross-month range (e.g., Dec 15 - Jan 5 — not currently used, but supported)
+  // wraps the year (e.g. Dec 15 - Jan 5); supported but not currently used
   if (range.startMonth > range.endMonth) {
-    // Wraps around the year
     return (
       (month === range.startMonth && day >= range.startDay) ||
       month > range.startMonth ||
@@ -856,7 +806,7 @@ export function isDateInEventRange(date: Date, range: EventDateRange): boolean {
     );
   }
 
-  // Multi-month range within the same year
+  // multi-month range within the same year
   return (
     (month === range.startMonth && day >= range.startDay) ||
     (month > range.startMonth && month < range.endMonth) ||
@@ -864,11 +814,7 @@ export function isDateInEventRange(date: Date, range: EventDateRange): boolean {
   );
 }
 
-/**
- * Returns the currently active seasonal event, or null if none is active.
- * If multiple events overlap (e.g., Moonfire Faire and The Rising in August),
- * the later-starting event takes priority.
- */
+/** on overlap (e.g. Moonfire Faire vs The Rising in August), the later-starting event wins */
 export function getActiveEvent(date: Date = new Date()): SeasonalEvent | null {
   const activeEvents = SEASONAL_EVENTS.filter((event) =>
     isDateInEventRange(date, event.dateRange),
@@ -877,7 +823,6 @@ export function getActiveEvent(date: Date = new Date()): SeasonalEvent | null {
   if (activeEvents.length === 0) return null;
   if (activeEvents.length === 1) return activeEvents[0];
 
-  // If multiple events are active, prefer the one that started most recently
   return activeEvents.reduce((latest, current) => {
     const latestStart =
       latest.dateRange.startMonth * 100 + latest.dateRange.startDay;
@@ -887,16 +832,12 @@ export function getActiveEvent(date: Date = new Date()): SeasonalEvent | null {
   });
 }
 
-/**
- * Returns the next upcoming event from the given date.
- * Useful for displaying "next event" countdown info.
- */
 export function getNextEvent(date: Date = new Date()): SeasonalEvent | null {
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const currentDayOfYear = month * 100 + day;
 
-  // Find events that haven't started yet this year
+  // events that haven't started yet this year
   const upcoming = SEASONAL_EVENTS.filter((event) => {
     const eventStart =
       event.dateRange.startMonth * 100 + event.dateRange.startDay;
@@ -907,10 +848,9 @@ export function getNextEvent(date: Date = new Date()): SeasonalEvent | null {
     return aStart - bStart;
   });
 
-  // If there are upcoming events this year, return the nearest one
   if (upcoming.length > 0) return upcoming[0];
 
-  // Otherwise, wrap to the first event of next year
+  // none left this year - wrap to the first event of next year
   const sorted = [...SEASONAL_EVENTS].sort((a, b) => {
     const aStart = a.dateRange.startMonth * 100 + a.dateRange.startDay;
     const bStart = b.dateRange.startMonth * 100 + b.dateRange.startDay;

@@ -137,14 +137,10 @@ export interface User {
   discordId: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Profile
-// Normalized profile model + viewer permissions. One shape drives the Profile
-// view whether it's rendering your own profile ("me") or — later — someone
-// else's (by characterId), so the presentation layer never reads auth directly.
-// ─────────────────────────────────────────────────────────────────────────────
+// one shape drives the Profile view whether it's your own ("me") or someone
+// else's (by characterId), so the presentation layer never reads auth directly
 
-/** Everything the Profile view needs to render an identity, source-agnostic. */
+/** source-agnostic identity for the Profile view */
 export interface ProfileData {
   /** Lodestone character id (absent for accounts not yet mapped to a character) */
   characterId?: string;
