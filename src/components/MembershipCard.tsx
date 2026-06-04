@@ -212,14 +212,14 @@ export function MembershipCard({
                     <PawPrint className="w-3.5 h-3.5 text-white" />
                   </span>
                   <div className="leading-none">
-                    <p className="text-lg text-[var(--text)]">Kupo Life</p>
+                    <p className="text-lg text-[var(--text)]">MogTome</p>
                     <p className="text-[10px] text-[var(--text-muted)] -mt-0.5">
                       メンバーズカード · Member's Card
                     </p>
                   </div>
                 </div>
                 <span className="text-[10px] text-[var(--text-subtle)] -rotate-3">
-                  MogTome
+                  Kupo Life!
                 </span>
               </div>
 
