@@ -14,7 +14,7 @@ import {
 import type { ReactNode } from "react";
 
 // keep the auth check off the network
-vi.mock("../api/client", () => ({
+vi.mock("@/shared/api/client", () => ({
   refreshAuthToken: vi.fn().mockResolvedValue(null),
 }));
 

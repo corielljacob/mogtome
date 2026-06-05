@@ -4,7 +4,7 @@ import { KnightRoute } from "@/app/KnightRoute";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 
 // stub refreshAuthToken so auth bootstrap doesn't hit the network
-vi.mock("../api/client", () => ({
+vi.mock("@/shared/api/client", () => ({
   refreshAuthToken: vi.fn().mockResolvedValue(null),
 }));
 

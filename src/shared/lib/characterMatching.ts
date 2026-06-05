@@ -6,7 +6,7 @@
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
-} from "@/api/characterMapping";
+} from "@/features/characterMapping/api";
 
 export type MatchConfidence = "exact" | "high" | "medium" | "low";
 

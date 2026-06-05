@@ -40,36 +40,36 @@ class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
 }
 
 const Home = lazy(() =>
-  import("@/pages/Home").then((m) => ({ default: m.Home })),
+  import("@/features/home/HomePage").then((m) => ({ default: m.Home })),
 );
 const Members = lazy(() =>
-  import("@/pages/Members").then((m) => ({ default: m.Members })),
+  import("@/features/members/MembersPage").then((m) => ({ default: m.Members })),
 );
 const Chronicle = lazy(() =>
-  import("@/pages/Chronicle").then((m) => ({ default: m.Chronicle })),
+  import("@/features/chronicle/ChroniclePage").then((m) => ({ default: m.Chronicle })),
 );
 const About = lazy(() =>
-  import("@/pages/About").then((m) => ({ default: m.About })),
+  import("@/features/about/AboutPage").then((m) => ({ default: m.About })),
 );
 const AuthCallback = lazy(() =>
-  import("@/pages/AuthCallback").then((m) => ({ default: m.AuthCallback })),
+  import("@/features/auth/AuthCallbackPage").then((m) => ({ default: m.AuthCallback })),
 );
 const Logout = lazy(() =>
-  import("@/pages/Logout").then((m) => ({ default: m.Logout })),
+  import("@/features/auth/LogoutPage").then((m) => ({ default: m.Logout })),
 );
 const Settings = lazy(() =>
-  import("@/pages/Settings").then((m) => ({ default: m.Settings })),
+  import("@/features/settings/SettingsPage").then((m) => ({ default: m.Settings })),
 );
 const Profile = lazy(() =>
-  import("@/pages/Profile").then((m) => ({ default: m.Profile })),
+  import("@/features/profile/ProfilePage").then((m) => ({ default: m.Profile })),
 );
 const KnightDashboard = lazy(() =>
-  import("@/pages/KnightDashboard").then((m) => ({
+  import("@/features/knights/KnightDashboardPage").then((m) => ({
     default: m.KnightDashboard,
   })),
 );
 const Debug = lazy(() =>
-  import("@/pages/Debug").then((m) => ({ default: m.Debug })),
+  import("@/features/debug/DebugPage").then((m) => ({ default: m.Debug })),
 );
 
 const queryClient = new QueryClient({

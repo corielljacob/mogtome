@@ -4,7 +4,7 @@ import { ProtectedRoute } from "@/app/ProtectedRoute";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 
 // mock refreshAuthToken to keep the auth check off the network
-vi.mock("../api/client", () => ({
+vi.mock("@/shared/api/client", () => ({
   refreshAuthToken: vi.fn().mockResolvedValue(null),
 }));
 

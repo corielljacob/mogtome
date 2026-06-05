@@ -2,7 +2,7 @@ import type { MatchConfidence, MatchPair } from "@/shared/lib/characterMatching"
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
-} from "@/api/characterMapping";
+} from "@/features/characterMapping/api";
 
 // Re-export for convenience
 export type {

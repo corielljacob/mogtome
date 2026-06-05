@@ -7,7 +7,7 @@ import {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
-import { refreshAuthToken } from "@/api/client";
+import { refreshAuthToken } from "@/shared/api/client";
 
 // User info extracted from JWT token
 export interface User {
