@@ -89,7 +89,17 @@ function tokenContainment(
 }
 
 const EXACT_THRESHOLD = 0.92; // score >= this → exact
-const SUGGESTED_THRESHOLD = 0.35; // score >= this → suggested
+const HIGH_THRESHOLD = 0.7; // score >= this → high
+const MEDIUM_THRESHOLD = 0.5; // score >= this → medium
+const SUGGESTED_THRESHOLD = 0.35; // score >= this → suggested (else dropped)
+
+/** Buckets a 0–1 match score into a confidence label. */
+function scoreToConfidence(score: number): MatchConfidence {
+  if (score >= EXACT_THRESHOLD) return "exact";
+  if (score >= HIGH_THRESHOLD) return "high";
+  if (score >= MEDIUM_THRESHOLD) return "medium";
+  return "low";
+}
 
 /** 0–1, where 1 is a perfect match */
 export function scoreMatch(characterName: string, discordNick: string): number {
@@ -173,14 +183,7 @@ export function computeMatches(
   for (const { charIdx, discIdx, score } of scores) {
     if (usedChars.has(charIdx) || usedDisc.has(discIdx)) continue;
 
-    const confidence: MatchConfidence =
-      score >= EXACT_THRESHOLD
-        ? "exact"
-        : score >= 0.7
-          ? "high"
-          : score >= 0.5
-            ? "medium"
-            : "low";
+    const confidence = scoreToConfidence(score);
 
     const pair: MatchPair = {
       character: characters[charIdx],
@@ -221,14 +224,7 @@ export function rankMatchesForCharacter(
   return discordUsers
     .map((u) => {
       const score = scoreMatch(character.name, u.serverNickName);
-      const confidence: MatchConfidence =
-        score >= EXACT_THRESHOLD
-          ? "exact"
-          : score >= 0.7
-            ? "high"
-            : score >= 0.5
-              ? "medium"
-              : "low";
+      const confidence = scoreToConfidence(score);
       return { ...u, confidence, score };
     })
     .filter((u) => u.score >= SUGGESTED_THRESHOLD)
@@ -242,14 +238,7 @@ export function rankMatchesForDiscordUser(
   return characters
     .map((c) => {
       const score = scoreMatch(c.name, discordUser.serverNickName);
-      const confidence: MatchConfidence =
-        score >= EXACT_THRESHOLD
-          ? "exact"
-          : score >= 0.7
-            ? "high"
-            : score >= 0.5
-              ? "medium"
-              : "low";
+      const confidence = scoreToConfidence(score);
       return { ...c, confidence, score };
     })
     .filter((c) => c.score >= SUGGESTED_THRESHOLD)
