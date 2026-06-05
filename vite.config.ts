@@ -6,8 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { generateThemeCss } from "./src/shared/theme/themeCss";
 
 // Serves the generated theme/event CSS variable blocks (built from the single
-// source in src/styles/themePalettes.ts) as `virtual:theme.css`. Vite watches the
-// config's imports, so editing the palettes restarts dev and regenerates.
+// source in src/shared/theme/themePalettes.ts) as `virtual:theme.css`. Vite watches
+// the config's imports, so editing the palettes restarts dev and regenerates.
 function themeCssPlugin() {
   const virtualId = "virtual:theme.css";
   const resolvedId = "\0" + virtualId;
@@ -95,9 +95,9 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       exclude: [
         "node_modules/",
-        "src/test/",
+        "src/shared/test/",
         "**/*.d.ts",
-        "src/main.tsx",
+        "src/app/main.tsx",
         "src/vite-env.d.ts",
       ],
     },
