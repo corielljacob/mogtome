@@ -43,25 +43,35 @@ const Home = lazy(() =>
   import("@/features/home/HomePage").then((m) => ({ default: m.Home })),
 );
 const Members = lazy(() =>
-  import("@/features/members/MembersPage").then((m) => ({ default: m.Members })),
+  import("@/features/members/MembersPage").then((m) => ({
+    default: m.Members,
+  })),
 );
 const Chronicle = lazy(() =>
-  import("@/features/chronicle/ChroniclePage").then((m) => ({ default: m.Chronicle })),
+  import("@/features/chronicle/ChroniclePage").then((m) => ({
+    default: m.Chronicle,
+  })),
 );
 const About = lazy(() =>
   import("@/features/about/AboutPage").then((m) => ({ default: m.About })),
 );
 const AuthCallback = lazy(() =>
-  import("@/features/auth/AuthCallbackPage").then((m) => ({ default: m.AuthCallback })),
+  import("@/features/auth/AuthCallbackPage").then((m) => ({
+    default: m.AuthCallback,
+  })),
 );
 const Logout = lazy(() =>
   import("@/features/auth/LogoutPage").then((m) => ({ default: m.Logout })),
 );
 const Settings = lazy(() =>
-  import("@/features/settings/SettingsPage").then((m) => ({ default: m.Settings })),
+  import("@/features/settings/SettingsPage").then((m) => ({
+    default: m.Settings,
+  })),
 );
 const Profile = lazy(() =>
-  import("@/features/profile/ProfilePage").then((m) => ({ default: m.Profile })),
+  import("@/features/profile/ProfilePage").then((m) => ({
+    default: m.Profile,
+  })),
 );
 const KnightDashboard = lazy(() =>
   import("@/features/knights/KnightDashboardPage").then((m) => ({

@@ -1,4 +1,7 @@
-import { confidenceConfig, type MatchConfidence } from "@/features/characterMapping/types";
+import {
+  confidenceConfig,
+  type MatchConfidence,
+} from "@/features/characterMapping/types";
 import { Tag } from "@/shared/ui/Tag";
 
 interface ConfidenceBadgeProps {

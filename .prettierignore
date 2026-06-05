@@ -1,0 +1,15 @@
+# Build output
+dist
+coverage
+
+# Dependencies
+node_modules
+
+# Generated - npm owns this
+package-lock.json
+
+# .NET backend - separate project with its own conventions
+api
+
+# CI workflows - leave deploy config untouched
+.github

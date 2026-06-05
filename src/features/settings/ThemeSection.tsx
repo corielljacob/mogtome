@@ -5,7 +5,10 @@ import {
   THEME_DEFINITIONS,
   type ColorMode,
 } from "@/shared/contexts/ThemeContext";
-import { SettingsCard, Collapsible } from "@/features/settings/SettingsControls";
+import {
+  SettingsCard,
+  Collapsible,
+} from "@/features/settings/SettingsControls";
 
 export function ThemeSection() {
   const { settings, setColorMode, setColorTheme } = useTheme();

@@ -18,10 +18,7 @@ import { useChronicle } from "@/features/chronicle/useChronicle";
 import { LiveStatus } from "@/features/chronicle/LiveStatus";
 import { JournalEntry } from "@/features/chronicle/JournalEntry";
 import { WashiTape } from "@/features/chronicle/WashiTape";
-import {
-  dayDecor,
-  getEventKey,
-} from "@/features/chronicle/chronicleHelpers";
+import { dayDecor, getEventKey } from "@/features/chronicle/chronicleHelpers";
 
 const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]

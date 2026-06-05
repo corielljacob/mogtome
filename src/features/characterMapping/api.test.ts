@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { characterMappingApi } from '@/features/characterMapping/api';
-import apiClient from '@/shared/api/client';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { characterMappingApi } from "@/features/characterMapping/api";
+import apiClient from "@/shared/api/client";
 
-vi.mock('@/shared/api/client', () => ({
+vi.mock("@/shared/api/client", () => ({
   default: {
     get: vi.fn(),
     post: vi.fn(),
@@ -14,45 +14,73 @@ const mockApiClient = apiClient as unknown as {
   post: ReturnType<typeof vi.fn>;
 };
 
-describe('characterMappingApi', () => {
+describe("characterMappingApi", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('getUnmappedCharacters', () => {
-    it('should fetch unmapped characters without params', async () => {
+  describe("getUnmappedCharacters", () => {
+    it("should fetch unmapped characters without params", async () => {
       const mockResponse = {
         data: {
-          suggestedCharacters: [{ characterId: '1', name: 'Test Char', avatarLink: 'url', freeCompanyRank: 'Knight' }],
-          unmappedCharacters: [{ characterId: '2', name: 'Another Char', avatarLink: 'url2', freeCompanyRank: 'Paissa' }],
+          suggestedCharacters: [
+            {
+              characterId: "1",
+              name: "Test Char",
+              avatarLink: "url",
+              freeCompanyRank: "Knight",
+            },
+          ],
+          unmappedCharacters: [
+            {
+              characterId: "2",
+              name: "Another Char",
+              avatarLink: "url2",
+              freeCompanyRank: "Paissa",
+            },
+          ],
         },
       };
       mockApiClient.get.mockResolvedValue(mockResponse);
 
       const result = await characterMappingApi.getUnmappedCharacters();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/dashboard/unmapped-characters', { params: undefined });
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/dashboard/unmapped-characters",
+        { params: undefined },
+      );
       expect(result.suggestedCharacters).toHaveLength(1);
       expect(result.unmappedCharacters).toHaveLength(1);
     });
 
-    it('should fetch unmapped characters with discordUsername param', async () => {
+    it("should fetch unmapped characters with discordUsername param", async () => {
       const mockResponse = {
         data: {
-          suggestedCharacters: [{ characterId: '1', name: 'Suggested Char', avatarLink: 'url', freeCompanyRank: 'Knight' }],
+          suggestedCharacters: [
+            {
+              characterId: "1",
+              name: "Suggested Char",
+              avatarLink: "url",
+              freeCompanyRank: "Knight",
+            },
+          ],
           unmappedCharacters: [],
         },
       };
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const result = await characterMappingApi.getUnmappedCharacters('TestUser');
+      const result =
+        await characterMappingApi.getUnmappedCharacters("TestUser");
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/dashboard/unmapped-characters', { params: { discordUsername: 'TestUser' } });
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/dashboard/unmapped-characters",
+        { params: { discordUsername: "TestUser" } },
+      );
       expect(result.suggestedCharacters).toHaveLength(1);
-      expect(result.suggestedCharacters[0].name).toBe('Suggested Char');
+      expect(result.suggestedCharacters[0].name).toBe("Suggested Char");
     });
 
-    it('should handle empty response gracefully', async () => {
+    it("should handle empty response gracefully", async () => {
       mockApiClient.get.mockResolvedValue({ data: {} });
 
       const result = await characterMappingApi.getUnmappedCharacters();
@@ -62,39 +90,52 @@ describe('characterMappingApi', () => {
     });
   });
 
-  describe('getUnmappedDiscordUsers', () => {
-    it('should fetch unmapped Discord users without params', async () => {
+  describe("getUnmappedDiscordUsers", () => {
+    it("should fetch unmapped Discord users without params", async () => {
       const mockResponse = {
         data: {
-          suggestedDiscordUsers: [{ discordId: '123', serverNickName: 'TestUser' }],
-          unmappedDiscordUsers: [{ discordId: '456', serverNickName: 'AnotherUser' }],
+          suggestedDiscordUsers: [
+            { discordId: "123", serverNickName: "TestUser" },
+          ],
+          unmappedDiscordUsers: [
+            { discordId: "456", serverNickName: "AnotherUser" },
+          ],
         },
       };
       mockApiClient.get.mockResolvedValue(mockResponse);
 
       const result = await characterMappingApi.getUnmappedDiscordUsers();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/dashboard/unmapped-discord-users', { params: undefined });
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/dashboard/unmapped-discord-users",
+        { params: undefined },
+      );
       expect(result.suggestedDiscordUsers).toHaveLength(1);
       expect(result.unmappedDiscordUsers).toHaveLength(1);
     });
 
-    it('should fetch unmapped Discord users with characterName param', async () => {
+    it("should fetch unmapped Discord users with characterName param", async () => {
       const mockResponse = {
         data: {
-          suggestedDiscordUsers: [{ discordId: '123', serverNickName: 'MatchedUser' }],
+          suggestedDiscordUsers: [
+            { discordId: "123", serverNickName: "MatchedUser" },
+          ],
           unmappedDiscordUsers: [],
         },
       };
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const result = await characterMappingApi.getUnmappedDiscordUsers('Joe Mamma');
+      const result =
+        await characterMappingApi.getUnmappedDiscordUsers("Joe Mamma");
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/dashboard/unmapped-discord-users', { params: { characterName: 'Joe Mamma' } });
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/dashboard/unmapped-discord-users",
+        { params: { characterName: "Joe Mamma" } },
+      );
       expect(result.suggestedDiscordUsers).toHaveLength(1);
     });
 
-    it('should handle empty response gracefully', async () => {
+    it("should handle empty response gracefully", async () => {
       mockApiClient.get.mockResolvedValue({ data: null });
 
       const result = await characterMappingApi.getUnmappedDiscordUsers();
@@ -104,15 +145,15 @@ describe('characterMappingApi', () => {
     });
   });
 
-  describe('mapCharacter', () => {
-    it('should post mapping with correct payload', async () => {
+  describe("mapCharacter", () => {
+    it("should post mapping with correct payload", async () => {
       mockApiClient.post.mockResolvedValue({});
 
-      await characterMappingApi.mapCharacter('char123', 'discord456');
+      await characterMappingApi.mapCharacter("char123", "discord456");
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/dashboard/map', {
-        characterId: 'char123',
-        discordId: 'discord456',
+      expect(mockApiClient.post).toHaveBeenCalledWith("/dashboard/map", {
+        characterId: "char123",
+        discordId: "discord456",
       });
     });
   });

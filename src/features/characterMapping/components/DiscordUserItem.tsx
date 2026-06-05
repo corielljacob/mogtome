@@ -1,6 +1,9 @@
 import { memo } from "react";
 import { Check } from "lucide-react";
-import type { UnmappedDiscordUser, MatchInfo } from "@/features/characterMapping/types";
+import type {
+  UnmappedDiscordUser,
+  MatchInfo,
+} from "@/features/characterMapping/types";
 import { ConfidenceBadge } from "@/features/characterMapping/components/ConfidenceBadge";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 

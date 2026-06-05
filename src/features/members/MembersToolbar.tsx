@@ -2,7 +2,10 @@ import { type CSSProperties, type RefObject } from "react";
 import { motion } from "motion/react";
 import { Search, X, ArrowUpDown } from "lucide-react";
 import { Dropdown } from "@/shared/ui/Dropdown";
-import { SORT_OPTIONS, type SortOption } from "@/features/members/useMemberFilters";
+import {
+  SORT_OPTIONS,
+  type SortOption,
+} from "@/features/members/useMemberFilters";
 
 export function MembersToolbar({
   searchInputRef,

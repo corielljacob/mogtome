@@ -1,6 +1,9 @@
 import { memo } from "react";
 import { Check } from "lucide-react";
-import type { UnmappedCharacter, MatchInfo } from "@/features/characterMapping/types";
+import type {
+  UnmappedCharacter,
+  MatchInfo,
+} from "@/features/characterMapping/types";
 import { ConfidenceBadge } from "@/features/characterMapping/components/ConfidenceBadge";
 import FfxivIcon from "@/assets/icons/ffxiv.png";
 

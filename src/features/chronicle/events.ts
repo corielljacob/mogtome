@@ -1,25 +1,30 @@
-import apiClient from '@/shared/api/client';
-import type { ChronicleEventsResponse, GetChronicleEventsParams } from '@/shared/types';
+import apiClient from "@/shared/api/client";
+import type {
+  ChronicleEventsResponse,
+  GetChronicleEventsParams,
+} from "@/shared/types";
 
-async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEventsResponse> {
+async function getEvents(
+  params?: GetChronicleEventsParams,
+): Promise<ChronicleEventsResponse> {
   const searchParams = new URLSearchParams();
-  
+
   if (params?.cursor) {
-    searchParams.set('cursor', params.cursor);
+    searchParams.set("cursor", params.cursor);
   }
   if (params?.limit) {
-    searchParams.set('limit', String(params.limit));
+    searchParams.set("limit", String(params.limit));
   }
   if (params?.query?.trim()) {
-    searchParams.set('query', params.query.trim());
+    searchParams.set("query", params.query.trim());
   }
   if (params?.filter) {
-    searchParams.set('filter', params.filter);
+    searchParams.set("filter", params.filter);
   }
 
   const queryString = searchParams.toString();
-  const url = queryString ? `/events?${queryString}` : '/events';
-  
+  const url = queryString ? `/events?${queryString}` : "/events";
+
   const response = await apiClient.get(url);
   const body = response.data;
 
