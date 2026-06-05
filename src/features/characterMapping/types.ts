@@ -1,4 +1,7 @@
-import type { MatchConfidence, MatchPair } from "@/shared/lib/characterMatching";
+import type {
+  MatchConfidence,
+  MatchPair,
+} from "@/features/characterMapping/matching";
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,

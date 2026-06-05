@@ -46,4 +46,42 @@ export default defineConfig([
       "react-refresh/only-export-components": "off",
     },
   },
+  {
+    // Architecture boundaries: shared/ is the platform layer and must not depend
+    // on a feature or the app shell. (Feature-to-feature is a convention for now;
+    // full cross-feature enforcement would need eslint-plugin-boundaries.)
+    files: ["src/shared/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/**", "@/app/**"],
+              message:
+                "shared/ is the platform layer — it must not import from features/ or app/.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Features build on the platform, not on the app shell.
+    files: ["src/features/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/**"],
+              message:
+                "features/ must not import from app/ (the shell). Lift anything shared into shared/.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);

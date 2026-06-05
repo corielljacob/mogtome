@@ -5,7 +5,7 @@ import {
   computeMatches,
   rankMatchesForCharacter,
   rankMatchesForDiscordUser,
-} from "@/shared/lib/characterMatching";
+} from "@/features/characterMapping/matching";
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
