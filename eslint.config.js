@@ -38,7 +38,10 @@ export default defineConfig([
     // Context providers and test helpers intentionally export hooks/utilities
     // alongside their components. `react-refresh/only-export-components` is a
     // Fast-Refresh-only concern and a false positive for these modules.
-    files: ["src/contexts/**/*.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
+    files: [
+      "src/shared/contexts/**/*.{ts,tsx}",
+      "src/shared/test/**/*.{ts,tsx}",
+    ],
     rules: {
       "react-refresh/only-export-components": "off",
     },
