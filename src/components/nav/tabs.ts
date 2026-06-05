@@ -8,7 +8,7 @@ import {
   Crown,
   type LucideIcon,
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Tab {
   path: string;

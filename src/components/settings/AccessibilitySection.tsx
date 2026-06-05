@@ -4,14 +4,14 @@ import {
   COLORBLIND_MODES,
   type ColorblindMode,
   type ToggleableSettingKey,
-} from "../../contexts/AccessibilityContext";
-import { useTheme } from "../../contexts/ThemeContext";
+} from "@/contexts/AccessibilityContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   SettingsCard,
   SettingRow,
   Collapsible,
   ToggleSwitch,
-} from "./SettingsControls";
+} from "@/components/settings/SettingsControls";
 
 interface AccessibilityOption {
   key: ToggleableSettingKey;

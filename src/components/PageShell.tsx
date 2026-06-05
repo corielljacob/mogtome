@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
 import { Heart, RefreshCw, Sparkles, X } from "lucide-react";
-import { StoryDivider } from "./StoryDivider";
-import { FloatingSparkles } from "./FloatingSparkles";
-import { FloatingBubbles } from "./FloatingBubbles";
-import { SimpleFloatingMoogles } from "./FloatingMoogles";
-import { ContentCard } from "./ContentCard";
-import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "./kawaiiMotifs";
+import { StoryDivider } from "@/components/StoryDivider";
+import { FloatingSparkles } from "@/components/FloatingSparkles";
+import { FloatingBubbles } from "@/components/FloatingBubbles";
+import { SimpleFloatingMoogles } from "@/components/FloatingMoogles";
+import { ContentCard } from "@/components/ContentCard";
+import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "@/components/kawaiiMotifs";
 
-import pushingMoogles from "../assets/moogles/moogles pushing.webp";
-import deadMoogle from "../assets/moogles/dead moogle.webp";
-import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import pushingMoogles from "@/assets/moogles/moogles pushing.webp";
+import deadMoogle from "@/assets/moogles/dead moogle.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 interface PageLayoutProps {
   children: ReactNode;

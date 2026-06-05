@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "../contexts/AuthContext";
-import { membersApi } from "../api/members";
-import { biographyApi } from "../api/biography";
+import { useAuth } from "@/contexts/AuthContext";
+import { membersApi } from "@/api/members";
+import { biographyApi } from "@/api/biography";
 import type {
   ProfileData,
   ProfileViewer,
   ProfileTarget,
   BiographySubmission,
-} from "../types";
+} from "@/types";
 
 const LODESTONE_BASE = "https://na.finalfantasyxiv.com/lodestone/character/";
 

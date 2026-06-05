@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { Star } from "lucide-react";
-import { COZY_STARS } from "./homeData";
+import { COZY_STARS } from "@/components/home/homeData";
 
 export function CozyAtmosphere({ eventId }: { eventId: string | null }) {
   const poolA =

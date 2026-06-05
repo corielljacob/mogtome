@@ -1,17 +1,17 @@
 import { useMemo, useCallback, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { characterMappingApi } from "../../../api/characterMapping";
+import { characterMappingApi } from "@/api/characterMapping";
 import {
   computeMatches,
   rankMatchesForCharacter,
   rankMatchesForDiscordUser,
-} from "../../../utils/characterMatching";
+} from "@/utils/characterMatching";
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
   MatchPair,
   MatchInfo,
-} from "../types";
+} from "@/features/characterMapping/types";
 
 // --- Types -------------------------------------------------------------------
 

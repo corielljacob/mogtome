@@ -19,7 +19,7 @@ import {
   COLORBLIND_MODES,
   type ToggleableSettingKey,
   type ColorblindMode,
-} from "../contexts/AccessibilityContext";
+} from "@/contexts/AccessibilityContext";
 
 interface SettingOption {
   key: ToggleableSettingKey;

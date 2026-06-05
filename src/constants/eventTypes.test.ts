@@ -3,7 +3,7 @@ import {
   EVENT_TYPE_CONFIG,
   DEFAULT_EVENT_TYPE_CONFIG,
   getEventTypeConfig,
-} from "./eventTypes";
+} from "@/constants/eventTypes";
 
 describe("eventTypes", () => {
   describe("EVENT_TYPE_CONFIG", () => {

@@ -12,12 +12,12 @@ import {
   Clock,
   User,
 } from "lucide-react";
-import { biographyApi } from "../api/biography";
-import { membersApi } from "../api/members";
-import type { BiographySubmission, StaffMember } from "../types";
-import { ContentCard } from "./ContentCard";
-import { Tag } from "./Tag";
-import { Button, IconButton } from "./Button";
+import { biographyApi } from "@/api/biography";
+import { membersApi } from "@/api/members";
+import type { BiographySubmission, StaffMember } from "@/types";
+import { ContentCard } from "@/components/ContentCard";
+import { Tag } from "@/components/Tag";
+import { Button, IconButton } from "@/components/Button";
 
 interface SubmissionCardProps {
   submission: BiographySubmission;

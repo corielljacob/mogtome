@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { SearchInput } from "./SearchInput";
+import { SearchInput } from "@/features/characterMapping/components/SearchInput";
 
 // Shared chrome for the two side-by-side picker columns (Characters / Discord):
 // icon + title + count pill, a search box, and a scroll area holding `children`

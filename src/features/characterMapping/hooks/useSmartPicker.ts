@@ -5,7 +5,7 @@ import type {
   MatchPair,
   MatchInfo,
   MatchConfidence,
-} from "../types";
+} from "@/features/characterMapping/types";
 
 // Sort priority for the resting lists: exact first, then close, then the rest.
 const CONF_ORDER: Record<MatchConfidence, number> = {

@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { LogIn, Shield, Swords } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { DiscordIcon } from "./DiscordIcon";
+import { useAuth } from "@/contexts/AuthContext";
+import { DiscordIcon } from "@/components/DiscordIcon";
 
-import wizardMoogle from "../assets/moogles/wizard moogle.webp";
+import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 
 interface KnightRouteProps {
   children: React.ReactNode;

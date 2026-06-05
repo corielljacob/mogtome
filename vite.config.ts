@@ -27,6 +27,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), themeCssPlugin()],
   resolve: {
     alias: {
+      '@': path.resolve(__dirname, 'src'),
       'lucide-react': path.resolve(__dirname, 'src/icons/cozyIcons.tsx'),
     },
   },

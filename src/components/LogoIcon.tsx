@@ -1,5 +1,5 @@
 import { memo } from "react";
-import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export const FloatingPom = memo(function FloatingPom({
   isHovered,

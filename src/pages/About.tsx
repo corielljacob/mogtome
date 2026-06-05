@@ -2,31 +2,31 @@ import { useMemo, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { Quote } from "lucide-react";
-import { membersApi } from "../api/members";
+import { membersApi } from "@/api/members";
 import {
   PageLayout,
   LoadingState,
   ErrorState,
   EmptyState,
-} from "../components/PageShell";
+} from "@/components/PageShell";
 import {
   KawaiiStar,
   KawaiiBow,
   KawaiiSparkle,
   KawaiiHeart,
-} from "../components/kawaiiMotifs";
-import { useAuth } from "../contexts/AuthContext";
-import { FC_RANKS } from "../types";
-import { StaffCard } from "../components/about/StaffCard";
+} from "@/components/kawaiiMotifs";
+import { useAuth } from "@/contexts/AuthContext";
+import { FC_RANKS } from "@/types";
+import { StaffCard } from "@/components/about/StaffCard";
 
 // rank -> sort index (same ordering as the Members page)
 const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
 
-import wizardMoogle from "../assets/moogles/wizard moogle.webp";
-import flyingMoogles from "../assets/moogles/moogles flying.webp";
-import moogleMail from "../assets/moogles/moogle mail.webp";
-import illustratedMoogle from "../assets/moogles/illustrated moogle.webp";
-import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
+import flyingMoogles from "@/assets/moogles/moogles flying.webp";
+import moogleMail from "@/assets/moogles/moogle mail.webp";
+import illustratedMoogle from "@/assets/moogles/illustrated moogle.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function About() {
   const { user, isAuthenticated } = useAuth();

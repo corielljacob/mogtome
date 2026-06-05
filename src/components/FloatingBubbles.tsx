@@ -1,5 +1,5 @@
 import { memo, type CSSProperties } from "react";
-import { KawaiiStar, KawaiiSparkle, KawaiiHeart } from "./kawaiiMotifs";
+import { KawaiiStar, KawaiiSparkle, KawaiiHeart } from "@/components/kawaiiMotifs";
 
 // pure-CSS `bubble-rise` (index.css) so it runs on the compositor; the
 // .animate-bubble-rise rule no-ops + hides under prefers-reduced-motion

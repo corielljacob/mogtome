@@ -1,18 +1,18 @@
 import { useMemo } from "react";
-import { useTheme } from "../../contexts/ThemeContext";
-import { IS_MOBILE } from "../../utils/motionConfig";
-import { FloatingMoogles } from "../FloatingMoogles";
+import { useTheme } from "@/contexts/ThemeContext";
+import { IS_MOBILE } from "@/utils/motionConfig";
+import { FloatingMoogles } from "@/components/FloatingMoogles";
 import {
   DEFAULT_FAIRY_LIGHTS,
   floatingMoogles,
   generateEventFairyLights,
-} from "./homeData";
-import { CozyAtmosphere } from "./CozyAtmosphere";
-import { FairyLights } from "./FairyLights";
-import { EventParticles } from "./EventParticles";
-import { HalloweenOverlay } from "./HalloweenOverlay";
-import { StarlightOverlay } from "./StarlightOverlay";
-import { EventBunting } from "./EventBunting";
+} from "@/components/home/homeData";
+import { CozyAtmosphere } from "@/components/home/CozyAtmosphere";
+import { FairyLights } from "@/components/home/FairyLights";
+import { EventParticles } from "@/components/home/EventParticles";
+import { HalloweenOverlay } from "@/components/home/HalloweenOverlay";
+import { StarlightOverlay } from "@/components/home/StarlightOverlay";
+import { EventBunting } from "@/components/home/EventBunting";
 
 export function BackgroundAtmospherics() {
   const { activeEvent, isEventThemeActive } = useTheme();

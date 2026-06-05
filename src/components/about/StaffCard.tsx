@@ -1,10 +1,10 @@
 import { memo, useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { Tag } from "../Tag";
-import { KawaiiSparkle } from "../kawaiiMotifs";
-import { getRankColor } from "../../constants/rankColors";
-import type { StaffMember } from "../../types";
-import { StickyBioNote } from "./StickyBioNote";
+import { Tag } from "@/components/Tag";
+import { KawaiiSparkle } from "@/components/kawaiiMotifs";
+import { getRankColor } from "@/constants/rankColors";
+import type { StaffMember } from "@/types";
+import { StickyBioNote } from "@/components/about/StickyBioNote";
 
 // deterministic per-member tilt, stable across renders (a hash, not Math.random,
 // so it never jitters). photo + note tilt independently in both directions for a

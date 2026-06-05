@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { DiscordIcon } from "./DiscordIcon";
-import { LogoIcon } from "./LogoIcon";
+import { useAuth } from "@/contexts/AuthContext";
+import { DiscordIcon } from "@/components/DiscordIcon";
+import { LogoIcon } from "@/components/LogoIcon";
 
 function UserMenu() {
   const { user, isLoading } = useAuth();

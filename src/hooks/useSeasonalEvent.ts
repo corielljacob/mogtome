@@ -3,7 +3,7 @@ import {
   getActiveEvent,
   getNextEvent,
   type SeasonalEvent,
-} from "../constants/seasonalEvents";
+} from "@/constants/seasonalEvents";
 
 const STORAGE_KEY = "mogtome-seasonal-event";
 

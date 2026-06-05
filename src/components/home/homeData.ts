@@ -1,9 +1,9 @@
-import type { MoogleConfig } from "../FloatingMoogles";
+import type { MoogleConfig } from "@/components/FloatingMoogles";
 
-import wizardMoogle from "../../assets/moogles/wizard moogle.webp";
-import flyingMoogles from "../../assets/moogles/moogles flying.webp";
-import musicMoogle from "../../assets/moogles/moogle playing music.webp";
-import lilGuyMoogle from "../../assets/moogles/lil guy moogle.webp";
+import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
+import flyingMoogles from "@/assets/moogles/moogles flying.webp";
+import musicMoogle from "@/assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export const DEFAULT_KUPO_QUOTES = [
   "Welcome home, kupo!",

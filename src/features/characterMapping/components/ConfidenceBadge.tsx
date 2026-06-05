@@ -1,5 +1,5 @@
-import { confidenceConfig, type MatchConfidence } from "../types";
-import { Tag } from "../../../components/Tag";
+import { confidenceConfig, type MatchConfidence } from "@/features/characterMapping/types";
+import { Tag } from "@/components/Tag";
 
 interface ConfidenceBadgeProps {
   confidence: MatchConfidence;

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import { Ghost } from "lucide-react";
-import { IS_MOBILE } from "../../utils/motionConfig";
+import { IS_MOBILE } from "@/utils/motionConfig";
 
 // All Saints' Wake overlay. mobile gets a static fallback (fog + 1 ghost)
 // instead of ~12 animated elements.

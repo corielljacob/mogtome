@@ -1,15 +1,15 @@
 import { Fragment } from "react";
 import type { CSSProperties } from "react";
-import { MembershipCard } from "../MembershipCard";
-import { KawaiiHeart } from "../kawaiiMotifs";
-import { ProfileHero } from "./ProfileHero";
-import { ProfileBio } from "./ProfileBio";
-import lilGuyMoogle from "../../assets/moogles/lil guy moogle.webp";
+import { MembershipCard } from "@/components/MembershipCard";
+import { KawaiiHeart } from "@/components/kawaiiMotifs";
+import { ProfileHero } from "@/components/profile/ProfileHero";
+import { ProfileBio } from "@/components/profile/ProfileBio";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 import type {
   ProfileData,
   ProfileViewer,
   BiographySubmission,
-} from "../../types";
+} from "@/types";
 
 interface ProfileViewProps {
   profile: ProfileData;

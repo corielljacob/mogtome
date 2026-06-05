@@ -1,9 +1,9 @@
 import { type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
-import { KawaiiBow } from "../kawaiiMotifs";
-import { getRankColor } from "../../constants/rankColors";
-import { FC_RANKS } from "../../types";
+import { KawaiiBow } from "@/components/kawaiiMotifs";
+import { getRankColor } from "@/constants/rankColors";
+import { FC_RANKS } from "@/types";
 
 export function RankFilter({
   selectedRanks,

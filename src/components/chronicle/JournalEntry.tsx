@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { motion } from "motion/react";
-import { Tag } from "../Tag";
-import { getEventTypeConfig } from "../../constants/eventTypes";
-import { formatRelativeTime } from "../../utils/dateFormatters";
-import type { EntryItem } from "./chronicleHelpers";
+import { Tag } from "@/components/Tag";
+import { getEventTypeConfig } from "@/constants/eventTypes";
+import { formatRelativeTime } from "@/utils/dateFormatters";
+import type { EntryItem } from "@/components/chronicle/chronicleHelpers";
 
 export const JournalEntry = memo(function JournalEntry({
   item,

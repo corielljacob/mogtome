@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { render, screen } from "../test/test-utils";
+import { render, screen } from "@/test/test-utils";
 import {
   AuthProvider,
   useAuth,
@@ -10,7 +10,7 @@ import {
   getReturnUrl,
   setReturnUrl,
   clearReturnUrl,
-} from "./AuthContext";
+} from "@/contexts/AuthContext";
 import type { ReactNode } from "react";
 
 // keep the auth check off the network

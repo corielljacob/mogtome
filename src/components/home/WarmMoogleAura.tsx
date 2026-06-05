@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { IS_MOBILE } from "../../utils/motionConfig";
+import { IS_MOBILE } from "@/utils/motionConfig";
 
 export function WarmMoogleAura({ eventId }: { eventId: string | null }) {
   // skip on mobile - drops a large blurred element

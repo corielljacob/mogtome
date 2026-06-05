@@ -1,14 +1,14 @@
 import type { CSSProperties } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { useProfile } from "../hooks/useProfile";
-import { PageLayout, LoadingState, ErrorState } from "../components/PageShell";
-import { ProfileView } from "../components/profile/ProfileView";
-import { DiscordIcon } from "../components/DiscordIcon";
-import type { ProfileTarget } from "../types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import { PageLayout, LoadingState, ErrorState } from "@/components/PageShell";
+import { ProfileView } from "@/components/profile/ProfileView";
+import { DiscordIcon } from "@/components/DiscordIcon";
+import type { ProfileTarget } from "@/types";
 
-import mailMoogle from "../assets/moogles/moogle mail.webp";
-import illustratedMoogle from "../assets/moogles/illustrated moogle.webp";
+import mailMoogle from "@/assets/moogles/moogle mail.webp";
+import illustratedMoogle from "@/assets/moogles/illustrated moogle.webp";
 
 // thin by design: reads the route (optional `:characterId`, absent → own
 // profile), hands the target to useProfile, renders the source-agnostic

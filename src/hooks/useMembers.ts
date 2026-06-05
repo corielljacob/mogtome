@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { membersApi, type GetMembersParams } from "../api/members";
+import { membersApi, type GetMembersParams } from "@/api/members";
 
 export function useMembers(params?: GetMembersParams) {
   return useQuery({

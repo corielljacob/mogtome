@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "../test/test-utils";
-import { Button, IconButton } from "./Button";
+import { render, screen } from "@/test/test-utils";
+import { Button, IconButton } from "@/components/Button";
 import { Heart } from "lucide-react";
 
 describe("Button", () => {

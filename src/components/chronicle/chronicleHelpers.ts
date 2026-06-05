@@ -4,8 +4,8 @@ import {
   KawaiiHeart,
   KawaiiSparkle,
   KawaiiBow,
-} from "../kawaiiMotifs";
-import type { ChronicleEvent } from "../../types";
+} from "@/components/kawaiiMotifs";
+import type { ChronicleEvent } from "@/types";
 
 const PLACEHOLDER_TIMESTAMP = 0;
 const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";

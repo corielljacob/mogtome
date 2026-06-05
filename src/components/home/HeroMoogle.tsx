@@ -1,19 +1,19 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useAuth } from "../../contexts/AuthContext";
-import { useTheme } from "../../contexts/ThemeContext";
-import { KawaiiBow, KawaiiCloud } from "../kawaiiMotifs";
-import { WarmMoogleAura } from "./WarmMoogleAura";
-import { MoogleCharms } from "./MoogleCharms";
-import { WarmMotes } from "./WarmMotes";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { KawaiiBow, KawaiiCloud } from "@/components/kawaiiMotifs";
+import { WarmMoogleAura } from "@/components/home/WarmMoogleAura";
+import { MoogleCharms } from "@/components/home/MoogleCharms";
+import { WarmMotes } from "@/components/home/WarmMotes";
 import {
   DEFAULT_KUPO_QUOTES,
   DEFAULT_WARM_MOTES,
   generateEventMotes,
   getTimeGreeting,
-} from "./homeData";
+} from "@/components/home/homeData";
 
-import welcomingMoogle from "../../assets/moogles/mooglef fly transparent.webp";
+import welcomingMoogle from "@/assets/moogles/mooglef fly transparent.webp";
 
 // preload hero moogle for LCP
 if (typeof window !== "undefined") {

@@ -1,5 +1,5 @@
-import apiClient from "./client";
-import type { BiographySubmission } from "../types";
+import apiClient from "@/api/client";
+import type { BiographySubmission } from "@/types";
 
 /** sets bio directly - Knights and above only */
 async function setBiography(biography: string): Promise<void> {

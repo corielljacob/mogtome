@@ -1,10 +1,10 @@
 import { motion } from "motion/react";
 import { LogIn } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { DiscordIcon } from "./DiscordIcon";
-import { KawaiiSparkle, KawaiiBow } from "./kawaiiMotifs";
+import { useAuth } from "@/contexts/AuthContext";
+import { DiscordIcon } from "@/components/DiscordIcon";
+import { KawaiiSparkle, KawaiiBow } from "@/components/kawaiiMotifs";
 
-import wizardMoogle from "../assets/moogles/wizard moogle.webp";
+import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

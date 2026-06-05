@@ -1,26 +1,26 @@
 import { type CSSProperties } from "react";
 import { Users } from "lucide-react";
-import { PaginatedMemberGrid } from "../components/PaginatedMemberGrid";
+import { PaginatedMemberGrid } from "@/components/PaginatedMemberGrid";
 import {
   PageLayout,
   LoadingState,
   ErrorState,
   EmptyState,
-} from "../components/PageShell";
-import { ScrollToTopButton } from "../components/ScrollToTopButton";
+} from "@/components/PageShell";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import {
   KawaiiSparkle,
   KawaiiBow,
   KawaiiHeart,
-} from "../components/kawaiiMotifs";
-import { useMemberFilters } from "../components/members/useMemberFilters";
-import { MembersToolbar } from "../components/members/MembersToolbar";
-import { RankFilter } from "../components/members/RankFilter";
+} from "@/components/kawaiiMotifs";
+import { useMemberFilters } from "@/components/members/useMemberFilters";
+import { MembersToolbar } from "@/components/members/MembersToolbar";
+import { RankFilter } from "@/components/members/RankFilter";
 
-import grumpyMoogle from "../assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp";
-import wizardMoogle from "../assets/moogles/wizard moogle.webp";
-import musicMoogle from "../assets/moogles/moogle playing music.webp";
-import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import grumpyMoogle from "@/assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp";
+import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
+import musicMoogle from "@/assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function Members() {
   const {

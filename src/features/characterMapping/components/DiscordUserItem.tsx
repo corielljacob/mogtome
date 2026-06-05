@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Check } from "lucide-react";
-import type { UnmappedDiscordUser, MatchInfo } from "../types";
-import { ConfidenceBadge } from "./ConfidenceBadge";
-import { DiscordIcon } from "../../../../src/components/DiscordIcon";
+import type { UnmappedDiscordUser, MatchInfo } from "@/features/characterMapping/types";
+import { ConfidenceBadge } from "@/features/characterMapping/components/ConfidenceBadge";
+import { DiscordIcon } from "@/components/DiscordIcon";
 
 interface DiscordUserItemProps {
   user: UnmappedDiscordUser;

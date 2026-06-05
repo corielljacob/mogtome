@@ -26,7 +26,7 @@ import {
   Snowflake,
   TreePine,
 } from "lucide-react";
-import { EVENT_PALETTES } from "../styles/themePalettes";
+import { EVENT_PALETTES } from "@/styles/themePalettes";
 
 export type SeasonalEventId =
   | "heavensturn"

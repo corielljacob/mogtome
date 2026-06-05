@@ -10,13 +10,13 @@ import {
   Inbox,
 } from "lucide-react";
 
-import { PageLayout, PageHeader, SectionLabel } from "../components/PageShell";
-import { Tag } from "../components/Tag";
-import { PendingSubmissions } from "../components/PendingSubmissions";
-import { CharacterMapping } from "../features/characterMapping/CharacterMapping";
-import { useAuth } from "../contexts/AuthContext";
-import { useCharacterMapping } from "../features/characterMapping/hooks/useCharacterMapping";
-import { biographyApi } from "../api/biography";
+import { PageLayout, PageHeader, SectionLabel } from "@/components/PageShell";
+import { Tag } from "@/components/Tag";
+import { PendingSubmissions } from "@/components/PendingSubmissions";
+import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
+import { biographyApi } from "@/api/biography";
 
 function CountBadge({ n }: { n: number }) {
   return <Tag color="var(--primary)">{n}</Tag>;

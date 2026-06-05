@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { ConnectionStatus } from "./useEventsHub";
+import type { ConnectionStatus } from "@/hooks/useEventsHub";
 
 // types/structure only - full coverage needs SignalR mocking, left to e2e
 
@@ -24,7 +24,7 @@ describe("useEventsHub types", () => {
 
 describe("useEventsHub exports", () => {
   it("exports useEventsHub function", async () => {
-    const module = await import("./useEventsHub");
+    const module = await import("@/hooks/useEventsHub");
     expect(module.useEventsHub).toBeDefined();
     expect(typeof module.useEventsHub).toBe("function");
   });
@@ -37,7 +37,7 @@ describe("useEventsHub exports", () => {
 
   it("hook returns expected shape", async () => {
     // structure-only; exercising the hook needs a SignalR mock
-    const module = await import("./useEventsHub");
+    const module = await import("@/hooks/useEventsHub");
 
     expect(typeof module.useEventsHub).toBe("function");
   });

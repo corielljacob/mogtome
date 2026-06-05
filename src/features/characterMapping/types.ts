@@ -1,8 +1,8 @@
-import type { MatchConfidence, MatchPair } from "../../utils/characterMatching";
+import type { MatchConfidence, MatchPair } from "@/utils/characterMatching";
 import type {
   UnmappedCharacter,
   UnmappedDiscordUser,
-} from "../../api/characterMapping";
+} from "@/api/characterMapping";
 
 // Re-export for convenience
 export type {

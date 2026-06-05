@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, ChevronDown } from "lucide-react";
-import { biographyApi } from "../../api/biography";
+import { biographyApi } from "@/api/biography";
 
 export function StickyBioNote({
   bio,

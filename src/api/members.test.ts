@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { membersApi } from './members';
-import apiClient from './client';
+import { membersApi } from '@/api/members';
+import apiClient from '@/api/client';
 
 vi.mock('./client', () => ({
   default: {

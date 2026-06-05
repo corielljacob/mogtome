@@ -1,18 +1,18 @@
 import { type CSSProperties } from "react";
-import { PageLayout } from "../components/PageShell";
+import { PageLayout } from "@/components/PageShell";
 import {
   KawaiiSparkle,
   KawaiiBow,
   KawaiiHeart,
-} from "../components/kawaiiMotifs";
-import { ThemeSection } from "../components/settings/ThemeSection";
-import { SeasonalEventSection } from "../components/settings/SeasonalEventSection";
-import { AccessibilitySection } from "../components/settings/AccessibilitySection";
-import { AccountSection } from "../components/settings/AccountSection";
+} from "@/components/kawaiiMotifs";
+import { ThemeSection } from "@/components/settings/ThemeSection";
+import { SeasonalEventSection } from "@/components/settings/SeasonalEventSection";
+import { AccessibilitySection } from "@/components/settings/AccessibilitySection";
+import { AccountSection } from "@/components/settings/AccountSection";
 
-import gamingMoogle from "../assets/moogles/gaming moogle.webp";
-import musicMoogle from "../assets/moogles/moogle playing music.webp";
-import lilGuyMoogle from "../assets/moogles/lil guy moogle.webp";
+import gamingMoogle from "@/assets/moogles/gaming moogle.webp";
+import musicMoogle from "@/assets/moogles/moogle playing music.webp";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function Settings() {
   return (

@@ -9,19 +9,19 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-} from "../components/PageShell";
-import { KawaiiStar } from "../components/kawaiiMotifs";
-import { EVENT_TYPE_CONFIG } from "../constants/eventTypes";
-import type { ChronicleEventFilter } from "../types";
+} from "@/components/PageShell";
+import { KawaiiStar } from "@/components/kawaiiMotifs";
+import { EVENT_TYPE_CONFIG } from "@/constants/eventTypes";
+import type { ChronicleEventFilter } from "@/types";
 
-import { useChronicle } from "../components/chronicle/useChronicle";
-import { LiveStatus } from "../components/chronicle/LiveStatus";
-import { JournalEntry } from "../components/chronicle/JournalEntry";
-import { WashiTape } from "../components/chronicle/WashiTape";
+import { useChronicle } from "@/components/chronicle/useChronicle";
+import { LiveStatus } from "@/components/chronicle/LiveStatus";
+import { JournalEntry } from "@/components/chronicle/JournalEntry";
+import { WashiTape } from "@/components/chronicle/WashiTape";
 import {
   dayDecor,
   getEventKey,
-} from "../components/chronicle/chronicleHelpers";
+} from "@/components/chronicle/chronicleHelpers";
 
 const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]
@@ -30,8 +30,8 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   label: EVENT_TYPE_CONFIG[key].label,
 }));
 
-import flyingMoogles from "../assets/moogles/moogles flying.webp";
-import moogleMail from "../assets/moogles/moogle mail.webp";
+import flyingMoogles from "@/assets/moogles/moogles flying.webp";
+import moogleMail from "@/assets/moogles/moogle mail.webp";
 
 export function Chronicle() {
   const {

@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "../test/test-utils";
+import { render, screen } from "@/test/test-utils";
 import {
   MemberCard,
   MemberCardSkeleton,
   MemberCardCompact,
-} from "./MemberCard";
-import type { FreeCompanyMember } from "../types";
+} from "@/components/MemberCard";
+import type { FreeCompanyMember } from "@/types";
 
 const mockMember: FreeCompanyMember = {
   id: "1",

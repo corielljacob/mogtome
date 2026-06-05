@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { characterMappingApi } from './characterMapping';
-import apiClient from './client';
+import { characterMappingApi } from '@/api/characterMapping';
+import apiClient from '@/api/client';
 
 vi.mock('./client', () => ({
   default: {

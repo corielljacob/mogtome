@@ -1,8 +1,8 @@
 import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { KawaiiStar } from "../kawaiiMotifs";
-import type { Tab } from "./tabs";
-import lilGuyMoogle from "../../assets/moogles/lil guy moogle.webp";
+import { KawaiiStar } from "@/components/kawaiiMotifs";
+import type { Tab } from "@/components/nav/tabs";
+import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export const DesktopTab = memo(function DesktopTab({
   tab,

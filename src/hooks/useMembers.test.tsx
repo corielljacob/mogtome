@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { useMembers, useMemberByCharacterId } from "./useMembers";
-import { membersApi } from "../api/members";
+import { useMembers, useMemberByCharacterId } from "@/hooks/useMembers";
+import { membersApi } from "@/api/members";
 
 vi.mock("../api/members", () => ({
   membersApi: {

@@ -6,12 +6,12 @@ import {
   useAuth,
   getReturnUrl,
   clearReturnUrl,
-} from "../contexts/AuthContext";
-import { ProcessingScreen } from "../components/authCallback/ProcessingScreen";
-import { SuccessScreen } from "../components/authCallback/SuccessScreen";
-import { ErrorScreen } from "../components/authCallback/ErrorScreen";
+} from "@/contexts/AuthContext";
+import { ProcessingScreen } from "@/components/authCallback/ProcessingScreen";
+import { SuccessScreen } from "@/components/authCallback/SuccessScreen";
+import { ErrorScreen } from "@/components/authCallback/ErrorScreen";
 
-import moogleWizard from "../assets/moogles/wizard moogle.webp";
+import moogleWizard from "@/assets/moogles/wizard moogle.webp";
 
 type CallbackStatus = "processing" | "success" | "error";
 

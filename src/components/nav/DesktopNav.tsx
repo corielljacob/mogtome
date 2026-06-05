@@ -1,7 +1,7 @@
-import type { Tab } from "./tabs";
-import { MoogleLogoButton } from "./MoogleLogoButton";
-import { DesktopTab } from "./DesktopTab";
-import { ThemeToggleSticker } from "./ThemeToggleSticker";
+import type { Tab } from "@/components/nav/tabs";
+import { MoogleLogoButton } from "@/components/nav/MoogleLogoButton";
+import { DesktopTab } from "@/components/nav/DesktopTab";
+import { ThemeToggleSticker } from "@/components/nav/ThemeToggleSticker";
 
 export function DesktopNav({
   tabs,

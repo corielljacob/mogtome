@@ -1,7 +1,7 @@
 import { type CSSProperties } from "react";
 import { User, LogOut } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
-import { SettingsCard } from "./SettingsControls";
+import { useAuth } from "@/contexts/AuthContext";
+import { SettingsCard } from "@/components/settings/SettingsControls";
 
 export function AccountSection() {
   const { user, logout, isLoading, isAuthenticated } = useAuth();

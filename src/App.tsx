@@ -3,18 +3,18 @@ import type { ReactNode, ErrorInfo } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
-import { Navbar } from "./components/Navbar";
-import { ScrapbookNav } from "./components/ScrapbookNav";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { KnightRoute } from "./components/KnightRoute";
-import { MissingUserDataDialog } from "./components/MissingUserDataDialog";
-import { AuthProvider } from "./contexts/AuthContext";
+import { Navbar } from "@/components/Navbar";
+import { ScrapbookNav } from "@/components/ScrapbookNav";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { KnightRoute } from "@/components/KnightRoute";
+import { MissingUserDataDialog } from "@/components/MissingUserDataDialog";
+import { AuthProvider } from "@/contexts/AuthContext";
 import {
   AccessibilityProvider,
   useAccessibility,
-} from "./contexts/AccessibilityContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { APP_SCROLL_ID, jumpAppToTop } from "./utils/scroll";
+} from "@/contexts/AccessibilityContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { APP_SCROLL_ID, jumpAppToTop } from "@/utils/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
@@ -40,36 +40,36 @@ class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
 }
 
 const Home = lazy(() =>
-  import("./pages/Home").then((m) => ({ default: m.Home })),
+  import("@/pages/Home").then((m) => ({ default: m.Home })),
 );
 const Members = lazy(() =>
-  import("./pages/Members").then((m) => ({ default: m.Members })),
+  import("@/pages/Members").then((m) => ({ default: m.Members })),
 );
 const Chronicle = lazy(() =>
-  import("./pages/Chronicle").then((m) => ({ default: m.Chronicle })),
+  import("@/pages/Chronicle").then((m) => ({ default: m.Chronicle })),
 );
 const About = lazy(() =>
-  import("./pages/About").then((m) => ({ default: m.About })),
+  import("@/pages/About").then((m) => ({ default: m.About })),
 );
 const AuthCallback = lazy(() =>
-  import("./pages/AuthCallback").then((m) => ({ default: m.AuthCallback })),
+  import("@/pages/AuthCallback").then((m) => ({ default: m.AuthCallback })),
 );
 const Logout = lazy(() =>
-  import("./pages/Logout").then((m) => ({ default: m.Logout })),
+  import("@/pages/Logout").then((m) => ({ default: m.Logout })),
 );
 const Settings = lazy(() =>
-  import("./pages/Settings").then((m) => ({ default: m.Settings })),
+  import("@/pages/Settings").then((m) => ({ default: m.Settings })),
 );
 const Profile = lazy(() =>
-  import("./pages/Profile").then((m) => ({ default: m.Profile })),
+  import("@/pages/Profile").then((m) => ({ default: m.Profile })),
 );
 const KnightDashboard = lazy(() =>
-  import("./pages/KnightDashboard").then((m) => ({
+  import("@/pages/KnightDashboard").then((m) => ({
     default: m.KnightDashboard,
   })),
 );
 const Debug = lazy(() =>
-  import("./pages/Debug").then((m) => ({ default: m.Debug })),
+  import("@/pages/Debug").then((m) => ({ default: m.Debug })),
 );
 
 const queryClient = new QueryClient({

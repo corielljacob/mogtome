@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { ConnectionStatus } from "../../hooks/useEventsHub";
+import type { ConnectionStatus } from "@/hooks/useEventsHub";
 
 export const LiveStatus = memo(function LiveStatus({
   status,

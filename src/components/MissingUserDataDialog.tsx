@@ -2,9 +2,9 @@ import { useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, AlertTriangle } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "@/components/Button";
 
-import deadMoogle from "../assets/moogles/dead moogle.webp";
+import deadMoogle from "@/assets/moogles/dead moogle.webp";
 
 export function MissingUserDataDialog() {
   const [searchParams, setSearchParams] = useSearchParams();

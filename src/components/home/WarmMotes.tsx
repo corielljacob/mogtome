@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import { IS_MOBILE } from "../../utils/motionConfig";
-import { DEFAULT_WARM_MOTES } from "./homeData";
+import { IS_MOBILE } from "@/utils/motionConfig";
+import { DEFAULT_WARM_MOTES } from "@/components/home/homeData";
 
 export function WarmMotes({ motes }: { motes: typeof DEFAULT_WARM_MOTES }) {
   // skip on mobile - drops animated glow overhead

@@ -7,15 +7,15 @@ import {
   useDeferredValue,
 } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEventsHub } from "../../hooks/useEventsHub";
-import { eventsApi } from "../../api/events";
-import type { ChronicleEventFilter } from "../../types";
+import { useEventsHub } from "@/hooks/useEventsHub";
+import { eventsApi } from "@/api/events";
+import type { ChronicleEventFilter } from "@/types";
 import {
   hasValidId,
   getEventSignature,
   buildDayGroups,
   type EntryItem,
-} from "./chronicleHelpers";
+} from "@/components/chronicle/chronicleHelpers";
 
 export function useChronicle() {
   const [searchInput, setSearchInput] = useState("");

@@ -1,8 +1,8 @@
-import { useTheme } from "../contexts/ThemeContext";
-import { BackgroundAtmospherics } from "../components/home/BackgroundAtmospherics";
-import { ScatteredStickers } from "../components/home/ScatteredStickers";
-import { HeroText } from "../components/home/HeroText";
-import { HeroMoogle } from "../components/home/HeroMoogle";
+import { useTheme } from "@/contexts/ThemeContext";
+import { BackgroundAtmospherics } from "@/components/home/BackgroundAtmospherics";
+import { ScatteredStickers } from "@/components/home/ScatteredStickers";
+import { HeroText } from "@/components/home/HeroText";
+import { HeroMoogle } from "@/components/home/HeroMoogle";
 
 export function Home() {
   const { activeEvent, isEventThemeActive } = useTheme();

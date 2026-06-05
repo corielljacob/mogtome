@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronUp } from "lucide-react";
-import { APP_SCROLL_ID, scrollAppToTop } from "../utils/scroll";
+import { APP_SCROLL_ID, scrollAppToTop } from "@/utils/scroll";
 
 interface ScrollToTopButtonProps {
   /** Show once the scroll container has scrolled past this many px (default 420). */

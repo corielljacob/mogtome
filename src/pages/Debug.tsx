@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Play, RotateCcw, X } from "lucide-react";
-import { MembershipCard } from "../components/MembershipCard";
-import { getTheme } from "../components/membershipCardThemes";
-import { ContentCard } from "../components/ContentCard";
+import { MembershipCard } from "@/components/MembershipCard";
+import { getTheme } from "@/components/membershipCardThemes";
+import { ContentCard } from "@/components/ContentCard";
 
 const MOCK_USER = {
   memberName: "Agility Rabbit",

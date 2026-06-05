@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { KawaiiStar } from "../kawaiiMotifs";
-import { getTagline } from "./homeData";
+import { KawaiiStar } from "@/components/kawaiiMotifs";
+import { getTagline } from "@/components/home/homeData";
 
 const QUICK_LINKS = [
   { to: "/members", label: "Family", color: "var(--secondary)" },

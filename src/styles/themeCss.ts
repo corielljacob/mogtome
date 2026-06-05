@@ -1,4 +1,10 @@
-import { THEME_PALETTES, EVENT_PALETTES, type Palette } from "./themePalettes";
+// Build-time (vite config) module — keep this import relative; the "@/" alias
+// is an app-build alias and isn't resolvable when vite loads its config.
+import {
+  THEME_PALETTES,
+  EVENT_PALETTES,
+  type Palette,
+} from "./themePalettes";
 
 /**
  * Palettes carry only their three identity colours (+ optional bg); the derived

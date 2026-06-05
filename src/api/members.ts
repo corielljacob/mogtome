@@ -1,9 +1,9 @@
-import apiClient from "./client";
+import apiClient from "@/api/client";
 import type {
   FreeCompanyMember,
   PaginatedResponse,
   StaffResponse,
-} from "../types";
+} from "@/types";
 
 // shape returned by the Azure API
 interface MembersApiResponse {

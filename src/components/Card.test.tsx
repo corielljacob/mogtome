@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "../test/test-utils";
-import { Card, CardBody, CardTitle, CardActions, CardHeader } from "./Card";
+import { render, screen } from "@/test/test-utils";
+import { Card, CardBody, CardTitle, CardActions, CardHeader } from "@/components/Card";
 
 describe("Card", () => {
   it("renders children correctly", () => {

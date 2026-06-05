@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "../test/test-utils";
-import { KnightRoute } from "./KnightRoute";
-import { AuthProvider } from "../contexts/AuthContext";
+import { render, screen, waitFor } from "@/test/test-utils";
+import { KnightRoute } from "@/components/KnightRoute";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 // stub refreshAuthToken so auth bootstrap doesn't hit the network
 vi.mock("../api/client", () => ({

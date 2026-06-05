@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import apiClient from './client';
+import apiClient from '@/api/client';
 
 describe('apiClient', () => {
   it('should have correct default configuration', () => {

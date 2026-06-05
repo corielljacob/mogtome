@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, ArrowRight } from "lucide-react";
-import type { User } from "../../contexts/AuthContext";
-import { MembershipCard } from "../MembershipCard";
-import { getTheme } from "../membershipCardThemes";
-import { CardShine } from "./CardShine";
-import { CelebrationSparkles } from "./CelebrationSparkles";
-import { AmbientGlow } from "./AmbientGlow";
-import { markWelcomeSeen } from "./welcomeSeen";
+import type { User } from "@/contexts/AuthContext";
+import { MembershipCard } from "@/components/MembershipCard";
+import { getTheme } from "@/components/membershipCardThemes";
+import { CardShine } from "@/components/authCallback/CardShine";
+import { CelebrationSparkles } from "@/components/authCallback/CelebrationSparkles";
+import { AmbientGlow } from "@/components/authCallback/AmbientGlow";
+import { markWelcomeSeen } from "@/components/authCallback/welcomeSeen";
 
 export function FirstTimeWelcome({
   user,

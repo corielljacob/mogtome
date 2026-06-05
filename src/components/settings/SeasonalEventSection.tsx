@@ -1,13 +1,13 @@
 import { CalendarDays, Ban } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useTheme, type EventOverride } from "../../contexts/ThemeContext";
-import { SEASONAL_EVENTS } from "../../constants/seasonalEvents";
+import { useTheme, type EventOverride } from "@/contexts/ThemeContext";
+import { SEASONAL_EVENTS } from "@/constants/seasonalEvents";
 import {
   SettingsCard,
   SettingRow,
   Collapsible,
   ToggleSwitch,
-} from "./SettingsControls";
+} from "@/components/settings/SettingsControls";
 
 // dev-only event override options for the switcher
 const EVENT_OVERRIDE_OPTIONS: {
