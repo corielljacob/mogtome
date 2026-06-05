@@ -1,0 +1,388 @@
+/* decorations - whimsy + scrapbook kit: stickers, washi tape, bounce (un-layered)
+   Split out of the old monolithic index.css; imported in order from src/index.css. */
+
+/* whimsy kit - springy hovers, sticker badges, gentle bounce. Motion is
+ * neutralized under prefers-reduced-motion (guard at the end of this block).
+ * See docs/DESIGN.md. */
+
+/* Springy lift for interactive cards & nav - bouncier cousin of .hover-lift */
+.hover-bounce {
+  transition:
+    transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 280ms ease;
+}
+.hover-bounce:hover {
+  transform: translateY(-3px) scale(1.012) rotate(-0.4deg);
+  box-shadow: var(--panel-shadow-strong);
+}
+.hover-bounce:active {
+  transform: translateY(-1px) scale(0.99);
+  transition-duration: 120ms;
+}
+
+/* Die-cut sticker badge - filled, soft shadow, a card-colored outline ring and a
+   playful tilt. Set background/color inline (e.g. a rank or event-type color). */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 2px 6px -1px var(--shadow);
+  transform: rotate(-2deg);
+}
+.sticker-r {
+  transform: rotate(2deg);
+} /* alternate tilt for variety */
+
+/* Gentle attention wobble */
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+.animate-wobble {
+  animation: wobble 0.5s ease-in-out;
+}
+.hover-wobble:hover {
+  animation: wobble 0.5s ease-in-out;
+}
+
+/* Pop-in entrance with a little overshoot */
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-pop-in {
+  animation: pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Squishy press for buttons */
+@keyframes boop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-boop {
+  animation: boop 0.28s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-bounce,
+  .hover-bounce:hover,
+  .hover-bounce:active {
+    transform: none;
+    transition: box-shadow 200ms ease;
+  }
+  .animate-wobble,
+  .hover-wobble:hover,
+  .animate-pop-in,
+  .animate-boop {
+    animation: none;
+  }
+}
+
+/* game-menu touches - soap bubbles + warm "menu-select" glow, echoing the
+ * quirky-fun charm of early-2000s game UIs (PlayOnline), warm & theme-tinted. */
+
+/* Soap-bubble look: translucent with an offset highlight + thin rim.
+   Tint via --bubble-tint (defaults to the theme primary). */
+.bubble {
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.12) 42%,
+    color-mix(in srgb, var(--bubble-tint, var(--primary)) 30%, transparent) 78%,
+    color-mix(in srgb, var(--bubble-tint, var(--primary)) 10%, transparent) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 0 6px -1px rgba(255, 255, 255, 0.55),
+    0 2px 8px -3px
+      color-mix(in srgb, var(--bubble-tint, var(--primary)) 40%, transparent);
+}
+
+/* Slow drift upward with a gentle sway - for ambient background bubbles */
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.9);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--bubble-opacity, 0.45);
+  }
+  50% {
+    transform: translateY(-50vh) translateX(12px) scale(1);
+  }
+  88% {
+    opacity: var(--bubble-opacity, 0.45);
+  }
+  100% {
+    transform: translateY(-100vh) translateX(-8px) scale(1.05);
+    opacity: 0;
+  }
+}
+.animate-bubble-rise {
+  animation: bubble-rise linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bubble-rise {
+    animation: none;
+    opacity: 0;
+  }
+  /* arbitrary animate-[wiggle…] / animate-[float-gentle…] on mascots/decorations */
+  [class*="wiggle"],
+  [class*="float-gentle"] {
+    animation: none;
+  }
+}
+
+/* enchanted garden - scrapbook decorations: paper, washi tape, ink, ribbons */
+
+/* Elevated card - multi-layer shadow for hero/featured elements */
+.paper-stack {
+  box-shadow:
+    var(--panel-shadow),
+    0 0 0 1px var(--border);
+}
+
+/* Decorative accent - subtle gradient strip at top of cards */
+.washi-tape {
+  position: relative;
+  overflow: hidden;
+}
+
+.washi-tape::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--accent),
+    var(--secondary)
+  );
+  opacity: 0.5;
+  z-index: 2;
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+/* Dual gradient accent - top + bottom */
+.washi-tape-dual::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--secondary),
+    var(--accent),
+    var(--primary)
+  );
+  opacity: 0.3;
+  z-index: 2;
+  border-radius: 0 0 1.25rem 1.25rem;
+}
+
+/* Subtle ruled lines for input fields */
+.notebook-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 27px,
+    color-mix(in srgb, var(--border) 50%, transparent) 27px,
+    color-mix(in srgb, var(--border) 50%, transparent) 28px
+  );
+  background-position: 0 8px;
+}
+
+/* Ambient wash - soft radial glow behind content */
+.watercolor-wash {
+  position: relative;
+}
+
+.watercolor-wash::before {
+  content: "";
+  position: absolute;
+  inset: -30% -20%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--primary) 6%, transparent),
+    color-mix(in srgb, var(--accent) 3%, transparent) 50%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  opacity: 0.6;
+  animation: watercolor-breathe 12s ease-in-out infinite alternate;
+}
+
+@keyframes watercolor-breathe {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.4;
+  }
+}
+
+/* Button press microinteraction */
+@keyframes stamp-press {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Decorative burst on actions */
+@keyframes ink-splash {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Active nav indicator - glowing dot */
+.bookmark-ribbon {
+  position: relative;
+}
+
+.bookmark-ribbon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -2px;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  max-height: 24px;
+  background: var(--primary);
+  border-radius: 0 4px 4px 0;
+  opacity: 0.85;
+  z-index: 3;
+  transition:
+    height 200ms ease,
+    opacity 200ms ease;
+}
+
+/* Corner accent - subtle rounded corners highlighting */
+.tape-corners {
+  position: relative;
+}
+
+.tape-corners::before,
+.tape-corners::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  opacity: 0.12;
+  z-index: 2;
+  border: 2px solid var(--primary);
+}
+
+.tape-corners::before {
+  top: 6px;
+  left: 6px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 4px 0 0 0;
+}
+
+.tape-corners::after {
+  bottom: 6px;
+  right: 6px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 4px 0;
+}
+
+/* Sticker peel - subtle corner shadow */
+.sticker-peel {
+  position: relative;
+}
+
+.sticker-peel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    color-mix(in srgb, var(--shadow) 30%, transparent) 50%
+  );
+  border-radius: 0 0 1.25rem 0;
+  z-index: 2;
+}
+
+/* Ink blot - decorative accent dot */
+.ink-blot {
+  position: relative;
+}
+
+.ink-blot::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.12;
+  top: 10px;
+  right: 14px;
+  box-shadow:
+    -12px 5px 0 1px color-mix(in srgb, var(--secondary) 10%, transparent),
+    7px -3px 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
+}

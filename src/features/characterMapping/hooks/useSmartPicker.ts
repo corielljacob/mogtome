@@ -5,7 +5,7 @@ import type {
   MatchPair,
   MatchInfo,
   MatchConfidence,
-} from "../types";
+} from "@/features/characterMapping/types";
 
 // Sort priority for the resting lists: exact first, then close, then the rest.
 const CONF_ORDER: Record<MatchConfidence, number> = {
@@ -58,7 +58,7 @@ const info = (confidence: MatchInfo["confidence"], score = 0): MatchInfo => ({
 });
 
 /**
- * useSmartPicker — the smarts behind the side-by-side board. Selecting one side
+ * useSmartPicker - the smarts behind the side-by-side board. Selecting one side
  * re-sorts the other column by the system's match ranking (best first) and
  * pre-fills the confident counterpart, so the knight is guided to the pair
  * instead of hunting both lists.
@@ -159,7 +159,10 @@ export function useSmartPicker({
             (discordRank.get(a.discordId)?.order ?? 1e9) -
             (discordRank.get(b.discordId)?.order ?? 1e9),
         )
-        .map((u) => ({ user: u, matchInfo: discordRank.get(u.discordId)?.info }));
+        .map((u) => ({
+          user: u,
+          matchInfo: discordRank.get(u.discordId)?.info,
+        }));
     }
     const priority = (u: UnmappedDiscordUser) => {
       const sug = byDiscord.get(u.discordId);

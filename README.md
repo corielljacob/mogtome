@@ -1,35 +1,72 @@
 # MogTome Frontend
 
-React + TypeScript frontend for the MogTome FC management app.
+The website for the MogTome FFXIV Free Company. React + TypeScript, frontend
+only. The backend lives in its own repo and is already running at
+`api.mogtome.com`, so you can clone this, install, and run with nothing else to
+set up.
 
-## Getting Started
+## Running it
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
+npm run dev      # http://localhost:3000
 ```
 
-## Tech Stack
+That's it. The dev server quietly forwards API and realtime calls to the live
+backend, so there's no server to spin up locally. Build for production with
+`npm run build` (output lands in `dist/`). Needs Node 20.19+.
 
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS
-- Framer Motion
-- React Query
-- React Router
+## Stack
 
-## Development
+React 19, Vite 7, TypeScript, Tailwind 4, [`motion`](https://motion.dev) for
+animation, TanStack Query for data fetching, React Router, and SignalR for the
+live Chronicle feed. Tests run on Vitest + Testing Library.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Scripts
 
-Currently, two official plugins are available:
+| Script                  | What it does                          |
+| ----------------------- | ------------------------------------- |
+| `npm run dev`           | Dev server on port 3000               |
+| `npm run build`         | Type-check and build into `dist/`     |
+| `npm run preview`       | Serve the built `dist/` locally       |
+| `npm run lint`          | ESLint                                |
+| `npm run format`        | Prettier (run this before committing) |
+| `npm run test`          | Vitest in watch mode                  |
+| `npm run test:run`      | Run the tests once                    |
+| `npm run test:coverage` | Tests with a coverage report          |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How it's laid out
+
+Grouped by feature instead of by file type, so each part of the site mostly
+lives in one folder.
+
+```
+src/
+  app/       the shell: App, routing, nav, route guards
+  shared/    stuff used all over: ui kit, hooks, api client, theme, contexts...
+  features/  one folder per area of the site
+             home, members, chronicle, about, settings,
+             profile, auth, knights, characterMapping, debug
+```
+
+A few habits the code follows (nothing strict, just keeps things tidy):
+
+- `@/` is an alias for `src/`, so imports read `@/shared/ui/Button` instead of
+  `../../../`.
+- No barrel/index files; import straight from the file you want.
+- Roughly: if only one feature uses something it lives in that feature; if lots
+  of them do, it goes in `shared/`.
+- There's a lint rule so `shared/` doesn't accidentally reach into a feature.
+  If `npm run lint` complains about that, that's why.
+
+## Backend
+
+There isn't one in here anymore. The app talks to `api.mogtome.com` (REST at
+`/api`, realtime websocket at `/eventsHub`), and `vite.config.ts` proxies both
+in dev. The old .NET backend that used to live here is gone, but it's tucked
+away under the git tag `archive/dotnet-backend` if anyone ever wants it.
+
+## Deploy
+
+Pushes go out to Azure Static Web Apps through the GitHub Actions workflow in
+`.github/`. It builds and ships `dist/`.

@@ -4,6 +4,8 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["*.{js,css,png,jpg,jpeg,gif,ico,svg,woff,woff2,ttf,eot,map,json,txt,xml,webp}"]
+    "exclude": [
+      "*.{js,css,png,jpg,jpeg,gif,ico,svg,woff,woff2,ttf,eot,map,json,txt,xml,webp}"
+    ]
   }
 }

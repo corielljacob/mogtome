@@ -1,0 +1,47 @@
+import type { ReactElement, ReactNode } from "react";
+import { render, type RenderOptions } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AccessibilityProvider } from "@/shared/contexts/AccessibilityContext";
+
+// Create a fresh QueryClient for each test
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+}
+
+interface WrapperProps {
+  children: ReactNode;
+}
+
+function AllTheProviders({ children }: WrapperProps) {
+  const queryClient = createTestQueryClient();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AccessibilityProvider>
+        <BrowserRouter>{children}</BrowserRouter>
+      </AccessibilityProvider>
+    </QueryClientProvider>
+  );
+}
+
+function customRender(
+  ui: ReactElement,
+  options?: Omit<RenderOptions, "wrapper">,
+) {
+  return render(ui, { wrapper: AllTheProviders, ...options });
+}
+
+// Re-export everything from testing-library
+export * from "@testing-library/react";
+export { userEvent } from "@testing-library/user-event";
+
+// Override render method
+export { customRender as render };

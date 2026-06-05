@@ -1,0 +1,83 @@
+/* typography - font + text helpers (un-layered)
+   Split out of the old monolithic index.css; imported in order from src/index.css. */
+
+.font-inter {
+  font-family: var(--font-body);
+}
+.font-display {
+  font-family: var(--font-display);
+}
+.font-number {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.font-accent {
+  font-family: var(--font-script);
+}
+.font-soft {
+  font-family: var(--font-body);
+}
+.font-title {
+  font-family: var(--font-display);
+}
+/* Latin rounded display - for the giant home title; Latin metrics keep hover
+   hitboxes aligned (Zen Maru's CJK ascent pushed them too high). */
+.font-title-latin {
+  font-family: "Fredoka", "Manrope", system-ui, sans-serif;
+}
+
+.editorial-title {
+  font-family: var(--font-display);
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.eyebrow-script {
+  font-family: "Caveat", cursive;
+  letter-spacing: 0.04em;
+}
+
+.text-highlight {
+  position: relative;
+  display: inline-block;
+  color: var(--text);
+  z-index: 0;
+}
+
+/* Elegant text underline highlight - gradient marker stroke */
+.text-highlight::after {
+  content: "";
+  position: absolute;
+  left: -0.15em;
+  right: -0.15em;
+  bottom: 0.02em;
+  height: 0.35em;
+  border-radius: 0.2em;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    color-mix(in srgb, var(--primary) 35%, transparent)
+  );
+  opacity: 0.45;
+  z-index: -1;
+  transform: rotate(-0.5deg);
+}
+
+/* Clean divider line */
+.divider {
+  height: 1px;
+  border: none;
+  background: var(--border);
+}
+
+/* Decorative tape-style divider - used in section labels */
+.washi-tape-strip {
+  height: 1px;
+  border: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 20%, transparent),
+    color-mix(in srgb, var(--primary) 8%, transparent)
+  );
+}
