@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@/test/test-utils";
+import { render, screen } from "@/shared/test/test-utils";
 import { Button, IconButton } from "@/shared/ui/Button";
 import { Heart } from "lucide-react";
 

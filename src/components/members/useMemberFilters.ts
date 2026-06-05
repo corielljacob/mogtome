@@ -9,7 +9,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { membersApi } from "@/api/members";
-import { FC_RANKS } from "@/types";
+import { FC_RANKS } from "@/shared/types";
 
 // for validating rank names that arrive via the URL
 const VALID_RANK_NAMES: Set<string> = new Set(FC_RANKS.map((r) => r.name));

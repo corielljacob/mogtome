@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import type { User } from "@/contexts/AuthContext";
+import type { User } from "@/shared/contexts/AuthContext";
 import { MembershipCard } from "@/shared/ui/MembershipCard";
 
 export function ReturningUserWelcome({

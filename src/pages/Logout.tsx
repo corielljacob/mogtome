@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Stars } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 import wavingMoogle from "@/assets/moogles/4478593_moogle-moogle-ff-hd-png-download.webp";
 

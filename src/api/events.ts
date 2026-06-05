@@ -1,5 +1,5 @@
 import apiClient from '@/api/client';
-import type { ChronicleEventsResponse, GetChronicleEventsParams } from '@/types';
+import type { ChronicleEventsResponse, GetChronicleEventsParams } from '@/shared/types';
 
 async function getEvents(params?: GetChronicleEventsParams): Promise<ChronicleEventsResponse> {
   const searchParams = new URLSearchParams();

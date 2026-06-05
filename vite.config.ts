@@ -3,7 +3,7 @@ import path from 'node:path'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { generateThemeCss } from './src/styles/themeCss'
+import { generateThemeCss } from './src/shared/theme/themeCss'
 
 // Serves the generated theme/event CSS variable blocks (built from the single
 // source in src/styles/themePalettes.ts) as `virtual:theme.css`. Vite watches the
@@ -85,7 +85,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    setupFiles: './src/shared/test/setup.ts',
     css: true,
     coverage: {
       provider: 'v8',

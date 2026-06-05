@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import { KawaiiBow, KawaiiCloud } from "@/shared/ui/kawaiiMotifs";
 import { WarmMoogleAura } from "@/components/home/WarmMoogleAura";
 import { MoogleCharms } from "@/components/home/MoogleCharms";

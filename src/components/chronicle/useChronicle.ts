@@ -7,9 +7,9 @@ import {
   useDeferredValue,
 } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEventsHub } from "@/hooks/useEventsHub";
+import { useEventsHub } from "@/shared/realtime/useEventsHub";
 import { eventsApi } from "@/api/events";
-import type { ChronicleEventFilter } from "@/types";
+import type { ChronicleEventFilter } from "@/shared/types";
 import {
   hasValidId,
   getEventSignature,

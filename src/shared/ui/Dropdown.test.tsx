@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, userEvent } from "@/test/test-utils";
+import { render, screen, fireEvent, userEvent } from "@/shared/test/test-utils";
 import { Dropdown } from "@/shared/ui/Dropdown";
 import { Heart } from "lucide-react";
 

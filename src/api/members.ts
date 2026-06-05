@@ -3,7 +3,7 @@ import type {
   FreeCompanyMember,
   PaginatedResponse,
   StaffResponse,
-} from "@/types";
+} from "@/shared/types";
 
 // shape returned by the Azure API
 interface MembersApiResponse {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@/test/test-utils";
+import { render, screen, waitFor } from "@/shared/test/test-utils";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/shared/contexts/AuthContext";
 
 // mock refreshAuthToken to keep the auth check off the network
 vi.mock("../api/client", () => ({

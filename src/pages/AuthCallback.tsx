@@ -6,7 +6,7 @@ import {
   useAuth,
   getReturnUrl,
   clearReturnUrl,
-} from "@/contexts/AuthContext";
+} from "@/shared/contexts/AuthContext";
 import { ProcessingScreen } from "@/components/authCallback/ProcessingScreen";
 import { SuccessScreen } from "@/components/authCallback/SuccessScreen";
 import { ErrorScreen } from "@/components/authCallback/ErrorScreen";

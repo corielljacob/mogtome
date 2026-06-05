@@ -15,8 +15,8 @@ import {
   KawaiiSparkle,
   KawaiiHeart,
 } from "@/shared/ui/kawaiiMotifs";
-import { useAuth } from "@/contexts/AuthContext";
-import { FC_RANKS } from "@/types";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { FC_RANKS } from "@/shared/types";
 import { StaffCard } from "@/components/about/StaffCard";
 
 // rank -> sort index (same ordering as the Members page)

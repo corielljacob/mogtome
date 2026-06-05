@@ -10,10 +10,10 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import type { FreeCompanyMember } from "@/types";
+import type { FreeCompanyMember } from "@/shared/types";
 import { MemberCard } from "@/components/MemberCard";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
-import { getRankColor } from "@/constants/rankColors";
+import { getRankColor } from "@/shared/constants/rankColors";
 import { scrollAppToTop } from "@/shared/lib/scroll";
 
 interface PaginatedMemberGridProps {

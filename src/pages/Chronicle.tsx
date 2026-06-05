@@ -12,7 +12,7 @@ import {
 } from "@/shared/ui/PageShell";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import { EVENT_TYPE_CONFIG } from "@/constants/eventTypes";
-import type { ChronicleEventFilter } from "@/types";
+import type { ChronicleEventFilter } from "@/shared/types";
 
 import { useChronicle } from "@/components/chronicle/useChronicle";
 import { LiveStatus } from "@/components/chronicle/LiveStatus";

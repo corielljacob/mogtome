@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
-import type { ChronicleEvent } from "@/types";
+import type { ChronicleEvent } from "@/shared/types";
 
 // dev goes through the Vite proxy to dodge CORS; prod hits the API directly
 const EVENTS_HUB_URL = import.meta.env.DEV

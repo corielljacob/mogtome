@@ -4,7 +4,7 @@ import {
   useTheme,
   THEME_DEFINITIONS,
   type ColorMode,
-} from "@/contexts/ThemeContext";
+} from "@/shared/contexts/ThemeContext";
 import { SettingsCard, Collapsible } from "@/components/settings/SettingsControls";
 
 export function ThemeSection() {

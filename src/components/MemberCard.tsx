@@ -1,7 +1,7 @@
 import { useState, memo, useCallback, type CSSProperties } from "react";
-import type { FreeCompanyMember } from "@/types";
+import type { FreeCompanyMember } from "@/shared/types";
 import { ExternalLink } from "lucide-react";
-import { getRankColor } from "@/constants/rankColors";
+import { getRankColor } from "@/shared/constants/rankColors";
 
 interface MemberCardProps {
   member: FreeCompanyMember;

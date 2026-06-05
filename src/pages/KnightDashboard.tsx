@@ -14,7 +14,7 @@ import { PageLayout, PageHeader, SectionLabel } from "@/shared/ui/PageShell";
 import { Tag } from "@/shared/ui/Tag";
 import { PendingSubmissions } from "@/components/PendingSubmissions";
 import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
 import { biographyApi } from "@/api/biography";
 

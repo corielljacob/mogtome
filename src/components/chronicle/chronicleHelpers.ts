@@ -5,7 +5,7 @@ import {
   KawaiiSparkle,
   KawaiiBow,
 } from "@/shared/ui/kawaiiMotifs";
-import type { ChronicleEvent } from "@/types";
+import type { ChronicleEvent } from "@/shared/types";
 
 const PLACEHOLDER_TIMESTAMP = 0;
 const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";

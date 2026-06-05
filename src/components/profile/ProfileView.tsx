@@ -9,7 +9,7 @@ import type {
   ProfileData,
   ProfileViewer,
   BiographySubmission,
-} from "@/types";
+} from "@/shared/types";
 
 interface ProfileViewProps {
   profile: ProfileData;

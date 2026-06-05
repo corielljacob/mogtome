@@ -1,7 +1,7 @@
 import { CalendarDays, Ban } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useTheme, type EventOverride } from "@/contexts/ThemeContext";
-import { SEASONAL_EVENTS } from "@/constants/seasonalEvents";
+import { useTheme, type EventOverride } from "@/shared/contexts/ThemeContext";
+import { SEASONAL_EVENTS } from "@/shared/constants/seasonalEvents";
 import {
   SettingsCard,
   SettingRow,

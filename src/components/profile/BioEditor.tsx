@@ -8,7 +8,7 @@ import type {
   ProfileData,
   ProfileViewer,
   BiographySubmission,
-} from "@/types";
+} from "@/shared/types";
 
 const MAX_BIO_LENGTH = 300;
 

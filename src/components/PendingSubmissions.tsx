@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { biographyApi } from "@/api/biography";
 import { membersApi } from "@/api/members";
-import type { BiographySubmission, StaffMember } from "@/types";
+import type { BiographySubmission, StaffMember } from "@/shared/types";
 import { ContentCard } from "@/shared/ui/ContentCard";
 import { Tag } from "@/shared/ui/Tag";
 import { Button, IconButton } from "@/shared/ui/Button";

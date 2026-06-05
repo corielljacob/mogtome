@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { CalendarDays } from "lucide-react";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
-import type { SeasonalEvent } from "@/constants/seasonalEvents";
+import type { SeasonalEvent } from "@/shared/constants/seasonalEvents";
 
 const MONTH_ABBR = [
   "Jan",

@@ -13,8 +13,8 @@ import {
   SEASONAL_EVENTS,
   type SeasonalEvent,
   type SeasonalEventId,
-} from "@/constants/seasonalEvents";
-import { THEME_META, THEME_PALETTES } from "@/styles/themePalettes";
+} from "@/shared/constants/seasonalEvents";
+import { THEME_META, THEME_PALETTES } from "@/shared/theme/themePalettes";
 
 export type ColorTheme =
   | "pom-pom" // Classic red/purple (default)

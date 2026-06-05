@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, ArrowRight } from "lucide-react";
-import type { User } from "@/contexts/AuthContext";
+import type { User } from "@/shared/contexts/AuthContext";
 import { MembershipCard } from "@/shared/ui/MembershipCard";
 import { getTheme } from "@/shared/ui/membershipCardThemes";
 import { CardShine } from "@/components/authCallback/CardShine";

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 import { FloatingMoogles } from "@/shared/ui/FloatingMoogles";
 import {

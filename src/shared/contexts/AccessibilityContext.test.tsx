@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { render, screen, fireEvent } from "@/test/test-utils";
+import { render, screen, fireEvent } from "@/shared/test/test-utils";
 import {
   AccessibilityProvider,
   useAccessibility,
   COLORBLIND_MODES,
   type ColorblindMode,
-} from "@/contexts/AccessibilityContext";
+} from "@/shared/contexts/AccessibilityContext";
 import type { ReactNode } from "react";
 
 const STORAGE_KEY = "mogtome-accessibility";

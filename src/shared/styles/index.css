@@ -12,12 +12,12 @@
  * Tailwind @layer utilities < un-layered. Component classes live in
  * @layer components so utilities can override them; the accessibility palette
  * stays un-layered + high-specificity so it always wins. */
-@import "./styles/config.css"; /* Tailwind variants + @theme radius tokens */
-@import "./styles/base.css"; /* @layer base: resets + native-app feel */
-@import "./styles/palette.css"; /* default :root/.dark tokens + flagship events */
-@import "./styles/accessibility.css"; /* high-contrast, colorblind, motion, dyslexia */
-@import "./styles/typography.css"; /* font + text helpers */
-@import "./styles/components.css"; /* @layer components: cards, nav, gel, journal */
-@import "./styles/decorations.css"; /* whimsy + scrapbook kit (stickers, washi) */
-@import "./styles/utilities.css"; /* sr-only, skip link, safe-area, page-bg */
-@import "./styles/animations.css"; /* keyframes + animate-* helpers */
+@import "./config.css"; /* Tailwind variants + @theme radius tokens */
+@import "./base.css"; /* @layer base: resets + native-app feel */
+@import "./palette.css"; /* default :root/.dark tokens + flagship events */
+@import "./accessibility.css"; /* high-contrast, colorblind, motion, dyslexia */
+@import "./typography.css"; /* font + text helpers */
+@import "./components.css"; /* @layer components: cards, nav, gel, journal */
+@import "./decorations.css"; /* whimsy + scrapbook kit (stickers, washi) */
+@import "./utilities.css"; /* sr-only, skip link, safe-area, page-bg */
+@import "./animations.css"; /* keyframes + animate-* helpers */

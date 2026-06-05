@@ -8,12 +8,12 @@ import { ScrapbookNav } from "@/components/ScrapbookNav";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { KnightRoute } from "@/components/KnightRoute";
 import { MissingUserDataDialog } from "@/components/MissingUserDataDialog";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/shared/contexts/AuthContext";
 import {
   AccessibilityProvider,
   useAccessibility,
-} from "@/contexts/AccessibilityContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+} from "@/shared/contexts/AccessibilityContext";
+import { ThemeProvider } from "@/shared/contexts/ThemeContext";
 import { APP_SCROLL_ID, jumpAppToTop } from "@/shared/lib/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets

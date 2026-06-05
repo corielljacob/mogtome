@@ -4,8 +4,8 @@ import {
   COLORBLIND_MODES,
   type ColorblindMode,
   type ToggleableSettingKey,
-} from "@/contexts/AccessibilityContext";
-import { useTheme } from "@/contexts/ThemeContext";
+} from "@/shared/contexts/AccessibilityContext";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import {
   SettingsCard,
   SettingRow,

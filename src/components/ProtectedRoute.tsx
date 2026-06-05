@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { LogIn } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { KawaiiSparkle, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 

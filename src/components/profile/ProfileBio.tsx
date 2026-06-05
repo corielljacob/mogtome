@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Sparkles, Pencil, X } from "lucide-react";
 import { MobileSheet } from "@/shared/ui/MobileSheet";
-import { useIsMobile } from "@/hooks/useMobile";
+import { useIsMobile } from "@/shared/hooks/useMobile";
 import { ProfileSection } from "@/components/profile/ProfileSection";
 import { BioEditor } from "@/components/profile/BioEditor";
 import type {
   ProfileData,
   ProfileViewer,
   BiographySubmission,
-} from "@/types";
+} from "@/shared/types";
 
 interface ProfileBioProps {
   profile: ProfileData;

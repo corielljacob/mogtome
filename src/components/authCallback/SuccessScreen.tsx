@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { User } from "@/contexts/AuthContext";
+import type { User } from "@/shared/contexts/AuthContext";
 import { isFirstTimeUser } from "@/components/authCallback/welcomeSeen";
 import { FirstTimeWelcome } from "@/components/authCallback/FirstTimeWelcome";
 import { ReturningUserWelcome } from "@/components/authCallback/ReturningUserWelcome";

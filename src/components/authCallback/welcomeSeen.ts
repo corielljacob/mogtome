@@ -1,4 +1,4 @@
-import type { User } from "@/contexts/AuthContext";
+import type { User } from "@/shared/contexts/AuthContext";
 
 const WELCOME_SEEN_KEY = "mogtome_welcome_seen";
 

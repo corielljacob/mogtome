@@ -2,9 +2,9 @@ import { useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
 import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
-import { getRankColor } from "@/constants/rankColors";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { useTheme } from "@/contexts/ThemeContext";
+import { getRankColor } from "@/shared/constants/rankColors";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import { KawaiiHeart, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 
 // on hover the card pivots toward the cursor and catches the light. pointer-tilt
