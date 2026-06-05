@@ -9,8 +9,8 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-} from "@/components/PageShell";
-import { KawaiiStar } from "@/components/kawaiiMotifs";
+} from "@/shared/ui/PageShell";
+import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import { EVENT_TYPE_CONFIG } from "@/constants/eventTypes";
 import type { ChronicleEventFilter } from "@/types";
 

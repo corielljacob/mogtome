@@ -12,9 +12,9 @@ import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import type { FreeCompanyMember } from "@/types";
 import { MemberCard } from "@/components/MemberCard";
-import { KawaiiStar } from "@/components/kawaiiMotifs";
+import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import { getRankColor } from "@/constants/rankColors";
-import { scrollAppToTop } from "@/utils/scroll";
+import { scrollAppToTop } from "@/shared/lib/scroll";
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];

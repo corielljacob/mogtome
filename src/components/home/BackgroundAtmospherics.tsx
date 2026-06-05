@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { IS_MOBILE } from "@/utils/motionConfig";
-import { FloatingMoogles } from "@/components/FloatingMoogles";
+import { IS_MOBILE } from "@/shared/lib/motionConfig";
+import { FloatingMoogles } from "@/shared/ui/FloatingMoogles";
 import {
   DEFAULT_FAIRY_LIGHTS,
   floatingMoogles,

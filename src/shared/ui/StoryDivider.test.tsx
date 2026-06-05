@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@/test/test-utils";
-import { StoryDivider } from "@/components/StoryDivider";
+import { StoryDivider } from "@/shared/ui/StoryDivider";
 
 describe("StoryDivider", () => {
   it("renders an SVG element", () => {

@@ -3,7 +3,7 @@ import {
   KawaiiHeart,
   KawaiiBow,
   KawaiiSparkle,
-} from "@/components/kawaiiMotifs";
+} from "@/shared/ui/kawaiiMotifs";
 
 export function ScatteredStickers() {
   return (

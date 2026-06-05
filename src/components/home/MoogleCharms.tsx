@@ -8,8 +8,8 @@ import {
   Star,
   TreePine,
 } from "lucide-react";
-import { KawaiiHeart, KawaiiStar } from "@/components/kawaiiMotifs";
-import { IS_MOBILE } from "@/utils/motionConfig";
+import { KawaiiHeart, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
+import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 export function MoogleCharms({ eventId }: { eventId: string | null }) {
   // skip on mobile - tiny, not worth the cost

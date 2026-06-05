@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 import userEvent from "@testing-library/user-event";
-import { Input, Textarea, Select } from "@/components/Input";
+import { Input, Textarea, Select } from "@/shared/ui/Input";
 import { Search } from "lucide-react";
 
 describe("Input", () => {

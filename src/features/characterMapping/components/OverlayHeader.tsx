@@ -1,5 +1,5 @@
 import { ArrowLeft, Link2, RefreshCw } from "lucide-react";
-import { IconButton } from "@/components/Button";
+import { IconButton } from "@/shared/ui/Button";
 
 export function OverlayHeader({
   onClose,

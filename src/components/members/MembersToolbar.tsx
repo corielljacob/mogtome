@@ -1,7 +1,7 @@
 import { type CSSProperties, type RefObject } from "react";
 import { motion } from "motion/react";
 import { Search, X, ArrowUpDown } from "lucide-react";
-import { Dropdown } from "@/components/Dropdown";
+import { Dropdown } from "@/shared/ui/Dropdown";
 import { SORT_OPTIONS, type SortOption } from "@/components/members/useMemberFilters";
 
 export function MembersToolbar({

@@ -6,13 +6,13 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-} from "@/components/PageShell";
-import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+} from "@/shared/ui/PageShell";
+import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
 import {
   KawaiiSparkle,
   KawaiiBow,
   KawaiiHeart,
-} from "@/components/kawaiiMotifs";
+} from "@/shared/ui/kawaiiMotifs";
 import { useMemberFilters } from "@/components/members/useMemberFilters";
 import { MembersToolbar } from "@/components/members/MembersToolbar";
 import { RankFilter } from "@/components/members/RankFilter";

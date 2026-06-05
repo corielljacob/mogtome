@@ -1,5 +1,5 @@
 import { Link2, Loader2, AlertCircle, Check, ChevronRight } from "lucide-react";
-import { ContentCard } from "@/components/ContentCard";
+import { ContentCard } from "@/shared/ui/ContentCard";
 
 export function TriggerCard({
   onOpen,

@@ -10,8 +10,8 @@ import {
   Inbox,
 } from "lucide-react";
 
-import { PageLayout, PageHeader, SectionLabel } from "@/components/PageShell";
-import { Tag } from "@/components/Tag";
+import { PageLayout, PageHeader, SectionLabel } from "@/shared/ui/PageShell";
+import { Tag } from "@/shared/ui/Tag";
 import { PendingSubmissions } from "@/components/PendingSubmissions";
 import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
 import { useAuth } from "@/contexts/AuthContext";

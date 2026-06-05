@@ -1,4 +1,4 @@
-import type { MoogleConfig } from "@/components/FloatingMoogles";
+import type { MoogleConfig } from "@/shared/ui/FloatingMoogles";
 
 import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 import flyingMoogles from "@/assets/moogles/moogles flying.webp";

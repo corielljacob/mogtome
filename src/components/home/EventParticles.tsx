@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
 import type { EventParticle } from "@/constants/seasonalEvents";
-import { IS_MOBILE } from "@/utils/motionConfig";
+import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 export function EventParticles({ particles }: { particles: EventParticle[] }) {
   const items = useMemo(() => {

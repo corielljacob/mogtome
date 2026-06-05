@@ -1,7 +1,7 @@
 import { type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
-import { KawaiiBow } from "@/components/kawaiiMotifs";
+import { KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 import { getRankColor } from "@/constants/rankColors";
 import { FC_RANKS } from "@/types";
 

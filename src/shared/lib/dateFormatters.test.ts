@@ -4,7 +4,7 @@ import {
   formatFullDate,
   formatLastUpdated,
   formatMemberSince,
-} from "@/utils/dateFormatters";
+} from "@/shared/lib/dateFormatters";
 
 describe("dateFormatters", () => {
   beforeEach(() => {

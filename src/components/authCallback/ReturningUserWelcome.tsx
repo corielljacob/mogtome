@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import type { User } from "@/contexts/AuthContext";
-import { MembershipCard } from "@/components/MembershipCard";
+import { MembershipCard } from "@/shared/ui/MembershipCard";
 
 export function ReturningUserWelcome({
   user,

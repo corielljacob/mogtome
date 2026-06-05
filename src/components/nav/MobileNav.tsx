@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon, X } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { KawaiiStar } from "@/components/kawaiiMotifs";
+import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import type { Tab } from "@/components/nav/tabs";
 import { MobileTab } from "@/components/nav/MobileTab";
 import { SheetTab } from "@/components/nav/SheetTab";

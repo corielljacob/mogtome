@@ -12,7 +12,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"],
-      "lucide-react": ["./src/icons/cozyIcons.tsx"]
+      "lucide-react": ["./src/shared/ui/icons/cozyIcons.tsx"]
     },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

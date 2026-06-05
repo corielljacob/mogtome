@@ -5,7 +5,7 @@ import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 import { getRankColor } from "@/constants/rankColors";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useTheme } from "@/contexts/ThemeContext";
-import { KawaiiHeart, KawaiiStar } from "@/components/kawaiiMotifs";
+import { KawaiiHeart, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 
 // on hover the card pivots toward the cursor and catches the light. pointer-tilt
 // is gated behind reduced-motion + hover pointers; lighting eases off in dark.

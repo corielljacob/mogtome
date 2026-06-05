@@ -28,7 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      'lucide-react': path.resolve(__dirname, 'src/icons/cozyIcons.tsx'),
+      'lucide-react': path.resolve(__dirname, 'src/shared/ui/icons/cozyIcons.tsx'),
     },
   },
   

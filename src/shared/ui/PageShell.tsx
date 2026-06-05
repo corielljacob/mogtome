@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { Heart, RefreshCw, Sparkles, X } from "lucide-react";
-import { StoryDivider } from "@/components/StoryDivider";
-import { FloatingSparkles } from "@/components/FloatingSparkles";
-import { FloatingBubbles } from "@/components/FloatingBubbles";
-import { SimpleFloatingMoogles } from "@/components/FloatingMoogles";
-import { ContentCard } from "@/components/ContentCard";
-import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "@/components/kawaiiMotifs";
+import { StoryDivider } from "@/shared/ui/StoryDivider";
+import { FloatingSparkles } from "@/shared/ui/FloatingSparkles";
+import { FloatingBubbles } from "@/shared/ui/FloatingBubbles";
+import { SimpleFloatingMoogles } from "@/shared/ui/FloatingMoogles";
+import { ContentCard } from "@/shared/ui/ContentCard";
+import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 
 import pushingMoogles from "@/assets/moogles/moogles pushing.webp";
 import deadMoogle from "@/assets/moogles/dead moogle.webp";

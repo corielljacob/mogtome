@@ -8,13 +8,13 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
-} from "@/components/PageShell";
+} from "@/shared/ui/PageShell";
 import {
   KawaiiStar,
   KawaiiBow,
   KawaiiSparkle,
   KawaiiHeart,
-} from "@/components/kawaiiMotifs";
+} from "@/shared/ui/kawaiiMotifs";
 import { useAuth } from "@/contexts/AuthContext";
 import { FC_RANKS } from "@/types";
 import { StaffCard } from "@/components/about/StaffCard";

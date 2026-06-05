@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/Button";
+import { Button } from "@/shared/ui/Button";
 
 import deadMoogle from "@/assets/moogles/dead moogle.webp";
 

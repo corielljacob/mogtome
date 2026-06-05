@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { KawaiiStar } from "@/components/kawaiiMotifs";
+import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import { getTagline } from "@/components/home/homeData";
 
 const QUICK_LINKS = [

@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import type { CSSProperties } from "react";
-import { MembershipCard } from "@/components/MembershipCard";
-import { KawaiiHeart } from "@/components/kawaiiMotifs";
+import { MembershipCard } from "@/shared/ui/MembershipCard";
+import { KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileBio } from "@/components/profile/ProfileBio";
 import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";

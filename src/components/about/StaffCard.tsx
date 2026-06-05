@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { Tag } from "@/components/Tag";
-import { KawaiiSparkle } from "@/components/kawaiiMotifs";
+import { Tag } from "@/shared/ui/Tag";
+import { KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
 import { getRankColor } from "@/constants/rankColors";
 import type { StaffMember } from "@/types";
 import { StickyBioNote } from "@/components/about/StickyBioNote";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@/test/test-utils";
-import { MooglePom, MooglePomCluster } from "@/components/MooglePom";
+import { MooglePom, MooglePomCluster } from "@/shared/ui/MooglePom";
 
 describe("MooglePom", () => {
   it("renders without crashing", () => {

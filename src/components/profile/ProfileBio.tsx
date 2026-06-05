@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sparkles, Pencil, X } from "lucide-react";
-import { MobileSheet } from "@/components/MobileSheet";
+import { MobileSheet } from "@/shared/ui/MobileSheet";
 import { useIsMobile } from "@/hooks/useMobile";
 import { ProfileSection } from "@/components/profile/ProfileSection";
 import { BioEditor } from "@/components/profile/BioEditor";

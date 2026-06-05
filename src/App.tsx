@@ -14,7 +14,7 @@ import {
   useAccessibility,
 } from "@/contexts/AccessibilityContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { APP_SCROLL_ID, jumpAppToTop } from "@/utils/scroll";
+import { APP_SCROLL_ID, jumpAppToTop } from "@/shared/lib/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {

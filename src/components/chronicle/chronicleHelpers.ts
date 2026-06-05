@@ -4,7 +4,7 @@ import {
   KawaiiHeart,
   KawaiiSparkle,
   KawaiiBow,
-} from "@/components/kawaiiMotifs";
+} from "@/shared/ui/kawaiiMotifs";
 import type { ChronicleEvent } from "@/types";
 
 const PLACEHOLDER_TIMESTAMP = 0;

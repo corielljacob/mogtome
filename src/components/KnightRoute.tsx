@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { LogIn, Shield, Swords } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { DiscordIcon } from "@/components/DiscordIcon";
+import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 
 import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 

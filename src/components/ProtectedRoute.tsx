@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { DiscordIcon } from "@/components/DiscordIcon";
-import { KawaiiSparkle, KawaiiBow } from "@/components/kawaiiMotifs";
+import { DiscordIcon } from "@/shared/ui/DiscordIcon";
+import { KawaiiSparkle, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 
 import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 

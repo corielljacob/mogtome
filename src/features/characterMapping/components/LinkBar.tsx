@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, X, Link2 } from "lucide-react";
-import { Button, IconButton } from "@/components/Button";
+import { Button, IconButton } from "@/shared/ui/Button";
 
 export function LinkBar({
   show,

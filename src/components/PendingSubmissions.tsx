@@ -15,9 +15,9 @@ import {
 import { biographyApi } from "@/api/biography";
 import { membersApi } from "@/api/members";
 import type { BiographySubmission, StaffMember } from "@/types";
-import { ContentCard } from "@/components/ContentCard";
-import { Tag } from "@/components/Tag";
-import { Button, IconButton } from "@/components/Button";
+import { ContentCard } from "@/shared/ui/ContentCard";
+import { Tag } from "@/shared/ui/Tag";
+import { Button, IconButton } from "@/shared/ui/Button";
 
 interface SubmissionCardProps {
   submission: BiographySubmission;

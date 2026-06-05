@@ -2,8 +2,8 @@ import { memo, useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Send, Check, AlertCircle, Clock, XCircle, Pencil } from "lucide-react";
 import { biographyApi } from "@/api/biography";
-import { Textarea } from "@/components/Input";
-import { Button } from "@/components/Button";
+import { Textarea } from "@/shared/ui/Input";
+import { Button } from "@/shared/ui/Button";
 import type {
   ProfileData,
   ProfileViewer,

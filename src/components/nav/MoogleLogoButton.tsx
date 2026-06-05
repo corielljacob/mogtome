@@ -1,7 +1,7 @@
 import { memo, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { LogoIcon } from "@/components/LogoIcon";
-import { KawaiiStar, KawaiiHeart } from "@/components/kawaiiMotifs";
+import { LogoIcon } from "@/shared/ui/LogoIcon";
+import { KawaiiStar, KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 
 // poke-me easter egg, not a nav link - Home already has its own tab
 const KUPO_LINES = [
