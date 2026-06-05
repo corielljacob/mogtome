@@ -3,11 +3,11 @@ import type { ReactNode, ErrorInfo } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
-import { Navbar } from "@/components/Navbar";
-import { ScrapbookNav } from "@/components/ScrapbookNav";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { KnightRoute } from "@/components/KnightRoute";
-import { MissingUserDataDialog } from "@/components/MissingUserDataDialog";
+import { Navbar } from "@/app/Navbar";
+import { ScrapbookNav } from "@/app/ScrapbookNav";
+import { ProtectedRoute } from "@/app/ProtectedRoute";
+import { KnightRoute } from "@/app/KnightRoute";
+import { MissingUserDataDialog } from "@/app/MissingUserDataDialog";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 import {
   AccessibilityProvider,

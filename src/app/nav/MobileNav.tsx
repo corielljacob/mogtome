@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon, X } from "lucide-react";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
-import type { Tab } from "@/components/nav/tabs";
-import { MobileTab } from "@/components/nav/MobileTab";
-import { SheetTab } from "@/components/nav/SheetTab";
+import type { Tab } from "@/app/nav/tabs";
+import { MobileTab } from "@/app/nav/MobileTab";
+import { SheetTab } from "@/app/nav/SheetTab";
 
 function MoreIcon({ className = "" }: { className?: string }) {
   return (

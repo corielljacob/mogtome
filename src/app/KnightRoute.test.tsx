@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@/shared/test/test-utils";
-import { KnightRoute } from "@/components/KnightRoute";
+import { KnightRoute } from "@/app/KnightRoute";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 
 // stub refreshAuthToken so auth bootstrap doesn't hit the network

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@/shared/test/test-utils";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/app/ProtectedRoute";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 
 // mock refreshAuthToken to keep the auth check off the network
