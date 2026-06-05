@@ -1,14 +1,4 @@
-import {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  useRef,
-  memo,
-  useDeferredValue,
-  type CSSProperties,
-} from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { type CSSProperties } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Wifi, Loader2, Search, X } from "lucide-react";
 
@@ -20,21 +10,18 @@ import {
   ErrorState,
   EmptyState,
 } from "../components/PageShell";
-import { Tag } from "../components/Tag";
+import { KawaiiStar } from "../components/kawaiiMotifs";
+import { EVENT_TYPE_CONFIG } from "../constants/eventTypes";
+import type { ChronicleEventFilter } from "../types";
+
+import { useChronicle } from "../components/chronicle/useChronicle";
+import { LiveStatus } from "../components/chronicle/LiveStatus";
+import { JournalEntry } from "../components/chronicle/JournalEntry";
+import { WashiTape } from "../components/chronicle/WashiTape";
 import {
-  KawaiiStar,
-  KawaiiHeart,
-  KawaiiSparkle,
-  KawaiiBow,
-} from "../components/kawaiiMotifs";
-import type { ComponentType } from "react";
-import { useEventsHub, type ConnectionStatus } from "../hooks/useEventsHub";
-
-import { formatRelativeTime } from "../utils/dateFormatters";
-import { getEventTypeConfig, EVENT_TYPE_CONFIG } from "../constants/eventTypes";
-
-import { eventsApi } from "../api/events";
-import type { ChronicleEvent, ChronicleEventFilter } from "../types";
+  dayDecor,
+  getEventKey,
+} from "../components/chronicle/chronicleHelpers";
 
 const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
   Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]
@@ -46,346 +33,36 @@ const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
 import flyingMoogles from "../assets/moogles/moogles flying.webp";
 import moogleMail from "../assets/moogles/moogle mail.webp";
 
-const PLACEHOLDER_TIMESTAMP = 0;
-const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";
-
-function hasValidId(event: ChronicleEvent): boolean {
-  return (
-    event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
-    event.id.creationTime !== PLACEHOLDER_CREATION_TIME
-  );
-}
-
-// dedup key for events that lack a real ID
-function getEventSignature(event: ChronicleEvent): string {
-  return `${event.createdAt}-${event.type}-${event.text}`;
-}
-
-function getEventKey(event: ChronicleEvent, index: number): string {
-  if (hasValidId(event)) {
-    return `${event.id.timestamp}-${event.id.creationTime}`;
-  }
-  // placeholder IDs collide, so disambiguate with the index
-  return `${getEventSignature(event)}-${index}`;
-}
-
-function startOfDay(d: Date): number {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
-
-function getDayKey(dateString: string): string {
-  const d = new Date(dateString);
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
-
-// Today / Yesterday / weekday / full date
-function getDayLabel(dateString: string): string {
-  const d = new Date(dateString);
-  const now = new Date();
-  const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
-  const opts: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
-  if (d.getFullYear() !== now.getFullYear()) opts.year = "numeric";
-  return d.toLocaleDateString("en-US", opts);
-}
-
-interface EntryItem {
-  event: ChronicleEvent;
-  isRealtime: boolean;
-  isUnseen: boolean;
-}
-
-interface DayGroup {
-  key: string;
-  label: string;
-  items: EntryItem[];
-}
-
-// input must already be newest-first; preserves that order within each group
-function buildDayGroups(items: EntryItem[]): DayGroup[] {
-  const groups: DayGroup[] = [];
-  const index = new Map<string, DayGroup>();
-  for (const item of items) {
-    const key = getDayKey(item.event.createdAt);
-    let group = index.get(key);
-    if (!group) {
-      group = { key, label: getDayLabel(item.event.createdAt), items: [] };
-      index.set(key, group);
-      groups.push(group);
-    }
-    group.items.push(item);
-  }
-  return groups;
-}
-
-const LiveStatus = memo(function LiveStatus({
-  status,
-}: {
-  status: ConnectionStatus;
-}) {
-  const config: Record<
-    ConnectionStatus,
-    { tone: string; label: string; pulse: boolean }
-  > = {
-    connected: { tone: "var(--primary)", label: "live", pulse: true },
-    connecting: { tone: "var(--accent)", label: "connecting", pulse: true },
-    reconnecting: { tone: "var(--accent)", label: "reconnecting", pulse: true },
-    disconnected: {
-      tone: "var(--text-subtle)",
-      label: "offline",
-      pulse: false,
-    },
-    error: { tone: "var(--text-subtle)", label: "offline", pulse: false },
-  };
-  const { tone, label, pulse } = config[status];
-
-  return (
-    <span
-      className="inline-flex items-center gap-2 text-xs font-soft text-[var(--text-muted)]"
-      role="status"
-      aria-live="polite"
-      aria-label={`Live updates: ${label}`}
-    >
-      <span className="relative flex w-2 h-2" aria-hidden="true">
-        {pulse && (
-          <span
-            className="absolute inline-flex w-full h-full rounded-full opacity-60 animate-ping"
-            style={{ background: tone }}
-          />
-        )}
-        <span
-          className="relative inline-flex w-2 h-2 rounded-full"
-          style={{ background: tone }}
-        />
-      </span>
-      {label}
-    </span>
-  );
-});
-
-const JournalEntry = memo(function JournalEntry({ item }: { item: EntryItem }) {
-  const { event, isRealtime, isUnseen } = item;
-  const { Icon, hex, label } = getEventTypeConfig(event.type);
-
-  return (
-    <motion.li
-      className="relative flex gap-2.5 sm:gap-3 py-3.5 sm:py-4 first:pt-0"
-      initial={isRealtime && isUnseen ? { opacity: 0, y: -8 } : false}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
-    >
-      <span
-        className="icon-badge w-7 h-7 shrink-0 mt-0.5"
-        style={{
-          color: hex,
-          background: `color-mix(in srgb, ${hex} 12%, var(--card))`,
-          borderColor: `color-mix(in srgb, ${hex} 30%, var(--border))`,
-        }}
-      >
-        <Icon className="w-3.5 h-3.5" aria-hidden="true" />
-      </span>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap mb-1.5">
-          <Tag color={hex}>{label}</Tag>
-          {isUnseen && (
-            <Tag color="var(--primary)" dot>
-              just in
-            </Tag>
-          )}
-          <time
-            className="ml-auto shrink-0 text-xs text-[var(--text-subtle)] font-soft"
-            dateTime={event.createdAt}
-          >
-            {formatRelativeTime(event.createdAt)}
-          </time>
-        </div>
-        <p className="text-[var(--text)] font-soft text-[15px] sm:text-[17px] leading-loose">
-          {event.text}
-        </p>
-      </div>
-    </motion.li>
-  );
-});
-
-type Motif = ComponentType<{ className?: string; color?: string }>;
-const DAY_STICKERS: Motif[] = [
-  KawaiiHeart,
-  KawaiiSparkle,
-  KawaiiBow,
-  KawaiiStar,
-];
-const STICKER_COLORS = ["var(--primary)", "var(--secondary)", "var(--accent)"];
-
-function WashiTape({
-  className = "",
-  color = "var(--accent)",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`pointer-events-none rounded-[2px] ${className}`}
-      style={{
-        background: `repeating-linear-gradient(45deg, color-mix(in srgb, ${color} 42%, transparent) 0 6px, color-mix(in srgb, ${color} 20%, transparent) 6px 12px)`,
-      }}
-    />
-  );
-}
-
-// hashed off the day key so the look is stable across re-renders
-function dayDecor(key: string, index: number) {
-  let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-  return {
-    tilt: ((h % 5) - 2) * 1.1, // ~ -2.2 .. 2.2 deg
-    Sticker: DAY_STICKERS[index % DAY_STICKERS.length],
-    tapeColor: STICKER_COLORS[h % STICKER_COLORS.length],
-    stickerColor: STICKER_COLORS[(h >> 3) % STICKER_COLORS.length],
-  };
-}
-
 export function Chronicle() {
-  const [searchInput, setSearchInput] = useState("");
-  const [activeFilter, setActiveFilter] = useState<ChronicleEventFilter | null>(
-    null,
-  );
-  const deferredSearchQuery = useDeferredValue(searchInput);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const isSearching = deferredSearchQuery.trim().length > 0;
-  const hasActiveFilter = activeFilter !== null;
-  const hasActiveQuery = isSearching || hasActiveFilter;
-
-  // realtime feed over SignalR
-  const { status, realtimeEvents, unseenCount, reconnect, markAllAsSeen } =
-    useEventsHub();
-
   const {
-    data,
+    searchInput,
+    setSearchInput,
+    activeFilter,
+    setActiveFilter,
+    deferredSearchQuery,
+    searchInputRef,
+    isSearching,
+    hasActiveFilter,
+    hasActiveQuery,
+    status,
+    unseenCount,
+    reconnect,
+    markAllAsSeen,
     isLoading,
     isError,
     isFetchingNextPage,
     hasNextPage,
-    fetchNextPage,
     refetch,
-  } = useInfiniteQuery({
-    queryKey: ["chronicle-events", deferredSearchQuery.trim(), activeFilter],
-    queryFn: ({ pageParam }) =>
-      eventsApi.getEvents({
-        cursor: pageParam,
-        limit: 20,
-        query: deferredSearchQuery.trim() || undefined,
-        filter: activeFilter ?? undefined,
-      }),
-    getNextPageParam: (lastPage) =>
-      lastPage.hasMore ? lastPage.nextCursor : undefined,
-    initialPageParam: undefined as string | undefined,
-    staleTime: 1000 * 60 * 2,
-  });
-
-  // infinite scroll via a callback-ref IntersectionObserver
-  const [sentinelVisible, setSentinelVisible] = useState(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-    if (!node) {
-      setSentinelVisible(false);
-      return;
-    }
-    observerRef.current = new IntersectionObserver(
-      ([entry]) => setSentinelVisible(entry.isIntersecting),
-      { rootMargin: "300px", threshold: 0 },
-    );
-    observerRef.current.observe(node);
-  }, []);
-
-  useEffect(
-    () => () => {
-      observerRef.current?.disconnect();
-    },
-    [],
-  );
-
-  useEffect(() => {
-    if (sentinelVisible && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [sentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  // flatten pages, dropping dups that cursor shifts can surface across pages
-  const apiEvents = useMemo(() => {
-    if (!data?.pages) return [];
-    const seen = new Set<string>();
-    return data.pages
-      .flatMap((page) => page.events)
-      .filter((event) => {
-        const key = hasValidId(event)
-          ? `${event.id.timestamp}-${event.id.creationTime}`
-          : getEventSignature(event);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-  }, [data]);
-
-  // filtered/searching: API results only. default view: drop API events that
-  // the realtime feed already covers so they don't show twice.
-  const displayedEvents = useMemo(() => {
-    if (hasActiveQuery) return apiEvents;
-    const rtSignatures = new Set(realtimeEvents.map(getEventSignature));
-    return apiEvents.filter((e) => !rtSignatures.has(getEventSignature(e)));
-  }, [apiEvents, hasActiveQuery, realtimeEvents]);
-
-  // only on the default view; memoized for a stable ref in dayGroups' deps
-  const visibleRealtimeEvents = useMemo(
-    () => (hasActiveQuery ? [] : realtimeEvents),
-    [hasActiveQuery, realtimeEvents],
-  );
-  const totalCount = visibleRealtimeEvents.length + displayedEvents.length;
-
-  // realtime (newest) ahead of historical, then bucketed by day
-  const dayGroups = useMemo(() => {
-    const items: EntryItem[] = [
-      ...visibleRealtimeEvents.map((event, i) => ({
-        event,
-        isRealtime: true,
-        isUnseen: i < unseenCount,
-      })),
-      ...displayedEvents.map((event) => ({
-        event,
-        isRealtime: false,
-        isUnseen: false,
-      })),
-    ];
-    return buildDayGroups(items);
-  }, [visibleRealtimeEvents, displayedEvents, unseenCount]);
-
-  // true while the input is ahead of the deferred (debounced) value
-  const isTransitioning = searchInput !== deferredSearchQuery;
-
-  const handleClearSearch = useCallback(() => {
-    setSearchInput("");
-    searchInputRef.current?.focus();
-  }, []);
-
-  const handleClearAll = useCallback(() => {
-    setSearchInput("");
-    setActiveFilter(null);
-    searchInputRef.current?.focus();
-  }, []);
-
-  const handleToggleFilter = useCallback((filter: ChronicleEventFilter) => {
-    setActiveFilter((prev) => (prev === filter ? null : filter));
-  }, []);
+    apiEvents,
+    displayedEvents,
+    totalCount,
+    dayGroups,
+    isTransitioning,
+    sentinelRef,
+    handleClearSearch,
+    handleClearAll,
+    handleToggleFilter,
+  } = useChronicle();
 
   return (
     <PageLayout
