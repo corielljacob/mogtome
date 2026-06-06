@@ -177,6 +177,19 @@
   --accent: #fed7aa;
 }
 
+/* Shadowbringers - High Contrast (amethyst violet, aether cyan & gold) */
+:root.theme-shadowbringers.high-contrast {
+  --primary: #6b21a8;
+  --secondary: #0e7490;
+  --accent: #92600a;
+}
+
+:root.dark.theme-shadowbringers.high-contrast {
+  --primary: #c4b5fd;
+  --secondary: #67e8f9;
+  --accent: #fde68a;
+}
+
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
 :root.dark.extra-dark {
   --bg: #000000;

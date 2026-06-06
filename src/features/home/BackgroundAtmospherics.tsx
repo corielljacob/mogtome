@@ -12,6 +12,7 @@ import { FairyLights } from "@/features/home/FairyLights";
 import { EventParticles } from "@/features/home/EventParticles";
 import { ThemeSnow } from "@/features/home/ThemeSnow";
 import { ThemeEmbers } from "@/features/home/ThemeEmbers";
+import { ThemeAurora } from "@/features/home/ThemeAurora";
 import { HalloweenOverlay } from "@/features/home/HalloweenOverlay";
 import { StarlightOverlay } from "@/features/home/StarlightOverlay";
 import { EventBunting } from "@/features/home/EventBunting";
@@ -41,6 +42,15 @@ const STORMBLOOD_SKY =
   " radial-gradient(150% 85% at 50% 135%, color-mix(in srgb, var(--primary) 52%, transparent), transparent 60%)," +
   " linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--primary) 16%, transparent) 100%)";
 
+// The Shadowbringers "divided sky": the golden Light pours in from BOTH sides,
+// splitting a deep indigo night down the middle, with a violet glow above. The
+// aurora layer adds flickering brightness to the walls + violet beams in the gap.
+const SHADOWBRINGERS_SKY =
+  "radial-gradient(55% 135% at -6% 50%, color-mix(in srgb, var(--accent) 44%, transparent), transparent 58%)," +
+  " radial-gradient(55% 135% at 106% 50%, color-mix(in srgb, var(--accent) 44%, transparent), transparent 58%)," +
+  " radial-gradient(85% 60% at 50% 2%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 52%)," +
+  " linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--secondary) 7%, transparent) 100%)";
+
 // the cozy default backdrop for every non-themed page
 const DEFAULT_SKY =
   "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)";
@@ -58,11 +68,17 @@ export function BackgroundAtmospherics() {
     !isEventThemeActive && settings.colorTheme === "stormblood";
   // the full fire (embers, no cozy dots) is the dark-mode Stormblood experience.
   const stormNight = stormblood && isDarkMode;
+  const shadowbringers =
+    !isEventThemeActive && settings.colorTheme === "shadowbringers";
+  // the aurora night sky is the dark-mode Shadowbringers experience.
+  const shadowNight = shadowbringers && isDarkMode;
   const themeSky = heavensward
     ? HEAVENSWARD_SKY
     : stormblood
       ? STORMBLOOD_SKY
-      : null;
+      : shadowbringers
+        ? SHADOWBRINGERS_SKY
+        : null;
 
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
@@ -106,7 +122,7 @@ export function BackgroundAtmospherics() {
           aria-hidden="true"
         />
       )}
-      {!heavensNight && !stormNight && (
+      {!heavensNight && !stormNight && !shadowNight && (
         <div
           className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
           aria-hidden="true"
@@ -115,6 +131,7 @@ export function BackgroundAtmospherics() {
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
       {heavensward && <ThemeSnow />}
       {stormNight && <ThemeEmbers />}
+      {shadowNight && <ThemeAurora />}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && (
         <EventParticles particles={activeEvent.particles} />

@@ -32,10 +32,11 @@ export function HeroText() {
   // metallic lettering for the dramatic dark themes - chrome for Heavensward,
   // embossed gold for Stormblood. Only on the dark skies (it would wash out on
   // the light backdrops, where the coloured title stays).
+  const ct = settings.colorTheme;
   const metalGrad =
-    isDarkMode && settings.colorTheme === "heavensward"
+    isDarkMode && ct === "heavensward"
       ? HW_SILVER
-      : isDarkMode && settings.colorTheme === "stormblood"
+      : isDarkMode && (ct === "stormblood" || ct === "shadowbringers")
         ? SB_GOLD
         : null;
   const metalStyle: CSSProperties | undefined = metalGrad
@@ -44,14 +45,13 @@ export function HeroText() {
         backgroundImage: metalGrad,
         WebkitBackgroundClip: "text",
         backgroundClip: "text",
-        // override sticker-text's thick white outline. The chrome (caps Cinzel)
-        // keeps a thin steel rim; the gold serif has lowercase descenders that
-        // glitch under text-stroke + background-clip, so it drops the rim and
-        // gets its depth from a soft emboss shadow instead.
+        // override sticker-text's thick white outline. The gold themes glitch
+        // under text-stroke + background-clip, so they drop the rim and lean on
+        // the emboss shadow; only Heavensward's chrome keeps a thin steel rim.
         WebkitTextStroke:
-          metalGrad === SB_GOLD
-            ? "0 transparent"
-            : "0.012em rgba(206,219,234,0.7)",
+          ct === "heavensward"
+            ? "0.012em rgba(206,219,234,0.7)"
+            : "0 transparent",
         textShadow:
           metalGrad === SB_GOLD
             ? "0 1px 0 rgba(90,55,10,0.5), 0 2px 5px rgba(0,0,0,0.45)"
@@ -59,11 +59,11 @@ export function HeroText() {
       }
     : undefined;
 
-  // Stormblood matches its all-caps logo - and caps dodge the lowercase
-  // descender that clips under background-clip + the gold serif.
+  // these expansions match their all-caps logos - and caps dodge the lowercase
+  // descender that clips under background-clip on the serif faces.
   const h1Style: CSSProperties = {};
   if (themeFont) h1Style.fontFamily = themeFont;
-  if (settings.colorTheme === "stormblood")
+  if (ct === "stormblood" || ct === "shadowbringers")
     h1Style.textTransform = "uppercase";
 
   return (

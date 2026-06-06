@@ -49,6 +49,12 @@ export const THEME_META: {
     displayFont: '"Cormorant Garamond", "Cinzel", serif',
   },
   {
+    id: "shadowbringers",
+    name: "Shadowbringers",
+    description: "Amethyst violet, aether cyan & the golden Light",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
+  },
+  {
     id: "crystal",
     name: "Crystal Tower",
     description: "Candy sky-blue & turquoise",
@@ -119,6 +125,21 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
       accent: "#f1d07c",
       bg: "#1a0a0c",
       card: "#2a1316",
+    },
+  },
+  shadowbringers: {
+    light: {
+      primary: "#8a52d6",
+      secondary: "#3ba3c7",
+      accent: "#d6a23c",
+      bg: "#f3effa",
+    },
+    dark: {
+      primary: "#a47bea",
+      secondary: "#57c2dd",
+      accent: "#ecc265",
+      bg: "#0c0a16",
+      card: "#181327",
     },
   },
   crystal: {
