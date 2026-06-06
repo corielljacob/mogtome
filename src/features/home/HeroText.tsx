@@ -36,7 +36,11 @@ export function HeroText() {
   const metalGrad =
     isDarkMode && ct === "heavensward"
       ? HW_SILVER
-      : isDarkMode && (ct === "stormblood" || ct === "shadowbringers")
+      : isDarkMode &&
+          (ct === "stormblood" ||
+            ct === "shadowbringers" ||
+            ct === "endwalker" ||
+            ct === "dawntrail")
         ? SB_GOLD
         : null;
   const metalStyle: CSSProperties | undefined = metalGrad
@@ -63,7 +67,12 @@ export function HeroText() {
   // descender that clips under background-clip on the serif faces.
   const h1Style: CSSProperties = {};
   if (themeFont) h1Style.fontFamily = themeFont;
-  if (ct === "stormblood" || ct === "shadowbringers")
+  if (
+    ct === "stormblood" ||
+    ct === "shadowbringers" ||
+    ct === "endwalker" ||
+    ct === "dawntrail"
+  )
     h1Style.textTransform = "uppercase";
 
   return (

@@ -190,6 +190,32 @@
   --accent: #fde68a;
 }
 
+/* Endwalker - High Contrast (cosmic blue, celestial gold & sunrise) */
+:root.theme-endwalker.high-contrast {
+  --primary: #1e3a8a;
+  --secondary: #92600a;
+  --accent: #b45309;
+}
+
+:root.dark.theme-endwalker.high-contrast {
+  --primary: #93c5fd;
+  --secondary: #fde68a;
+  --accent: #fed7aa;
+}
+
+/* Dawntrail - High Contrast (dawn coral, golden sun & teal sea) */
+:root.theme-dawntrail.high-contrast {
+  --primary: #b4480f;
+  --secondary: #0e6e7d;
+  --accent: #92600a;
+}
+
+:root.dark.theme-dawntrail.high-contrast {
+  --primary: #fdba74;
+  --secondary: #67e8f9;
+  --accent: #fde68a;
+}
+
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
 :root.dark.extra-dark {
   --bg: #000000;

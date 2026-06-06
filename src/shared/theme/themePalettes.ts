@@ -55,6 +55,18 @@ export const THEME_META: {
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
+    id: "endwalker",
+    name: "Endwalker",
+    description: "Cosmic blue, celestial gold & the dawn at journey's end",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
+  },
+  {
+    id: "dawntrail",
+    name: "Dawntrail",
+    description: "Tural dawn - coral sky, golden sun & teal sea",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
+  },
+  {
     id: "crystal",
     name: "Crystal Tower",
     description: "Candy sky-blue & turquoise",
@@ -140,6 +152,36 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
       accent: "#ecc265",
       bg: "#0c0a16",
       card: "#181327",
+    },
+  },
+  endwalker: {
+    light: {
+      primary: "#4f6fc8",
+      secondary: "#d6a44a",
+      accent: "#ec8a56",
+      bg: "#f2f1f7",
+    },
+    dark: {
+      primary: "#708fe6",
+      secondary: "#e8c06e",
+      accent: "#f2a06e",
+      bg: "#07060f",
+      card: "#14131f",
+    },
+  },
+  dawntrail: {
+    light: {
+      primary: "#e6906a",
+      secondary: "#5f9aa8",
+      accent: "#f2bb50",
+      bg: "#fdeee0",
+    },
+    dark: {
+      primary: "#f0a578",
+      secondary: "#6fb3c0",
+      accent: "#f7cf6a",
+      bg: "#170f0b",
+      card: "#251a13",
     },
   },
   crystal: {

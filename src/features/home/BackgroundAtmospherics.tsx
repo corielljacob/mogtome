@@ -13,6 +13,8 @@ import { EventParticles } from "@/features/home/EventParticles";
 import { ThemeSnow } from "@/features/home/ThemeSnow";
 import { ThemeEmbers } from "@/features/home/ThemeEmbers";
 import { ThemeAurora } from "@/features/home/ThemeAurora";
+import { ThemeCosmos } from "@/features/home/ThemeCosmos";
+import { ThemeDawn } from "@/features/home/ThemeDawn";
 import { HalloweenOverlay } from "@/features/home/HalloweenOverlay";
 import { StarlightOverlay } from "@/features/home/StarlightOverlay";
 import { EventBunting } from "@/features/home/EventBunting";
@@ -51,6 +53,22 @@ const SHADOWBRINGERS_SKY =
   " radial-gradient(85% 60% at 50% 2%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 52%)," +
   " linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--secondary) 7%, transparent) 100%)";
 
+// Endwalker's cosmos: a warm gold/coral eclipse glow in the upper right, a cool
+// blue world glowing lower-left, over deep space (the cosmos layer adds stars).
+const ENDWALKER_SKY =
+  "radial-gradient(60% 65% at 86% 16%, color-mix(in srgb, var(--secondary) 38%, transparent), transparent 55%)," +
+  " radial-gradient(42% 48% at 90% 22%, color-mix(in srgb, var(--accent) 44%, transparent), transparent 50%)," +
+  " radial-gradient(72% 82% at 8% 84%, color-mix(in srgb, var(--primary) 32%, transparent), transparent 60%)," +
+  " linear-gradient(160deg, transparent 50%, color-mix(in srgb, var(--primary) 10%, transparent) 100%)";
+
+// Dawntrail's dawn over the sea: a coral/peach sky up top, a golden sun glowing
+// at the horizon (right of centre), and the muted teal sea along the bottom (the
+// dawn layer adds the sun's glow + reflection pillar + pollen).
+const DAWNTRAIL_SKY =
+  "radial-gradient(46% 30% at 60% 60%, color-mix(in srgb, var(--accent) 52%, transparent), transparent 56%)," +
+  " linear-gradient(180deg, color-mix(in srgb, var(--primary) 26%, transparent) 0%, color-mix(in srgb, var(--accent) 14%, transparent) 36%, transparent 56%)," +
+  " linear-gradient(0deg, color-mix(in srgb, var(--secondary) 34%, transparent) 0%, transparent 30%)";
+
 // the cozy default backdrop for every non-themed page
 const DEFAULT_SKY =
   "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)";
@@ -72,13 +90,24 @@ export function BackgroundAtmospherics() {
     !isEventThemeActive && settings.colorTheme === "shadowbringers";
   // the aurora night sky is the dark-mode Shadowbringers experience.
   const shadowNight = shadowbringers && isDarkMode;
+  const endwalker =
+    !isEventThemeActive && settings.colorTheme === "endwalker";
+  // the deep starry cosmos is the dark-mode Endwalker experience.
+  const endwalkerNight = endwalker && isDarkMode;
+  // Dawntrail is the bright one - its sun/rays/pollen show in both modes.
+  const dawntrail =
+    !isEventThemeActive && settings.colorTheme === "dawntrail";
   const themeSky = heavensward
     ? HEAVENSWARD_SKY
     : stormblood
       ? STORMBLOOD_SKY
       : shadowbringers
         ? SHADOWBRINGERS_SKY
-        : null;
+        : endwalker
+          ? ENDWALKER_SKY
+          : dawntrail
+            ? DAWNTRAIL_SKY
+            : null;
 
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
@@ -122,16 +151,22 @@ export function BackgroundAtmospherics() {
           aria-hidden="true"
         />
       )}
-      {!heavensNight && !stormNight && !shadowNight && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
-          aria-hidden="true"
-        />
-      )}
+      {!heavensNight &&
+        !stormNight &&
+        !shadowNight &&
+        !endwalkerNight &&
+        !dawntrail && (
+          <div
+            className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+            aria-hidden="true"
+          />
+        )}
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
       {heavensward && <ThemeSnow />}
       {stormNight && <ThemeEmbers />}
       {shadowNight && <ThemeAurora />}
+      {endwalkerNight && <ThemeCosmos />}
+      {dawntrail && <ThemeDawn />}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && (
         <EventParticles particles={activeEvent.particles} />
