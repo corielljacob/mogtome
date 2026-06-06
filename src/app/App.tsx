@@ -14,6 +14,10 @@ import {
   useAccessibility,
 } from "@/shared/contexts/AccessibilityContext";
 import { ThemeProvider } from "@/shared/contexts/ThemeContext";
+import {
+  NavExpandedProvider,
+  useNavExpanded,
+} from "@/shared/contexts/NavExpandedContext";
 import { APP_SCROLL_ID, jumpAppToTop } from "@/shared/lib/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
@@ -101,6 +105,7 @@ function PageLoader() {
 
 function AppContent() {
   const { settings } = useAccessibility();
+  const { expanded: navExpanded } = useNavExpanded();
   const location = useLocation();
   // Home has its own bg; every other page gets the page pattern.
   const isHome = location.pathname === "/";
@@ -164,10 +169,11 @@ function AppContent() {
 
         <ScrapbookNav />
 
-        {/* pad left on desktop to clear the edge tabs */}
+        {/* pad left on desktop to clear the nav: the slim edge rail, or the
+            wider gutter the pinned expanded sidebar needs (animated either way) */}
         <div
           id={APP_SCROLL_ID}
-          className={`flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain md:pl-16 ${isHome ? "" : "page-pattern"}`}
+          className={`flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"} ${isHome ? "" : "page-pattern"}`}
         >
           <Navbar />
 
@@ -216,7 +222,9 @@ function App() {
         <AuthProvider>
           <ThemeProvider>
             <AccessibilityProvider>
-              <AppContent />
+              <NavExpandedProvider>
+                <AppContent />
+              </NavExpandedProvider>
             </AccessibilityProvider>
           </ThemeProvider>
         </AuthProvider>
