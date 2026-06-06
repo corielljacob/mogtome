@@ -33,7 +33,7 @@ export const THEME_META: {
 }[] = [
   {
     id: "pom-pom",
-    name: "Pom-Pom Classic",
+    name: "MogTome (Default)",
     description: "Warm sunset orange, coral & honey",
   },
   {
@@ -77,41 +77,6 @@ export const THEME_META: {
     name: "Evercold",
     description: "Norse frost - icy blue, aurora green & violet",
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
-  },
-  {
-    id: "crystal",
-    name: "Crystal Tower",
-    description: "Candy sky-blue & turquoise",
-  },
-  {
-    id: "chocobo",
-    name: "Chocobo Gold",
-    description: "Sunny gold & warm amber",
-  },
-  {
-    id: "tonberry",
-    name: "Tonberry Lantern",
-    description: "Lantern teal & leafy green",
-  },
-  {
-    id: "cactuar",
-    name: "Cactuar Fresh",
-    description: "Fresh green & sunlit lime",
-  },
-  {
-    id: "moogle-cloud",
-    name: "Moogle Cloud",
-    description: "Soft pom-pink & lavender",
-  },
-  {
-    id: "midnight",
-    name: "Midnight Realm",
-    description: "Candy indigo & lavender",
-  },
-  {
-    id: "sunset",
-    name: "Costa del Sol",
-    description: "Turquoise water, coral & sun",
   },
 ];
 
@@ -225,34 +190,6 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
       bg: "#050f15",
       card: "#0f1c24",
     },
-  },
-  crystal: {
-    light: { primary: "#3a8ed2", secondary: "#34bfd6", accent: "#f4be4c" },
-    dark: { primary: "#6cb2e6", secondary: "#54d4e6", accent: "#ffd57e" },
-  },
-  chocobo: {
-    light: { primary: "#d3851a", secondary: "#ef9a3a", accent: "#f5cd5f" },
-    dark: { primary: "#f0bb45", secondary: "#f5a85a", accent: "#fbe08a" },
-  },
-  tonberry: {
-    light: { primary: "#1fa68c", secondary: "#4fbf78", accent: "#f0b94a" },
-    dark: { primary: "#52cca6", secondary: "#7dd98e", accent: "#f7cf6e" },
-  },
-  cactuar: {
-    light: { primary: "#2f9e4c", secondary: "#8cbf3a", accent: "#f0cf4a" },
-    dark: { primary: "#66cf82", secondary: "#b0d95e", accent: "#f7dd72" },
-  },
-  "moogle-cloud": {
-    light: { primary: "#d9527f", secondary: "#8e72c2", accent: "#f2a6c6" },
-    dark: { primary: "#f07da6", secondary: "#b49ae6", accent: "#f8c2da" },
-  },
-  midnight: {
-    light: { primary: "#6a5cd4", secondary: "#9a6ed6", accent: "#a0aef5" },
-    dark: { primary: "#9b90f0", secondary: "#bd96ef", accent: "#b9c6ff" },
-  },
-  sunset: {
-    light: { primary: "#14b8c0", secondary: "#ff7e6a", accent: "#f7c95c" },
-    dark: { primary: "#43d3db", secondary: "#ff9683", accent: "#ffd97e" },
   },
 };
 
