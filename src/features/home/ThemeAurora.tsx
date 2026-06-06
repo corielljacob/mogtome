@@ -1,11 +1,12 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
-// Shadowbringers' "divided sky": a starfield with the golden Light flickering in
-// from BOTH sides, splitting a deep indigo night, and violet/cyan aether beams
-// shimmering in the dark gap between. Screen-blended so it glows on the indigo.
-// Home-only; skipped on mobile. Under reduced motion everything holds still.
+// Shadowbringers' "divided sky": the golden Light flickers in from BOTH sides,
+// splitting a deep indigo night, with violet/cyan aether beams in the dark gap,
+// drifting twinkling aether motes, and the occasional shooting star (the First's
+// restored night). Screen-blended so it glows on the indigo. Home-only; skipped
+// on mobile. Under reduced motion everything holds still and the streaks stop.
 
 // white / lavender / faint-cyan stars, tiled
 const STARFIELD =
@@ -49,8 +50,61 @@ const BEAMS = [
   },
 ];
 
+const MOTE_COLORS = [
+  "#ffffff",
+  "var(--primary)",
+  "var(--secondary)",
+  "var(--accent)",
+  "#ffffff",
+];
+
+// shooting stars - rare diagonal streaks across the dark sky
+const SHOOTING = [
+  {
+    top: 14,
+    left: 10,
+    len: 92,
+    rot: 20,
+    dx: 30,
+    dy: 12,
+    dur: 1.4,
+    gap: 6.5,
+    delay: 2,
+  },
+  {
+    top: 28,
+    left: 60,
+    len: 72,
+    rot: 17,
+    dx: 24,
+    dy: 9,
+    dur: 1.2,
+    gap: 9,
+    delay: 6,
+  },
+];
+
 export const ThemeAurora = memo(function ThemeAurora() {
   const reduceMotion = useReducedMotion();
+
+  const motes = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, i) => {
+        const seed = i * 53 + 9;
+        return {
+          key: i,
+          left: 18 + ((seed * 29) % 64), // 18..82 - the dark gap
+          top: 8 + ((seed * 37) % 80),
+          size: 2 + ((seed * 7) % 4), // 2..5px
+          color: MOTE_COLORS[seed % MOTE_COLORS.length],
+          op: 0.45 + ((seed * 13) % 50) / 100,
+          bob: 6 + ((seed * 5) % 10),
+          dur: 4 + ((seed * 3) % 5),
+          delay: -((seed * 1.7) % 6),
+        };
+      }),
+    [],
+  );
 
   if (IS_MOBILE) return null;
 
@@ -142,6 +196,78 @@ export const ThemeAurora = memo(function ThemeAurora() {
           }}
         />
       ))}
+
+      {/* drifting, twinkling aether motes */}
+      {motes.map((m) => (
+        <motion.div
+          key={`m${m.key}`}
+          className="absolute rounded-full"
+          style={{
+            left: `${m.left}%`,
+            top: `${m.top}%`,
+            width: m.size,
+            height: m.size,
+            background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
+            boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
+            mixBlendMode: "screen",
+          }}
+          animate={
+            reduceMotion
+              ? { opacity: m.op * 0.7 }
+              : {
+                  y: [0, -m.bob, 0],
+                  opacity: [
+                    m.op * 0.25,
+                    m.op,
+                    m.op * 0.4,
+                    m.op * 0.85,
+                    m.op * 0.25,
+                  ],
+                }
+          }
+          transition={{
+            duration: m.dur,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: m.delay,
+          }}
+        />
+      ))}
+
+      {/* shooting stars */}
+      {!reduceMotion &&
+        SHOOTING.map((s, i) => (
+          <motion.div
+            key={`s${i}`}
+            className="absolute"
+            style={{ top: `${s.top}%`, left: `${s.left}%` }}
+            initial={{ x: 0, y: 0, opacity: 0 }}
+            animate={{
+              x: ["0vw", `${s.dx}vw`],
+              y: ["0vh", `${s.dy}vh`],
+              opacity: [0, 0.9, 0.9, 0],
+            }}
+            transition={{
+              duration: s.dur,
+              repeat: Infinity,
+              repeatDelay: s.gap,
+              ease: "easeOut",
+              delay: s.delay,
+            }}
+          >
+            <div
+              style={{
+                width: s.len,
+                height: 2,
+                transform: `rotate(${s.rot}deg)`,
+                background:
+                  "linear-gradient(to left, rgba(255,255,255,0.95), transparent)",
+                boxShadow: "0 0 6px rgba(255,255,255,0.7)",
+                borderRadius: 2,
+              }}
+            />
+          </motion.div>
+        ))}
     </div>
   );
 });
