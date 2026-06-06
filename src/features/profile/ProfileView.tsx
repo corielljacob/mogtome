@@ -81,13 +81,18 @@ export function ProfileView({
 
       <ProfileHero profile={profile} />
 
-      <div className="space-y-7 sm:space-y-9 mt-8 sm:mt-10">
-        {sections.map((s) => (
-          <Fragment key={s.key}>{s.render()}</Fragment>
-        ))}
+      {/* on large screens the bio sits beside the membership card so the wide
+          page is used; stacks back to one column below lg. */}
+      <div className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-7 sm:gap-9 items-start">
+        <div className="space-y-7 sm:space-y-9 min-w-0">
+          {sections.map((s) => (
+            <Fragment key={s.key}>{s.render()}</Fragment>
+          ))}
+        </div>
 
-        {/* brings its own chrome - pinned but not re-wrapped in a surface */}
-        <section className="paper relative">
+        {/* brings its own chrome - pinned but not re-wrapped in a surface.
+            Sticky beside the bio on large screens. */}
+        <section className="paper relative lg:sticky lg:top-6">
           <span
             className="pushpin absolute -top-2 left-8 z-10"
             style={{ "--pin": "var(--primary)" } as CSSProperties}

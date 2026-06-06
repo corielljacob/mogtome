@@ -58,7 +58,7 @@ export const StaffCard = memo(function StaffCard({
           }}
           aria-hidden="true"
         />
-        <div className="surface p-2 pb-2.5 w-28 sm:w-32">
+        <div className="surface p-2 pb-2.5 w-36 sm:w-44 lg:w-52">
           <div className="relative aspect-square rounded-lg overflow-hidden bg-[var(--bg)]">
             {!imageLoaded && (
               <div

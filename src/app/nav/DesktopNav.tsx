@@ -1,8 +1,12 @@
+import { AnimatePresence } from "motion/react";
 import type { Tab } from "@/app/nav/tabs";
-import { MoogleLogoButton } from "@/app/nav/MoogleLogoButton";
-import { DesktopTab } from "@/app/nav/DesktopTab";
-import { ThemeToggleSticker } from "@/app/nav/ThemeToggleSticker";
+import { DesktopNavRail } from "@/app/nav/DesktopNavRail";
+import { DesktopNavPanel } from "@/app/nav/DesktopNavPanel";
+import { useNavExpanded } from "@/shared/contexts/NavExpandedContext";
 
+// Two shapes for the desktop nav: the slim edge rail (default) and a pinned,
+// expanded sidebar. Toggling crossfades one out as the other slides in - both
+// are fixed to the same left edge, so they swap in place.
 export function DesktopNav({
   tabs,
   currentPath,
@@ -10,22 +14,15 @@ export function DesktopNav({
   tabs: Tab[];
   currentPath: string;
 }) {
+  const { expanded } = useNavExpanded();
+
   return (
-    <nav
-      className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 flex-col items-start gap-2.5 max-h-screen py-2"
-      aria-label="Main navigation"
-    >
-      <MoogleLogoButton />
-
-      {tabs.map((tab) => (
-        <DesktopTab
-          key={tab.path}
-          tab={tab}
-          isActive={currentPath === tab.path}
-        />
-      ))}
-
-      <ThemeToggleSticker />
-    </nav>
+    <AnimatePresence initial={false}>
+      {expanded ? (
+        <DesktopNavPanel key="panel" tabs={tabs} currentPath={currentPath} />
+      ) : (
+        <DesktopNavRail key="rail" tabs={tabs} currentPath={currentPath} />
+      )}
+    </AnimatePresence>
   );
 }

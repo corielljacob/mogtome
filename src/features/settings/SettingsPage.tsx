@@ -16,10 +16,7 @@ import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function Settings() {
   return (
-    <PageLayout
-      moogles={{ primary: gamingMoogle, secondary: musicMoogle }}
-      maxWidth="max-w-2xl"
-    >
+    <PageLayout moogles={{ primary: gamingMoogle, secondary: musicMoogle }}>
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
@@ -71,7 +68,9 @@ export function Settings() {
           </div>
         </header>
 
-        <div className="space-y-7 sm:space-y-9">
+        {/* single column on small screens; a balanced two-column masonry on
+            large screens so the cards fill the width instead of stretching. */}
+        <div className="space-y-7 sm:space-y-9 lg:space-y-0 lg:columns-2 lg:gap-7 lg:[&>*]:mb-7 lg:[&>*]:break-inside-avoid">
           <ThemeSection />
           <SeasonalEventSection />
           <AccessibilitySection />

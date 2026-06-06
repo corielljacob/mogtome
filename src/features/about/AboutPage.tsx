@@ -60,10 +60,7 @@ export function About() {
   const hasStaff = !isLoading && !isError && staff.length > 0;
 
   return (
-    <PageLayout
-      moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}
-      maxWidth="max-w-5xl"
-    >
+    <PageLayout moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}>
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
@@ -116,7 +113,7 @@ export function About() {
         </header>
 
         <motion.section
-          className="relative mb-9 sm:mb-12 max-w-2xl mx-auto"
+          className="relative mb-9 sm:mb-12 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}

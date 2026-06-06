@@ -21,7 +21,11 @@ interface PageLayoutProps {
 export function PageLayout({
   children,
   moogles,
-  maxWidth = "max-w-7xl",
+  // One shared width for every view, so navigating between pages doesn't make
+  // the content column jump around. Grows on large / ultra-wide screens so the
+  // space gets used. Pages can still override for special cases (e.g. tiny
+  // sign-in / status screens).
+  maxWidth = "max-w-6xl 2xl:max-w-[84rem] 3xl:max-w-[96rem] 4xl:max-w-[110rem]",
   className = "",
 }: PageLayoutProps) {
   // page backdrop lives on the #app-scroll container in App.tsx so it scrolls

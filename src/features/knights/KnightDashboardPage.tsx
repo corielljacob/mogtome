@@ -123,7 +123,7 @@ export function KnightDashboard() {
     autoMatchCount === 0;
 
   return (
-    <PageLayout maxWidth="max-w-4xl">
+    <PageLayout>
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"

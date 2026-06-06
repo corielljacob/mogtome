@@ -26,7 +26,7 @@ export const THEME_META: { id: string; name: string; description: string }[] = [
   {
     id: "pom-pom",
     name: "Pom-Pom Classic",
-    description: "Candy pink, moogle lavender & butter",
+    description: "Warm sunset orange, coral & honey",
   },
   {
     id: "crystal",
@@ -58,14 +58,18 @@ export const THEME_META: { id: string; name: string; description: string }[] = [
     name: "Midnight Realm",
     description: "Candy indigo & lavender",
   },
-  { id: "sunset", name: "Costa del Sol", description: "Sunset orange & coral" },
+  {
+    id: "sunset",
+    name: "Costa del Sol",
+    description: "Turquoise water, coral & sun",
+  },
 ];
 
 /** "pom-pom" is the default and lives in :root */
 export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
-    light: { primary: "#e25d88", secondary: "#9f80da", accent: "#f4be4c" },
-    dark: { primary: "#f48bae", secondary: "#bba4ef", accent: "#ffcf79" },
+    light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
+    dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
   },
   crystal: {
     light: { primary: "#3a8ed2", secondary: "#34bfd6", accent: "#f4be4c" },
@@ -92,8 +96,8 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
     dark: { primary: "#9b90f0", secondary: "#bd96ef", accent: "#b9c6ff" },
   },
   sunset: {
-    light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
-    dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
+    light: { primary: "#14b8c0", secondary: "#ff7e6a", accent: "#f7c95c" },
+    dark: { primary: "#43d3db", secondary: "#ff9683", accent: "#ffd97e" },
   },
 };
 

@@ -26,19 +26,14 @@ interface PaginatedMemberGridProps {
 }
 
 // matches Tailwind's default breakpoints
-const BREAKPOINTS = {
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-} as const;
+// The grid measures its own container, which now varies: the full board on small
+// screens, or the narrower main column when the filter rail sits beside it on
+// large screens. So scale columns to the actual width - aim for ~184px per member
+// card (they cap at ~12rem and centre in the cell), clamped to 2..8.
+const CARD_TARGET_PX = 184;
 
 function getColumnCount(width: number): number {
-  if (width >= BREAKPOINTS.xl) return 6;
-  if (width >= BREAKPOINTS.lg) return 5;
-  if (width >= BREAKPOINTS.md) return 4;
-  if (width >= BREAKPOINTS.sm) return 3;
-  return 2;
+  return Math.max(2, Math.min(8, Math.floor(width / CARD_TARGET_PX)));
 }
 
 function useResponsiveColumns(

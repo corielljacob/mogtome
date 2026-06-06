@@ -23,7 +23,7 @@ export function RankFilter({
   rankCounts: Record<string, number>;
 }) {
   return (
-    <section className="relative mb-7 sm:mb-9">
+    <section className="relative">
       <span
         className="pushpin absolute -top-2 left-8 z-10"
         style={{ "--pin": "var(--accent)" } as CSSProperties}
