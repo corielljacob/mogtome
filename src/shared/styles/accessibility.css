@@ -164,6 +164,19 @@
   --accent: #67e8f9;
 }
 
+/* Stormblood - High Contrast (Ala Mhigan scarlet & imperial gold) */
+:root.theme-stormblood.high-contrast {
+  --primary: #9a1c2a;
+  --secondary: #8a5a0e;
+  --accent: #b45309;
+}
+
+:root.dark.theme-stormblood.high-contrast {
+  --primary: #fca5a5;
+  --secondary: #fcd34d;
+  --accent: #fed7aa;
+}
+
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
 :root.dark.extra-dark {
   --bg: #000000;

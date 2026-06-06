@@ -11,6 +11,10 @@ import { getTagline } from "@/features/home/homeData";
 const HW_SILVER =
   "linear-gradient(180deg, #b3bdc9 0%, #939eac 32%, #767f8d 50%, #a4aebb 62%, #828c9a 80%, #69727f 100%)";
 
+// embossed-gold lettering for the Stormblood title (matches the gold logo)
+const SB_GOLD =
+  "linear-gradient(180deg, #fff8da 0%, #fde89c 26%, #f8dc83 48%, #fff2b8 60%, #f5da88 82%, #edcb6c 100%)";
+
 const QUICK_LINKS = [
   { to: "/members", label: "Family", color: "var(--secondary)" },
   { to: "/chronicle", label: "Chronicle", color: "var(--accent)" },
@@ -25,20 +29,42 @@ export function HeroText() {
   const themeFont = THEME_META.find(
     (t) => t.id === settings.colorTheme,
   )?.displayFont;
-  // chrome lettering only reads on Heavensward's dark navy sky (it would wash out
-  // on the light icy backdrop, where the steel-blue title stays).
-  const metalStyle: CSSProperties | undefined =
-    settings.colorTheme === "heavensward" && isDarkMode
-      ? {
-          color: "transparent",
-          backgroundImage: HW_SILVER,
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-          // override sticker-text's thick white outline with a thin steel rim
-          WebkitTextStroke: "0.012em rgba(206,219,234,0.7)",
-          textShadow: "0 1px 3px rgba(0,0,0,0.45)",
-        }
-      : undefined;
+  // metallic lettering for the dramatic dark themes - chrome for Heavensward,
+  // embossed gold for Stormblood. Only on the dark skies (it would wash out on
+  // the light backdrops, where the coloured title stays).
+  const metalGrad =
+    isDarkMode && settings.colorTheme === "heavensward"
+      ? HW_SILVER
+      : isDarkMode && settings.colorTheme === "stormblood"
+        ? SB_GOLD
+        : null;
+  const metalStyle: CSSProperties | undefined = metalGrad
+    ? {
+        color: "transparent",
+        backgroundImage: metalGrad,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        // override sticker-text's thick white outline. The chrome (caps Cinzel)
+        // keeps a thin steel rim; the gold serif has lowercase descenders that
+        // glitch under text-stroke + background-clip, so it drops the rim and
+        // gets its depth from a soft emboss shadow instead.
+        WebkitTextStroke:
+          metalGrad === SB_GOLD
+            ? "0 transparent"
+            : "0.012em rgba(206,219,234,0.7)",
+        textShadow:
+          metalGrad === SB_GOLD
+            ? "0 1px 0 rgba(90,55,10,0.5), 0 2px 5px rgba(0,0,0,0.45)"
+            : "0 1px 3px rgba(0,0,0,0.45)",
+      }
+    : undefined;
+
+  // Stormblood matches its all-caps logo - and caps dodge the lowercase
+  // descender that clips under background-clip + the gold serif.
+  const h1Style: CSSProperties = {};
+  if (themeFont) h1Style.fontFamily = themeFont;
+  if (settings.colorTheme === "stormblood")
+    h1Style.textTransform = "uppercase";
 
   return (
     <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
@@ -58,7 +84,7 @@ export function HeroText() {
 
       <motion.h1
         className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
-        style={themeFont ? { fontFamily: themeFont } : undefined}
+        style={h1Style}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}

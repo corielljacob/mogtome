@@ -43,6 +43,12 @@ export const THEME_META: {
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
+    id: "stormblood",
+    name: "Stormblood",
+    description: "Ala Mhigan scarlet & imperial gold",
+    displayFont: '"Cormorant Garamond", "Cinzel", serif',
+  },
+  {
     id: "crystal",
     name: "Crystal Tower",
     description: "Candy sky-blue & turquoise",
@@ -98,6 +104,21 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
       accent: "#57c7dd",
       bg: "#070c15",
       card: "#161f2e",
+    },
+  },
+  stormblood: {
+    light: {
+      primary: "#d2303a",
+      secondary: "#c2922f",
+      accent: "#e6b84e",
+      bg: "#fceae6",
+    },
+    dark: {
+      primary: "#ee5a62",
+      secondary: "#ddb857",
+      accent: "#f1d07c",
+      bg: "#1a0a0c",
+      card: "#2a1316",
     },
   },
   crystal: {

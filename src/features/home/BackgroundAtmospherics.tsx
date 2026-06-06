@@ -11,6 +11,7 @@ import { CozyAtmosphere } from "@/features/home/CozyAtmosphere";
 import { FairyLights } from "@/features/home/FairyLights";
 import { EventParticles } from "@/features/home/EventParticles";
 import { ThemeSnow } from "@/features/home/ThemeSnow";
+import { ThemeEmbers } from "@/features/home/ThemeEmbers";
 import { HalloweenOverlay } from "@/features/home/HalloweenOverlay";
 import { StarlightOverlay } from "@/features/home/StarlightOverlay";
 import { EventBunting } from "@/features/home/EventBunting";
@@ -33,6 +34,17 @@ const HEAVENSWARD_STARS =
   " radial-gradient(1.2px 1.2px at 40% 86%, rgba(255,255,255,0.65), transparent 60%)," +
   " radial-gradient(1.4px 1.4px at 7% 78%, rgba(190,220,255,0.7), transparent 60%)";
 
+// A fiery Stormblood sky: the screen burns from the bottom - a gold-white flame
+// core, a crimson glow above it, fading up to the deep warm dark.
+const STORMBLOOD_SKY =
+  "radial-gradient(120% 55% at 50% 125%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 50%)," +
+  " radial-gradient(150% 85% at 50% 135%, color-mix(in srgb, var(--primary) 52%, transparent), transparent 60%)," +
+  " linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--primary) 16%, transparent) 100%)";
+
+// the cozy default backdrop for every non-themed page
+const DEFAULT_SKY =
+  "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)";
+
 export function BackgroundAtmospherics() {
   const { settings, isDarkMode, activeEvent, isEventThemeActive } = useTheme();
   // theme atmosphere only shows when its theme is actually on screen (an active
@@ -42,6 +54,15 @@ export function BackgroundAtmospherics() {
   // the full dark Ishgard sky (stars, deepest navy) is a dark-mode experience;
   // light Heavensward stays a cool, snowy day with the usual cozy dots.
   const heavensNight = heavensward && isDarkMode;
+  const stormblood =
+    !isEventThemeActive && settings.colorTheme === "stormblood";
+  // the full fire (embers, no cozy dots) is the dark-mode Stormblood experience.
+  const stormNight = stormblood && isDarkMode;
+  const themeSky = heavensward
+    ? HEAVENSWARD_SKY
+    : stormblood
+      ? STORMBLOOD_SKY
+      : null;
 
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
@@ -60,9 +81,7 @@ export function BackgroundAtmospherics() {
           background:
             isEventThemeActive && activeEvent
               ? activeEvent.atmosphere.backgroundGradient
-              : heavensward
-                ? HEAVENSWARD_SKY
-                : "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)",
+              : (themeSky ?? DEFAULT_SKY),
         }}
         aria-hidden="true"
       />
@@ -76,7 +95,7 @@ export function BackgroundAtmospherics() {
           aria-hidden="true"
         />
       )}
-      {heavensNight ? (
+      {heavensNight && (
         <div
           className="fixed inset-0 z-0 pointer-events-none"
           style={{
@@ -86,7 +105,8 @@ export function BackgroundAtmospherics() {
           }}
           aria-hidden="true"
         />
-      ) : (
+      )}
+      {!heavensNight && !stormNight && (
         <div
           className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
           aria-hidden="true"
@@ -94,6 +114,7 @@ export function BackgroundAtmospherics() {
       )}
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
       {heavensward && <ThemeSnow />}
+      {stormNight && <ThemeEmbers />}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && (
         <EventParticles particles={activeEvent.particles} />
