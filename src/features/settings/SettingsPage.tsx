@@ -5,8 +5,7 @@ import {
   KawaiiBow,
   KawaiiHeart,
 } from "@/shared/ui/kawaiiMotifs";
-import { ThemeSection } from "@/features/settings/ThemeSection";
-import { SeasonalEventSection } from "@/features/settings/SeasonalEventSection";
+import { AppearanceSection } from "@/features/settings/AppearanceSection";
 import { AccessibilitySection } from "@/features/settings/AccessibilitySection";
 import { AccountSection } from "@/features/settings/AccountSection";
 
@@ -71,8 +70,7 @@ export function Settings() {
         {/* single column on small screens; a balanced two-column masonry on
             large screens so the cards fill the width instead of stretching. */}
         <div className="space-y-7 sm:space-y-9 lg:space-y-0 lg:columns-2 lg:gap-7 lg:[&>*]:mb-7 lg:[&>*]:break-inside-avoid">
-          <ThemeSection />
-          <SeasonalEventSection />
+          <AppearanceSection />
           <AccessibilitySection />
           <AccountSection />
         </div>

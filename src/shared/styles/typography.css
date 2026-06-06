@@ -33,6 +33,19 @@
   text-wrap: balance;
 }
 
+/* Expansion themes match their all-caps logos on page titles too (the home hero
+   already uppercases them); a touch of tracking keeps the caps legible. */
+.theme-arr .editorial-title,
+.theme-heavensward .editorial-title,
+.theme-stormblood .editorial-title,
+.theme-shadowbringers .editorial-title,
+.theme-endwalker .editorial-title,
+.theme-dawntrail .editorial-title,
+.theme-evercold .editorial-title {
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+}
+
 .eyebrow-script {
   font-family: "Caveat", cursive;
   letter-spacing: 0.04em;

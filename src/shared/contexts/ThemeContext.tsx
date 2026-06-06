@@ -62,6 +62,8 @@ export interface ThemeDefinition {
   id: ColorTheme;
   name: string;
   description: string;
+  /** optional themed title font (so the picker can preview it in-font) */
+  displayFont?: string;
   /** Preview colors shown in the theme picker */
   preview: {
     primary: string;
@@ -81,6 +83,7 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = THEME_META.map((meta) => {
     id: meta.id as ColorTheme,
     name: meta.name,
     description: meta.description,
+    displayFont: meta.displayFont,
     preview: { primary, secondary, accent },
   };
 });
