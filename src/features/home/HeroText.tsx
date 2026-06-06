@@ -11,6 +11,15 @@ import { getTagline } from "@/features/home/homeData";
 const HW_SILVER =
   "linear-gradient(180deg, #b3bdc9 0%, #939eac 32%, #767f8d 50%, #a4aebb 62%, #828c9a 80%, #69727f 100%)";
 
+// brighter platinum-blue lettering for A Realm Reborn (its logo runs cooler and
+// brighter than Heavensward's gunmetal).
+const ARR_SILVER =
+  "linear-gradient(180deg, #eaf2fc 0%, #c2d6ee 30%, #9cb6d8 50%, #dce8f8 62%, #aec6e4 80%, #8eaad2 100%)";
+
+// icy frost-silver lettering for Evercold (cooler, faintly cyan).
+const EVERCOLD_SILVER =
+  "linear-gradient(180deg, #ebf7fc 0%, #bcdcec 30%, #92c2d8 50%, #d6eef8 62%, #a4cfe2 80%, #84b6cf 100%)";
+
 // embossed-gold lettering for the Stormblood title (matches the gold logo)
 const SB_GOLD =
   "linear-gradient(180deg, #fff8da 0%, #fde89c 26%, #f8dc83 48%, #fff2b8 60%, #f5da88 82%, #edcb6c 100%)";
@@ -36,13 +45,17 @@ export function HeroText() {
   const metalGrad =
     isDarkMode && ct === "heavensward"
       ? HW_SILVER
-      : isDarkMode &&
-          (ct === "stormblood" ||
-            ct === "shadowbringers" ||
-            ct === "endwalker" ||
-            ct === "dawntrail")
-        ? SB_GOLD
-        : null;
+      : isDarkMode && ct === "arr"
+        ? ARR_SILVER
+        : isDarkMode && ct === "evercold"
+          ? EVERCOLD_SILVER
+          : isDarkMode &&
+              (ct === "stormblood" ||
+                ct === "shadowbringers" ||
+                ct === "endwalker" ||
+                ct === "dawntrail")
+            ? SB_GOLD
+            : null;
   const metalStyle: CSSProperties | undefined = metalGrad
     ? {
         color: "transparent",
@@ -53,7 +66,7 @@ export function HeroText() {
         // under text-stroke + background-clip, so they drop the rim and lean on
         // the emboss shadow; only Heavensward's chrome keeps a thin steel rim.
         WebkitTextStroke:
-          ct === "heavensward"
+          ct === "heavensward" || ct === "arr" || ct === "evercold"
             ? "0.012em rgba(206,219,234,0.7)"
             : "0 transparent",
         textShadow:
@@ -68,10 +81,12 @@ export function HeroText() {
   const h1Style: CSSProperties = {};
   if (themeFont) h1Style.fontFamily = themeFont;
   if (
+    ct === "arr" ||
     ct === "stormblood" ||
     ct === "shadowbringers" ||
     ct === "endwalker" ||
-    ct === "dawntrail"
+    ct === "dawntrail" ||
+    ct === "evercold"
   )
     h1Style.textTransform = "uppercase";
 

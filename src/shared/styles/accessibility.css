@@ -45,6 +45,19 @@
   --gradient-4: transparent;
 }
 
+/* A Realm Reborn - High Contrast (Hydaelyn crystal blue & cyan) */
+:root.theme-arr.high-contrast {
+  --primary: #1d4ed8;
+  --secondary: #0e7490;
+  --accent: #92600a;
+}
+
+:root.dark.theme-arr.high-contrast {
+  --primary: #93c5fd;
+  --secondary: #67e8f9;
+  --accent: #fde68a;
+}
+
 /* Pom-Pom Classic - High Contrast (warm sunset orange/coral) */
 :root.high-contrast,
 :root.theme-pom-pom.high-contrast {
@@ -214,6 +227,19 @@
   --primary: #fdba74;
   --secondary: #67e8f9;
   --accent: #fde68a;
+}
+
+/* Evercold - High Contrast (icy blue, aurora green & violet) */
+:root.theme-evercold.high-contrast {
+  --primary: #075985;
+  --secondary: #0f766e;
+  --accent: #5b21b6;
+}
+
+:root.dark.theme-evercold.high-contrast {
+  --primary: #7dd3fc;
+  --secondary: #5eead4;
+  --accent: #c4b5fd;
 }
 
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */

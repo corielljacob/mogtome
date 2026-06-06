@@ -15,6 +15,8 @@ import { ThemeEmbers } from "@/features/home/ThemeEmbers";
 import { ThemeAurora } from "@/features/home/ThemeAurora";
 import { ThemeCosmos } from "@/features/home/ThemeCosmos";
 import { ThemeDawn } from "@/features/home/ThemeDawn";
+import { ThemeCrystal } from "@/features/home/ThemeCrystal";
+import { NorthernLights } from "@/features/home/NorthernLights";
 import { HalloweenOverlay } from "@/features/home/HalloweenOverlay";
 import { StarlightOverlay } from "@/features/home/StarlightOverlay";
 import { EventBunting } from "@/features/home/EventBunting";
@@ -53,6 +55,20 @@ const SHADOWBRINGERS_SKY =
   " radial-gradient(85% 60% at 50% 2%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 52%)," +
   " linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--secondary) 7%, transparent) 100%)";
 
+// Evercold's Norse night: an aurora-green glow and a violet glow up top with an
+// icy-blue wash, over the deep frost-dark (the aurora layer + snow do the rest).
+const EVERCOLD_SKY =
+  "radial-gradient(120% 60% at 50% -5%, color-mix(in srgb, var(--secondary) 22%, transparent), transparent 55%)," +
+  " radial-gradient(90% 50% at 72% 6%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%)," +
+  " linear-gradient(180deg, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 55%)";
+
+// A Realm Reborn's Mothercrystal sky: a radiant blue-white crystal glow centre-
+// right over deep navy space (the crystal layer adds the core, rays + sparkles).
+const ARR_SKY =
+  "radial-gradient(50% 55% at 64% 40%, color-mix(in srgb, var(--secondary) 30%, transparent), transparent 55%)," +
+  " radial-gradient(38% 44% at 64% 40%, color-mix(in srgb, var(--primary) 26%, transparent), transparent 50%)," +
+  " linear-gradient(180deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 52%)";
+
 // Endwalker's cosmos: a warm gold/coral eclipse glow in the upper right, a cool
 // blue world glowing lower-left, over deep space (the cosmos layer adds stars).
 const ENDWALKER_SKY =
@@ -82,6 +98,9 @@ export function BackgroundAtmospherics() {
   // the full dark Ishgard sky (stars, deepest navy) is a dark-mode experience;
   // light Heavensward stays a cool, snowy day with the usual cozy dots.
   const heavensNight = heavensward && isDarkMode;
+  const arr = !isEventThemeActive && settings.colorTheme === "arr";
+  // the radiant Mothercrystal in deep space is the dark-mode ARR experience.
+  const arrNight = arr && isDarkMode;
   const stormblood =
     !isEventThemeActive && settings.colorTheme === "stormblood";
   // the full fire (embers, no cozy dots) is the dark-mode Stormblood experience.
@@ -90,24 +109,29 @@ export function BackgroundAtmospherics() {
     !isEventThemeActive && settings.colorTheme === "shadowbringers";
   // the aurora night sky is the dark-mode Shadowbringers experience.
   const shadowNight = shadowbringers && isDarkMode;
-  const endwalker =
-    !isEventThemeActive && settings.colorTheme === "endwalker";
+  const endwalker = !isEventThemeActive && settings.colorTheme === "endwalker";
   // the deep starry cosmos is the dark-mode Endwalker experience.
   const endwalkerNight = endwalker && isDarkMode;
   // Dawntrail is the bright one - its sun/rays/pollen show in both modes.
-  const dawntrail =
-    !isEventThemeActive && settings.colorTheme === "dawntrail";
-  const themeSky = heavensward
-    ? HEAVENSWARD_SKY
-    : stormblood
-      ? STORMBLOOD_SKY
-      : shadowbringers
-        ? SHADOWBRINGERS_SKY
-        : endwalker
-          ? ENDWALKER_SKY
-          : dawntrail
-            ? DAWNTRAIL_SKY
-            : null;
+  const dawntrail = !isEventThemeActive && settings.colorTheme === "dawntrail";
+  const evercold = !isEventThemeActive && settings.colorTheme === "evercold";
+  // the aurora + snow over the frost-dark night is the dark-mode Evercold look.
+  const evercoldNight = evercold && isDarkMode;
+  const themeSky = arr
+    ? ARR_SKY
+    : heavensward
+      ? HEAVENSWARD_SKY
+      : stormblood
+        ? STORMBLOOD_SKY
+        : shadowbringers
+          ? SHADOWBRINGERS_SKY
+          : endwalker
+            ? ENDWALKER_SKY
+            : dawntrail
+              ? DAWNTRAIL_SKY
+              : evercold
+                ? EVERCOLD_SKY
+                : null;
 
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
@@ -152,17 +176,21 @@ export function BackgroundAtmospherics() {
         />
       )}
       {!heavensNight &&
+        !arrNight &&
         !stormNight &&
         !shadowNight &&
         !endwalkerNight &&
-        !dawntrail && (
+        !dawntrail &&
+        !evercoldNight && (
           <div
             className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
             aria-hidden="true"
           />
         )}
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
-      {heavensward && <ThemeSnow />}
+      {(heavensward || evercoldNight) && <ThemeSnow />}
+      {evercoldNight && <NorthernLights />}
+      {arrNight && <ThemeCrystal />}
       {stormNight && <ThemeEmbers />}
       {shadowNight && <ThemeAurora />}
       {endwalkerNight && <ThemeCosmos />}

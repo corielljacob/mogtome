@@ -37,6 +37,12 @@ export const THEME_META: {
     description: "Warm sunset orange, coral & honey",
   },
   {
+    id: "arr",
+    name: "A Realm Reborn",
+    description: "Hydaelyn's crystal blue, radiant cyan & golden light",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
+  },
+  {
     id: "heavensward",
     name: "Heavensward",
     description: "Ishgard ice-blue, frost & dragonfire gold",
@@ -64,6 +70,12 @@ export const THEME_META: {
     id: "dawntrail",
     name: "Dawntrail",
     description: "Tural dawn - coral sky, golden sun & teal sea",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
+  },
+  {
+    id: "evercold",
+    name: "Evercold",
+    description: "Norse frost - icy blue, aurora green & violet",
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
@@ -108,6 +120,21 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
     light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
     dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
+  },
+  arr: {
+    light: {
+      primary: "#3a7fd5",
+      secondary: "#4fb8e0",
+      accent: "#e6c155",
+      bg: "#eef3fb",
+    },
+    dark: {
+      primary: "#5e9ee8",
+      secondary: "#6fcdec",
+      accent: "#f0cf6e",
+      bg: "#08101f",
+      card: "#141d30",
+    },
   },
   heavensward: {
     light: {
@@ -182,6 +209,21 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
       accent: "#f7cf6a",
       bg: "#170f0b",
       card: "#251a13",
+    },
+  },
+  evercold: {
+    light: {
+      primary: "#36a4d4",
+      secondary: "#35c79e",
+      accent: "#8f86e0",
+      bg: "#eef5f9",
+    },
+    dark: {
+      primary: "#5cc0e8",
+      secondary: "#4fdcae",
+      accent: "#a99cf0",
+      bg: "#050f15",
+      card: "#0f1c24",
     },
   },
   crystal: {
