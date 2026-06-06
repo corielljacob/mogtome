@@ -1,7 +1,15 @@
+import { type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
+import { useTheme } from "@/shared/contexts/ThemeContext";
+import { THEME_META } from "@/shared/theme/themePalettes";
 import { getTagline } from "@/features/home/homeData";
+
+// brushed-gunmetal lettering for the Heavensward title - cool grey with just a
+// faint blue lean (not white), like the silver logo on the dark sky.
+const HW_SILVER =
+  "linear-gradient(180deg, #b3bdc9 0%, #939eac 32%, #767f8d 50%, #a4aebb 62%, #828c9a 80%, #69727f 100%)";
 
 const QUICK_LINKS = [
   { to: "/members", label: "Family", color: "var(--secondary)" },
@@ -11,6 +19,26 @@ const QUICK_LINKS = [
 
 export function HeroText() {
   const defaultTagline = getTagline();
+  const { settings, isDarkMode } = useTheme();
+  // themes can carry a display font (e.g. Heavensward -> Cinzel); when set, the
+  // giant hero title takes it too, for a more dramatic themed home.
+  const themeFont = THEME_META.find(
+    (t) => t.id === settings.colorTheme,
+  )?.displayFont;
+  // chrome lettering only reads on Heavensward's dark navy sky (it would wash out
+  // on the light icy backdrop, where the steel-blue title stays).
+  const metalStyle: CSSProperties | undefined =
+    settings.colorTheme === "heavensward" && isDarkMode
+      ? {
+          color: "transparent",
+          backgroundImage: HW_SILVER,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          // override sticker-text's thick white outline with a thin steel rim
+          WebkitTextStroke: "0.012em rgba(206,219,234,0.7)",
+          textShadow: "0 1px 3px rgba(0,0,0,0.45)",
+        }
+      : undefined;
 
   return (
     <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
@@ -30,6 +58,7 @@ export function HeroText() {
 
       <motion.h1
         className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
+        style={themeFont ? { fontFamily: themeFont } : undefined}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
@@ -46,7 +75,13 @@ export function HeroText() {
               }}
               transition={{ type: "spring", stiffness: 300, damping: 12 }}
             >
-              {char}
+              {metalStyle ? (
+                <span className="inline-block" style={metalStyle}>
+                  {char}
+                </span>
+              ) : (
+                char
+              )}
             </motion.span>
           ))}
         </span>
@@ -62,7 +97,13 @@ export function HeroText() {
               }}
               transition={{ type: "spring", stiffness: 300, damping: 12 }}
             >
-              {char}
+              {metalStyle ? (
+                <span className="inline-block" style={metalStyle}>
+                  {char}
+                </span>
+              ) : (
+                char
+              )}
             </motion.span>
           ))}
         </span>

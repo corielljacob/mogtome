@@ -151,6 +151,19 @@
   --accent: #fde68a;
 }
 
+/* Heavensward - High Contrast (Ishgard steel-blue & gold) */
+:root.theme-heavensward.high-contrast {
+  --primary: #1e527e;
+  --secondary: #155e75;
+  --accent: #0891b2;
+}
+
+:root.dark.theme-heavensward.high-contrast {
+  --primary: #93c5fd;
+  --secondary: #bae6fd;
+  --accent: #67e8f9;
+}
+
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */
 :root.dark.extra-dark {
   --bg: #000000;

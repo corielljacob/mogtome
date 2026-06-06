@@ -10,12 +10,38 @@ import {
 import { CozyAtmosphere } from "@/features/home/CozyAtmosphere";
 import { FairyLights } from "@/features/home/FairyLights";
 import { EventParticles } from "@/features/home/EventParticles";
+import { ThemeSnow } from "@/features/home/ThemeSnow";
 import { HalloweenOverlay } from "@/features/home/HalloweenOverlay";
 import { StarlightOverlay } from "@/features/home/StarlightOverlay";
 import { EventBunting } from "@/features/home/EventBunting";
 
+// A dramatic cold Ishgard sky for the Heavensward theme's Home backdrop: a frost
+// glow descending from the top, a steel glow rising from below, and a cool wash.
+const HEAVENSWARD_SKY =
+  "radial-gradient(135% 100% at 50% -18%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 56%)," +
+  " radial-gradient(ellipse at 50% 120%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 60%)," +
+  " linear-gradient(180deg, color-mix(in srgb, var(--secondary) 16%, transparent) 0%, transparent 40%)";
+
+// faint tiled starfield for the Heavensward night sky
+const HEAVENSWARD_STARS =
+  "radial-gradient(1.4px 1.4px at 14% 16%, rgba(255,255,255,0.95), transparent 60%)," +
+  " radial-gradient(1px 1px at 32% 58%, rgba(200,225,255,0.7), transparent 60%)," +
+  " radial-gradient(1.6px 1.6px at 49% 28%, rgba(255,255,255,0.85), transparent 60%)," +
+  " radial-gradient(1px 1px at 66% 72%, rgba(180,215,255,0.6), transparent 60%)," +
+  " radial-gradient(2px 2px at 80% 20%, rgba(255,255,255,0.9), transparent 60%)," +
+  " radial-gradient(1px 1px at 90% 52%, rgba(210,230,255,0.7), transparent 60%)," +
+  " radial-gradient(1.2px 1.2px at 40% 86%, rgba(255,255,255,0.65), transparent 60%)," +
+  " radial-gradient(1.4px 1.4px at 7% 78%, rgba(190,220,255,0.7), transparent 60%)";
+
 export function BackgroundAtmospherics() {
-  const { activeEvent, isEventThemeActive } = useTheme();
+  const { settings, isDarkMode, activeEvent, isEventThemeActive } = useTheme();
+  // theme atmosphere only shows when its theme is actually on screen (an active
+  // seasonal event overrides the chosen theme's colours, so suppress it then).
+  const heavensward =
+    !isEventThemeActive && settings.colorTheme === "heavensward";
+  // the full dark Ishgard sky (stars, deepest navy) is a dark-mode experience;
+  // light Heavensward stays a cool, snowy day with the usual cozy dots.
+  const heavensNight = heavensward && isDarkMode;
 
   const fairyLights = useMemo(() => {
     if (isEventThemeActive && activeEvent) {
@@ -34,15 +60,40 @@ export function BackgroundAtmospherics() {
           background:
             isEventThemeActive && activeEvent
               ? activeEvent.atmosphere.backgroundGradient
-              : "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)",
+              : heavensward
+                ? HEAVENSWARD_SKY
+                : "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)",
         }}
         aria-hidden="true"
       />
-      <div
-        className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
-        aria-hidden="true"
-      />
+      {heavensward && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 82% 74% at 50% 36%, transparent 52%, rgba(6, 10, 20, 0.38) 100%)",
+          }}
+          aria-hidden="true"
+        />
+      )}
+      {heavensNight ? (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage: HEAVENSWARD_STARS,
+            backgroundSize: "260px 260px",
+            opacity: 0.55,
+          }}
+          aria-hidden="true"
+        />
+      ) : (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+          aria-hidden="true"
+        />
+      )}
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
+      {heavensward && <ThemeSnow />}
       <FairyLights lights={fairyLights} />
       {isEventThemeActive && activeEvent && (
         <EventParticles particles={activeEvent.particles} />

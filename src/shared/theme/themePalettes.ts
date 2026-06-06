@@ -12,8 +12,10 @@ export interface Palette {
   primary: string;
   secondary: string;
   accent: string;
-  /** some events wash the whole page in their colour */
+  /** some events/themes wash the whole page in their colour */
   bg?: string;
+  /** themes may also deepen the card surface (e.g. Heavensward's navy) */
+  card?: string;
 }
 
 export interface ModePalette {
@@ -22,11 +24,23 @@ export interface ModePalette {
 }
 
 /** order here drives Settings order */
-export const THEME_META: { id: string; name: string; description: string }[] = [
+export const THEME_META: {
+  id: string;
+  name: string;
+  description: string;
+  /** optional per-theme display/heading font stack (overrides --font-heading) */
+  displayFont?: string;
+}[] = [
   {
     id: "pom-pom",
     name: "Pom-Pom Classic",
     description: "Warm sunset orange, coral & honey",
+  },
+  {
+    id: "heavensward",
+    name: "Heavensward",
+    description: "Ishgard ice-blue, frost & dragonfire gold",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
     id: "crystal",
@@ -70,6 +84,21 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
     light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
     dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
+  },
+  heavensward: {
+    light: {
+      primary: "#3a6ea2",
+      secondary: "#6e93c1",
+      accent: "#2596b0",
+      bg: "#e8eef6",
+    },
+    dark: {
+      primary: "#4f93d6",
+      secondary: "#89b2dd",
+      accent: "#57c7dd",
+      bg: "#070c15",
+      card: "#161f2e",
+    },
   },
   crystal: {
     light: { primary: "#3a8ed2", secondary: "#34bfd6", accent: "#f4be4c" },

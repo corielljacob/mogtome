@@ -27,7 +27,7 @@
 }
 
 .editorial-title {
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   letter-spacing: -0.005em;
   line-height: 1.12;
   text-wrap: balance;

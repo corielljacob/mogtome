@@ -7,6 +7,9 @@
   /* Cozy type system - storybook rounded display, clean body, handwritten accent */
   --font-display:
     "Zen Maru Gothic", "Fredoka", "Manrope", system-ui, sans-serif;
+  /* page-title font - defaults to the display font; themes may override it
+     (e.g. Heavensward -> Cinzel) without touching nav/buttons/body. */
+  --font-heading: var(--font-display);
   --font-body: "Manrope", system-ui, sans-serif;
   --font-script: "Caveat", cursive;
   /* Pop-kawaii "Pom-Pom Classic" palette (default) - warm Costa-del-Sol sunset:
