@@ -45,19 +45,19 @@
   --gradient-4: transparent;
 }
 
-/* Pom-Pom Classic - High Contrast (default red/purple) */
+/* Pom-Pom Classic - High Contrast (warm sunset orange/coral) */
 :root.high-contrast,
 :root.theme-pom-pom.high-contrast {
-  --primary: #b80000;
-  --secondary: #4a0080;
-  --accent: #cc3333;
+  --primary: #9a3412;
+  --secondary: #991b1b;
+  --accent: #c2410c;
 }
 
 :root.dark.high-contrast,
 :root.dark.theme-pom-pom.high-contrast {
-  --primary: #ff7777;
-  --secondary: #dd99ff;
-  --accent: #ff9999;
+  --primary: #fdba74;
+  --secondary: #fca5a5;
+  --accent: #fed7aa;
 }
 
 /* Crystal Tower - High Contrast (blues/cyans) */
@@ -138,17 +138,17 @@
   --accent: #c7d2fe;
 }
 
-/* Costa del Sol - High Contrast (oranges/reds) */
+/* Costa del Sol - High Contrast (tropical teal/coral) */
 :root.theme-sunset.high-contrast {
-  --primary: #9a3412;
-  --secondary: #991b1b;
-  --accent: #c2410c;
+  --primary: #0e7490;
+  --secondary: #be123c;
+  --accent: #a16207;
 }
 
 :root.dark.theme-sunset.high-contrast {
-  --primary: #fdba74;
-  --secondary: #fca5a5;
-  --accent: #fed7aa;
+  --primary: #5eead4;
+  --secondary: #fda4af;
+  --accent: #fde68a;
 }
 
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */

@@ -24,7 +24,7 @@ export function MembersToolbar({
 }) {
   return (
     <motion.section
-      className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 mb-4 sm:mb-5"
+      className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 lg:static lg:z-auto"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
@@ -40,7 +40,7 @@ export function MembersToolbar({
         aria-hidden="true"
       />
       <div className="surface paper p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
           <div className="relative flex-1">
             <label htmlFor="member-search" className="sr-only">
               Search members by name or rank
@@ -91,7 +91,7 @@ export function MembersToolbar({
             )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 lg:w-full">
             <span className="hidden sm:flex items-center gap-1.5 text-sm font-display font-bold text-[var(--text-muted)] pl-1">
               <ArrowUpDown
                 className="w-4 h-4 text-[var(--secondary)]"
@@ -105,7 +105,7 @@ export function MembersToolbar({
               onChange={setSortBy}
               icon={<ArrowUpDown className="w-4 h-4" />}
               menuClassName="paper"
-              className="w-full sm:w-44"
+              className="w-full sm:w-44 lg:flex-1"
               aria-label="Sort members by"
             />
           </div>

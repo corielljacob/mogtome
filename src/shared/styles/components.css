@@ -127,77 +127,77 @@
       );
   }
 
-  /* Page pattern (gingham check) - a soft gingham check for the page background.
-   * Placed on the scroll container (#app-scroll). Two perpendicular translucent
-   * stripe sets overlap into the classic 3-tone check, tinted from the theme so it
-   * recolours per palette. Hidden in high-contrast for a clean a11y bg. */
+  /* Page pattern (polka dots) - a soft two-tone kawaii dot wash for the page
+   * background. Placed on the scroll container (#app-scroll), tinted from the theme
+   * so it recolours per palette. Hidden in high-contrast for a clean a11y bg. */
   .page-pattern {
-    --gp: color-mix(in srgb, var(--primary) 9%, transparent);
     background-color: var(--bg);
     background-image:
-      repeating-linear-gradient(90deg, var(--gp) 0 16px, transparent 16px 32px),
-      repeating-linear-gradient(0deg, var(--gp) 0 16px, transparent 16px 32px);
-    /* Default (scroll) attachment, pinned to the viewport - NOT "local". The check
-       is uniform, so there's no visible difference while scrolling, but it no longer
-       rides the overscroll bounce / content reflow, which made it jitter. */
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--primary) 10%, transparent) 0 2px,
+        transparent 2.6px
+      ),
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--secondary) 8%, transparent) 0 2px,
+        transparent 2.6px
+      );
+    background-size:
+      40px 40px,
+      40px 40px;
+    background-position:
+      0 0,
+      20px 20px;
+    /* Default (scroll) attachment, pinned to the viewport - NOT "local". The dots
+       are uniform, so there's no visible difference while scrolling, but they no
+       longer ride the overscroll bounce / content reflow, which made it jitter. */
   }
-  /* Dark mode: keep the check very gentle on the deep base. */
+  /* Dark mode: keep the dots very gentle on the deep base. */
   .dark .page-pattern {
-    --gp: color-mix(in srgb, var(--primary) 4%, transparent);
+    background-image:
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--primary) 7%, transparent) 0 2px,
+        transparent 2.6px
+      ),
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--secondary) 6%, transparent) 0 2px,
+        transparent 2.6px
+      );
   }
   :root.high-contrast .page-pattern {
     background-image: none;
   }
 
-  /* Cork bulletin board.
-   * Light: a warm cream speckled cork (cards pop as white polaroids on cream).
-   * Dark: a board pitched between the page bg and the cards - darker than the cards
-   * so the polaroids pop, lighter than the page so the board stands out - warmed by
-   * a faint theme wash and lit with light speckles so the grain reads (no muddy
-   * brown). Frame is the candy --primary border; pin cards with the .pushpin nub. */
+  /* Scrapbook board - the big content surface on Members / Chronicle / Settings /
+   * Knights. A soft, theme-tinted pastel paper page (no more brown cork): just the
+   * shared paper grain (no dots - those live on the page background now), a candy
+   * frame and a soft layered drop so it reads as a page pinned to the wall
+   * (.pushpin corners). Class name kept as .corkboard so existing pages keep working. */
   .corkboard {
-    --cork-base: #f1e3cd;
-    --cork-dot-a: color-mix(in srgb, var(--primary) 13%, transparent);
-    --cork-dot-b: color-mix(in srgb, var(--secondary) 10%, transparent);
     position: relative;
     border-radius: var(--radius-3xl);
-    border: 6px solid color-mix(in srgb, var(--primary) 30%, var(--card));
-    background-color: var(--cork-base);
-    /* Flat-ish kawaii cork: two-tone candy polka dots over a flat theme-tinted base,
-       with just a faint SVG fractal-noise grain (soft-light) for a hint of cork -
-       no blobby mottling/highlights. */
-    background-image:
-      radial-gradient(circle, var(--cork-dot-a) 0 2px, transparent 3.1px),
-      radial-gradient(circle, var(--cork-dot-b) 0 1.7px, transparent 2.7px),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='cork'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='5' seed='12' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncG type='linear' slope='1.5' intercept='-0.25'/%3E%3CfeFuncB type='linear' slope='1.5' intercept='-0.25'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23cork)' opacity='0.2'/%3E%3C/svg%3E");
-    background-size:
-      52px 52px,
-      52px 52px,
-      300px 300px;
-    background-position:
-      0 0,
-      26px 26px,
-      0 0;
-    background-repeat: repeat, repeat, repeat;
-    background-blend-mode: normal, normal, soft-light;
+    border: 3px solid color-mix(in srgb, var(--primary) 20%, var(--card));
+    background-color: color-mix(in srgb, var(--primary) 5%, var(--card));
+    /* a whisper of the shared fractal-noise paper grain (soft-light) - the same
+       grain the .surface cards use - so the page reads as soft paper, not flat fill. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23cg)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    background-blend-mode: soft-light;
     box-shadow:
-      inset 0 2px 12px color-mix(in srgb, #6b4a26 22%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, #6b4a26 8%, transparent),
       0 2px 0 0 color-mix(in srgb, var(--primary) 12%, transparent),
-      0 20px 44px -18px var(--shadow),
-      0 8px 18px -10px var(--shadow);
+      0 22px 50px -22px var(--shadow),
+      0 8px 20px -12px var(--shadow);
   }
   .dark .corkboard {
-    --cork-base: color-mix(in srgb, var(--bg) 86%, #000);
-    --cork-dot-a: color-mix(in srgb, var(--primary) 15%, transparent);
-    --cork-dot-b: color-mix(in srgb, var(--secondary) 12%, transparent);
-    border-color: color-mix(in srgb, var(--primary) 26%, var(--card));
-    /* Flatter in dark: gentle, low-opacity candy dots (vars above) on the flat base
-       so they don't read as gaudy, plus the faint inherited soft-light grain. */
+    border-color: color-mix(in srgb, var(--primary) 22%, var(--card));
+    background-color: color-mix(in srgb, var(--primary) 9%, var(--card));
     box-shadow:
-      inset 0 2px 14px rgba(0, 0, 0, 0.3),
-      0 18px 40px -18px rgba(0, 0, 0, 0.55),
-      0 6px 16px -8px rgba(0, 0, 0, 0.4);
+      0 2px 0 0 color-mix(in srgb, var(--primary) 10%, transparent),
+      0 20px 46px -20px rgba(0, 0, 0, 0.55),
+      0 8px 18px -10px rgba(0, 0, 0, 0.4);
   }
   :root.high-contrast .corkboard {
     background-image: none;

@@ -111,72 +111,79 @@ export function Members() {
           </div>
         </header>
 
-        <MembersToolbar
-          searchInputRef={searchInputRef}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          setSearchQuery={setSearchQuery}
-          validSortBy={validSortBy}
-          setSortBy={setSortBy}
-        />
-
-        <RankFilter
-          selectedRanks={selectedRanks}
-          toggleRank={toggleRank}
-          clearFilters={clearFilters}
-          hasActiveFilters={hasActiveFilters}
-          filteredCount={filteredMembers.length}
-          totalCount={allMembers.length}
-          rankCounts={rankCounts}
-        />
-
-        {isLoading ? (
-          <div className="paper">
-            <LoadingState message="Fetching members, kupo..." />
-          </div>
-        ) : isError ? (
-          <div className="paper">
-            <ErrorState
-              message="A moogle fell over, kupo..."
-              onRetry={() => refetch()}
+        {/* sticky search + filter rail beside the member grid on large screens */}
+        <div className="lg:grid lg:grid-cols-[19rem_1fr] lg:gap-6 xl:gap-8 lg:items-start">
+          <aside className="space-y-4 sm:space-y-5 mb-5 sm:mb-7 lg:mb-0 lg:sticky lg:top-4">
+            <MembersToolbar
+              searchInputRef={searchInputRef}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              setSearchQuery={setSearchQuery}
+              validSortBy={validSortBy}
+              setSortBy={setSortBy}
             />
-          </div>
-        ) : filteredMembers.length === 0 ? (
-          <div className="paper">
-            <EmptyState
-              title="No members found"
-              message="Kupo? We couldn't find anyone by that name..."
-              imageSrc={grumpyMoogle}
-              onClear={hasActiveFilters ? clearFilters : undefined}
-              clearLabel="Clear filters"
-            />
-          </div>
-        ) : (
-          <div
-            className={`transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"}`}
-          >
-            <PaginatedMemberGrid
-              members={filteredMembers}
-              membersByRank={membersByRank}
-              showGrouped={
-                deferredSelectedRanks.length === 0 &&
-                !deferredSearchQuery &&
-                validSortBy === "rank-asc"
-              }
-              pageSize={24}
-            />
-          </div>
-        )}
 
-        {!isLoading && !isError && filteredMembers.length > 0 && (
-          <div className="text-center mt-10 pt-7">
-            <p className="eyebrow-script text-2xl text-[var(--text-muted)] inline-flex items-center justify-center gap-2.5">
-              <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
-              Every member makes us stronger, kupo!
-              <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
-            </p>
+            <RankFilter
+              selectedRanks={selectedRanks}
+              toggleRank={toggleRank}
+              clearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+              filteredCount={filteredMembers.length}
+              totalCount={allMembers.length}
+              rankCounts={rankCounts}
+            />
+          </aside>
+
+          <div className="min-w-0">
+            {isLoading ? (
+              <div className="paper">
+                <LoadingState message="Fetching members, kupo..." />
+              </div>
+            ) : isError ? (
+              <div className="paper">
+                <ErrorState
+                  message="A moogle fell over, kupo..."
+                  onRetry={() => refetch()}
+                />
+              </div>
+            ) : filteredMembers.length === 0 ? (
+              <div className="paper">
+                <EmptyState
+                  title="No members found"
+                  message="Kupo? We couldn't find anyone by that name..."
+                  imageSrc={grumpyMoogle}
+                  onClear={hasActiveFilters ? clearFilters : undefined}
+                  clearLabel="Clear filters"
+                />
+              </div>
+            ) : (
+              <div
+                className={`transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"}`}
+              >
+                <PaginatedMemberGrid
+                  members={filteredMembers}
+                  membersByRank={membersByRank}
+                  showGrouped={
+                    deferredSelectedRanks.length === 0 &&
+                    !deferredSearchQuery &&
+                    validSortBy === "rank-asc"
+                  }
+                  pageSize={24}
+                />
+              </div>
+            )}
+
+            {!isLoading && !isError && filteredMembers.length > 0 && (
+              <div className="text-center mt-10 pt-7">
+                <p className="eyebrow-script text-2xl text-[var(--text-muted)] inline-flex items-center justify-center gap-2.5">
+                  <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
+                  Every member makes us stronger, kupo!
+                  <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
+                </p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       <ScrollToTopButton />

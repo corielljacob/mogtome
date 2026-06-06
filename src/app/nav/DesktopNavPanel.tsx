@@ -113,13 +113,7 @@ export function DesktopNavPanel({
       style={{ transformOrigin: "left center" }}
       className="hidden md:flex fixed inset-y-0 left-0 z-40 items-stretch p-2"
     >
-      <div className="surface relative w-60 flex flex-col rounded-3xl p-2.5 overflow-hidden">
-        {/* faint sticker-book polka dots wash behind everything */}
-        <span
-          className="kawaii-dots absolute inset-0 opacity-40 pointer-events-none"
-          aria-hidden="true"
-        />
-
+      <div className="surface relative w-60 flex flex-col rounded-3xl p-2.5">
         {/* header: a little brand plate, taped to the board with two washi strips */}
         <div
           className="relative flex items-center gap-2.5 rounded-2xl px-2.5 py-2.5 mb-2.5 shrink-0"

@@ -75,10 +75,7 @@ export function Profile() {
   }
 
   return (
-    <PageLayout
-      maxWidth="max-w-2xl"
-      moogles={{ primary: mailMoogle, secondary: illustratedMoogle }}
-    >
+    <PageLayout moogles={{ primary: mailMoogle, secondary: illustratedMoogle }}>
       <ProfileView
         profile={profile}
         viewer={viewer}

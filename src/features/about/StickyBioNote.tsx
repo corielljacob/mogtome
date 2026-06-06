@@ -88,7 +88,7 @@ export function StickyBioNote({
   // tucked over the polaroid's edge. Fixed size keeps every note consistent;
   // a long bio scrolls inside it rather than stretching the card.
   const shellCls =
-    "relative z-20 shrink-0 -ml-4 sm:-ml-5 mt-4 sm:mt-6 w-44 sm:w-56";
+    "relative z-20 shrink-0 -ml-5 sm:-ml-6 mt-4 sm:mt-6 w-52 sm:w-64 lg:w-72";
   const shellStyle: CSSProperties = { transform: `rotate(${tilt}deg)` };
   const pin = (
     <span
@@ -145,7 +145,7 @@ export function StickyBioNote({
         <div
           ref={scrollRef}
           onScroll={updateScroll}
-          className="h-48 sm:h-56 overflow-y-auto rounded-[3px] p-3.5 sm:p-4"
+          className="h-56 sm:h-64 lg:h-72 overflow-y-auto rounded-[3px] p-3.5 sm:p-4"
           style={scrollerStyle}
         >
           <p
