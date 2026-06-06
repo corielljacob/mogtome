@@ -1,6 +1,6 @@
 import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { ChevronsLeft } from "lucide-react";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 import { KawaiiStar, KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
@@ -15,11 +15,11 @@ const DASHED_RULE =
 const tiltFor = (i: number) => (i % 2 === 0 ? "-rotate-6" : "rotate-6");
 
 // the nav rows cascade in one after another when the panel swings open
-const listVariants = {
+const listVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.05, delayChildren: 0.09 } },
 };
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, x: -18, scale: 0.94 },
   show: {
     opacity: 1,
