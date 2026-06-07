@@ -78,7 +78,7 @@ describe("CharacterMapping", () => {
     });
   });
 
-  it("shows the Characters and Discord columns when opened", async () => {
+  it("shows the Characters and Discord columns on the By hand tab", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -101,6 +101,8 @@ describe("CharacterMapping", () => {
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
+
+    await user.click(await screen.findByRole("button", { name: "By hand" }));
 
     await waitFor(() => {
       expect(screen.getByText("Characters")).toBeInTheDocument();
@@ -134,6 +136,8 @@ describe("CharacterMapping", () => {
       screen.getByRole("button", { name: /character mapping/i }),
     );
 
+    await user.click(await screen.findByRole("button", { name: "By hand" }));
+
     await waitFor(() => {
       expect(screen.getByText("Characters")).toBeInTheDocument();
       expect(screen.getByText("Discord Accounts")).toBeInTheDocument();
@@ -143,7 +147,7 @@ describe("CharacterMapping", () => {
     expect(screen.getByText("TestDiscordUser")).toBeInTheDocument();
   });
 
-  it("surfaces an exact match with a bulk-confirm button + badge", async () => {
+  it("surfaces an exact match as a confirmable pair + bulk-confirm button", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -167,16 +171,20 @@ describe("CharacterMapping", () => {
       screen.getByRole("button", { name: /character mapping/i }),
     );
 
+    // the Suggested tab is the default - the exact match shows up there with a
+    // one-click confirm and a bulk "confirm all exact" button.
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: /confirm 1 exact match/i }),
       ).toBeInTheDocument();
     });
-    // matched tiles also get an "Exact Match" confidence badge
-    expect(screen.getAllByText("Exact Match").length).toBeGreaterThan(0);
+    expect(screen.getByText("Perfect match!")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /confirm miko cocoa with miko cocoa/i }),
+    ).toBeInTheDocument();
   });
 
-  it("shows both column search inputs", async () => {
+  it("shows both column search inputs on the By hand tab", async () => {
     const user = userEvent.setup();
     mockCharacterMappingApi.getUnmappedCharacters.mockResolvedValue({
       suggestedCharacters: [],
@@ -199,6 +207,8 @@ describe("CharacterMapping", () => {
     await user.click(
       screen.getByRole("button", { name: /character mapping/i }),
     );
+
+    await user.click(await screen.findByRole("button", { name: "By hand" }));
 
     await waitFor(() => {
       expect(
