@@ -84,9 +84,11 @@ export function Settings() {
           }
         />
 
-        {/* single column on small screens; a balanced two-column masonry on
-            large screens so the cards fill the width instead of stretching. */}
-        <div className="space-y-7 sm:space-y-9 lg:space-y-0 lg:columns-2 lg:gap-7 lg:[&>*]:mb-7 lg:[&>*]:break-inside-avoid">
+        {/* single column on small screens; two columns on large screens. NB:
+            CSS multi-column (columns-2) clips content that overflows a column
+            box, which sheared off the cards' pushpins - so this uses grid, which
+            doesn't clip. items-start keeps cards at their natural height. */}
+        <div className="space-y-7 sm:space-y-9 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-7 lg:items-start">
           <AppearanceSection />
           <AccessibilitySection />
           <AccountSection />
