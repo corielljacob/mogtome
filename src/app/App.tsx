@@ -97,7 +97,7 @@ const queryClient = new QueryClient({
 
 function PageLoader() {
   return (
-    <div className="min-h-full flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-[100dvh] flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="w-10 h-10 rounded-full border-3 border-[var(--primary)]/20 border-t-[var(--primary)] animate-spin" />
     </div>
   );
@@ -144,14 +144,40 @@ function AppContent() {
       reducedMotion={settings.reducedMotion ? "always" : "never"}
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
-      <div className="h-full bg-[var(--bg)] page-bg transition-colors duration-300 flex">
+      <div>
+        {/* Full-screen background. position:fixed + inset-0 always covers the
+            entire device screen - including under the status bar and home
+            indicator - and stays put while the document scrolls. The shell and
+            content stay transparent so this shows through their gaps. */}
+        <div
+          aria-hidden="true"
+          className={`fixed inset-0 -z-10 bg-[var(--bg)] page-bg transition-colors duration-300 ${
+            isHome ? "" : "page-pattern"
+          }`}
+        />
+
+        {/* iOS standalone runs edge-to-edge with white status-bar icons
+            (black-translucent), which wash out over the light page at the top.
+            This scrim darkens just the status-bar strip and fades to nothing -
+            its height is the safe-area inset, so it's invisibly 0px tall on
+            devices/browsers without a top inset. */}
+        <div
+          aria-hidden="true"
+          className="md:hidden fixed inset-x-0 top-0 z-40 pointer-events-none"
+          style={{
+            height: "env(safe-area-inset-top)",
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.12) 65%, transparent)",
+          }}
+        />
+
         {/* Home's warm ambient glow lives inside the content area, so the fixed
             nav's left gutter (md:pl-16) would otherwise read as a dark seam -
             most visible at tablet widths. This app-level wash bathes that strip
             in the same warm light, behind the nav. */}
         {isHome && (
           <div
-            className="hidden md:block absolute inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
+            className="hidden md:block fixed inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
             aria-hidden="true"
             style={{
               background:
@@ -169,11 +195,13 @@ function AppContent() {
 
         <ScrapbookNav />
 
-        {/* pad left on desktop to clear the nav: the slim edge rail, or the
-            wider gutter the pinned expanded sidebar needs (animated either way) */}
+        {/* The document (body) scrolls natively. This column just holds the page;
+            pad left on desktop to clear the fixed nav (slim edge rail, or the
+            wider gutter the pinned expanded sidebar needs - animated either way).
+            Horizontal overflow is clipped globally via html { overflow-x:hidden }. */}
         <div
           id={APP_SCROLL_ID}
-          className={`flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"} ${isHome ? "" : "page-pattern"}`}
+          className={`flex flex-col min-h-[100dvh] transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
         >
           <Navbar />
 

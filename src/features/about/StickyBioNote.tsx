@@ -89,8 +89,10 @@ export function StickyBioNote({
   // Same overlap + tilt in both states so the note keeps its scrapbook spot,
   // tucked over the polaroid's edge. Fixed size keeps every note consistent;
   // a long bio scrolls inside it rather than stretching the card.
+  // phone sizes are trimmed so the polaroid + overlapping note (plus its tilt)
+  // fit a ~360px screen without clipping; full scrapbook sizes return at sm.
   const shellCls =
-    "relative z-20 shrink-0 -ml-5 sm:-ml-6 mt-4 sm:mt-6 w-52 sm:w-64 lg:w-72";
+    "relative z-20 shrink-0 -ml-4 sm:-ml-6 mt-4 sm:mt-6 w-44 sm:w-64 lg:w-72";
   const shellStyle: CSSProperties = { transform: `rotate(${tilt}deg)` };
   const pin = (
     <span

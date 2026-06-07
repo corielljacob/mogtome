@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useDragControls } from "motion/react";
 import { X } from "lucide-react";
 import { KawaiiSparkle, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 import { TapeStrip } from "@/shared/ui/stickers";
+import { useIsMobile } from "@/shared/hooks/useMobile";
 
 const SIZES = {
   sm: "max-w-md",
@@ -33,10 +34,12 @@ interface ModalProps {
   children: ReactNode;
 }
 
-// A cozy scrapbook modal: a sheet of sticker-paper taped onto a dimmed, blurred
-// page. Kawaii title row, a hand-written eyebrow, a highlighted title, and
-// die-cut sticker buttons. Handles scroll-lock, Escape, focus and backdrop-close
-// so callers just pass content. Shared across the app.
+// A cozy scrapbook modal. On desktop it's a sheet of sticker-paper taped onto a
+// dimmed page (kawaii title row, hand-written eyebrow, die-cut sticker buttons).
+// On phones it becomes a native-feeling bottom sheet: slides up from the bottom,
+// rounded top, a grab handle that swipes-to-dismiss, and safe-area aware padding
+// so action bars clear the home indicator. Handles scroll-lock, Escape, focus
+// and backdrop-close so callers just pass content. Shared across the app.
 export function Modal({
   open,
   onClose,
@@ -53,14 +56,22 @@ export function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  const isMobile = useIsMobile();
+  // swipe-to-dismiss is driven only from the grab handle, so dragging never
+  // hijacks scrolling inside the sheet body.
+  const dragControls = useDragControls();
 
-  // lock the page behind the modal
+  // lock the page behind the modal (html is the document scroller)
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
+    const root = document.documentElement;
+    const prevRoot = root.style.overflow;
+    const prevBody = document.body.style.overflow;
+    root.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev;
+      root.style.overflow = prevRoot;
+      document.body.style.overflow = prevBody;
     };
   }, [open]);
 
@@ -79,6 +90,75 @@ export function Modal({
     };
   }, [open, onClose]);
 
+  // header controls (close + any caller actions) - identical on both layouts
+  const controls = (
+    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+      {headerActions}
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        className="grid place-items-center w-9 h-9 rounded-full border-2 border-white bg-[color:color-mix(in_srgb,var(--secondary)_22%,var(--card))] text-[var(--secondary)] shadow-[0_4px_10px_-3px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110 hover:rotate-[12deg] active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--secondary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
+      >
+        <X className="w-4 h-4" aria-hidden="true" />
+      </button>
+    </div>
+  );
+
+  const titleBlock = (
+    <>
+      <div
+        className="flex items-center justify-center gap-2 mb-1.5"
+        aria-hidden="true"
+      >
+        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+        {icon ? (
+          <span className="icon-badge w-9 h-9 text-[var(--primary)]">{icon}</span>
+        ) : (
+          <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+        )}
+        <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+      </div>
+
+      {eyebrow && (
+        <p className="eyebrow-script text-base sm:text-lg text-[var(--secondary)]/90 mb-0.5">
+          {eyebrow}
+        </p>
+      )}
+
+      <h2
+        id={titleId}
+        className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] leading-tight"
+      >
+        <span className="text-highlight">{title}</span>
+      </h2>
+    </>
+  );
+
+  const body = (
+    <div
+      className={`flex-1 min-h-0 ${padded ? "px-4 sm:px-5 py-4" : ""} ${
+        scroll ? "overflow-y-auto overscroll-contain" : "overflow-hidden flex flex-col"
+      } ${isMobile && !footer ? "pb-[calc(1rem+env(safe-area-inset-bottom))]" : ""}`}
+    >
+      {children}
+    </div>
+  );
+
+  const footerBlock = footer && (
+    <div
+      className={`shrink-0 ${isMobile ? "pb-[env(safe-area-inset-bottom)]" : ""}`}
+    >
+      {footer}
+    </div>
+  );
+
+  const divider = (
+    <div
+      className="mx-5 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_22%,transparent)] shrink-0"
+      aria-hidden="true"
+    />
+  );
+
   return createPortal(
     <AnimatePresence>
       {open && (
@@ -88,96 +168,94 @@ export function Modal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          className={`fixed inset-0 z-50 flex justify-center ${
+            isMobile ? "items-end" : "items-center p-4 sm:p-6"
+          }`}
         >
-          {/* dim + blur the page behind */}
+          {/* dim the page behind */}
           <div
             onClick={closeOnBackdrop ? onClose : undefined}
-            className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/45"
             aria-hidden="true"
           />
 
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            tabIndex={-1}
-            initial={{ opacity: 0, scale: 0.92, y: 18, rotate: -1.5 }}
-            animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-            transition={{ type: "spring", damping: 24, stiffness: 280 }}
-            className={`relative z-10 w-full ${SIZES[size]} max-h-[88vh] focus:outline-none`}
-          >
-            {/* the sheet of sticker-paper */}
-            <div className="surface relative flex max-h-[88vh] flex-col overflow-hidden">
-              {/* header */}
-              <div className="relative px-6 pt-7 pb-4 text-center shrink-0">
-                {/* die-cut sticker controls, tucked in the corner */}
-                <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
-                  {headerActions}
-                  <button
-                    onClick={onClose}
-                    aria-label="Close"
-                    className="grid place-items-center w-9 h-9 rounded-full border-2 border-white bg-[color:color-mix(in_srgb,var(--secondary)_22%,var(--card))] text-[var(--secondary)] shadow-[0_4px_10px_-3px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110 hover:rotate-[12deg] active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--secondary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
-                  >
-                    <X className="w-4 h-4" aria-hidden="true" />
-                  </button>
-                </div>
-
+          {isMobile ? (
+            /* ---- phone: bottom sheet ---- */
+            <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              tabIndex={-1}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 32, stiffness: 320 }}
+              drag="y"
+              dragControls={dragControls}
+              dragListener={false}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.6 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 120 || info.velocity.y > 600) onClose();
+              }}
+              className="relative z-10 w-full max-w-[40rem] focus:outline-none"
+            >
+              <div className="surface relative flex max-h-[92dvh] flex-col overflow-hidden rounded-t-3xl rounded-b-none">
+                {/* grab handle - the swipe-to-dismiss grip */}
                 <div
-                  className="flex items-center justify-center gap-2 mb-1.5"
-                  aria-hidden="true"
+                  onPointerDown={(e) => dragControls.start(e)}
+                  style={{ touchAction: "none" }}
+                  className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing"
                 >
-                  <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-                  {icon ? (
-                    <span className="icon-badge w-9 h-9 text-[var(--primary)]">
-                      {icon}
-                    </span>
-                  ) : (
-                    <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-                  )}
-                  <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+                  <div
+                    className="h-1.5 w-10 rounded-full bg-[color:color-mix(in_srgb,var(--text-subtle)_40%,transparent)]"
+                    aria-hidden="true"
+                  />
                 </div>
 
-                {eyebrow && (
-                  <p className="eyebrow-script text-base sm:text-lg text-[var(--secondary)]/90 mb-0.5">
-                    {eyebrow}
-                  </p>
-                )}
+                <div className="relative px-6 pt-1 pb-4 text-center shrink-0">
+                  {controls}
+                  {titleBlock}
+                </div>
 
-                <h2
-                  id={titleId}
-                  className="font-display font-bold text-xl sm:text-2xl text-[var(--text)] leading-tight"
-                >
-                  <span className="text-highlight">{title}</span>
-                </h2>
+                {divider}
+                {body}
+                {footerBlock}
+              </div>
+            </motion.div>
+          ) : (
+            /* ---- desktop: taped scrapbook dialog ---- */
+            <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              tabIndex={-1}
+              initial={{ opacity: 0, scale: 0.92, y: 18, rotate: -1.5 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              transition={{ type: "spring", damping: 24, stiffness: 280 }}
+              className={`relative z-10 w-full ${SIZES[size]} max-h-[88vh] focus:outline-none`}
+            >
+              <div className="surface relative flex max-h-[88vh] flex-col overflow-hidden">
+                <div className="relative px-6 pt-7 pb-4 text-center shrink-0">
+                  {controls}
+                  {titleBlock}
+                </div>
+
+                {divider}
+                {body}
+                {footerBlock}
               </div>
 
-              {/* dashed scrapbook divider */}
-              <div
-                className="mx-5 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_22%,transparent)] shrink-0"
-                aria-hidden="true"
+              {/* washi tape pinning the page to the board */}
+              <TapeStrip className="z-20 -top-3 left-10 -rotate-[10deg]" />
+              <TapeStrip
+                className="z-20 -top-3 right-10 rotate-[10deg]"
+                color="var(--accent)"
               />
-
-              {/* body */}
-              <div
-                className={`flex-1 min-h-0 ${padded ? "px-4 sm:px-5 py-4" : ""} ${
-                  scroll ? "overflow-y-auto" : "overflow-hidden flex flex-col"
-                }`}
-              >
-                {children}
-              </div>
-
-              {footer && <div className="shrink-0">{footer}</div>}
-            </div>
-
-            {/* washi tape pinning the page to the board */}
-            <TapeStrip className="z-20 -top-3 left-10 -rotate-[10deg]" />
-            <TapeStrip
-              className="z-20 -top-3 right-10 rotate-[10deg]"
-              color="var(--accent)"
-            />
-          </motion.div>
+            </motion.div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>,

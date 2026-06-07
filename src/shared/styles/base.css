@@ -4,28 +4,31 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    height: 100dvh;
-    /* Background color - gradients applied via page-bg on content */
+    /* The document scrolls natively, like a normal site. This is what lets the
+       page always fill the mobile screen (the browser sizes the viewport for us)
+       - avoiding the "chin" a fixed-height inner scroll container produces. html
+       is the scroll element in standards mode; overflow-x:hidden here clips stray
+       decorations horizontally while keeping vertical scroll. */
+    overflow-x: hidden;
+    /* Background color - gradients applied via the fixed page-bg layer */
     background-color: var(--bg);
     transition: background-color 0.3s ease;
   }
 
   body {
     font-family: "Manrope", system-ui, sans-serif;
-    height: 100%;
+    /* fill at least the screen so short pages don't collapse */
+    min-height: 100dvh;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
-    /* Body never scrolls - content column is the scroll container */
-    overflow: hidden;
-    /* Transparent to let html background show through */
+    /* Transparent to let the fixed background layer show through */
     background: transparent;
     color: var(--text);
   }
 
-  /* Root element - strict height to prevent body scroll */
   #root {
-    height: 100%;
+    min-height: 100dvh;
   }
 
   h1,
