@@ -2,6 +2,9 @@ import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import type { Tab } from "@/app/nav/tabs";
 
+// One item in the floating bottom pill. Inactive tabs are an icon-only circle in
+// their own colour; the active tab fills with that colour and smoothly expands to
+// reveal its label (an iOS-style "pill" indicator).
 export const MobileTab = memo(function MobileTab({
   tab,
   isActive,
@@ -15,23 +18,29 @@ export const MobileTab = memo(function MobileTab({
       to={path}
       aria-current={isActive ? "page" : undefined}
       aria-label={label}
-      className={`relative flex flex-col items-center gap-0.5 px-2.5 pt-2 pb-2 rounded-t-2xl font-display font-bold text-[10px] leading-none shrink-0 transition-transform duration-150 active:scale-90
-        ${isActive ? "-translate-y-1.5" : ""}`}
+      className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none transition-[background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90"
       style={
         isActive
           ? ({
               background: color,
               color: "#fff",
-              boxShadow: `0 0 0 2px var(--card), 0 3px 0 0 color-mix(in srgb, ${color} 55%, black)`,
+              boxShadow: `0 4px 12px -3px color-mix(in srgb, ${color} 70%, transparent)`,
             } as CSSProperties)
-          : ({
-              background: `color-mix(in srgb, ${color} 16%, var(--card))`,
-              color,
-            } as CSSProperties)
+          : ({ color } as CSSProperties)
       }
     >
-      <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
-      <span>{label}</span>
+      <Icon
+        className="w-[22px] h-[22px] shrink-0"
+        strokeWidth={isActive ? 2.6 : 2.1}
+      />
+      {/* label expands in on the active tab */}
+      <span
+        className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isActive ? "max-w-[7rem] opacity-100 ml-1.5" : "max-w-0 opacity-0"
+        }`}
+      >
+        {label}
+      </span>
     </Link>
   );
 });

@@ -47,12 +47,21 @@ export function MobileNav({
 
   return (
     <>
-      {/* mobile: bottom bar - core tabs + "More" */}
+      {/* mobile: a floating pill that hovers above the home indicator, so the
+          page background runs edge-to-edge underneath it. The <nav> spans the
+          width but is click-through; only the pill itself catches taps. */}
       <nav
-        className="md:hidden fixed bottom-0 inset-x-0 z-50 px-2 pb-[env(safe-area-inset-bottom)] pointer-events-none"
+        className="md:hidden fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pointer-events-none"
         aria-label="Mobile navigation"
       >
-        <div className="pointer-events-auto flex items-end justify-center gap-1.5 px-1 pt-2">
+        <div
+          className="pointer-events-auto surface flex items-center gap-0.5 p-1.5 max-w-full"
+          style={{
+            borderRadius: "9999px",
+            boxShadow:
+              "0 12px 30px -10px var(--shadow), 0 4px 10px -4px var(--shadow)",
+          }}
+        >
           {coreTabs.map((tab) => (
             <MobileTab key={tab.path} tab={tab} isActive={isActive(tab.path)} />
           ))}
@@ -62,22 +71,25 @@ export function MobileNav({
             aria-haspopup="dialog"
             aria-expanded={sheetOpen}
             aria-label="More"
-            className={`relative flex flex-col items-center gap-0.5 px-2.5 pt-2 pb-2 rounded-t-2xl font-display font-bold text-[10px] leading-none shrink-0 cursor-pointer transition-transform duration-150 active:scale-90 ${moreActive ? "-translate-y-1.5" : ""}`}
+            className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none cursor-pointer transition-[background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90"
             style={
               moreActive
                 ? ({
                     background: MORE_COLOR,
                     color: "#fff",
-                    boxShadow: `0 0 0 2px var(--card), 0 3px 0 0 color-mix(in srgb, ${MORE_COLOR} 55%, black)`,
+                    boxShadow: `0 4px 12px -3px color-mix(in srgb, ${MORE_COLOR} 70%, transparent)`,
                   } as CSSProperties)
-                : ({
-                    background: `color-mix(in srgb, ${MORE_COLOR} 16%, var(--card))`,
-                    color: MORE_COLOR,
-                  } as CSSProperties)
+                : ({ color: MORE_COLOR } as CSSProperties)
             }
           >
-            <MoreIcon className="w-5 h-5" />
-            <span>More</span>
+            <MoreIcon className="w-[22px] h-[22px]" />
+            <span
+              className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                moreActive ? "max-w-[5rem] opacity-100 ml-1.5" : "max-w-0 opacity-0"
+              }`}
+            >
+              More
+            </span>
           </button>
         </div>
       </nav>
