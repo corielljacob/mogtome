@@ -40,22 +40,25 @@ export default defineConfig({
     // Target modern browsers for smaller bundles
     target: "es2020",
 
-    // Enable minification
-    minify: "esbuild",
+    // Enable minification (Vite 8 uses the built-in oxc minifier; esbuild is
+    // no longer bundled and would need to be installed separately).
+    minify: "oxc",
 
-    // Code splitting for better caching
+    // Code splitting for better caching. Vite 8 (Rolldown) dropped the object
+    // form of manualChunks, so we group vendors with the function form instead.
     rollupOptions: {
       output: {
-        // Split vendor chunks for better caching
-        manualChunks: {
-          // React core - rarely changes
-          "react-vendor": ["react", "react-dom"],
-          // React Router - separate chunk
-          router: ["react-router-dom"],
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          // React Router first - its path also contains "react".
+          if (/[\\/]react-router/.test(id)) return "router";
           // TanStack Query - data fetching
-          query: ["@tanstack/react-query"],
-          // Framer Motion - large animation library
-          motion: ["motion"],
+          if (/[\\/]@tanstack[\\/]/.test(id)) return "query";
+          // Motion - large animation library (motion, motion-dom, motion-utils)
+          if (/[\\/]motion(-dom|-utils)?[\\/]/.test(id)) return "motion";
+          // React core - rarely changes
+          if (/[\\/](react|react-dom|scheduler)[\\/]/.test(id))
+            return "react-vendor";
         },
       },
     },

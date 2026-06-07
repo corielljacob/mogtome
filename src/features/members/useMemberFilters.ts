@@ -111,10 +111,14 @@ export function useMemberFilters() {
   // local state for snappy typing; debounced into the URL below
   const [inputValue, setInputValue] = useState(searchQuery);
 
-  // re-sync when the URL changes out from under us (e.g. back button)
-  useEffect(() => {
+  // re-sync when the URL changes out from under us (e.g. back button) by
+  // adjusting state during render instead of in an effect — see
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
+  if (searchQuery !== prevSearchQuery) {
+    setPrevSearchQuery(searchQuery);
     setInputValue(searchQuery);
-  }, [searchQuery]);
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {

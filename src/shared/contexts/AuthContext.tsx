@@ -131,6 +131,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // guards against overlapping refresh calls
   const isRefreshingRef = useRef(false);
+  // holds the latest refreshUser so it can recurse without referencing its own
+  // (not-yet-declared) binding; kept current by the effect below.
+  const refreshUserRef = useRef<(() => Promise<void>) | null>(null);
 
   const clearRefreshTimer = useCallback(() => {
     if (refreshTimerRef.current) {
@@ -190,7 +193,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (newToken) {
             // re-run to process the freshly minted token
             isRefreshingRef.current = false;
-            return refreshUser();
+            return refreshUserRef.current?.();
           }
         } catch {
           // refresh failed silently
@@ -221,7 +224,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (newToken) {
             // re-run to process the freshly minted token
             isRefreshingRef.current = false;
-            return refreshUser();
+            return refreshUserRef.current?.();
           }
         } catch {
           // refresh failed silently
@@ -274,7 +277,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, [clearRefreshTimer, scheduleTokenRefresh]);
 
+  // expose the latest refreshUser to its own recursive calls (see ref above)
   useEffect(() => {
+    refreshUserRef.current = refreshUser;
+  }, [refreshUser]);
+
+  // Hydrate auth state from the stored token on mount. refreshUser is an async
+  // loader that intentionally sets auth state — the canonical "sync with an
+  // external system on mount" case, not the cascading-render anti-pattern this
+  // rule targets.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshUser();
   }, [refreshUser]);
 
