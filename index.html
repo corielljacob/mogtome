@@ -91,10 +91,13 @@
           document.documentElement.classList.add("theme-" + colorTheme);
         }
 
-        // Set background color that will be enhanced by CSS gradients
+        // Set the first-paint background on <html> only (it covers the whole
+        // canvas, so there's no flash). Deliberately NOT on <body>: body stays
+        // transparent so the fixed page-background layer shows through, and an
+        // opaque body background would paint over it and not update on theme
+        // toggle (ThemeContext only refreshes the <html> background).
         var bgColor = isDark ? "#16131F" : "#FFF6F4";
         document.documentElement.style.backgroundColor = bgColor;
-        document.body.style.backgroundColor = bgColor;
 
         // Match the browser chrome (address/status bar) from the very first paint
         var tcMeta = document.querySelector('meta[name="theme-color"]');
