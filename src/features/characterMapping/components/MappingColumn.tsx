@@ -41,7 +41,10 @@ export function MappingColumn({
         onChange={onSearchChange}
         placeholder={searchPlaceholder}
       />
-      <div className="space-y-2 lg:flex-1 lg:overflow-y-auto lg:min-h-0 pr-1">
+      {/* phone: cap each list so both columns (and their search boxes) stay
+          reachable without one pushing the other far down the sheet. desktop:
+          fill the column and scroll internally. */}
+      <div className="space-y-2 overflow-y-auto overscroll-contain max-h-[38vh] lg:max-h-none lg:flex-1 lg:min-h-0 pr-1">
         {isEmpty ? (
           <p className="text-sm text-[var(--text-muted)] font-soft text-center py-6">
             {emptyMessage}

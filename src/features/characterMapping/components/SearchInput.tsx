@@ -23,7 +23,7 @@ export function SearchInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="
-          w-full pl-10 pr-4 py-2.5 rounded-xl
+          w-full pl-10 pr-4 py-3 rounded-xl
           bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
           border-2 border-[color:color-mix(in_srgb,var(--primary)_14%,var(--card))]
           text-sm font-soft text-[var(--text)] placeholder:text-[var(--text-subtle)]
