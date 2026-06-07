@@ -153,7 +153,7 @@ export function About() {
               color="var(--accent)"
             />
 
-            {/* mascot polaroid */}
+            {/* moogle polaroid */}
             <div className="relative mx-auto mb-6 w-fit -rotate-2">
               <div className="surface p-2 pb-3 w-32 sm:w-36">
                 <div className="aspect-square overflow-hidden rounded-lg bg-[var(--bg)]">
