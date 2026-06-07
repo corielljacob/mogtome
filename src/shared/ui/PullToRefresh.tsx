@@ -41,7 +41,11 @@ export function PullToRefresh({
   const pullRef = useRef(0);
   const refreshingRef = useRef(false);
   const onRefreshRef = useRef(onRefresh);
-  onRefreshRef.current = onRefresh;
+  // Keep the latest onRefresh in a ref so the touch handlers (set up once in
+  // the effect below) always call the current one without re-subscribing.
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  });
 
   const setPullBoth = useCallback((v: number) => {
     pullRef.current = v;
