@@ -23,6 +23,7 @@ import type { ChronicleEventFilter } from "@/shared/types";
 
 import { useChronicle } from "@/features/chronicle/useChronicle";
 import { LiveStatus } from "@/features/chronicle/LiveStatus";
+import { PullToRefresh } from "@/shared/ui/PullToRefresh";
 import { JournalEntry } from "@/features/chronicle/JournalEntry";
 import { WashiTape } from "@/features/chronicle/WashiTape";
 import { dayDecor, getEventKey } from "@/features/chronicle/chronicleHelpers";
@@ -489,6 +490,8 @@ export function Chronicle() {
           />
         )}
       </div>
+
+      <PullToRefresh onRefresh={() => refetch()} />
     </PageLayout>
   );
 }
