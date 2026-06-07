@@ -31,7 +31,7 @@ export function PageLayout({
   // natively with the content and sits behind the nav.
 
   return (
-    <div className="min-h-full relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       {moogles && (
         <SimpleFloatingMoogles
           primarySrc={moogles.primary}

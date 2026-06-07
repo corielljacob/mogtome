@@ -1,18 +1,15 @@
-/** the overflow-y-auto wrapper in App.tsx; the app scrolls inside this, not the window */
+/** id on the main content column in App.tsx. The document (window) is the
+ *  scroller now, but a few places still reference this element. */
 export const APP_SCROLL_ID = "app-scroll";
 
+/** smooth scroll the document back to the top (Back-to-top button) */
 export function scrollAppToTop() {
-  const el = document.getElementById(APP_SCROLL_ID);
-  (el ?? window).scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/** jump (no smooth) on route changes so each view starts at the top */
+/** jump (no smooth) on route changes so each view starts at the top.
+ *  Writes scrollTop directly to bypass the CSS `scroll-behavior: smooth`. */
 export function jumpAppToTop() {
-  const el = document.getElementById(APP_SCROLL_ID);
-  if (el) {
-    el.scrollTop = 0;
-    el.scrollLeft = 0;
-  } else {
-    window.scrollTo(0, 0);
-  }
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0; // Safari fallback
 }

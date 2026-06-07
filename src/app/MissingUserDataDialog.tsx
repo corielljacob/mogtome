@@ -20,13 +20,17 @@ export function MissingUserDataDialog() {
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
+    const root = document.documentElement;
     if (isOpen) {
       closeButtonRef.current?.focus();
+      root.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
     } else {
+      root.style.overflow = "";
       document.body.style.overflow = "";
     }
     return () => {
+      root.style.overflow = "";
       document.body.style.overflow = "";
     };
   }, [isOpen]);
