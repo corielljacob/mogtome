@@ -25,6 +25,9 @@ import {
   ToggleSwitch,
 } from "@/features/settings/SettingsControls";
 
+// the only theme that stays selectable while an event dresses up the site
+const DEFAULT_THEME_ID: ColorTheme = "pom-pom";
+
 const MODE_OPTIONS: { value: ColorMode; label: string; icon: LucideIcon }[] = [
   { value: "light", label: "Light", icon: Sun },
   { value: "dark", label: "Dark", icon: Moon },
@@ -59,14 +62,17 @@ function formatDateRange(
 }
 
 // a rich preview tile - the theme's identity gradient + its name in its own
-// title font, ringed when selected.
+// title font, ringed when selected. Disabled while an event theme has the
+// site dressed up (only the default stays pickable then).
 const ThemeTile = memo(function ThemeTile({
   theme,
   selected,
+  disabled = false,
   onSelect,
 }: {
   theme: ThemeDefinition;
   selected: boolean;
+  disabled?: boolean;
   onSelect: (id: ColorTheme) => void;
 }) {
   const { primary, secondary, accent } = theme.preview;
@@ -74,9 +80,14 @@ const ThemeTile = memo(function ThemeTile({
     <button
       type="button"
       onClick={() => onSelect(theme.id)}
+      disabled={disabled}
       aria-pressed={selected}
       aria-label={theme.name}
-      className="group relative overflow-hidden rounded-2xl border-2 cursor-pointer transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
+      className={`group relative overflow-hidden rounded-2xl border-2 transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)] ${
+        disabled
+          ? "cursor-not-allowed opacity-45"
+          : "cursor-pointer hover:-translate-y-0.5"
+      }`}
       style={{
         borderColor: selected
           ? primary
@@ -266,14 +277,13 @@ export function AppearanceSection() {
             </span>
           )}
         </div>
-        <div
-          className={`grid grid-cols-2 gap-2.5 transition-opacity ${isEventThemeActive ? "opacity-60" : ""}`}
-        >
+        <div className="grid grid-cols-2 gap-2.5">
           {THEME_DEFINITIONS.map((theme) => (
             <ThemeTile
               key={theme.id}
               theme={theme}
               selected={settings.colorTheme === theme.id}
+              disabled={isEventThemeActive && theme.id !== DEFAULT_THEME_ID}
               onSelect={setColorTheme}
             />
           ))}

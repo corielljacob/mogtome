@@ -1,17 +1,22 @@
 import { type CSSProperties } from "react";
-import { PageLayout } from "@/shared/ui/PageShell";
+import { PageLayout, PageHeader } from "@/shared/ui/PageShell";
 import {
-  KawaiiSparkle,
-  KawaiiBow,
   KawaiiHeart,
+  KawaiiBow,
+  KawaiiSparkle,
 } from "@/shared/ui/kawaiiMotifs";
+import {
+  Sticker,
+  BubbleSticker,
+  MoogleSticker,
+  Dot,
+} from "@/shared/ui/stickers";
 import { AppearanceSection } from "@/features/settings/AppearanceSection";
 import { AccessibilitySection } from "@/features/settings/AccessibilitySection";
 import { AccountSection } from "@/features/settings/AccountSection";
 
 import gamingMoogle from "@/assets/moogles/gaming moogle.webp";
 import musicMoogle from "@/assets/moogles/moogle playing music.webp";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function Settings() {
   return (
@@ -37,35 +42,47 @@ export function Settings() {
           aria-hidden="true"
         />
 
-        <img
-          src={lilGuyMoogle}
-          alt=""
-          aria-hidden="true"
-          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
+        <PageHeader
+          opener="~ make it yours, kupo ~"
+          title="Settings"
+          stickers={
+            <>
+              <Sticker
+                className="hidden sm:flex left-[5%] top-1/2 -translate-y-1/2 h-12 w-12 -rotate-[12deg]"
+                color="var(--primary)"
+              >
+                <KawaiiBow className="w-7 h-7 text-white" />
+              </Sticker>
+              <Sticker
+                className="hidden md:flex right-[5%] top-1/2 -translate-y-1/2 h-11 w-11 rotate-[12deg]"
+                color="var(--accent)"
+              >
+                <KawaiiSparkle className="w-6 h-6 text-white" />
+              </Sticker>
+              <BubbleSticker className="hidden lg:block right-[15%] top-6 -rotate-[5deg]">
+                make it yours!
+              </BubbleSticker>
+              {/* a little palette of swatch dots */}
+              <Dot
+                className="hidden md:block left-[16%] top-6 h-3 w-3"
+                color="var(--primary)"
+              />
+              <Dot
+                className="hidden md:block left-[18%] top-11 h-3 w-3"
+                color="var(--secondary)"
+              />
+              <Dot
+                className="hidden md:block left-[20%] top-16 h-3 w-3"
+                color="var(--accent)"
+              />
+              <MoogleSticker
+                src={gamingMoogle}
+                ring="var(--secondary)"
+                className="hidden lg:block left-[6%] bottom-3 h-14 w-14 rotate-[6deg]"
+              />
+            </>
+          }
         />
-
-        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-          <span
-            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-            aria-hidden="true"
-          />
-          <div className="surface paper -rotate-1 px-8 sm:px-12 py-5 sm:py-6">
-            <div
-              className="flex items-center justify-center gap-1.5 mb-1.5"
-              aria-hidden="true"
-            >
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
-            </div>
-            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
-              ~ make it yours, kupo ~
-            </p>
-            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
-              <span className="text-highlight">Settings</span>
-            </h1>
-          </div>
-        </header>
 
         {/* single column on small screens; a balanced two-column masonry on
             large screens so the cards fill the width instead of stretching. */}

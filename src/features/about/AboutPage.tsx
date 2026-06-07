@@ -5,16 +5,19 @@ import { Quote } from "lucide-react";
 import { membersApi } from "@/shared/api/members";
 import {
   PageLayout,
+  PageHeader,
   LoadingState,
   ErrorState,
   EmptyState,
 } from "@/shared/ui/PageShell";
+import { KawaiiStar, KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import {
-  KawaiiStar,
-  KawaiiBow,
-  KawaiiSparkle,
-  KawaiiHeart,
-} from "@/shared/ui/kawaiiMotifs";
+  Sticker,
+  MoogleSticker,
+  BubbleSticker,
+  TapeStrip,
+  Dot,
+} from "@/shared/ui/stickers";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { FC_RANKS } from "@/shared/types";
 import { StaffCard } from "@/features/about/StaffCard";
@@ -26,7 +29,6 @@ import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 import flyingMoogles from "@/assets/moogles/moogles flying.webp";
 import moogleMail from "@/assets/moogles/moogle mail.webp";
 import illustratedMoogle from "@/assets/moogles/illustrated moogle.webp";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function About() {
   const { user, isAuthenticated } = useAuth();
@@ -82,35 +84,45 @@ export function About() {
           aria-hidden="true"
         />
 
-        <img
-          src={lilGuyMoogle}
-          alt=""
-          aria-hidden="true"
-          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
+        <PageHeader
+          opener="~ pull up a chair, kupo ~"
+          title="Who We Are"
+          stickers={
+            <>
+              <TapeStrip
+                className="top-4 right-[7%] rotate-[14deg]"
+                color="var(--accent)"
+              />
+              <Sticker
+                className="hidden sm:flex left-[5%] top-1/2 -translate-y-1/2 h-12 w-12 -rotate-[12deg]"
+                color="var(--secondary)"
+              >
+                <KawaiiStar className="w-6 h-6 text-white" />
+              </Sticker>
+              <MoogleSticker
+                src={illustratedMoogle}
+                ring="var(--primary)"
+                className="hidden md:block right-[4%] top-1/2 -translate-y-1/2 h-16 w-16 rotate-[8deg]"
+              />
+              <BubbleSticker
+                className="hidden lg:block left-[14%] bottom-5 rotate-[4deg]"
+                color="var(--secondary)"
+              >
+                hello~
+              </BubbleSticker>
+              <Sticker
+                className="hidden lg:flex left-[3%] bottom-4 h-10 w-10 rotate-[8deg]"
+                color="var(--primary)"
+              >
+                <KawaiiHeart className="w-5 h-5 text-white" />
+              </Sticker>
+              <Dot
+                className="hidden md:block right-[17%] top-6 h-2.5 w-2.5"
+                color="var(--secondary)"
+              />
+            </>
+          }
         />
-
-        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-          <span
-            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-            aria-hidden="true"
-          />
-          <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
-            <div
-              className="flex items-center justify-center gap-1.5 mb-1.5"
-              aria-hidden="true"
-            >
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
-            </div>
-            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
-              ~ pull up a chair, kupo ~
-            </p>
-            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
-              <span className="text-highlight">Who We Are</span>
-            </h1>
-          </div>
-        </header>
 
         <motion.section
           className="relative mb-9 sm:mb-12 max-w-3xl mx-auto"

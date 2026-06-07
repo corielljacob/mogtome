@@ -2,9 +2,10 @@ import { memo, useMemo } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
-// Endwalker's cosmos: a deep starfield with a breathing gold/coral eclipse glow,
-// drifting twinkling stardust, and the occasional slow comet crossing the dark.
-// Home-only; skipped on mobile. Under reduced motion it holds still (no comets).
+// Endwalker's cosmos: a deep starfield with the moon hanging in the upper sky
+// (sphere shading + craters + a warm halo), drifting twinkling stardust, and the
+// occasional slow comet crossing the dark. Home-only; skipped on mobile. Under
+// reduced motion it holds still (no comets, no drift).
 
 // dense deep-space starfield, tiled - white with faint gold + blue glints
 const STARFIELD =
@@ -27,6 +28,16 @@ const MOTE_COLORS = [
   "var(--primary)",
   "#ffffff",
   "var(--accent)",
+];
+
+// soft craters dappling the moon's surface (positions + sizes as % of the moon)
+const CRATERS = [
+  { left: 56, top: 24, size: 16 },
+  { left: 33, top: 52, size: 12 },
+  { left: 64, top: 60, size: 10 },
+  { left: 28, top: 32, size: 7 },
+  { left: 48, top: 73, size: 8 },
+  { left: 72, top: 42, size: 6 },
 ];
 
 // comets - slow, grand diagonal streaks on a long loop
@@ -93,26 +104,64 @@ export const ThemeCosmos = memo(function ThemeCosmos() {
         }}
       />
 
-      {/* the eclipse - a gold/coral glow breathing in the upper right */}
+      {/* the moon, hanging in the upper sky - the heart of Endwalker. A static
+          sphere inside a gently drifting wrapper, ringed by a breathing halo. */}
       <motion.div
         className="absolute"
-        style={{
-          right: "2%",
-          top: "4%",
-          width: "34%",
-          height: "34%",
-          background:
-            "radial-gradient(circle, color-mix(in srgb, var(--accent) 52%, transparent) 0%, color-mix(in srgb, var(--secondary) 30%, transparent) 36%, transparent 66%)",
-          filter: "blur(18px)",
-          mixBlendMode: "screen",
-        }}
-        animate={
-          reduceMotion
-            ? { opacity: 0.6 }
-            : { opacity: [0.45, 0.72, 0.5, 0.66, 0.45], scale: [1, 1.05, 1] }
-        }
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      />
+        style={{ right: "7%", top: "9%", width: "20vmax", height: "20vmax" }}
+        animate={reduceMotion ? undefined : { y: [0, -9, 0] }}
+        transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
+      >
+        {/* warm halo */}
+        <motion.div
+          className="absolute inset-[-38%]"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent) 0%, color-mix(in srgb, var(--secondary) 22%, transparent) 38%, transparent 68%)",
+            filter: "blur(24px)",
+            mixBlendMode: "screen",
+          }}
+          animate={
+            reduceMotion ? { opacity: 0.6 } : { opacity: [0.42, 0.7, 0.5, 0.42] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* moon body - lit from the upper left, shadowed lower right */}
+        <div
+          className="absolute inset-0 overflow-hidden rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 32% 28%, #f7f1e4 0%, #e7d9bd 30%, #c0af90 52%, #8b7e8f 72%, #574f6b 88%, #3a3350 100%)",
+            boxShadow:
+              "inset -16px -18px 44px rgba(24,18,42,0.72), 0 0 34px color-mix(in srgb, var(--accent) 22%, transparent)",
+          }}
+        >
+          {CRATERS.map((c, i) => (
+            <span
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                left: `${c.left}%`,
+                top: `${c.top}%`,
+                width: `${c.size}%`,
+                height: `${c.size}%`,
+                background:
+                  "radial-gradient(circle at 38% 34%, rgba(60,52,88,0.6) 0%, rgba(60,52,88,0.18) 55%, transparent 72%)",
+              }}
+            />
+          ))}
+
+          {/* terminator: a soft shadow falling off toward the lower right, so
+              the lit side reads brighter and the dark side recedes */}
+          <span
+            className="absolute inset-0 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 30% 26%, transparent 0%, transparent 40%, rgba(24,18,44,0.32) 68%, rgba(16,12,32,0.6) 100%)",
+            }}
+          />
+        </div>
+      </motion.div>
 
       {/* drifting, twinkling stardust */}
       {motes.map((m) => (

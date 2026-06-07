@@ -3,16 +3,20 @@ import { Users } from "lucide-react";
 import { PaginatedMemberGrid } from "@/features/members/PaginatedMemberGrid";
 import {
   PageLayout,
+  PageHeader,
   LoadingState,
   ErrorState,
   EmptyState,
 } from "@/shared/ui/PageShell";
 import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
+import { KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import {
-  KawaiiSparkle,
-  KawaiiBow,
-  KawaiiHeart,
-} from "@/shared/ui/kawaiiMotifs";
+  Sticker,
+  MoogleSticker,
+  BubbleSticker,
+  TapeStrip,
+  Dot,
+} from "@/shared/ui/stickers";
 import { useMemberFilters } from "@/features/members/useMemberFilters";
 import { MembersToolbar } from "@/features/members/MembersToolbar";
 import { RankFilter } from "@/features/members/RankFilter";
@@ -20,7 +24,6 @@ import { RankFilter } from "@/features/members/RankFilter";
 import grumpyMoogle from "@/assets/moogles/just-the-moogle-cartoon-mammal-animal-wildlife-rabbit-transparent-png-2967816.webp";
 import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 import musicMoogle from "@/assets/moogles/moogle playing music.webp";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function Members() {
   const {
@@ -69,47 +72,50 @@ export function Members() {
           aria-hidden="true"
         />
 
-        <img
-          src={lilGuyMoogle}
-          alt=""
-          aria-hidden="true"
-          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
-        />
-
-        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-          <span
-            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-            aria-hidden="true"
-          />
-          <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
-            <div
-              className="flex items-center justify-center gap-1.5 mb-1.5"
-              aria-hidden="true"
-            >
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
-            </div>
-            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
-              ~ the whole moogle pile ~
-            </p>
-            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
-              <span className="text-highlight">Our Family</span>
-            </h1>
-            <div className="inline-flex items-center gap-1.5 mt-2 text-[var(--text-muted)]">
-              <Users
-                className="w-4 h-4 text-[var(--secondary)]"
-                aria-hidden="true"
+        <PageHeader
+          opener="~ the whole moogle pile ~"
+          title="Our Family"
+          stickers={
+            <>
+              <TapeStrip className="top-4 left-[7%] -rotate-[14deg]" />
+              <MoogleSticker
+                src={musicMoogle}
+                ring="var(--primary)"
+                className="hidden md:block left-[4%] top-1/2 -translate-y-1/2 h-16 w-16 -rotate-[8deg]"
               />
-              <span className="font-soft text-sm">
-                <span className="font-display font-bold text-[var(--text)]">
-                  {allMembers.length}
-                </span>{" "}
-                members
-              </span>
-            </div>
+              <Sticker
+                className="hidden sm:flex right-[5%] top-1/2 -translate-y-1/2 h-12 w-12 rotate-[12deg]"
+                color="var(--accent)"
+              >
+                <KawaiiHeart className="w-6 h-6 text-white" />
+              </Sticker>
+              <BubbleSticker className="hidden lg:block right-[14%] top-6 -rotate-[5deg]">
+                welcome!
+              </BubbleSticker>
+              <Dot
+                className="hidden md:block left-[17%] bottom-5 h-2.5 w-2.5"
+                color="var(--secondary)"
+              />
+              <Dot
+                className="hidden lg:block right-[3%] top-7 h-2 w-2"
+                color="var(--primary)"
+              />
+            </>
+          }
+        >
+          <div className="inline-flex items-center gap-1.5 mt-3 text-[var(--text-muted)]">
+            <Users
+              className="w-4 h-4 text-[var(--secondary)]"
+              aria-hidden="true"
+            />
+            <span className="font-soft text-sm">
+              <span className="font-display font-bold text-[var(--text)]">
+                {allMembers.length}
+              </span>{" "}
+              members
+            </span>
           </div>
-        </header>
+        </PageHeader>
 
         {/* sticky search + filter rail beside the member grid on large screens */}
         <div className="lg:grid lg:grid-cols-[19rem_1fr] lg:gap-6 xl:gap-8 lg:items-start">

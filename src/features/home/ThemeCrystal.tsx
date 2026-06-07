@@ -2,9 +2,9 @@ import { memo, useMemo } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
-// A Realm Reborn's Mothercrystal: a radiant blue-white crystal pulsing in deep
-// navy space, with slow light rays and drifting crystal sparkles. Screen-blended
-// so it glows. Home-only; skipped on mobile; reduced motion holds it still.
+// A Realm Reborn's Mothercrystal: a large faceted crystal glowing in deep navy
+// space with shards slowly circling it, over a starfield. Screen-blended so it
+// glows. Home-only; skipped on mobile; reduced motion holds it still.
 
 // deep-space starfield, tiled - white with faint blue/cyan glints
 const STARFIELD =
@@ -27,14 +27,25 @@ const SPARK_COLORS = [
 
 // the crystal sits centre-right, clear of the (left-aligned) hero text
 const CX = 64;
-const CY = 40;
+const CY = 42;
+
+// a tall faceted crystal
+const CRYSTAL_CLIP = "polygon(50% 0%, 72% 17%, 64% 100%, 36% 100%, 28% 17%)";
+// the left facet, caught in the light
+const FACET_CLIP = "polygon(50% 0%, 50% 100%, 36% 100%, 28% 17%)";
+
+// rings of shards that circle the crystal
+const ORBITS = [
+  { radius: 17, count: 6, dur: 48, dir: 1, size: 4, color: "var(--secondary)" },
+  { radius: 10.5, count: 4, dur: 34, dir: -1, size: 3, color: "var(--accent)" },
+];
 
 export const ThemeCrystal = memo(function ThemeCrystal() {
   const reduceMotion = useReducedMotion();
 
   const sparks = useMemo(
     () =>
-      Array.from({ length: 18 }, (_, i) => {
+      Array.from({ length: 12 }, (_, i) => {
         const seed = i * 53 + 11;
         return {
           key: i,
@@ -42,7 +53,7 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
           top: 8 + ((seed * 37) % 80),
           size: 2 + ((seed * 7) % 4),
           color: SPARK_COLORS[seed % SPARK_COLORS.length],
-          op: 0.4 + ((seed * 13) % 55) / 100,
+          op: 0.4 + (((seed * 13) % 55) / 100),
           bob: 5 + ((seed * 5) % 9),
           dur: 4 + ((seed * 3) % 5),
           delay: -((seed * 1.6) % 6),
@@ -67,33 +78,7 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
         }}
       />
 
-      {/* crystal light rays, slowly turning */}
-      <motion.div
-        className="absolute"
-        style={{
-          left: `${CX}%`,
-          top: `${CY}%`,
-          width: "120vmax",
-          height: "120vmax",
-          marginLeft: "-60vmax",
-          marginTop: "-60vmax",
-          background:
-            "repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 5deg, color-mix(in srgb, var(--secondary) 14%, transparent) 5deg 6deg, transparent 6deg 11deg)",
-          filter: "blur(8px)",
-          mixBlendMode: "screen",
-        }}
-        animate={
-          reduceMotion
-            ? { opacity: 0.4 }
-            : { opacity: [0.3, 0.5, 0.3], rotate: 360 }
-        }
-        transition={{
-          opacity: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: 150, repeat: Infinity, ease: "linear" },
-        }}
-      />
-
-      {/* the radiant crystal core, breathing */}
+      {/* aura glow behind the crystal, breathing (opacity only) */}
       <motion.div
         className="absolute"
         style={{
@@ -104,17 +89,75 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
           marginLeft: "-20vmax",
           marginTop: "-20vmax",
           background:
-            "radial-gradient(circle, rgba(236,246,255,0.85) 0%, color-mix(in srgb, var(--secondary) 48%, transparent) 20%, color-mix(in srgb, var(--primary) 22%, transparent) 44%, transparent 66%)",
-          filter: "blur(14px)",
+            "radial-gradient(circle, color-mix(in srgb, var(--secondary) 36%, transparent) 0%, color-mix(in srgb, var(--primary) 18%, transparent) 40%, transparent 66%)",
+          filter: "blur(20px)",
           mixBlendMode: "screen",
         }}
-        animate={
-          reduceMotion
-            ? { opacity: 0.7 }
-            : { opacity: [0.55, 0.9, 0.68, 0.55], scale: [1, 1.06, 1] }
-        }
+        animate={reduceMotion ? { opacity: 0.7 } : { opacity: [0.5, 0.8, 0.6, 0.5] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       />
+
+      {/* the crystal itself - static shape inside a gently floating wrapper */}
+      <motion.div
+        className="absolute"
+        style={{
+          left: `${CX}%`,
+          top: `${CY}%`,
+          width: "18vmax",
+          height: "30vmax",
+          marginLeft: "-9vmax",
+          marginTop: "-15vmax",
+        }}
+        animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            clipPath: CRYSTAL_CLIP,
+            background:
+              "linear-gradient(150deg, rgba(234,247,255,0.7) 0%, color-mix(in srgb, var(--secondary) 52%, transparent) 42%, color-mix(in srgb, var(--primary) 46%, transparent) 100%)",
+            filter:
+              "blur(6px) drop-shadow(0 0 20px color-mix(in srgb, var(--secondary) 55%, transparent))",
+            mixBlendMode: "screen",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            clipPath: FACET_CLIP,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.12))",
+            filter: "blur(7px)",
+            mixBlendMode: "screen",
+          }}
+        />
+      </motion.div>
+
+      {/* shards circling the crystal */}
+      {ORBITS.map((ring, ri) => (
+        <motion.div
+          key={`ring${ri}`}
+          className="absolute"
+          style={{ left: `${CX}%`, top: `${CY}%`, width: 1, height: 1 }}
+          animate={reduceMotion ? undefined : { rotate: ring.dir * 360 }}
+          transition={{ duration: ring.dur, repeat: Infinity, ease: "linear" }}
+        >
+          {Array.from({ length: ring.count }).map((_, i) => (
+            <span
+              key={i}
+              className="absolute left-0 top-0 rounded-full"
+              style={{
+                width: ring.size,
+                height: ring.size,
+                transform: `translate(-50%, -50%) rotate(${(i * 360) / ring.count}deg) translateY(-${ring.radius}vmax)`,
+                background: `radial-gradient(circle, #ffffff, ${ring.color} 60%, transparent)`,
+                boxShadow: `0 0 ${ring.size * 2.2}px ${ring.size * 0.7}px ${ring.color}`,
+              }}
+            />
+          ))}
+        </motion.div>
+      ))}
 
       {/* drifting, twinkling crystal sparkles */}
       {sparks.map((s) => (

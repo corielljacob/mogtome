@@ -12,6 +12,8 @@ import {
 
 import { PageLayout, PageHeader, SectionLabel } from "@/shared/ui/PageShell";
 import { Tag } from "@/shared/ui/Tag";
+import { KawaiiStar, KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
+import { Sticker, BubbleSticker, TapeStrip, Dot } from "@/shared/ui/stickers";
 import { PendingSubmissions } from "@/features/knights/PendingSubmissions";
 import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -149,6 +151,36 @@ export function KnightDashboard() {
           opener="~ Tend to the realm ~"
           title="Knight Dashboard"
           subtitle={`Welcome back, ${firstName}`}
+          stickers={
+            <>
+              <TapeStrip
+                className="top-4 right-[7%] rotate-[12deg]"
+                color="var(--primary)"
+              />
+              <Sticker
+                className="hidden sm:flex left-[5%] top-1/2 -translate-y-1/2 h-12 w-12 -rotate-[12deg]"
+                color="var(--primary)"
+              >
+                <KawaiiSparkle className="w-6 h-6 text-white" />
+              </Sticker>
+              <Sticker
+                className="hidden md:flex right-[5%] top-1/2 -translate-y-1/2 h-11 w-11 rotate-[12deg]"
+                color="var(--accent)"
+              >
+                <KawaiiStar className="w-6 h-6 text-white" />
+              </Sticker>
+              <BubbleSticker
+                className="hidden lg:block left-[14%] bottom-5 rotate-[4deg]"
+                color="var(--secondary)"
+              >
+                on duty!
+              </BubbleSticker>
+              <Dot
+                className="hidden md:block right-[17%] top-6 h-2.5 w-2.5"
+                color="var(--primary)"
+              />
+            </>
+          }
         />
 
         <section className="mb-12">
