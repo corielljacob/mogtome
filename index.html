@@ -17,10 +17,14 @@
     <!-- PWA / native: standalone-capable + transparent status bar -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="MogTome" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <!-- Installable PWA: manifest + home-screen icons -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>MogTome</title>
     <style>
       /* Prevent FOUC - initial background before CSS loads */

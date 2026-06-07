@@ -17,7 +17,8 @@
     "start": "node ./scripts/start-preview.js",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "icons": "node scripts/generate-pwa-icons.js"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",
