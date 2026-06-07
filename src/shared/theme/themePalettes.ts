@@ -12,8 +12,10 @@ export interface Palette {
   primary: string;
   secondary: string;
   accent: string;
-  /** some events wash the whole page in their colour */
+  /** some events/themes wash the whole page in their colour */
   bg?: string;
+  /** themes may also deepen the card surface (e.g. Heavensward's navy) */
+  card?: string;
 }
 
 export interface ModePalette {
@@ -22,46 +24,59 @@ export interface ModePalette {
 }
 
 /** order here drives Settings order */
-export const THEME_META: { id: string; name: string; description: string }[] = [
+export const THEME_META: {
+  id: string;
+  name: string;
+  description: string;
+  /** optional per-theme display/heading font stack (overrides --font-heading) */
+  displayFont?: string;
+}[] = [
   {
     id: "pom-pom",
-    name: "Pom-Pom Classic",
+    name: "MogTome (Default)",
     description: "Warm sunset orange, coral & honey",
   },
   {
-    id: "crystal",
-    name: "Crystal Tower",
-    description: "Candy sky-blue & turquoise",
+    id: "arr",
+    name: "A Realm Reborn",
+    description: "Hydaelyn's crystal blue, radiant cyan & golden light",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
-    id: "chocobo",
-    name: "Chocobo Gold",
-    description: "Sunny gold & warm amber",
+    id: "heavensward",
+    name: "Heavensward",
+    description: "Ishgard ice-blue, frost & dragonfire gold",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
-    id: "tonberry",
-    name: "Tonberry Lantern",
-    description: "Lantern teal & leafy green",
+    id: "stormblood",
+    name: "Stormblood",
+    description: "Ala Mhigan scarlet & imperial gold",
+    displayFont: '"Cormorant Garamond", "Cinzel", serif',
   },
   {
-    id: "cactuar",
-    name: "Cactuar Fresh",
-    description: "Fresh green & sunlit lime",
+    id: "shadowbringers",
+    name: "Shadowbringers",
+    description: "Amethyst violet, aether cyan & the golden Light",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
-    id: "moogle-cloud",
-    name: "Moogle Cloud",
-    description: "Soft pom-pink & lavender",
+    id: "endwalker",
+    name: "Endwalker",
+    description: "Cosmic blue, celestial gold & the dawn at journey's end",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
-    id: "midnight",
-    name: "Midnight Realm",
-    description: "Candy indigo & lavender",
+    id: "dawntrail",
+    name: "Dawntrail",
+    description: "Tural dawn - coral sky, golden sun & teal sea",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
-    id: "sunset",
-    name: "Costa del Sol",
-    description: "Turquoise water, coral & sun",
+    id: "evercold",
+    name: "Evercold",
+    description: "Norse frost - icy blue, aurora green & violet",
+    displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
 ];
 
@@ -71,33 +86,110 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
     light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
     dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
   },
-  crystal: {
-    light: { primary: "#3a8ed2", secondary: "#34bfd6", accent: "#f4be4c" },
-    dark: { primary: "#6cb2e6", secondary: "#54d4e6", accent: "#ffd57e" },
+  arr: {
+    light: {
+      primary: "#3a7fd5",
+      secondary: "#4fb8e0",
+      accent: "#e6c155",
+      bg: "#eef3fb",
+    },
+    dark: {
+      primary: "#5e9ee8",
+      secondary: "#6fcdec",
+      accent: "#f0cf6e",
+      bg: "#08101f",
+      card: "#141d30",
+    },
   },
-  chocobo: {
-    light: { primary: "#d3851a", secondary: "#ef9a3a", accent: "#f5cd5f" },
-    dark: { primary: "#f0bb45", secondary: "#f5a85a", accent: "#fbe08a" },
+  heavensward: {
+    light: {
+      primary: "#3a6ea2",
+      secondary: "#6e93c1",
+      accent: "#2596b0",
+      bg: "#e8eef6",
+    },
+    dark: {
+      primary: "#4f93d6",
+      secondary: "#89b2dd",
+      accent: "#57c7dd",
+      bg: "#070c15",
+      card: "#161f2e",
+    },
   },
-  tonberry: {
-    light: { primary: "#1fa68c", secondary: "#4fbf78", accent: "#f0b94a" },
-    dark: { primary: "#52cca6", secondary: "#7dd98e", accent: "#f7cf6e" },
+  stormblood: {
+    light: {
+      primary: "#d2303a",
+      secondary: "#c2922f",
+      accent: "#e6b84e",
+      bg: "#fceae6",
+    },
+    dark: {
+      primary: "#ee5a62",
+      secondary: "#ddb857",
+      accent: "#f1d07c",
+      bg: "#1a0a0c",
+      card: "#2a1316",
+    },
   },
-  cactuar: {
-    light: { primary: "#2f9e4c", secondary: "#8cbf3a", accent: "#f0cf4a" },
-    dark: { primary: "#66cf82", secondary: "#b0d95e", accent: "#f7dd72" },
+  shadowbringers: {
+    light: {
+      primary: "#8a52d6",
+      secondary: "#3ba3c7",
+      accent: "#d6a23c",
+      bg: "#f3effa",
+    },
+    dark: {
+      primary: "#a47bea",
+      secondary: "#57c2dd",
+      accent: "#ecc265",
+      bg: "#0c0a16",
+      card: "#181327",
+    },
   },
-  "moogle-cloud": {
-    light: { primary: "#d9527f", secondary: "#8e72c2", accent: "#f2a6c6" },
-    dark: { primary: "#f07da6", secondary: "#b49ae6", accent: "#f8c2da" },
+  endwalker: {
+    light: {
+      primary: "#4f6fc8",
+      secondary: "#d6a44a",
+      accent: "#ec8a56",
+      bg: "#f2f1f7",
+    },
+    dark: {
+      primary: "#708fe6",
+      secondary: "#e8c06e",
+      accent: "#f2a06e",
+      bg: "#07060f",
+      card: "#14131f",
+    },
   },
-  midnight: {
-    light: { primary: "#6a5cd4", secondary: "#9a6ed6", accent: "#a0aef5" },
-    dark: { primary: "#9b90f0", secondary: "#bd96ef", accent: "#b9c6ff" },
+  dawntrail: {
+    light: {
+      primary: "#e6906a",
+      secondary: "#5f9aa8",
+      accent: "#f2bb50",
+      bg: "#fdeee0",
+    },
+    dark: {
+      primary: "#f0a578",
+      secondary: "#6fb3c0",
+      accent: "#f7cf6a",
+      bg: "#170f0b",
+      card: "#251a13",
+    },
   },
-  sunset: {
-    light: { primary: "#14b8c0", secondary: "#ff7e6a", accent: "#f7c95c" },
-    dark: { primary: "#43d3db", secondary: "#ff9683", accent: "#ffd97e" },
+  evercold: {
+    light: {
+      primary: "#36a4d4",
+      secondary: "#35c79e",
+      accent: "#8f86e0",
+      bg: "#eef5f9",
+    },
+    dark: {
+      primary: "#5cc0e8",
+      secondary: "#4fdcae",
+      accent: "#a99cf0",
+      bg: "#050f15",
+      card: "#0f1c24",
+    },
   },
 };
 

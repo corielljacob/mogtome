@@ -27,7 +27,7 @@ export function LinkBar({
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 26, stiffness: 320 }}
-          className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/60 bg-[var(--bg)]/90"
+          className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/60 bg-[var(--card)]"
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1 text-sm">

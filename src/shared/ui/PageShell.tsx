@@ -9,7 +9,6 @@ import { KawaiiSparkle, KawaiiBow, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 
 import pushingMoogles from "@/assets/moogles/moogles pushing.webp";
 import deadMoogle from "@/assets/moogles/dead moogle.webp";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -56,7 +55,8 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   showHeart?: boolean;
-  dividerSize?: "sm" | "md" | "lg";
+  /** page-specific scrapbook stickers, tucked into the banner around the title */
+  stickers?: ReactNode;
   children?: ReactNode;
 }
 
@@ -65,48 +65,56 @@ export function PageHeader({
   title,
   subtitle,
   showHeart = true,
+  stickers,
   children,
 }: PageHeaderProps) {
   return (
-    <header className="relative w-fit mx-auto mb-6 sm:mb-10 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-      <img
-        src={lilGuyMoogle}
-        alt=""
-        aria-hidden="true"
-        className="hidden lg:block absolute -top-7 -right-5 w-16 object-contain rotate-[8deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-10"
-      />
+    <header className="relative mb-7 sm:mb-10 animate-[fadeSlideIn_0.4s_ease-out]">
+      {/* the title is a full-width scrapbook banner; each page tucks its own
+          die-cut stickers into the `stickers` slot, which fills the space on
+          either side of the centered title (stickers fade in where there's
+          room on wider screens). */}
+      <div className="surface paper relative overflow-hidden px-5 sm:px-10 py-7 sm:py-9 md:py-11 text-center">
+        {stickers && (
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            aria-hidden="true"
+          >
+            {stickers}
+          </div>
+        )}
 
-      {/* title sits on a pinned polaroid so it never floats on the bare page */}
-      <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
-        <div
-          className="flex items-center justify-center gap-1.5 mb-1.5"
-          aria-hidden="true"
-        >
-          <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-          <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+        <div className="relative z-10 mx-auto max-w-[34rem]">
+          <div
+            className="flex items-center justify-center gap-1.5 mb-1.5"
+            aria-hidden="true"
+          >
+            <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
+            <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
+            <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
+          </div>
+
+          {opener && (
+            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
+              {opener}
+            </p>
+          )}
+
+          <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-[var(--text)]">
+            <span className="text-highlight">{title}</span>
+          </h1>
+
+          {subtitle && (
+            <p className="text-base sm:text-lg text-[var(--text-muted)] font-soft flex items-center justify-center gap-2 mt-3">
+              {subtitle}
+              {showHeart && (
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)] fill-[var(--primary)]/90" />
+              )}
+            </p>
+          )}
+
+          {children}
         </div>
-
-        {opener && (
-          <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
-            {opener}
-          </p>
-        )}
-
-        <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
-          <span className="text-highlight">{title}</span>
-        </h1>
-
-        {subtitle && (
-          <p className="text-base sm:text-lg text-[var(--text-muted)] font-soft flex items-center justify-center gap-2 mt-3">
-            {subtitle}
-            {showHeart && (
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)] fill-[var(--primary)]/90" />
-            )}
-          </p>
-        )}
-
-        {children}
       </div>
     </header>
   );

@@ -11,6 +11,13 @@ import {
   EmptyState,
 } from "@/shared/ui/PageShell";
 import { KawaiiStar, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
+import {
+  Sticker,
+  MoogleSticker,
+  BubbleSticker,
+  TapeStrip,
+  Dot,
+} from "@/shared/ui/stickers";
 import { EVENT_TYPE_CONFIG } from "@/features/chronicle/eventTypes";
 import type { ChronicleEventFilter } from "@/shared/types";
 
@@ -88,6 +95,36 @@ export function Chronicle() {
           opener="~ a little logbook of our days ~"
           title="The Chronicle"
           subtitle="what the FC has been up to lately"
+          stickers={
+            <>
+              <TapeStrip
+                className="top-4 left-[7%] -rotate-[12deg]"
+                color="var(--secondary)"
+              />
+              <MoogleSticker
+                src={moogleMail}
+                ring="var(--primary)"
+                className="hidden md:block left-[4%] top-1/2 -translate-y-1/2 h-16 w-16 -rotate-[6deg]"
+              />
+              <Sticker
+                className="hidden sm:flex right-[5%] top-1/2 -translate-y-1/2 h-12 w-12 rotate-[10deg]"
+                color="var(--accent)"
+              >
+                <KawaiiStar className="w-6 h-6 text-white" />
+              </Sticker>
+              <BubbleSticker className="hidden lg:block right-[14%] bottom-5 -rotate-[4deg]">
+                news!
+              </BubbleSticker>
+              <Dot
+                className="hidden md:block left-[17%] bottom-6 h-2.5 w-2.5"
+                color="var(--accent)"
+              />
+              <Dot
+                className="hidden lg:block right-[3%] top-7 h-2 w-2"
+                color="var(--secondary)"
+              />
+            </>
+          }
         />
 
         {/* on large screens: a sticky search/filter rail beside the feed, so the

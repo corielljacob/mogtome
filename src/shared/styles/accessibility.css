@@ -45,7 +45,20 @@
   --gradient-4: transparent;
 }
 
-/* Pom-Pom Classic - High Contrast (warm sunset orange/coral) */
+/* A Realm Reborn - High Contrast (Hydaelyn crystal blue & cyan) */
+:root.theme-arr.high-contrast {
+  --primary: #1d4ed8;
+  --secondary: #0e7490;
+  --accent: #92600a;
+}
+
+:root.dark.theme-arr.high-contrast {
+  --primary: #93c5fd;
+  --secondary: #67e8f9;
+  --accent: #fde68a;
+}
+
+/* MogTome default - High Contrast (warm sunset orange/coral) */
 :root.high-contrast,
 :root.theme-pom-pom.high-contrast {
   --primary: #9a3412;
@@ -60,95 +73,82 @@
   --accent: #fed7aa;
 }
 
-/* Crystal Tower - High Contrast (blues/cyans) */
-:root.theme-crystal.high-contrast {
-  --primary: #0047ab;
-  --secondary: #006080;
-  --accent: #2563eb;
+/* Heavensward - High Contrast (Ishgard steel-blue & gold) */
+:root.theme-heavensward.high-contrast {
+  --primary: #1e527e;
+  --secondary: #155e75;
+  --accent: #0891b2;
 }
 
-:root.dark.theme-crystal.high-contrast {
+:root.dark.theme-heavensward.high-contrast {
   --primary: #93c5fd;
+  --secondary: #bae6fd;
+  --accent: #67e8f9;
+}
+
+/* Stormblood - High Contrast (Ala Mhigan scarlet & imperial gold) */
+:root.theme-stormblood.high-contrast {
+  --primary: #9a1c2a;
+  --secondary: #8a5a0e;
+  --accent: #b45309;
+}
+
+:root.dark.theme-stormblood.high-contrast {
+  --primary: #fca5a5;
+  --secondary: #fcd34d;
+  --accent: #fed7aa;
+}
+
+/* Shadowbringers - High Contrast (amethyst violet, aether cyan & gold) */
+:root.theme-shadowbringers.high-contrast {
+  --primary: #6b21a8;
+  --secondary: #0e7490;
+  --accent: #92600a;
+}
+
+:root.dark.theme-shadowbringers.high-contrast {
+  --primary: #c4b5fd;
   --secondary: #67e8f9;
-  --accent: #bfdbfe;
-}
-
-/* Chocobo Gold - High Contrast (yellows/golds) */
-:root.theme-chocobo.high-contrast {
-  --primary: #92600a;
-  --secondary: #b84000;
-  --accent: #a16207;
-}
-
-:root.dark.theme-chocobo.high-contrast {
-  --primary: #fde047;
-  --secondary: #fdba74;
-  --accent: #fef08a;
-}
-
-/* Tonberry Lantern - High Contrast (teals/greens) */
-:root.theme-tonberry.high-contrast {
-  --primary: #065f5e;
-  --secondary: #04543f;
-  --accent: #0d9488;
-}
-
-:root.dark.theme-tonberry.high-contrast {
-  --primary: #5eead4;
-  --secondary: #6ee7b7;
-  --accent: #99f6e4;
-}
-
-/* Cactuar Fresh - High Contrast (greens/limes) */
-:root.theme-cactuar.high-contrast {
-  --primary: #166534;
-  --secondary: #3f6212;
-  --accent: #15803d;
-}
-
-:root.dark.theme-cactuar.high-contrast {
-  --primary: #86efac;
-  --secondary: #bef264;
-  --accent: #bbf7d0;
-}
-
-/* Moogle Cloud - High Contrast (pinks/purples) */
-:root.theme-moogle-cloud.high-contrast {
-  --primary: #9d174d;
-  --secondary: #6b21a8;
-  --accent: #be185d;
-}
-
-:root.dark.theme-moogle-cloud.high-contrast {
-  --primary: #f9a8d4;
-  --secondary: #d8b4fe;
-  --accent: #fbcfe8;
-}
-
-/* Midnight Realm - High Contrast (indigos/purples) */
-:root.theme-midnight.high-contrast {
-  --primary: #3730a3;
-  --secondary: #5b21b6;
-  --accent: #4338ca;
-}
-
-:root.dark.theme-midnight.high-contrast {
-  --primary: #a5b4fc;
-  --secondary: #c4b5fd;
-  --accent: #c7d2fe;
-}
-
-/* Costa del Sol - High Contrast (tropical teal/coral) */
-:root.theme-sunset.high-contrast {
-  --primary: #0e7490;
-  --secondary: #be123c;
-  --accent: #a16207;
-}
-
-:root.dark.theme-sunset.high-contrast {
-  --primary: #5eead4;
-  --secondary: #fda4af;
   --accent: #fde68a;
+}
+
+/* Endwalker - High Contrast (cosmic blue, celestial gold & sunrise) */
+:root.theme-endwalker.high-contrast {
+  --primary: #1e3a8a;
+  --secondary: #92600a;
+  --accent: #b45309;
+}
+
+:root.dark.theme-endwalker.high-contrast {
+  --primary: #93c5fd;
+  --secondary: #fde68a;
+  --accent: #fed7aa;
+}
+
+/* Dawntrail - High Contrast (dawn coral, golden sun & teal sea) */
+:root.theme-dawntrail.high-contrast {
+  --primary: #b4480f;
+  --secondary: #0e6e7d;
+  --accent: #92600a;
+}
+
+:root.dark.theme-dawntrail.high-contrast {
+  --primary: #fdba74;
+  --secondary: #67e8f9;
+  --accent: #fde68a;
+}
+
+/* Evercold - High Contrast (icy blue, aurora green & violet) */
+:root.theme-evercold.high-contrast {
+  --primary: #075985;
+  --secondary: #0f766e;
+  --accent: #5b21b6;
+}
+
+:root.dark.theme-evercold.high-contrast {
+  --primary: #7dd3fc;
+  --secondary: #5eead4;
+  --accent: #c4b5fd;
 }
 
 /* Extra Dark Mode (OLED-friendly, only when dark mode is active) */

@@ -81,7 +81,9 @@ export function StickyBioNote({
     ...stickyStyle,
     WebkitOverflowScrolling: "touch",
     touchAction: "pan-y",
-    overscrollBehavior: "contain",
+    // only trap the scroll when the note actually has more to show; otherwise a
+    // wheel over a short note should fall through and scroll the page.
+    overscrollBehavior: scrollState.canScroll ? "contain" : "auto",
   };
 
   // Same overlap + tilt in both states so the note keeps its scrapbook spot,
@@ -110,7 +112,7 @@ export function StickyBioNote({
             maxLength={500}
             autoFocus
             placeholder="Write your note, kupo~"
-            className="w-full resize-none border-none bg-transparent p-0 font-accent text-lg leading-snug text-[#463c2e] placeholder:text-[#463c2e]/40 focus:outline-none"
+            className="w-full resize-none border-none bg-transparent p-0 font-accent text-lg sm:text-xl leading-snug text-[#463c2e] placeholder:text-[#463c2e]/40 focus:outline-none"
           />
           <div className="mt-1 flex items-center gap-2">
             <button
@@ -145,11 +147,11 @@ export function StickyBioNote({
         <div
           ref={scrollRef}
           onScroll={updateScroll}
-          className="h-56 sm:h-64 lg:h-72 overflow-y-auto rounded-[3px] p-3.5 sm:p-4"
+          className={`h-56 sm:h-64 lg:h-72 ${scrollState.canScroll ? "overflow-y-auto" : "overflow-hidden"} rounded-[3px] p-3.5 sm:p-4`}
           style={scrollerStyle}
         >
           <p
-            className={`font-accent text-[17px] sm:text-lg leading-snug whitespace-pre-line ${bio ? "text-[#463c2e]" : "text-[#463c2e]/55"}`}
+            className={`font-accent text-lg sm:text-xl leading-snug whitespace-pre-line ${bio ? "text-[#463c2e]" : "text-[#463c2e]/55"}`}
           >
             {bio || "no note pinned yet, kupo~"}
           </p>

@@ -5,16 +5,20 @@ import { Quote } from "lucide-react";
 import { membersApi } from "@/shared/api/members";
 import {
   PageLayout,
+  PageHeader,
   LoadingState,
   ErrorState,
   EmptyState,
 } from "@/shared/ui/PageShell";
+import { KawaiiStar, KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
+import { Tag } from "@/shared/ui/Tag";
 import {
-  KawaiiStar,
-  KawaiiBow,
-  KawaiiSparkle,
-  KawaiiHeart,
-} from "@/shared/ui/kawaiiMotifs";
+  Sticker,
+  MoogleSticker,
+  BubbleSticker,
+  TapeStrip,
+  Dot,
+} from "@/shared/ui/stickers";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { FC_RANKS } from "@/shared/types";
 import { StaffCard } from "@/features/about/StaffCard";
@@ -26,7 +30,6 @@ import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 import flyingMoogles from "@/assets/moogles/moogles flying.webp";
 import moogleMail from "@/assets/moogles/moogle mail.webp";
 import illustratedMoogle from "@/assets/moogles/illustrated moogle.webp";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 
 export function About() {
   const { user, isAuthenticated } = useAuth();
@@ -82,71 +85,99 @@ export function About() {
           aria-hidden="true"
         />
 
-        <img
-          src={lilGuyMoogle}
-          alt=""
-          aria-hidden="true"
-          className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
+        <PageHeader
+          opener="~ pull up a chair, kupo ~"
+          title="Who We Are"
+          stickers={
+            <>
+              <TapeStrip
+                className="top-4 right-[7%] rotate-[14deg]"
+                color="var(--accent)"
+              />
+              <Sticker
+                className="hidden sm:flex left-[5%] top-1/2 -translate-y-1/2 h-12 w-12 -rotate-[12deg]"
+                color="var(--secondary)"
+              >
+                <KawaiiStar className="w-6 h-6 text-white" />
+              </Sticker>
+              <MoogleSticker
+                src={illustratedMoogle}
+                ring="var(--primary)"
+                className="hidden md:block right-[4%] top-1/2 -translate-y-1/2 h-16 w-16 rotate-[8deg]"
+              />
+              <BubbleSticker
+                className="hidden lg:block left-[14%] bottom-5 rotate-[4deg]"
+                color="var(--secondary)"
+              >
+                hello~
+              </BubbleSticker>
+              <Sticker
+                className="hidden lg:flex left-[3%] bottom-4 h-10 w-10 rotate-[8deg]"
+                color="var(--primary)"
+              >
+                <KawaiiHeart className="w-5 h-5 text-white" />
+              </Sticker>
+              <Dot
+                className="hidden md:block right-[17%] top-6 h-2.5 w-2.5"
+                color="var(--secondary)"
+              />
+            </>
+          }
         />
 
-        <header className="relative w-fit mx-auto mb-7 sm:mb-9 text-center animate-[fadeSlideIn_0.4s_ease-out]">
-          <span
-            className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-            aria-hidden="true"
-          />
-          <div className="surface paper -rotate-1 px-7 sm:px-12 py-5 sm:py-6">
-            <div
-              className="flex items-center justify-center gap-1.5 mb-1.5"
-              aria-hidden="true"
-            >
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
-              <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--secondary)]" />
-            </div>
-            <p className="eyebrow-script text-lg sm:text-2xl text-[var(--secondary)]/90 mb-1">
-              ~ pull up a chair, kupo ~
-            </p>
-            <h1 className="editorial-title text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[var(--text)]">
-              <span className="text-highlight">Who We Are</span>
-            </h1>
-          </div>
-        </header>
-
         <motion.section
-          className="relative mb-9 sm:mb-12 max-w-3xl mx-auto"
+          className="relative mb-10 sm:mb-14 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <span
-            className="pushpin absolute -top-2 left-10 z-10"
-            style={{ "--pin": "var(--primary)" } as CSSProperties}
-            aria-hidden="true"
+          {/* confetti dots tying the note to the board */}
+          <Dot
+            className="hidden sm:block -left-2 top-14 h-2.5 w-2.5"
+            color="var(--secondary)"
           />
-          <span
-            className="pushpin absolute -top-2 right-10 z-10"
-            style={{ "--pin": "var(--accent)" } as CSSProperties}
-            aria-hidden="true"
+          <Dot
+            className="hidden sm:block -right-1 top-28 h-2 w-2"
+            color="var(--accent)"
           />
-          <div className="surface paper p-5 sm:p-8 text-center -rotate-[0.5deg]">
-            <img
-              src={illustratedMoogle}
-              alt=""
-              aria-hidden="true"
-              className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5 object-contain drop-shadow-md"
+          <Dot
+            className="hidden sm:block left-8 -bottom-2 h-2 w-2"
+            color="var(--primary)"
+          />
+
+          <div className="surface relative p-6 sm:p-9 -rotate-[0.5deg]">
+            {/* washi tape pinning the note to the board */}
+            <TapeStrip className="-top-3 left-10 -rotate-[8deg]" />
+            <TapeStrip
+              className="-top-3 right-10 rotate-[8deg]"
+              color="var(--accent)"
             />
-            <div className="space-y-4 text-[var(--text-muted)] font-soft text-base sm:text-lg leading-relaxed">
+
+            {/* moogle polaroid */}
+            <div className="relative mx-auto mb-6 w-fit -rotate-2">
+              <div className="surface p-2 pb-3 w-32 sm:w-36">
+                <div className="aspect-square overflow-hidden rounded-lg bg-[var(--bg)]">
+                  <img
+                    src={illustratedMoogle}
+                    alt=""
+                    aria-hidden="true"
+                    className="w-full h-full object-contain p-2"
+                  />
+                </div>
+                <p className="font-accent font-bold text-center text-sm text-[var(--text)] mt-1.5">
+                  just a moogle
+                </p>
+              </div>
+            </div>
+
+            <p className="eyebrow-script text-center text-xl sm:text-2xl text-[var(--secondary)] mb-3">
+              ~ a little about us ~
+            </p>
+
+            <div className="space-y-4 text-[var(--text-muted)] font-soft text-base sm:text-lg leading-relaxed text-center max-w-2xl mx-auto">
               <p>
-                Kupo Life is a cozy Free Company on{" "}
-                <strong className="text-[var(--text)] font-semibold">
-                  Zalera
-                </strong>
-                , over in the{" "}
-                <strong className="text-[var(--text)] font-semibold">
-                  Crystal
-                </strong>{" "}
-                data center. More than anything, it's a place to log in and not
-                be alone, kupo.
+                Kupo Life is a cozy Free Company where, more than anything, it's
+                a place to log in and not be alone, kupo.
               </p>
               <p>
                 There's no quota to hit and no pressure to perform. Raid if you
@@ -160,15 +191,47 @@ export function About() {
                 home.
               </p>
             </div>
-            <figure className="mt-7">
-              <Quote
-                className="w-6 h-6 mx-auto mb-2 text-[var(--primary)]/40 rotate-180"
-                aria-hidden="true"
+
+            {/* scrapbook labels */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+              <Tag color="var(--secondary)" dot>
+                Zalera
+              </Tag>
+              <Tag color="var(--primary)" dot>
+                Crystal Data Center
+              </Tag>
+              <Tag
+                color="var(--accent)"
+                icon={<KawaiiHeart className="w-3 h-3" aria-hidden="true" />}
+              >
+                cozy &amp; no pressure
+              </Tag>
+            </div>
+
+            {/* sticky-note quote */}
+            <div className="relative mx-auto mt-8 w-fit max-w-md rotate-[1deg]">
+              <TapeStrip
+                className="-top-2.5 left-1/2 -translate-x-1/2 -rotate-3"
+                color="var(--secondary)"
               />
-              <p className="font-accent text-2xl sm:text-3xl text-[var(--secondary)] leading-snug">
-                A warm corner of Eorzea to come back to, kupo.
-              </p>
-            </figure>
+              <figure
+                className="rounded-2xl border-2 px-5 py-4 text-center"
+                style={{
+                  background:
+                    "color-mix(in srgb, var(--accent) 12%, var(--card))",
+                  borderColor:
+                    "color-mix(in srgb, var(--accent) 28%, transparent)",
+                }}
+              >
+                <Quote
+                  className="w-5 h-5 mx-auto mb-1 text-[var(--primary)]/40 rotate-180"
+                  aria-hidden="true"
+                />
+                <figcaption className="font-accent text-2xl sm:text-3xl text-[var(--secondary)] leading-snug">
+                  A warm corner of Eorzea to come back to, kupo.
+                </figcaption>
+              </figure>
+            </div>
           </div>
         </motion.section>
 

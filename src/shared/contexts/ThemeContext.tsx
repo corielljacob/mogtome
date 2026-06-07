@@ -17,14 +17,14 @@ import {
 import { THEME_META, THEME_PALETTES } from "@/shared/theme/themePalettes";
 
 export type ColorTheme =
-  | "pom-pom" // Classic red/purple (default)
-  | "crystal" // Blue/cyan crystal theme
-  | "chocobo" // Yellow/gold warm theme
-  | "tonberry" // Green/teal theme
-  | "cactuar" // Green/lime fresh theme
-  | "moogle-cloud" // Soft pink/lavender pastel theme
-  | "midnight" // Deep indigo/purple night theme
-  | "sunset"; // Orange/coral warm theme
+  | "pom-pom" // MogTome default (warm sunset orange/coral)
+  | "arr" // A Realm Reborn - Hydaelyn crystal blue
+  | "heavensward" // Ishgard ice-blue & frost
+  | "stormblood" // Ala Mhigan scarlet & gold
+  | "shadowbringers" // amethyst violet, cyan & gold Light
+  | "endwalker" // cosmic blue & celestial gold
+  | "dawntrail" // Tural dawn - coral, gold & teal
+  | "evercold"; // Norse frost - icy blue & aurora
 
 export type ColorMode = "light" | "dark" | "system";
 
@@ -62,6 +62,8 @@ export interface ThemeDefinition {
   id: ColorTheme;
   name: string;
   description: string;
+  /** optional themed title font (so the picker can preview it in-font) */
+  displayFont?: string;
   /** Preview colors shown in the theme picker */
   preview: {
     primary: string;
@@ -81,6 +83,7 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = THEME_META.map((meta) => {
     id: meta.id as ColorTheme,
     name: meta.name,
     description: meta.description,
+    displayFont: meta.displayFont,
     preview: { primary, secondary, accent },
   };
 });
@@ -122,7 +125,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        return { ...defaultSettings, ...parsed };
+        const merged = { ...defaultSettings, ...parsed };
+        // a removed theme (e.g. one of the retired non-expansion themes) falls
+        // back to the default rather than rendering an unstyled :root.
+        if (!THEME_META.some((t) => t.id === merged.colorTheme)) {
+          merged.colorTheme = defaultSettings.colorTheme;
+        }
+        return merged;
       }
 
       // Migration: check for old 'theme' key (light/dark)

@@ -1,7 +1,28 @@
+import { type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
+import { useTheme } from "@/shared/contexts/ThemeContext";
+import { THEME_META } from "@/shared/theme/themePalettes";
 import { getTagline } from "@/features/home/homeData";
+
+// brushed-gunmetal lettering for the Heavensward title - cool grey with just a
+// faint blue lean (not white), like the silver logo on the dark sky.
+const HW_SILVER =
+  "linear-gradient(180deg, #b3bdc9 0%, #939eac 32%, #767f8d 50%, #a4aebb 62%, #828c9a 80%, #69727f 100%)";
+
+// brighter platinum-blue lettering for A Realm Reborn (its logo runs cooler and
+// brighter than Heavensward's gunmetal).
+const ARR_SILVER =
+  "linear-gradient(180deg, #eaf2fc 0%, #c2d6ee 30%, #9cb6d8 50%, #dce8f8 62%, #aec6e4 80%, #8eaad2 100%)";
+
+// icy frost-silver lettering for Evercold (cooler, faintly cyan).
+const EVERCOLD_SILVER =
+  "linear-gradient(180deg, #ebf7fc 0%, #bcdcec 30%, #92c2d8 50%, #d6eef8 62%, #a4cfe2 80%, #84b6cf 100%)";
+
+// embossed-gold lettering for the Stormblood title (matches the gold logo)
+const SB_GOLD =
+  "linear-gradient(180deg, #fff8da 0%, #fde89c 26%, #f8dc83 48%, #fff2b8 60%, #f5da88 82%, #edcb6c 100%)";
 
 const QUICK_LINKS = [
   { to: "/members", label: "Family", color: "var(--secondary)" },
@@ -11,6 +32,63 @@ const QUICK_LINKS = [
 
 export function HeroText() {
   const defaultTagline = getTagline();
+  const { settings, isDarkMode } = useTheme();
+  // themes can carry a display font (e.g. Heavensward -> Cinzel); when set, the
+  // giant hero title takes it too, for a more dramatic themed home.
+  const themeFont = THEME_META.find(
+    (t) => t.id === settings.colorTheme,
+  )?.displayFont;
+  // metallic lettering for the dramatic dark themes - chrome for Heavensward,
+  // embossed gold for Stormblood. Only on the dark skies (it would wash out on
+  // the light backdrops, where the coloured title stays).
+  const ct = settings.colorTheme;
+  const metalGrad =
+    isDarkMode && ct === "heavensward"
+      ? HW_SILVER
+      : isDarkMode && ct === "arr"
+        ? ARR_SILVER
+        : isDarkMode && ct === "evercold"
+          ? EVERCOLD_SILVER
+          : isDarkMode &&
+              (ct === "stormblood" ||
+                ct === "shadowbringers" ||
+                ct === "endwalker" ||
+                ct === "dawntrail")
+            ? SB_GOLD
+            : null;
+  const metalStyle: CSSProperties | undefined = metalGrad
+    ? {
+        color: "transparent",
+        backgroundImage: metalGrad,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        // override sticker-text's thick white outline. The gold themes glitch
+        // under text-stroke + background-clip, so they drop the rim and lean on
+        // the emboss shadow; only Heavensward's chrome keeps a thin steel rim.
+        WebkitTextStroke:
+          ct === "heavensward" || ct === "arr" || ct === "evercold"
+            ? "0.012em rgba(206,219,234,0.7)"
+            : "0 transparent",
+        textShadow:
+          metalGrad === SB_GOLD
+            ? "0 1px 0 rgba(90,55,10,0.5), 0 2px 5px rgba(0,0,0,0.45)"
+            : "0 1px 3px rgba(0,0,0,0.45)",
+      }
+    : undefined;
+
+  // these expansions match their all-caps logos - and caps dodge the lowercase
+  // descender that clips under background-clip on the serif faces.
+  const h1Style: CSSProperties = {};
+  if (themeFont) h1Style.fontFamily = themeFont;
+  if (
+    ct === "arr" ||
+    ct === "stormblood" ||
+    ct === "shadowbringers" ||
+    ct === "endwalker" ||
+    ct === "dawntrail" ||
+    ct === "evercold"
+  )
+    h1Style.textTransform = "uppercase";
 
   return (
     <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
@@ -30,6 +108,7 @@ export function HeroText() {
 
       <motion.h1
         className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
+        style={h1Style}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, staggerChildren: 0.1 }}
@@ -46,7 +125,13 @@ export function HeroText() {
               }}
               transition={{ type: "spring", stiffness: 300, damping: 12 }}
             >
-              {char}
+              {metalStyle ? (
+                <span className="inline-block" style={metalStyle}>
+                  {char}
+                </span>
+              ) : (
+                char
+              )}
             </motion.span>
           ))}
         </span>
@@ -62,7 +147,13 @@ export function HeroText() {
               }}
               transition={{ type: "spring", stiffness: 300, damping: 12 }}
             >
-              {char}
+              {metalStyle ? (
+                <span className="inline-block" style={metalStyle}>
+                  {char}
+                </span>
+              ) : (
+                char
+              )}
             </motion.span>
           ))}
         </span>
