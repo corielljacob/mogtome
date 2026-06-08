@@ -27,11 +27,14 @@ export function PageLayout({
   maxWidth = "max-w-6xl 2xl:max-w-[84rem] 3xl:max-w-[96rem] 4xl:max-w-[110rem]",
   className = "",
 }: PageLayoutProps) {
-  // page backdrop lives on the #app-scroll container in App.tsx so it scrolls
-  // natively with the content and sits behind the nav.
+  // The page background is a fixed layer in App.tsx; this content just flows and
+  // the document scrolls. On phones we give NO bottom padding here so the content
+  // (the .corkboard) runs all the way down to the screen edge and bleeds behind
+  // the floating bottom nav - the nav clearance is moved into .corkboard's own
+  // bottom padding (see components.css) so the last row still clears the nav.
 
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-0">
       {moogles && (
         <SimpleFloatingMoogles
           primarySrc={moogles.primary}
@@ -42,7 +45,7 @@ export function PageLayout({
       <FloatingBubbles />
 
       <div
-        className={`relative py-6 sm:py-8 md:py-12 px-3 sm:px-4 z-10 ${className}`}
+        className={`relative pt-6 sm:pt-8 md:py-12 pb-0 px-3 sm:px-4 z-10 ${className}`}
       >
         <div className={`${maxWidth} mx-auto`}>{children}</div>
       </div>
