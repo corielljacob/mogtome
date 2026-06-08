@@ -195,13 +195,15 @@ function AppContent() {
 
         <ScrapbookNav />
 
-        {/* The document (body) scrolls natively. This column just holds the page;
-            pad left on desktop to clear the fixed nav (slim edge rail, or the
-            wider gutter the pinned expanded sidebar needs - animated either way).
-            Horizontal overflow is clipped globally via html { overflow-x:hidden }. */}
+        {/* The viewport scrolls the document natively. This column just holds the
+            page; pad left on desktop to clear the fixed nav (slim edge rail, or
+            the wider gutter the pinned expanded sidebar needs - animated either
+            way). overflow-x-clip is the horizontal guard for stray decorations:
+            it clips sideways overflow WITHOUT creating a scroll container, so the
+            native body scroll (and iOS toolbar-collapse) keeps working. */}
         <div
           id={APP_SCROLL_ID}
-          className={`flex flex-col min-h-[100dvh] transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
+          className={`flex flex-col min-h-[100dvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
         >
           <Navbar />
 
