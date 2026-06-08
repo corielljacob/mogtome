@@ -145,7 +145,7 @@ export function BackgroundAtmospherics() {
   return (
     <>
       <div
-        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
+        className="fixed inset-x-0 top-0 h-[100lvh] pointer-events-none z-0 transition-colors duration-1000"
         style={{
           background:
             isEventThemeActive && activeEvent
@@ -183,7 +183,7 @@ export function BackgroundAtmospherics() {
         !dawntrail &&
         !evercoldNight && (
           <div
-            className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+            className="fixed inset-x-0 top-0 h-[100lvh] z-0 pointer-events-none kawaii-dots opacity-80"
             aria-hidden="true"
           />
         )}

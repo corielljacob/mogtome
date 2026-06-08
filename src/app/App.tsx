@@ -145,13 +145,15 @@ function AppContent() {
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div>
-        {/* Full-screen background. position:fixed + inset-0 always covers the
-            entire device screen - including under the status bar and home
-            indicator - and stays put while the document scrolls. The shell and
-            content stay transparent so this shows through their gaps. */}
+        {/* Full-screen background. Sized to 100lvh (the LARGE viewport height)
+            rather than inset-0/dvh: on iOS Safari a fixed inset-0 layer undershoots
+            the visible viewport and leaves an unpainted band at the bottom. lvh is
+            always >= the visible area, so this covers the whole screen (including
+            behind the toolbar) while the document scrolls. Transparent shell +
+            content let it show through. */}
         <div
           aria-hidden="true"
-          className={`fixed inset-0 -z-10 bg-[var(--bg)] page-bg transition-colors duration-300 ${
+          className={`fixed inset-x-0 top-0 h-[100lvh] -z-10 bg-[var(--bg)] page-bg transition-colors duration-300 ${
             isHome ? "" : "page-pattern"
           }`}
         />
