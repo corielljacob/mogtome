@@ -4,13 +4,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* The document scrolls natively, like a normal site. This is what lets the
-       page always fill the mobile screen (the browser sizes the viewport for us)
-       - avoiding the "chin" a fixed-height inner scroll container produces. html
-       is the scroll element in standards mode; overflow-x:hidden here clips stray
-       decorations horizontally while keeping vertical scroll. */
-    overflow-x: hidden;
-    /* Background color - gradients applied via the fixed page-bg layer */
+    /* The viewport scrolls the document natively, like a normal site - this is
+       what lets iOS Safari collapse its toolbar and fill the screen as you
+       scroll. IMPORTANT: do NOT set overflow on html or body. Even
+       `overflow-x: hidden` turns the root into a scroll *container* (it forces
+       overflow-y to `auto`), which disables that native behaviour and brings the
+       "chin" back. Horizontal overflow is clipped on the content wrapper with
+       `overflow-x: clip` (App.tsx) instead - clip clips without creating a
+       scroller. */
     background-color: var(--bg);
     transition: background-color 0.3s ease;
   }
