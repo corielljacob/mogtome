@@ -322,3 +322,13 @@
     box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.06);
   }
 }
+
+/* Phones (below md, where the floating bottom nav lives): the corkboard bleeds
+   all the way down behind the nav. Its bottom padding becomes the nav clearance
+   so the last row clears the floating pill while the board background runs under
+   it - no dead band. Un-layered + !important so it beats the per-page py-* . */
+@media (max-width: 767px) {
+  .corkboard {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+  }
+}
