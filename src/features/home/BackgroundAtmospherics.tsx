@@ -145,7 +145,7 @@ export function BackgroundAtmospherics() {
   return (
     <>
       <div
-        className="fixed inset-x-0 top-0 h-[100lvh] pointer-events-none z-0 transition-colors duration-1000"
+        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
         style={{
           background:
             isEventThemeActive && activeEvent
@@ -175,18 +175,15 @@ export function BackgroundAtmospherics() {
           aria-hidden="true"
         />
       )}
-      {!heavensNight &&
-        !arrNight &&
-        !stormNight &&
-        !shadowNight &&
-        !endwalkerNight &&
-        !dawntrail &&
-        !evercoldNight && (
-          <div
-            className="fixed inset-x-0 top-0 h-[100lvh] z-0 pointer-events-none kawaii-dots opacity-80"
-            aria-hidden="true"
-          />
-        )}
+      {/* The cozy dots normally come from the page background on <html> (so they
+          cover the whole viewport). During an event the canvas shows the event's
+          gradient instead, so render the dots on top here just for events. */}
+      {isEventThemeActive && activeEvent && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+          aria-hidden="true"
+        />
+      )}
       {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
       {(heavensward || evercoldNight) && <ThemeSnow />}
       {evercoldNight && <NorthernLights />}

@@ -75,7 +75,7 @@ export function Profile() {
   }
 
   return (
-    <PageLayout moogles={{ primary: mailMoogle, secondary: illustratedMoogle }}>
+    <PageLayout bleed moogles={{ primary: mailMoogle, secondary: illustratedMoogle }}>
       <ProfileView
         profile={profile}
         viewer={viewer}

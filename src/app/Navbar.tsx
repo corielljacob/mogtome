@@ -190,9 +190,14 @@ function LoginButton() {
 export function Navbar() {
   return (
     <>
-      {/* mobile: top header, logo left + account controls right */}
+      {/* mobile: top header, logo left + account controls right.
+          Offset DOWN from the top edge (top-[...safe...]) rather than pinned
+          flush (top-0 + matching pt): iOS Safari treats a fixed element touching
+          top:0 as a top bar and won't let page content render behind the status
+          bar. Keeping the fixed box off the edge lets content run edge-to-edge
+          under the status bar (mirrors the bottom MobileNav fix). */}
       <nav
-        className="md:hidden fixed top-0 left-0 right-0 z-50 pt-[calc(env(safe-area-inset-top)+0.5rem)] px-3 pointer-events-none"
+        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
         aria-label="Mobile header"
       >
         <div className="flex items-center justify-between">

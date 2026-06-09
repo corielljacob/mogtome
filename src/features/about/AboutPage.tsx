@@ -63,7 +63,7 @@ export function About() {
   const hasStaff = !isLoading && !isError && staff.length > 0;
 
   return (
-    <PageLayout moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}>
+    <PageLayout bleed moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}>
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"

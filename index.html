@@ -102,6 +102,9 @@
         // Match the browser chrome (address/status bar) from the very first paint
         var tcMeta = document.querySelector('meta[name="theme-color"]');
         if (tcMeta) tcMeta.setAttribute("content", bgColor);
+        // NOTE: page height is pure CSS now (100lvh, see base.css) so the page
+        // fills the full screen and content flows behind the iOS toolbars. No
+        // JS viewport-height measurement needed.
       })();
     </script>
     <div id="root"></div>
