@@ -11,25 +11,73 @@
        overflow-y to `auto`), which disables that native behaviour and brings the
        "chin" back. Horizontal overflow is clipped on the content wrapper with
        `overflow-x: clip` (App.tsx) instead - clip clips without creating a
-       scroller. */
+       scroller.
+
+       The page background lives HERE on the root element. The browser paints the
+       root's background across the entire canvas (the whole viewport, always),
+       so there's no chin/forehead - unlike a `position: fixed` layer, which
+       undershoots the viewport on iOS. The flat colour is also set inline by the
+       boot script / ThemeContext; these dots layer on top of it. */
     background-color: var(--bg);
+    background-image:
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--primary) 10%, transparent) 0 2px,
+        transparent 2.6px
+      ),
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--secondary) 8%, transparent) 0 2px,
+        transparent 2.6px
+      );
+    background-size:
+      40px 40px,
+      40px 40px;
+    background-position:
+      0 0,
+      20px 20px;
     transition: background-color 0.3s ease;
+  }
+  /* gentler dots on the deep dark base */
+  html.dark {
+    background-image:
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--primary) 7%, transparent) 0 2px,
+        transparent 2.6px
+      ),
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--secondary) 6%, transparent) 0 2px,
+        transparent 2.6px
+      );
+  }
+  html.high-contrast {
+    background-image: none;
   }
 
   body {
     font-family: "Manrope", system-ui, sans-serif;
-    /* fill at least the screen so short pages don't collapse */
-    min-height: 100dvh;
+    /* 100lvh = the LARGE viewport (the height with iOS Safari's toolbars
+       collapsed). Sizing the page to this means its content runs the FULL height
+       of the screen and flows behind the browser toolbars, which then fill in as
+       you scroll - exactly how Reddit / Google behave. Sizing to the *visible*
+       height instead (100dvh / window.innerHeight) ends the document above the
+       toolbar and leaves that hard line / "chin". The root background covers any
+       gap, so short pages never look empty. */
+    min-height: 100vh; /* fallback for browsers without lvh */
+    min-height: 100lvh;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
-    /* Transparent to let the fixed background layer show through */
+    /* Transparent so the root (<html>) background shows through */
     background: transparent;
     color: var(--text);
   }
 
   #root {
-    min-height: 100dvh;
+    min-height: 100vh; /* fallback for browsers without lvh */
+    min-height: 100lvh;
   }
 
   h1,

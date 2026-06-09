@@ -49,15 +49,30 @@ export function MobileNav({
     <>
       {/* mobile: a floating pill that hovers above the home indicator, so the
           page background runs edge-to-edge underneath it. The <nav> spans the
-          width but is click-through; only the pill itself catches taps. */}
+          width but is click-through; only the pill itself catches taps.
+
+          CRITICAL: this is offset UP from the bottom edge (bottom-[...safe...])
+          rather than pinned flush (bottom-0 + matching pb). iOS Safari treats a
+          fixed element touching bottom:0 as a bottom bar it must keep above its
+          toolbar, which stops page content from scrolling behind the toolbar
+          (verified by bisection). Keeping the fixed box off the edge preserves
+          the native toolbar-collapse / content-behind-toolbar behaviour. */}
       <nav
-        className="md:hidden fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pointer-events-none"
+        className="md:hidden fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 flex justify-center px-3 pointer-events-none"
         aria-label="Mobile navigation"
       >
         <div
-          className="pointer-events-auto surface flex items-center gap-0.5 p-1.5 max-w-full"
+          className="pointer-events-auto flex items-center gap-0.5 p-1.5 max-w-full"
           style={{
             borderRadius: "9999px",
+            // frosted/translucent like a native iOS tab bar, so page content is
+            // visibly scrolling behind it (inline backdrop-filter intentionally
+            // bypasses the site-wide glassmorphism reset for this one element).
+            background: "color-mix(in srgb, var(--card) 68%, transparent)",
+            backdropFilter: "blur(18px) saturate(160%)",
+            WebkitBackdropFilter: "blur(18px) saturate(160%)",
+            border:
+              "2px solid color-mix(in srgb, var(--primary) 16%, var(--card))",
             boxShadow:
               "0 12px 30px -10px var(--shadow), 0 4px 10px -4px var(--shadow)",
           }}

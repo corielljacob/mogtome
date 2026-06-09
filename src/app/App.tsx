@@ -18,7 +18,7 @@ import {
   NavExpandedProvider,
   useNavExpanded,
 } from "@/shared/contexts/NavExpandedContext";
-import { APP_SCROLL_ID, jumpAppToTop } from "@/shared/lib/scroll";
+import { jumpAppToTop } from "@/shared/lib/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
@@ -97,7 +97,7 @@ const queryClient = new QueryClient({
 
 function PageLoader() {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-[100lvh] flex items-center justify-center pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="w-10 h-10 rounded-full border-3 border-[var(--primary)]/20 border-t-[var(--primary)] animate-spin" />
     </div>
   );
@@ -110,16 +110,18 @@ function AppContent() {
   // Home has its own bg; every other page gets the page pattern.
   const isHome = location.pathname === "/";
 
-  // Start each view at the top - the app scrolls inside #app-scroll, which
-  // persists across routes, so its scroll position must be reset on navigation.
+  // Start each view at the top on navigation - the document (window) is the
+  // scroller, and its scroll position carries across client-side route changes.
   useEffect(() => {
     jumpAppToTop();
   }, [location.pathname]);
 
-  // While the viewport is actively resizing, mark <html data-resizing> so the
-  // global CSS freeze (animations.css) suspends transitions/animations. Without
-  // it, spring/overshoot transitions and the Home view's transform layers can
-  // render a transient oversized/stale frame that only corrects on a reflow.
+  // While the viewport is actively resizing (orientation change, or iOS Safari
+  // collapsing/expanding its toolbars on scroll), mark <html data-resizing> so
+  // the global CSS freeze (animations.css) suspends transitions/animations.
+  // Without it, spring/overshoot transitions and the Home view's transform
+  // layers can render a transient oversized/stale frame that only corrects on a
+  // reflow. (Page heights are pure CSS now - 100lvh - so nothing to re-measure.)
   useEffect(() => {
     const root = document.documentElement;
     let timer: number | undefined;
@@ -145,33 +147,9 @@ function AppContent() {
       transition={settings.reducedMotion ? { duration: 0 } : undefined}
     >
       <div>
-        {/* Full-screen background. Sized to 100lvh (the LARGE viewport height)
-            rather than inset-0/dvh: on iOS Safari a fixed inset-0 layer undershoots
-            the visible viewport and leaves an unpainted band at the bottom. lvh is
-            always >= the visible area, so this covers the whole screen (including
-            behind the toolbar) while the document scrolls. Transparent shell +
-            content let it show through. */}
-        <div
-          aria-hidden="true"
-          className={`fixed inset-x-0 top-0 h-[100lvh] -z-10 bg-[var(--bg)] page-bg transition-colors duration-300 ${
-            isHome ? "" : "page-pattern"
-          }`}
-        />
-
-        {/* iOS standalone runs edge-to-edge with white status-bar icons
-            (black-translucent), which wash out over the light page at the top.
-            This scrim darkens just the status-bar strip and fades to nothing -
-            its height is the safe-area inset, so it's invisibly 0px tall on
-            devices/browsers without a top inset. */}
-        <div
-          aria-hidden="true"
-          className="md:hidden fixed inset-x-0 top-0 z-40 pointer-events-none"
-          style={{
-            height: "env(safe-area-inset-top)",
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.12) 65%, transparent)",
-          }}
-        />
+        {/* The page background lives on the <html> element (base.css) so the
+            browser canvas paints it across the whole viewport - no fixed layer
+            that undershoots on iOS, no chin/forehead. */}
 
         {/* Home's warm ambient glow lives inside the content area, so the fixed
             nav's left gutter (md:pl-16) would otherwise read as a dark seam -
@@ -197,19 +175,28 @@ function AppContent() {
 
         <ScrapbookNav />
 
-        {/* The viewport scrolls the document natively. This column just holds the
-            page; pad left on desktop to clear the fixed nav (slim edge rail, or
-            the wider gutter the pinned expanded sidebar needs - animated either
-            way). overflow-x-clip is the horizontal guard for stray decorations:
-            it clips sideways overflow WITHOUT creating a scroll container, so the
-            native body scroll (and iOS toolbar-collapse) keeps working. */}
+        {/* The viewport scrolls the document natively. This wrapper just holds
+            the page; pad left on desktop to clear the fixed nav (slim edge rail,
+            or the wider gutter the pinned expanded sidebar needs - animated
+            either way). overflow-x-clip is the horizontal guard for stray
+            decorations: it clips sideways overflow WITHOUT creating a scroll
+            container, so the native body scroll (and iOS toolbar-collapse) keeps
+            working.
+
+            CRITICAL: do NOT make this a `flex flex-col` with a `flex-1` <main>.
+            Combined with min-h-[100lvh] that gives <main> a one-screen-tall BOX
+            that taller content merely overflows - and iOS Safari fills behind its
+            toolbar based on that box, so content hard-stops at the screen edge
+            instead of running under the toolbar. A plain block <main> whose box
+            grows with its content is what lets content render behind the toolbar
+            (verified against a bare HTML page). Pages fill the screen via their
+            own min-h-[100lvh] (PageLayout / Home), not a flex stretch. */}
         <div
-          id={APP_SCROLL_ID}
-          className={`flex flex-col min-h-[100dvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
+          className={`min-h-[100lvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
         >
           <Navbar />
 
-          <main id="main-content" className="flex-1" tabIndex={-1}>
+          <main id="main-content" tabIndex={-1}>
             <ChunkErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>

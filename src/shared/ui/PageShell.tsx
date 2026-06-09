@@ -15,6 +15,14 @@ interface PageLayoutProps {
   moogles?: { primary: string; secondary: string };
   maxWidth?: string;
   className?: string;
+  /**
+   * Phones only: when the page's content is a full `.corkboard`, pass `bleed` so
+   * this layout drops its own top/bottom clearance and the board itself runs to
+   * the screen edges (behind the status bar + floating nav). The board provides
+   * the chrome clearance via its own padding (see components.css). Non-corkboard
+   * pages leave this off so their content still clears the chrome.
+   */
+  bleed?: boolean;
 }
 
 export function PageLayout({
@@ -26,15 +34,10 @@ export function PageLayout({
   // sign-in / status screens).
   maxWidth = "max-w-6xl 2xl:max-w-[84rem] 3xl:max-w-[96rem] 4xl:max-w-[110rem]",
   className = "",
+  bleed = false,
 }: PageLayoutProps) {
-  // The page background is a fixed layer in App.tsx; this content just flows and
-  // the document scrolls. On phones we give NO bottom padding here so the content
-  // (the .corkboard) runs all the way down to the screen edge and bleeds behind
-  // the floating bottom nav - the nav clearance is moved into .corkboard's own
-  // bottom padding (see components.css) so the last row still clears the nav.
-
   return (
-    <div className="min-h-[100dvh] relative pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-0">
+    <div className="min-h-[100lvh] relative pt-0 pb-0">
       {moogles && (
         <SimpleFloatingMoogles
           primarySrc={moogles.primary}
@@ -45,7 +48,7 @@ export function PageLayout({
       <FloatingBubbles />
 
       <div
-        className={`relative pt-6 sm:pt-8 md:py-12 pb-0 px-3 sm:px-4 z-10 ${className}`}
+        className={`relative ${bleed ? "" : "pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))]"} md:py-12 px-3 sm:px-4 z-10 ${className}`}
       >
         <div className={`${maxWidth} mx-auto`}>{children}</div>
       </div>

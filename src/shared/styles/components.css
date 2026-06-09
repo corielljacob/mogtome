@@ -127,50 +127,6 @@
       );
   }
 
-  /* Page pattern (polka dots) - a soft two-tone kawaii dot wash for the page
-   * background. Placed on the scroll container (#app-scroll), tinted from the theme
-   * so it recolours per palette. Hidden in high-contrast for a clean a11y bg. */
-  .page-pattern {
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 10%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 8%, transparent) 0 2px,
-        transparent 2.6px
-      );
-    background-size:
-      40px 40px,
-      40px 40px;
-    background-position:
-      0 0,
-      20px 20px;
-    /* Default (scroll) attachment, pinned to the viewport - NOT "local". The dots
-       are uniform, so there's no visible difference while scrolling, but they no
-       longer ride the overscroll bounce / content reflow, which made it jitter. */
-  }
-  /* Dark mode: keep the dots very gentle on the deep base. */
-  .dark .page-pattern {
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 7%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 6%, transparent) 0 2px,
-        transparent 2.6px
-      );
-  }
-  :root.high-contrast .page-pattern {
-    background-image: none;
-  }
-
   /* Scrapbook board - the big content surface on Members / Chronicle / Settings /
    * Knights. A soft, theme-tinted pastel paper page (no more brown cork): just the
    * shared paper grain (no dots - those live on the page background now), a candy
@@ -323,12 +279,24 @@
   }
 }
 
-/* Phones (below md, where the floating bottom nav lives): the corkboard bleeds
-   all the way down behind the nav. Its bottom padding becomes the nav clearance
-   so the last row clears the floating pill while the board background runs under
-   it - no dead band. Un-layered + !important so it beats the per-page py-* . */
+/* Phones (below md, where the floating nav + status bar live): the corkboard
+   bleeds all the way to BOTH screen edges, its board background running behind
+   the status bar (top) and the floating MobileNav pill (bottom) so the page
+   reads continuous edge-to-edge. The board's own padding becomes the chrome
+   clearance - the title clears the top Navbar, the last row clears the bottom
+   pill - while the board fills behind them. Un-layered + !important so it beats
+   the per-page py-* . (PageShell zeroes its own top/bottom padding on phones so
+   the board can reach the edges.) */
 @media (max-width: 767px) {
+  /* The board runs to BOTH screen edges (behind the status bar + floating nav)
+     so the page reads continuous edge-to-edge. The page itself drops its
+     clearance via PageLayout's `bleed` prop; the board re-adds it as its own
+     padding so the title/last row still clear the chrome. min-height fills the
+     screen so a short page's board still reaches the bottom edge instead of
+     ending mid-screen with empty space below it. */
   .corkboard {
+    min-height: 100lvh;
+    padding-top: calc(4rem + env(safe-area-inset-top)) !important;
     padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
   }
 }

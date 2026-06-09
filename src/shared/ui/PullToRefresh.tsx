@@ -23,9 +23,9 @@ interface PullToRefreshProps {
   disabled?: boolean;
 }
 
-// Native-style pull-to-refresh for the app's shared scroll container. Renders
-// nothing inline - it attaches touch listeners to #app-scroll and portals a
-// small spinner badge that follows the pull, then spins while refreshing. Only
+// Native-style pull-to-refresh for the document scroll. Renders nothing inline -
+// it attaches touch listeners to the window and portals a small spinner badge
+// that follows the pull, then spins while refreshing. Only
 // engages on touch devices and only when the view is already scrolled to the
 // top, so it never fights normal scrolling.
 export function PullToRefresh({
