@@ -18,7 +18,7 @@ import {
   NavExpandedProvider,
   useNavExpanded,
 } from "@/shared/contexts/NavExpandedContext";
-import { APP_SCROLL_ID, jumpAppToTop } from "@/shared/lib/scroll";
+import { jumpAppToTop } from "@/shared/lib/scroll";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
 class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
@@ -110,8 +110,8 @@ function AppContent() {
   // Home has its own bg; every other page gets the page pattern.
   const isHome = location.pathname === "/";
 
-  // Start each view at the top - the app scrolls inside #app-scroll, which
-  // persists across routes, so its scroll position must be reset on navigation.
+  // Start each view at the top on navigation - the document (window) is the
+  // scroller, and its scroll position carries across client-side route changes.
   useEffect(() => {
     jumpAppToTop();
   }, [location.pathname]);
@@ -192,7 +192,6 @@ function AppContent() {
             (verified against a bare HTML page). Pages fill the screen via their
             own min-h-[100lvh] (PageLayout / Home), not a flex stretch. */}
         <div
-          id={APP_SCROLL_ID}
           className={`min-h-[100lvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
         >
           <Navbar />

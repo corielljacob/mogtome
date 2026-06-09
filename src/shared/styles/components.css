@@ -127,50 +127,6 @@
       );
   }
 
-  /* Page pattern (polka dots) - a soft two-tone kawaii dot wash for the page
-   * background. Placed on the scroll container (#app-scroll), tinted from the theme
-   * so it recolours per palette. Hidden in high-contrast for a clean a11y bg. */
-  .page-pattern {
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 10%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 8%, transparent) 0 2px,
-        transparent 2.6px
-      );
-    background-size:
-      40px 40px,
-      40px 40px;
-    background-position:
-      0 0,
-      20px 20px;
-    /* Default (scroll) attachment, pinned to the viewport - NOT "local". The dots
-       are uniform, so there's no visible difference while scrolling, but they no
-       longer ride the overscroll bounce / content reflow, which made it jitter. */
-  }
-  /* Dark mode: keep the dots very gentle on the deep base. */
-  .dark .page-pattern {
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 7%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 6%, transparent) 0 2px,
-        transparent 2.6px
-      );
-  }
-  :root.high-contrast .page-pattern {
-    background-image: none;
-  }
-
   /* Scrapbook board - the big content surface on Members / Chronicle / Settings /
    * Knights. A soft, theme-tinted pastel paper page (no more brown cork): just the
    * shared paper grain (no dots - those live on the page background now), a candy
