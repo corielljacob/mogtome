@@ -111,6 +111,16 @@ function AppContent() {
     jumpAppToTop();
   }, [location.pathname]);
 
+  // Phones: pin the home view to the visible viewport (base.css html[data-home])
+  // so it never scrolls. The flat page background is painted on the <html> canvas,
+  // so it still fills the whole screen behind the iOS chrome. Other pages scroll.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isHome) root.setAttribute("data-home", "");
+    else root.removeAttribute("data-home");
+    return () => root.removeAttribute("data-home");
+  }, [isHome]);
+
   // While the viewport is actively resizing (orientation change, or iOS Safari
   // collapsing/expanding its toolbars on scroll), mark <html data-resizing> so
   // the global CSS freeze (animations.css) suspends transitions/animations.
@@ -183,7 +193,7 @@ function AppContent() {
             (verified against a bare HTML page). Pages fill the screen via their
             own min-h-[100lvh] (PageLayout / Home), not a flex stretch. */}
       <div
-        className={`min-h-[100lvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
+        className={`${isHome ? "h-[100dvh] md:h-auto md:min-h-[100lvh]" : "min-h-[100lvh]"} overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
       >
         <Navbar />
 

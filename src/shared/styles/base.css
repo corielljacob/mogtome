@@ -49,6 +49,19 @@
     min-height: 100lvh;
   }
 
+  /* Home (phones): pin the document to the visible viewport so it can't scroll -
+     the dashboard is sized to fit one screen. The flat page background is painted
+     on the <html> canvas, so it still fills the whole screen (incl. behind the
+     iOS chrome) regardless. Toggled by App.tsx (data-home). Desktop scrolls. */
+  @media (max-width: 767px) {
+    html[data-home],
+    html[data-home] body,
+    html[data-home] #root {
+      height: 100dvh;
+      min-height: 0;
+    }
+  }
+
   h1,
   h2,
   h3,
