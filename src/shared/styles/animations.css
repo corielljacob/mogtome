@@ -211,8 +211,70 @@
   animation: ping-slow 2s ease-in-out infinite;
 }
 
+/* --- Framer-Motion replacements ---------------------------------------------
+   Entrance/exit keyframes, applied via Tailwind arbitrary animations, e.g.
+   `animate-[fadeIn_0.3s_ease-out]` or with fill mode `animate-[scaleIn_0.3s_ease-out_both]`.
+   Added when Framer Motion was removed app-wide (its mount/unmount churned the
+   iOS Safari compositor and banded the safe-area edges). `fadeSlideIn` (above)
+   covers fade+rise; these cover the rest. */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(18px) rotate(-1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0);
+  }
+}
+
 /* Respect user's reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+  /* arbitrary entrance animations (animate-[name_...]) - just appear */
+  [class*="animate-["] {
+    animation: none !important;
+  }
+
   .animate-float-moogle,
   .animate-float-moogle-subtle,
   .animate-float-sparkle,
@@ -260,4 +322,676 @@ html[data-resizing] *::after {
   transition: none !important;
   animation-play-state: paused !important;
   scroll-behavior: auto !important;
+}
+
+/* ===========================================================================
+   home-* keyframes - Framer Motion replacements for the decorative Home
+   effects (auroras, particles, twinkles, drifting moogles, hero text). Each
+   reproduces an infinite-loop motion that previously lived in an inline
+   `animate`/`transition`. Per-element values (drift, spin, bob, rise, sway,
+   etc.) are passed in via CSS custom properties (--home-*) set inline on the
+   element, so a single keyframe serves every seeded item.
+   APPEND-ONLY: never modify or reorder existing rules above this banner.
+   =========================================================================== */
+
+/* CozyAtmosphere stars: y drift + rotate + opacity pulse.
+   vars: --home-drift (px), --home-spin (deg), --home-op (peak opacity) */
+@keyframes home-cozy-star {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: calc(var(--home-op, 0.6) * 0.5);
+  }
+  50% {
+    transform: translateY(var(--home-drift, 0px)) rotate(var(--home-spin, 0deg));
+    opacity: var(--home-op, 0.6);
+  }
+}
+
+/* EventParticles: y rise + x drift + rotate + opacity pulse.
+   vars: --home-drift (px, x), --home-rot (deg), --home-op (peak opacity) */
+@keyframes home-event-particle {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: calc(var(--home-op, 0.6) * 0.6);
+  }
+  50% {
+    transform: translateY(-15px) translateX(var(--home-drift, 0px))
+      rotate(var(--home-rot, 0deg));
+    opacity: var(--home-op, 0.6);
+  }
+}
+
+/* FairyLights: opacity 0.1->0.85 + scale 0.8->1.3 pulse */
+@keyframes home-fairy-light {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.3);
+  }
+}
+
+/* HalloweenOverlay fog/vignette opacity pulse.
+   vars: --home-op-min, --home-op-max */
+@keyframes home-fog-pulse {
+  0%,
+  100% {
+    opacity: var(--home-op-min, 0.6);
+  }
+  50% {
+    opacity: var(--home-op-max, 1);
+  }
+}
+
+/* HalloweenOverlay drifting blurred fog bank: x sweep + opacity in/out.
+   vars: --home-x-from, --home-x-to, --home-op-max */
+@keyframes home-fog-sweep {
+  0% {
+    transform: translateX(var(--home-x-from, -10%));
+    opacity: 0;
+  }
+  50% {
+    opacity: var(--home-op-max, 0.12);
+  }
+  100% {
+    transform: translateX(var(--home-x-to, 110%));
+    opacity: 0;
+  }
+}
+
+/* HalloweenOverlay ghosts: y rise + x drift, opacity in/hold/out.
+   vars: --home-y (px, negative), --home-drift (px, x), --home-op (peak) */
+@keyframes home-ghost-drift {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: var(--home-op, 0.07);
+  }
+  80% {
+    opacity: var(--home-op, 0.07);
+  }
+  100% {
+    transform: translateY(var(--home-y, -100px))
+      translateX(var(--home-drift, 0px));
+    opacity: 0;
+  }
+}
+
+/* HalloweenOverlay lantern glow: irregular opacity + scale flicker */
+@keyframes home-lantern-flicker {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  50% {
+    opacity: 0.2;
+    transform: scale(0.95);
+  }
+  75% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+}
+
+/* HeroMoogle speech bubble gentle bob (y 0 -> -8 -> 0) */
+@keyframes home-bubble-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* HeroMoogle quote swap entrance (AnimatePresence replacement): rise + fade */
+@keyframes home-quote-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HeroMoogle main moogle idle: independent y bob + rotate sway.
+   Original: y [-8,12,-8] over 5s, rotate [-1.5,2.5,-1.5] over 7s. Combined
+   into one keyframe whose 35/70 stops approximate the differing periods. */
+@keyframes home-moogle-idle {
+  0% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(2.5deg);
+  }
+  100% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+}
+
+/* WarmMotes: rise + x drift + opacity in/out.
+   vars: --home-y (px, negative rise), --home-drift (px, x) */
+@keyframes home-warm-mote {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(var(--home-y, -220px))
+      translateX(var(--home-drift, 0px));
+    opacity: 0;
+  }
+}
+
+/* WarmMoogleAura - scale-pulse + opacity. Several variants differ only in the
+   scale range, passed via --home-scale-min/--home-scale-max and opacity via
+   --home-op-min/--home-op-max. */
+@keyframes home-aura-pulse {
+  0%,
+  100% {
+    transform: scale(var(--home-scale-min, 1.6));
+    opacity: var(--home-op-min, 0.35);
+  }
+  50% {
+    transform: scale(var(--home-scale-max, 1.85));
+    opacity: var(--home-op-max, 0.55);
+  }
+}
+
+/* WarmMoogleAura - opacity-only breathe (no scale change).
+   vars: --home-op-min, --home-op-max */
+@keyframes home-aura-breathe {
+  0%,
+  100% {
+    opacity: var(--home-op-min, 0.25);
+  }
+  50% {
+    opacity: var(--home-op-max, 0.5);
+  }
+}
+
+/* WarmMoogleAura - 4-stop flicker breathe (Halloween radial).
+   vars: --home-op-a..d as stop opacities */
+@keyframes home-aura-flicker {
+  0% {
+    opacity: var(--home-op-a, 0.1);
+  }
+  25% {
+    opacity: var(--home-op-b, 0.35);
+  }
+  50% {
+    opacity: var(--home-op-c, 0.05);
+  }
+  75% {
+    opacity: var(--home-op-d, 0.3);
+  }
+  100% {
+    opacity: var(--home-op-a, 0.1);
+  }
+}
+
+/* WarmMoogleAura - rotating ring at a fixed scale, opacity pulse layered on a
+   wrapper. This one only rotates; opacity handled by a separate breathe wrapper.
+   vars: --home-rot-from, --home-rot-to, --home-scale */
+@keyframes home-aura-spin {
+  from {
+    transform: scale(var(--home-scale, 1.3)) rotate(var(--home-rot-from, 0deg));
+  }
+  to {
+    transform: scale(var(--home-scale, 1.3)) rotate(var(--home-rot-to, 360deg));
+  }
+}
+
+/* MoogleCharms - small floating charm bob.
+   vars: --home-y (px, negative peak) */
+@keyframes home-charm-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--home-y, -6px));
+  }
+}
+
+/* MoogleCharms - bob + rotate.
+   vars: --home-y (px), --home-rot (deg) */
+@keyframes home-charm-bob-rot {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(var(--home-y, -6px)) rotate(var(--home-rot, 0deg));
+  }
+}
+
+/* MoogleCharms - bob + opacity pulse.
+   vars: --home-y (px), --home-op-min, --home-op-max */
+@keyframes home-charm-bob-op {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: var(--home-op-min, 0.4);
+  }
+  50% {
+    transform: translateY(var(--home-y, -6px));
+    opacity: var(--home-op-max, 1);
+  }
+}
+
+/* MoogleCharms - scale + opacity pulse (no translate).
+   vars: --home-scale-max, --home-op-min, --home-op-max */
+@keyframes home-charm-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: var(--home-op-min, 0.5);
+  }
+  50% {
+    transform: scale(var(--home-scale-max, 1.3));
+    opacity: var(--home-op-max, 1);
+  }
+}
+
+/* MoogleCharms - scale + rotate (Halloween skull / Starlight twist).
+   vars: --home-scale-max, --home-rot (deg) */
+@keyframes home-charm-scale-rot {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(var(--home-scale-max, 1.2)) rotate(var(--home-rot, 10deg));
+  }
+}
+
+/* MoogleCharms - bob + scale pulse.
+   vars: --home-y (px), --home-scale-max */
+@keyframes home-charm-bob-scale {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(var(--home-y, -4px)) scale(var(--home-scale-max, 1.2));
+  }
+}
+
+/* MoogleCharms - scale + rotate-and-back + opacity pulse (Starlight top
+   snowflake: rotate 0->90->0). vars: --home-scale-max, --home-rot (deg),
+   --home-op-min, --home-op-max */
+@keyframes home-charm-scale-rot-op {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: var(--home-op-min, 0.5);
+  }
+  50% {
+    transform: scale(var(--home-scale-max, 1.3)) rotate(var(--home-rot, 90deg));
+    opacity: var(--home-op-max, 1);
+  }
+}
+
+/* MoogleCharms - Starlight snowflake: scale + opacity + full spin (linear
+   rotate 0->360 across the loop, with scale/opacity peaking mid-way). */
+@keyframes home-charm-spin-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: var(--home-op-min, 0.4);
+  }
+  50% {
+    transform: scale(var(--home-scale-max, 1.2)) rotate(180deg);
+    opacity: var(--home-op-max, 1);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: var(--home-op-min, 0.4);
+  }
+}
+
+/* NorthernLights aurora ribbons: 5-stop opacity shimmer (no transform).
+   vars: --home-op-1..5 */
+@keyframes home-aurora-shimmer {
+  0% {
+    opacity: var(--home-op-1, 0.2);
+  }
+  25% {
+    opacity: var(--home-op-2, 0.4);
+  }
+  50% {
+    opacity: var(--home-op-3, 0.25);
+  }
+  75% {
+    opacity: var(--home-op-4, 0.35);
+  }
+  100% {
+    opacity: var(--home-op-1, 0.2);
+  }
+}
+
+/* ThemeAurora golden Light flicker (left): 5-stop opacity.
+   vars: --home-op-1..5 (reuses home-aurora-shimmer mapping) */
+@keyframes home-light-flicker {
+  0% {
+    opacity: var(--home-op-1, 0.62);
+  }
+  25% {
+    opacity: var(--home-op-2, 0.95);
+  }
+  50% {
+    opacity: var(--home-op-3, 0.72);
+  }
+  75% {
+    opacity: var(--home-op-4, 0.9);
+  }
+  100% {
+    opacity: var(--home-op-1, 0.62);
+  }
+}
+
+/* ThemeAurora beams: 5-stop opacity + x sway, fixed rotate held via var.
+   vars: --home-rot (deg), --home-op-1..5 */
+@keyframes home-beam-sway {
+  0% {
+    transform: rotate(var(--home-rot, 0deg)) translateX(-16px);
+    opacity: var(--home-op-1, 0.25);
+  }
+  25% {
+    opacity: var(--home-op-2, 0.5);
+  }
+  50% {
+    transform: rotate(var(--home-rot, 0deg)) translateX(16px);
+    opacity: var(--home-op-3, 0.32);
+  }
+  75% {
+    opacity: var(--home-op-4, 0.5);
+  }
+  100% {
+    transform: rotate(var(--home-rot, 0deg)) translateX(-16px);
+    opacity: var(--home-op-1, 0.25);
+  }
+}
+
+/* ThemeAurora / ThemeCosmos / ThemeCrystal twinkling motes: y bob + 5-stop
+   opacity. vars: --home-bob (px), --home-op (peak) */
+@keyframes home-mote-twinkle {
+  0% {
+    transform: translateY(0);
+    opacity: calc(var(--home-op, 0.6) * 0.25);
+  }
+  25% {
+    opacity: var(--home-op, 0.6);
+  }
+  50% {
+    transform: translateY(calc(-1 * var(--home-bob, 8px)));
+    opacity: calc(var(--home-op, 0.6) * 0.4);
+  }
+  75% {
+    transform: translateY(0);
+    opacity: calc(var(--home-op, 0.6) * 0.85);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: calc(var(--home-op, 0.6) * 0.25);
+  }
+}
+
+/* ThemeAurora shooting stars / ThemeCosmos comets: diagonal travel + fade.
+   Travel + the repeatDelay gap are folded into one loop: the streak fires in
+   the first `--home-active` fraction, then sits invisible for the remainder.
+   vars: --home-dx (vw), --home-dy (vh), --home-active (0..1 active fraction) */
+@keyframes home-shooting-star {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  12% {
+    transform: translate(var(--home-dx, 30vw), var(--home-dy, 12vh));
+    opacity: 0;
+  }
+  100% {
+    transform: translate(var(--home-dx, 30vw), var(--home-dy, 12vh));
+    opacity: 0;
+  }
+}
+
+/* ThemeCosmos / ThemeCrystal floating wrapper: gentle y bob.
+   vars: --home-bob (px peak, negative) */
+@keyframes home-float-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--home-bob, -9px));
+  }
+}
+
+/* ThemeCosmos moon halo / ThemeCrystal aura: 4-stop opacity breathe.
+   vars: --home-op-1..4 */
+@keyframes home-halo-breathe {
+  0% {
+    opacity: var(--home-op-1, 0.42);
+  }
+  33% {
+    opacity: var(--home-op-2, 0.7);
+  }
+  66% {
+    opacity: var(--home-op-3, 0.5);
+  }
+  100% {
+    opacity: var(--home-op-1, 0.42);
+  }
+}
+
+/* ThemeCrystal orbiting shard rings: full rotate (direction via to-value).
+   vars: --home-rot-to (deg, +360 or -360) */
+@keyframes home-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(var(--home-rot-to, 360deg));
+  }
+}
+
+/* ThemeDawn sun reflection pillar: 5-stop opacity */
+@keyframes home-dawn-reflection {
+  0% {
+    opacity: 0.5;
+  }
+  25% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 0.58;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* ThemeDawn sun: opacity 4-stop + scale breathe */
+@keyframes home-dawn-sun {
+  0% {
+    opacity: 0.68;
+    transform: scale(1);
+  }
+  33% {
+    opacity: 0.95;
+    transform: scale(1.05);
+  }
+  66% {
+    opacity: 0.78;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.68;
+    transform: scale(1);
+  }
+}
+
+/* ThemeDawn pollen / ThemeEmbers embers rise: vertical travel + opacity
+   in/hold/out. vars: --home-rise (e.g. 70vh), applied as negative translateY */
+@keyframes home-rise-fade {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--home-op, 0.8);
+  }
+  85% {
+    opacity: var(--home-op, 0.8);
+  }
+  100% {
+    transform: translateY(calc(-1 * var(--home-rise, 70vh)));
+    opacity: 0;
+  }
+}
+
+/* ThemeDawn pollen / ThemeEmbers ember / ThemeSnow flake horizontal sway on an
+   inner wrapper. vars: --home-sway (px) -> sways -sway/2 .. +sway/2 */
+@keyframes home-sway {
+  0%,
+  100% {
+    transform: translateX(calc(-0.5 * var(--home-sway, 16px)));
+  }
+  50% {
+    transform: translateX(calc(0.5 * var(--home-sway, 16px)));
+  }
+}
+
+/* ThemeEmbers flame glow: 5-stop opacity flicker */
+@keyframes home-flame-glow {
+  0% {
+    opacity: 0.75;
+  }
+  25% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.82;
+  }
+  75% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0.75;
+  }
+}
+
+/* ThemeSnow flake fall: linear top->bottom (-10vh .. 110vh) */
+@keyframes home-snow-fall {
+  from {
+    transform: translateY(-10vh);
+  }
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+/* StarlightOverlay falling flakes: full-height fall + x drift + spin.
+   The x sway and rotate ran on separate timings in the original; combined here
+   with the fall as the master period. vars: --home-fall (px), --home-drift (px) */
+@keyframes home-starlight-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(calc(0.5 * var(--home-fall, 1000px)))
+      translateX(var(--home-drift, 0px)) rotate(180deg);
+  }
+  100% {
+    transform: translateY(var(--home-fall, 1000px)) translateX(0) rotate(360deg);
+  }
+}
+
+/* StarlightOverlay bottom glow: opacity pulse 0.6 -> 1 -> 0.6 */
+@keyframes home-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* StarlightOverlay sparkles: opacity 0->0.6->0 + scale 0.5->1.2->0.5 + rotate
+   0->180, then idle for the repeatDelay (4s) tail. With duration 3s + gap 4s the
+   active fraction is 3/7; the keyframe fires in the first ~43% then rests. */
+@keyframes home-sparkle-twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  21% {
+    opacity: 0.6;
+    transform: scale(1.2) rotate(90deg);
+  }
+  43% {
+    opacity: 0;
+    transform: scale(0.5) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(180deg);
+  }
+}
+
+/* StarlightOverlay string-light bulb glow halo: opacity + radius (scale).
+   vars: --home-op-min, --home-op-max */
+@keyframes home-bulb-glow {
+  0%,
+  100% {
+    opacity: var(--home-op-min, 0.35);
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: var(--home-op-max, 0.75);
+    transform: scale(1.1);
+  }
+}
+
+/* StarlightOverlay string-light bulb body twinkle: opacity only.
+   vars: --home-op-min, --home-op-max */
+@keyframes home-bulb-twinkle {
+  0%,
+  100% {
+    opacity: var(--home-op-min, 0.8);
+  }
+  50% {
+    opacity: var(--home-op-max, 1);
+  }
 }

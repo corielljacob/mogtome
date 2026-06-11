@@ -1,11 +1,10 @@
-import { memo, useEffect, useRef } from "react";
 import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-} from "motion/react";
-import type { PanInfo } from "motion/react";
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type TouchEvent as ReactTouchEvent,
+} from "react";
 import { X } from "lucide-react";
 
 interface MobileSheetProps {
@@ -18,6 +17,9 @@ interface MobileSheetProps {
   swipeToDismiss?: boolean;
 }
 
+// Native-feeling bottom sheet. CSS slide-up entrance + a plain touch-driven
+// swipe-to-dismiss on the grab handle (Framer Motion was removed app-wide - its
+// mount/unmount churned the iOS Safari compositor).
 export const MobileSheet = memo(function MobileSheet({
   isOpen,
   onClose,
@@ -28,9 +30,28 @@ export const MobileSheet = memo(function MobileSheet({
   swipeToDismiss = true,
 }: MobileSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
-  const y = useMotionValue(0);
-  const opacity = useTransform(y, [0, 300], [1, 0]);
-  const backdropOpacity = useTransform(y, [0, 300], [0.5, 0]);
+
+  // swipe-to-dismiss: follow the finger downward from the handle; close on a
+  // long-enough drag, else snap back. The sheet + backdrop fade with the drag.
+  const [dragY, setDragY] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+
+  const onTouchStart = (e: ReactTouchEvent) => {
+    if (!swipeToDismiss) return;
+    dragStartY.current = e.touches[0].clientY;
+  };
+  const onTouchMove = (e: ReactTouchEvent) => {
+    if (dragStartY.current === null) return;
+    const dy = e.touches[0].clientY - dragStartY.current;
+    setDragY(dy > 0 ? dy : 0);
+  };
+  const onTouchEnd = () => {
+    if (dragStartY.current === null) return;
+    const shouldClose = dragY > 150;
+    dragStartY.current = null;
+    setDragY(0);
+    if (shouldClose) onClose();
+  };
 
   // lock body scroll while open
   useEffect(() => {
@@ -52,99 +73,90 @@ export const MobileSheet = memo(function MobileSheet({
     };
   }, [isOpen]);
 
-  const handleDragEnd = (
-    _: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-  ) => {
-    if (!swipeToDismiss) return;
-
-    // close on a fast flick or a long enough drag
-    if (info.velocity.y > 500 || info.offset.y > 150) {
-      onClose();
-    }
-  };
-
   const sizeClasses = {
     auto: "max-h-[90dvh]",
     half: "h-[50dvh]",
     full: "h-[calc(100dvh-2rem)]",
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* z-[60] to sit above the bottom nav (z-50) */}
-          <motion.div
-            className="fixed inset-0 z-[60] bg-black md:hidden"
-            style={{ opacity: backdropOpacity }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            aria-hidden="true"
-          />
+  if (!isOpen) return null;
 
-          {/* z-[60] to sit above the bottom nav (z-50) */}
-          <motion.div
-            ref={sheetRef}
-            className="fixed inset-x-0 bottom-0 z-[60] md:hidden"
-            style={{ y, opacity }}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            drag={swipeToDismiss ? "y" : false}
-            dragConstraints={{ top: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
-            role="dialog"
-            aria-modal="true"
-            aria-label={title}
-          >
-            <div
-              className={`
+  // fade the sheet + dim with the drag (matches the old useTransform mapping)
+  const dragFade = Math.max(0, 1 - dragY / 300);
+
+  return (
+    <>
+      {/* z-[60] to sit above the bottom nav (z-50) */}
+      <div
+        className="fixed inset-0 z-[60] bg-black md:hidden"
+        style={
+          dragY
+            ? { opacity: 0.5 * dragFade }
+            : { opacity: 0.5, animation: "fadeIn 0.2s ease-out" }
+        }
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* z-[60] to sit above the bottom nav (z-50) */}
+      <div
+        ref={sheetRef}
+        className="fixed inset-x-0 bottom-0 z-[60] md:hidden"
+        style={
+          dragY
+            ? { transform: `translateY(${dragY}px)`, opacity: dragFade }
+            : { animation: "sheetSlideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)" }
+        }
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <div
+          className={`
               bg-[var(--card)] rounded-t-3xl border-t border-x border-[var(--border)]
               flex flex-col
               ${sizeClasses[size]}
             `}
-            >
-              {/* drag handle */}
-              <div className="flex justify-center pt-4 pb-3 flex-shrink-0">
-                <div className="w-12 h-1.5 rounded-full bg-[var(--text-subtle)]/30" />
-              </div>
+        >
+          {/* drag handle - swipe down here to dismiss */}
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            style={{ touchAction: "none" }}
+            className="flex justify-center pt-4 pb-3 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          >
+            <div className="w-12 h-1.5 rounded-full bg-[var(--text-subtle)]/30" />
+          </div>
 
-              {(title || showCloseButton) && (
-                <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--border)] flex-shrink-0">
-                  {title ? (
-                    <h2 className="font-display font-bold text-xl text-[var(--text)]">
-                      {title}
-                    </h2>
-                  ) : (
-                    <div />
-                  )}
-                  {showCloseButton && (
-                    <motion.button
-                      onClick={onClose}
-                      className="p-2.5 -mr-2 rounded-full text-[var(--text-muted)] active:bg-[var(--bg)] active:text-[var(--text)] cursor-pointer touch-manipulation"
-                      whileTap={{ scale: 0.9 }}
-                      aria-label="Close"
-                    >
-                      <X className="w-6 h-6" />
-                    </motion.button>
-                  )}
-                </div>
+          {(title || showCloseButton) && (
+            <div className="flex items-center justify-between px-5 pb-4 border-b border-[var(--border)] flex-shrink-0">
+              {title ? (
+                <h2 className="font-display font-bold text-xl text-[var(--text)]">
+                  {title}
+                </h2>
+              ) : (
+                <div />
               )}
-
-              {/* extra bottom padding clears the safe area + where the nav sits */}
-              <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+5rem)]">
-                {children}
-              </div>
+              {showCloseButton && (
+                <button
+                  onClick={onClose}
+                  className="p-2.5 -mr-2 rounded-full text-[var(--text-muted)] active:bg-[var(--bg)] active:text-[var(--text)] active:scale-90 transition-transform cursor-pointer touch-manipulation"
+                  aria-label="Close"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              )}
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          )}
+
+          {/* extra bottom padding clears the safe area + where the nav sits */}
+          <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+5rem)]">
+            {children}
+          </div>
+        </div>
+      </div>
+    </>
   );
 });
 

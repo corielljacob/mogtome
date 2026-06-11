@@ -237,20 +237,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const bgColor =
         getComputedStyle(root).getPropertyValue("--bg").trim() ||
         (isDarkMode ? "#1A1722" : "#FFF9F5");
-      root.style.backgroundColor = bgColor;
-      // The page background lives on the root so the browser paints it across the
-      // whole canvas (no iOS "chin"). During an event, paint the event's gradient
-      // here so it fills edge-to-edge; otherwise clear it so the CSS dot pattern
-      // (base.css) shows through.
-      if (activeEvent && !settings.eventThemingDisabled) {
-        root.style.backgroundImage = activeEvent.atmosphere.backgroundGradient;
-        root.style.backgroundSize = "cover";
-        root.style.backgroundRepeat = "no-repeat";
-      } else {
-        root.style.backgroundImage = "";
-        root.style.backgroundSize = "";
-        root.style.backgroundRepeat = "";
-      }
+      // NEVER paint a background-IMAGE (e.g. an event gradient) onto the root:
+      // on the very tall root document iOS Safari tiles it across the whole page,
+      // exceeds its max painted-surface size, and renders stale "blocks" that
+      // cover content on long pages (this was the bug). The root stays a FLAT
+      // reactive var(--bg) fill (CSS-driven, height-safe). The seasonal tint still
+      // comes through the event theme colours, and Home's full atmosphere renders
+      // on fixed, viewport-sized layers (BackgroundAtmospherics) which are safe.
+      root.style.backgroundImage = "";
+      root.style.backgroundSize = "";
+      root.style.backgroundRepeat = "";
       // Keep the browser chrome (address bar / status bar) matching the active
       // theme + mode, so the page edges blend into the device UI natively.
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');

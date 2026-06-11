@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { motion } from "motion/react";
 
 // generated once at module load - cosmetic, so no per-mount randomness needed,
 // and keeping Math.random out of render keeps the components pure.
@@ -43,33 +42,16 @@ export const CelebrationSparkles = memo(function CelebrationSparkles({
       aria-hidden="true"
     >
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
-          className="absolute"
+          className="absolute animate-[popIn_0.8s_cubic-bezier(0.16,1,0.3,1)_both]"
           style={{
             left: `${p.startX}%`,
             top: `${p.startY}%`,
             width: p.size,
             height: p.size,
-          }}
-          initial={{
-            opacity: 0,
-            scale: 0,
-            x: 0,
-            y: 0,
-            rotate: 0,
-          }}
-          animate={{
-            opacity: [0, 1, 1, 0],
-            scale: [0, 1.5, 1, 0.5],
-            x: `${p.endX - p.startX}%`,
-            y: `${p.endY - p.startY}%`,
-            rotate: p.rotation,
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: [0.16, 1, 0.3, 1],
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
           }}
         >
           {p.id % 3 === 0 ? (
@@ -85,7 +67,7 @@ export const CelebrationSparkles = memo(function CelebrationSparkles({
               }}
             />
           )}
-        </motion.div>
+        </div>
       ))}
     </div>
   );

@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // Dawntrail's dawn over the sea: a golden sun glowing at the horizon with its
@@ -40,7 +40,7 @@ export const ThemeDawn = memo(function ThemeDawn() {
       aria-hidden="true"
     >
       {/* the sun's reflection - a soft light pillar down onto the sea */}
-      <motion.div
+      <div
         className="absolute"
         style={{
           left: "60%",
@@ -51,17 +51,14 @@ export const ThemeDawn = memo(function ThemeDawn() {
           background:
             "linear-gradient(to bottom, color-mix(in srgb, var(--accent) 52%, transparent) 0%, color-mix(in srgb, var(--accent) 20%, transparent) 38%, transparent 92%)",
           filter: "blur(9px)",
-        }}
-        animate={
-          reduceMotion
+          ...(reduceMotion
             ? { opacity: 0.65 }
-            : { opacity: [0.5, 0.78, 0.58, 0.7, 0.5] }
-        }
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            : { animation: "home-dawn-reflection 5s ease-in-out infinite" }),
+        }}
       />
 
       {/* the dawn sun, glowing at the horizon */}
-      <motion.div
+      <div
         className="absolute"
         style={{
           left: "60%",
@@ -73,45 +70,38 @@ export const ThemeDawn = memo(function ThemeDawn() {
           background:
             "radial-gradient(circle, rgba(255,250,235,0.85) 0%, color-mix(in srgb, var(--accent) 48%, transparent) 22%, color-mix(in srgb, var(--accent) 16%, transparent) 46%, transparent 66%)",
           filter: "blur(10px)",
-        }}
-        animate={
-          reduceMotion
+          ...(reduceMotion
             ? { opacity: 0.8 }
-            : { opacity: [0.68, 0.95, 0.78, 0.68], scale: [1, 1.05, 1] }
-        }
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            : { animation: "home-dawn-sun 8s ease-in-out infinite" }),
+        }}
       />
 
       {/* warm pollen drifting up in the sunlight */}
       {pollen.map((p) => (
-        <motion.div
+        <div
           key={p.key}
           className="absolute bottom-0"
-          style={{ left: `${p.left}%` }}
-          initial={{ y: 0, opacity: 0 }}
-          animate={
+          style={
             reduceMotion
-              ? { opacity: p.op * 0.6 }
-              : { y: `-${p.rise}vh`, opacity: [0, p.op, p.op, 0] }
+              ? { left: `${p.left}%`, opacity: p.op * 0.6 }
+              : ({
+                  left: `${p.left}%`,
+                  opacity: 0,
+                  "--home-rise": `${p.rise}vh`,
+                  "--home-op": p.op,
+                  animation: `home-rise-fade ${p.dur}s ease-out ${p.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: p.dur,
-            repeat: Infinity,
-            ease: "easeOut",
-            delay: p.delay,
-          }}
         >
-          <motion.div
-            animate={
+          <div
+            style={
               reduceMotion
                 ? undefined
-                : { x: [-p.sway / 2, p.sway / 2, -p.sway / 2] }
+                : ({
+                    "--home-sway": `${p.sway}px`,
+                    animation: `home-sway ${p.swayDur}s ease-in-out infinite`,
+                  } as CSSProperties)
             }
-            transition={{
-              duration: p.swayDur,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
           >
             <span
               className="block rounded-full"
@@ -122,8 +112,8 @@ export const ThemeDawn = memo(function ThemeDawn() {
                 boxShadow: `0 0 ${p.size * 1.8}px ${p.size * 0.5}px ${p.color}`,
               }}
             />
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       ))}
     </div>
   );

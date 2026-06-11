@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { motion } from "motion/react";
+import { useMemo, type CSSProperties } from "react";
 import { Ghost } from "lucide-react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
@@ -106,81 +105,90 @@ export function HalloweenOverlay() {
       className="fixed inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
-      <motion.div
+      <div
         className="absolute bottom-0 inset-x-0 h-[40%]"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)",
-        }}
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          {
+            background:
+              "linear-gradient(to top, rgba(109,40,217,0.12), rgba(109,40,217,0.06) 40%, transparent)",
+            "--home-op-min": 0.6,
+            "--home-op-max": 1,
+            animation: "home-fog-pulse 8s ease-in-out infinite",
+          } as CSSProperties
+        }
       />
-      <motion.div
+      <div
         className="absolute bottom-0 inset-x-0 h-[25%]"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(74,222,128,0.06), rgba(34,197,94,0.03) 50%, transparent)",
-        }}
-        animate={{ opacity: [0.4, 0.8, 0.4] }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
+        style={
+          {
+            background:
+              "linear-gradient(to top, rgba(74,222,128,0.06), rgba(34,197,94,0.03) 50%, transparent)",
+            "--home-op-min": 0.4,
+            "--home-op-max": 0.8,
+            animation: "home-fog-pulse 6s ease-in-out 2s infinite",
+          } as CSSProperties
+        }
       />
 
-      <motion.div
+      <div
         className="absolute bottom-[5%] h-[15%] w-[60%] rounded-full blur-3xl"
-        style={{ background: "rgba(167,139,250,0.08)" }}
-        animate={{ x: ["-10%", "110%"], opacity: [0, 0.12, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+        style={
+          {
+            background: "rgba(167,139,250,0.08)",
+            "--home-x-from": "-10%",
+            "--home-x-to": "110%",
+            "--home-op-max": 0.12,
+            animation: "home-fog-sweep 18s linear infinite",
+          } as CSSProperties
+        }
       />
-      <motion.div
+      <div
         className="absolute bottom-[12%] h-[10%] w-[45%] rounded-full blur-3xl"
-        style={{ background: "rgba(249,115,22,0.06)" }}
-        animate={{ x: ["110%", "-10%"], opacity: [0, 0.1, 0] }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: "linear",
-          delay: 4,
-        }}
+        style={
+          {
+            background: "rgba(249,115,22,0.06)",
+            "--home-x-from": "110%",
+            "--home-x-to": "-10%",
+            "--home-op-max": 0.1,
+            animation: "home-fog-sweep 22s linear 4s infinite",
+          } as CSSProperties
+        }
       />
 
-      <motion.div
+      <div
         className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)",
-        }}
-        animate={{ opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          {
+            background:
+              "radial-gradient(ellipse at center, transparent 35%, rgba(12,8,20,0.18) 100%)",
+            "--home-op-min": 0.7,
+            "--home-op-max": 1,
+            animation: "home-fog-pulse 5s ease-in-out infinite",
+          } as CSSProperties
+        }
       />
 
       {ghosts.map((ghost, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute"
-          style={{ left: ghost.left, top: ghost.yStart }}
-          animate={{
-            y: [0, -(parseFloat(ghost.yStart) - parseFloat(ghost.yEnd)) * 4],
-            x: [0, ghost.drift],
-            opacity: [0, ghost.opacity, ghost.opacity, 0],
-          }}
-          transition={{
-            duration: ghost.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: ghost.delay,
-          }}
+          style={
+            {
+              left: ghost.left,
+              top: ghost.yStart,
+              "--home-y": `${-(parseFloat(ghost.yStart) - parseFloat(ghost.yEnd)) * 4}px`,
+              "--home-drift": `${ghost.drift}px`,
+              "--home-op": ghost.opacity,
+              animation: `home-ghost-drift ${ghost.duration}s ease-in-out ${ghost.delay}s infinite`,
+            } as CSSProperties
+          }
         >
           <Ghost
             style={{ width: ghost.size, height: ghost.size }}
             className="text-purple-400/60"
             strokeWidth={1}
           />
-        </motion.div>
+        </div>
       ))}
 
       {[
@@ -188,7 +196,7 @@ export function HalloweenOverlay() {
         { left: "80%", top: "65%", size: 100 },
         { left: "45%", top: "80%", size: 140 },
       ].map((spot, i) => (
-        <motion.div
+        <div
           key={`lantern-${i}`}
           className="absolute rounded-full blur-3xl"
           style={{
@@ -198,16 +206,7 @@ export function HalloweenOverlay() {
             height: spot.size,
             background:
               "radial-gradient(circle, rgba(249,115,22,0.15), rgba(251,191,36,0.08), transparent)",
-          }}
-          animate={{
-            opacity: [0.3, 0.7, 0.2, 0.8, 0.3],
-            scale: [1, 1.1, 0.95, 1.08, 1],
-          }}
-          transition={{
-            duration: 3 + i * 0.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 1.2,
+            animation: `home-lantern-flicker ${3 + i * 0.5}s ease-in-out ${i * 1.2}s infinite`,
           }}
         />
       ))}

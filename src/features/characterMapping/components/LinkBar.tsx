@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, X, Link2 } from "lucide-react";
 import { Button, IconButton } from "@/shared/ui/Button";
 
@@ -20,15 +19,9 @@ export function LinkBar({
   onLink: () => void;
 }) {
   return (
-    <AnimatePresence>
+    <>
       {show && (
-        <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 26, stiffness: 320 }}
-          className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/60 bg-[var(--card)]"
-        >
+        <div className="relative z-10 flex-shrink-0 border-t border-[var(--border)]/60 bg-[var(--card)] animate-[sheetSlideUp_0.3s_cubic-bezier(0.23,1,0.32,1)]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1 text-sm">
               <span className="font-display font-semibold text-[var(--text)] truncate">
@@ -60,8 +53,8 @@ export function LinkBar({
               Link
             </Button>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

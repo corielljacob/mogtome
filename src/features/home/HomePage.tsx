@@ -9,7 +9,7 @@ export function Home() {
   const eventActive = isEventThemeActive && activeEvent;
 
   return (
-    <div className="min-h-[100lvh] w-full flex flex-col relative selection:bg-[var(--primary)] selection:text-white overflow-hidden">
+    <div className="min-h-[100lvh] w-full flex flex-col relative selection:bg-[var(--primary)] selection:text-white overflow-x-clip">
       <BackgroundAtmospherics />
 
       {/* mobile pads for the fixed top/bottom bars; desktop nav is the sidebar */}

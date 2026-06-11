@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { motion } from "motion/react";
 import {
   setAuthToken,
   useAuth,
@@ -63,21 +62,14 @@ export function AuthCallback() {
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
-      <motion.img
+      <img
         src={moogleWizard}
         alt=""
         aria-hidden="true"
-        className="absolute bottom-24 right-6 md:right-20 w-20 md:w-28 object-contain opacity-[0.08]"
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-24 right-6 md:right-20 w-20 md:w-28 object-contain opacity-[0.08] animate-float-gentle"
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-lg relative z-10"
-      >
+      <div className="w-full max-w-lg relative z-10 animate-[fadeSlideIn_0.4s_ease-out]">
         <div
           className={`bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] relative overflow-hidden transition-all duration-300 ${status === "success" ? "max-w-lg" : "max-w-sm"}`}
         >
@@ -94,7 +86,7 @@ export function AuthCallback() {
             <ErrorScreen error={error} onReturnHome={handleReturnHome} />
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

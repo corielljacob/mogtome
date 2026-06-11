@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { AlertCircle } from "lucide-react";
 
 export function ErrorScreen({
@@ -10,14 +9,9 @@ export function ErrorScreen({
 }) {
   return (
     <div className="text-center py-4">
-      <motion.div
-        className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-red-500/20 to-rose-500/20 flex items-center justify-center"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
+      <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-red-500/20 to-rose-500/20 flex items-center justify-center animate-[popIn_0.4s_ease-out]">
         <AlertCircle className="w-8 h-8 text-red-500" />
-      </motion.div>
+      </div>
       <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
         Oh no, kupo!
       </h2>

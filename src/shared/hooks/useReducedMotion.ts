@@ -48,14 +48,3 @@ export function useReducedMotion(): boolean {
 
   return prefersReducedMotion;
 }
-
-/** Framer Motion props that disable animation when reduced motion is preferred. */
-export function getReducedMotionProps(prefersReducedMotion: boolean) {
-  if (prefersReducedMotion) {
-    return {
-      transition: { duration: 0 },
-      initial: false,
-    };
-  }
-  return {};
-}

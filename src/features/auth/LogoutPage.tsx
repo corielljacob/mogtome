@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
 import { Stars } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 
@@ -56,64 +55,40 @@ export function Logout() {
         aria-hidden="true"
       >
         {[...Array(6)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute"
+            className="absolute animate-ping-slow transition-opacity duration-500"
             style={{
               left: `${15 + i * 15}%`,
               top: `${20 + (i % 3) * 25}%`,
-            }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{
-              opacity: phase === "fading" ? 0 : [0.2, 0.5, 0.2],
-              scale: phase === "fading" ? 0 : 1,
-            }}
-            transition={{
-              opacity: { duration: 2, repeat: Infinity, delay: i * 0.3 },
-              scale: { duration: 0.5, delay: i * 0.1 },
+              animationDelay: `${i * 0.3}s`,
+              opacity: phase === "fading" ? 0 : 1,
             }}
           >
             <Stars className="w-4 h-4 text-[var(--secondary)]" />
-          </motion.div>
+          </div>
         ))}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{
+      <div
+        className="w-full max-w-sm relative z-10 animate-[fadeSlideIn_0.5s_ease-out] transition-all duration-500 ease-out"
+        style={{
           opacity: phase === "fading" ? 0 : 1,
-          y: phase === "fading" ? -20 : 0,
-          scale: phase === "fading" ? 0.95 : 1,
+          transform:
+            phase === "fading" ? "translateY(-20px) scale(0.95)" : undefined,
         }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-sm relative z-10"
       >
         <div className="bg-[var(--card)] rounded-lg p-6 shadow-sm border border-[var(--border)] text-center relative overflow-hidden">
-          <motion.div
-            className="w-24 h-24 mx-auto mb-4"
-            initial={{ scale: 0, rotate: -10 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          >
-            <motion.img
+          <div className="w-24 h-24 mx-auto mb-4 animate-[popIn_0.5s_ease-out]">
+            <img
               src={wavingMoogle}
               alt="Moogle waving goodbye"
-              className="w-full h-full object-contain"
-              animate={{ rotate: [0, 5, -5, 5, 0] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.3,
-              }}
+              className="w-full h-full object-contain animate-[wiggle_2s_ease-in-out_infinite]"
+              style={{ animationDelay: "0.3s" }}
             />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div className="animate-[fadeSlideIn_0.4s_ease-out_0.2s_both]">
             <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
               Goodbye
               {displayUser ? `, ${displayUser.memberName.split(" ")[0]}` : ""}!
@@ -121,18 +96,13 @@ export function Logout() {
             <p className="text-[var(--text-muted)] font-soft text-sm mb-4">
               {farewell}
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
+          <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)] animate-[fadeIn_0.3s_ease-out_0.5s_both]">
             <span className="font-soft">Returning to home...</span>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import { memo, type CSSProperties } from "react";
-import { motion } from "motion/react";
 import { Check, X, Loader2, Heart, Sparkles, Link2 } from "lucide-react";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { ConfidenceBadge } from "@/features/characterMapping/components/ConfidenceBadge";
-import type { MatchPair, MatchConfidence } from "@/features/characterMapping/types";
+import type {
+  MatchPair,
+  MatchConfidence,
+} from "@/features/characterMapping/types";
 import FfxivIcon from "@/assets/icons/ffxiv.png";
 
 // per-confidence accent (green when we're sure → orange when we're guessing)
@@ -26,8 +28,7 @@ interface PairCardProps {
 
 // A single suggested pairing the knight can lock in with one happy click. The
 // character sits on the left, its Discord match on the right, joined by a heart
-// (exact) or a link (fuzzier). Confirm stamps it; skip dismisses it. On confirm
-// the row pops away via the parent's AnimatePresence.
+// (exact) or a link (fuzzier). Confirm stamps it; skip dismisses it.
 export const PairCard = memo(function PairCard({
   pair,
   onConfirm,
@@ -41,13 +42,8 @@ export const PairCard = memo(function PairCard({
   const busy = isConfirming || disabled;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 12, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
-      transition={{ type: "spring", stiffness: 340, damping: 27 }}
-      className="surface relative px-3 pt-4 pb-3 sm:px-4"
+    <div
+      className="surface relative px-3 pt-4 pb-3 sm:px-4 animate-[fadeSlideIn_0.3s_ease-out]"
       style={{ borderColor: `color-mix(in srgb, ${accent} 34%, var(--card))` }}
     >
       {/* confidence ribbon, pinned to the top edge */}
@@ -148,6 +144,6 @@ export const PairCard = memo(function PairCard({
           Skip
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 });

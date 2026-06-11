@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
@@ -77,90 +76,85 @@ function UserMenu() {
         </div>
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="absolute right-0 top-full mt-2 z-50 min-w-[180px]"
-            initial={{ opacity: 0, y: -6, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.96 }}
-            transition={{ duration: 0.12, ease: "easeOut" }}
-            role="menu"
-            aria-label="User menu"
+      {isOpen && (
+        <div
+          className="absolute right-0 top-full mt-2 z-50 min-w-[180px] animate-[scaleIn_0.12s_ease-out]"
+          style={{ transformOrigin: "top right" }}
+          role="menu"
+          aria-label="User menu"
+        >
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--card)",
+              border:
+                "2px solid color-mix(in srgb, var(--primary) 28%, var(--card))",
+              boxShadow:
+                "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 22%, transparent), 0 10px 24px -8px var(--shadow)",
+            }}
           >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="px-3 py-2.5"
               style={{
-                background: "var(--card)",
-                border:
-                  "2px solid color-mix(in srgb, var(--primary) 28%, var(--card))",
-                boxShadow:
-                  "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 22%, transparent), 0 10px 24px -8px var(--shadow)",
+                background:
+                  "color-mix(in srgb, var(--primary) 12%, var(--card))",
+                borderBottom:
+                  "2px dashed color-mix(in srgb, var(--primary) 28%, transparent)",
               }}
             >
-              <div
-                className="px-3 py-2.5"
-                style={{
-                  background:
-                    "color-mix(in srgb, var(--primary) 12%, var(--card))",
-                  borderBottom:
-                    "2px dashed color-mix(in srgb, var(--primary) 28%, transparent)",
-                }}
-              >
-                <p className="font-display font-bold text-sm text-[var(--text)] truncate">
-                  {displayName}
-                </p>
-                <p className="text-xs text-[var(--text-muted)] truncate">
-                  {user.memberRank}
-                </p>
-              </div>
-
-              <div className="p-1.5">
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate("/profile");
-                  }}
-                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
-                  role="menuitem"
-                >
-                  <span
-                    className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
-                    style={{
-                      background:
-                        "color-mix(in srgb, var(--secondary) 16%, var(--card))",
-                      color: "var(--secondary)",
-                    }}
-                  >
-                    <FileText className="w-4 h-4" aria-hidden="true" />
-                  </span>
-                  <span className="text-sm">My Profile</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate("/auth/logout");
-                  }}
-                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
-                  role="menuitem"
-                >
-                  <span
-                    className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
-                    style={{
-                      background:
-                        "color-mix(in srgb, var(--primary) 16%, var(--card))",
-                      color: "var(--primary)",
-                    }}
-                  >
-                    <LogOut className="w-4 h-4" aria-hidden="true" />
-                  </span>
-                  <span className="text-sm">Sign Out</span>
-                </button>
-              </div>
+              <p className="font-display font-bold text-sm text-[var(--text)] truncate">
+                {displayName}
+              </p>
+              <p className="text-xs text-[var(--text-muted)] truncate">
+                {user.memberRank}
+              </p>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            <div className="p-1.5">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/profile");
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
+                role="menuitem"
+              >
+                <span
+                  className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
+                  style={{
+                    background:
+                      "color-mix(in srgb, var(--secondary) 16%, var(--card))",
+                    color: "var(--secondary)",
+                  }}
+                >
+                  <FileText className="w-4 h-4" aria-hidden="true" />
+                </span>
+                <span className="text-sm">My Profile</span>
+              </button>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/auth/logout");
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl font-display font-bold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none"
+                role="menuitem"
+              >
+                <span
+                  className="flex items-center justify-center w-7 h-7 rounded-full shrink-0"
+                  style={{
+                    background:
+                      "color-mix(in srgb, var(--primary) 16%, var(--card))",
+                    color: "var(--primary)",
+                  }}
+                >
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
+                </span>
+                <span className="text-sm">Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

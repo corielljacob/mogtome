@@ -1,5 +1,4 @@
 import { type CSSProperties, type RefObject } from "react";
-import { motion } from "motion/react";
 import { Search, X, ArrowUpDown } from "lucide-react";
 import { Dropdown } from "@/shared/ui/Dropdown";
 import {
@@ -23,12 +22,7 @@ export function MembersToolbar({
   setSortBy: (sort: SortOption) => void;
 }) {
   return (
-    <motion.section
-      className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 lg:static lg:z-auto"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.1 }}
-    >
+    <section className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 lg:static lg:z-auto animate-[fadeSlideIn_0.3s_ease-out_0.1s_both]">
       <span
         className="pushpin absolute -top-2 left-8 z-10"
         style={{ "--pin": "var(--secondary)" } as CSSProperties}
@@ -111,6 +105,6 @@ export function MembersToolbar({
           </div>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

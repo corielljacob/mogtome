@@ -1,6 +1,5 @@
 import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { motion, type Variants } from "motion/react";
 import { ChevronsLeft } from "lucide-react";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 import { KawaiiStar, KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
@@ -14,20 +13,9 @@ const DASHED_RULE =
 // alternating "stuck on by hand" tilt for the sticker badges
 const tiltFor = (i: number) => (i % 2 === 0 ? "-rotate-6" : "rotate-6");
 
-// the nav rows cascade in one after another when the panel swings open
-const listVariants: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05, delayChildren: 0.09 } },
-};
-const itemVariants: Variants = {
-  hidden: { opacity: 0, x: -18, scale: 0.94 },
-  show: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { type: "spring", damping: 20, stiffness: 360 },
-  },
-};
+// the nav rows cascade in one after another when the panel swings open:
+// each row plays fadeSlideIn with a staggered delay (delayChildren 0.09s + 0.05s/row)
+const rowDelay = (i: number) => 0.09 + i * 0.05;
 
 // A full nav row: a tilted sticker icon badge + label. The active row fills in
 // with the tab's colour and gets a little candy lip + a trailing kira star.
@@ -99,19 +87,10 @@ export function DesktopNavPanel({
   const { toggle } = useNavExpanded();
 
   return (
-    <motion.nav
+    <nav
       aria-label="Main navigation"
-      initial={{ opacity: 0, x: -48, scale: 0.97 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{
-        opacity: 0,
-        x: -30,
-        scale: 0.97,
-        transition: { duration: 0.16, ease: "easeIn" },
-      }}
-      transition={{ type: "spring", damping: 26, stiffness: 280, mass: 0.9 }}
       style={{ transformOrigin: "left center" }}
-      className="hidden md:flex fixed inset-y-0 left-0 z-40 items-stretch p-2"
+      className="hidden md:flex fixed inset-y-0 left-0 z-40 items-stretch p-2 animate-[scaleIn_0.35s_cubic-bezier(0.34,1.56,0.64,1)]"
     >
       <div className="surface relative w-60 flex flex-col rounded-3xl p-2.5">
         {/* header: a little brand plate, taped to the board with two washi strips */}
@@ -171,26 +150,25 @@ export function DesktopNavPanel({
 
         {/* nav rows - grow to fill; the moogle settles at the foot of the list.
             They cascade in one by one when the panel swings open. */}
-        <motion.div
-          className="relative flex-1 flex flex-col gap-1 py-0.5"
-          variants={listVariants}
-          initial="hidden"
-          animate="show"
-        >
+        <div className="relative flex-1 flex flex-col gap-1 py-0.5">
           {tabs.map((tab, i) => (
-            <motion.div key={tab.path} variants={itemVariants}>
+            <div
+              key={tab.path}
+              className="animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_both]"
+              style={{ animationDelay: `${rowDelay(i)}s` }}
+            >
               <PanelTab
                 tab={tab}
                 isActive={currentPath === tab.path}
                 index={i}
               />
-            </motion.div>
+            </div>
           ))}
 
           {/* mascot keeping watch, fills the tall panel's quiet middle */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-auto pt-4 flex flex-col items-center gap-1 pointer-events-none select-none"
+          <div
+            className="mt-auto pt-4 flex flex-col items-center gap-1 pointer-events-none select-none animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_both]"
+            style={{ animationDelay: `${rowDelay(tabs.length)}s` }}
           >
             <img
               src={lilGuyMoogle}
@@ -201,8 +179,8 @@ export function DesktopNavPanel({
             <span className="eyebrow-script text-base leading-none text-[var(--text-subtle)] -rotate-3">
               kupo~
             </span>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         <span
           className="mx-1 mt-1.5 mb-1.5 h-px rounded-full shrink-0"
@@ -239,6 +217,6 @@ export function DesktopNavPanel({
           <span>Collapse</span>
         </button>
       </div>
-    </motion.nav>
+    </nav>
   );
 }

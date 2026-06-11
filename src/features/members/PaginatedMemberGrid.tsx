@@ -8,7 +8,6 @@ import {
   type CSSProperties,
 } from "react";
 import { useSearchParams } from "react-router-dom";
-import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import type { FreeCompanyMember } from "@/shared/types";
 import { MemberCard } from "@/features/members/MemberCard";
@@ -271,20 +270,17 @@ export function PaginatedMemberGrid({
   return (
     <div ref={containerRef} className="w-full">
       {showGrouped && paginatedByRank ? (
-        <div className="space-y-2">
+        <div
+          key={currentPage}
+          className="space-y-2 animate-[fadeIn_0.2s_ease-out]"
+        >
           {Array.from(paginatedByRank.entries()).map(
             ([rankName, rankMembers]) => (
               <div key={rankName}>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <RankHeader
-                    rankName={rankName}
-                    memberCount={rankMembers.length}
-                  />
-                </motion.div>
+                <RankHeader
+                  rankName={rankName}
+                  memberCount={rankMembers.length}
+                />
                 <div
                   className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
                   style={{
@@ -305,7 +301,8 @@ export function PaginatedMemberGrid({
         </div>
       ) : (
         <div
-          className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
+          key={currentPage}
+          className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5 animate-[fadeIn_0.2s_ease-out]"
           style={{
             gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
           }}

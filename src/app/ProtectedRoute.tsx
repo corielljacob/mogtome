@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
@@ -25,19 +24,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (!isAuthenticated) {
     return (
       <div className="relative min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top)+1rem)] md:pt-10 pb-[calc(5rem+env(safe-area-inset-bottom)+1rem)] md:pb-10">
-        <motion.div
-          className="relative w-full max-w-md"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-        >
+        <div className="relative w-full max-w-md animate-[fadeSlideIn_0.45s_ease-out]">
           <div className="surface p-7 sm:p-9 text-center">
-            <motion.img
+            <img
               src={wizardMoogle}
               alt="A moogle wizard guarding the page"
-              className="w-28 sm:w-36 mx-auto mb-3 drop-shadow-lg select-none"
-              animate={{ y: [0, -6, 0], rotate: [0, 2, -2, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-28 sm:w-36 mx-auto mb-3 drop-shadow-lg select-none animate-float-gentle"
             />
 
             <div
@@ -73,7 +65,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
           <p className="eyebrow-script text-xl text-center mt-5 text-[var(--text-muted)]">
             ~ the moogle will let you pass once verified ~
           </p>
-        </motion.div>
+        </div>
       </div>
     );
   }

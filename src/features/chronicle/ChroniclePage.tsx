@@ -1,5 +1,4 @@
 import { type CSSProperties } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Wifi, Loader2, Search, X } from "lucide-react";
 
 import {
@@ -70,7 +69,10 @@ export function Chronicle() {
   } = useChronicle();
 
   return (
-    <PageLayout bleed moogles={{ primary: flyingMoogles, secondary: moogleMail }}>
+    <PageLayout
+      bleed
+      moogles={{ primary: flyingMoogles, secondary: moogleMail }}
+    >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
@@ -133,12 +135,7 @@ export function Chronicle() {
         <div className="lg:grid lg:grid-cols-[19rem_1fr] lg:gap-6 xl:gap-8 lg:items-start">
           <aside className="space-y-4 sm:space-y-5 mb-5 sm:mb-7 lg:mb-0 lg:sticky lg:top-4">
             {/* search card - matches the Members search card */}
-            <motion.section
-              className="relative"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
+            <section className="relative animate-[fadeSlideIn_0.3s_ease-out_0.1s_both]">
               <span
                 className="pushpin absolute -top-2 left-8 z-10"
                 style={{ "--pin": "var(--secondary)" } as CSSProperties}
@@ -188,7 +185,7 @@ export function Chronicle() {
                   )}
                 </div>
               </div>
-            </motion.section>
+            </section>
 
             {/* filter + status card - matches the Members rank-filter card */}
             <section className="relative">
@@ -312,174 +309,149 @@ export function Chronicle() {
           </aside>
 
           <div className="min-w-0">
-            <AnimatePresence mode="wait">
-              {isLoading && apiEvents.length === 0 ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <LoadingState
-                    message="Gathering the chronicles, kupo..."
-                    imageSrc={flyingMoogles}
+            {isLoading && apiEvents.length === 0 ? (
+              <div>
+                <LoadingState
+                  message="Gathering the chronicles, kupo..."
+                  imageSrc={flyingMoogles}
+                />
+              </div>
+            ) : isError ? (
+              <div className="animate-[fadeIn_0.2s_ease-out]">
+                <ErrorState
+                  message="The chronicle tome got lost, kupo..."
+                  onRetry={() => refetch()}
+                />
+              </div>
+            ) : totalCount === 0 ? (
+              <div className="animate-[fadeIn_0.2s_ease-out]">
+                {hasActiveQuery ? (
+                  <EmptyState
+                    title="Nothing here"
+                    message={
+                      isSearching
+                        ? "Kupo? Nothing matches that search..."
+                        : "No entries of that kind yet, kupo..."
+                    }
+                    imageSrc={moogleMail}
+                    onClear={handleClearAll}
+                    clearLabel={
+                      isSearching && hasActiveFilter
+                        ? "Clear search & filter"
+                        : isSearching
+                          ? "Clear search"
+                          : "Clear filter"
+                    }
                   />
-                </motion.div>
-              ) : isError ? (
-                <motion.div
-                  key="error"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ErrorState
-                    message="The chronicle tome got lost, kupo..."
-                    onRetry={() => refetch()}
+                ) : (
+                  <EmptyState
+                    title="No entries yet"
+                    message="The chronicle awaits its first entry, kupo~"
+                    imageSrc={moogleMail}
                   />
-                </motion.div>
-              ) : totalCount === 0 ? (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {hasActiveQuery ? (
-                    <EmptyState
-                      title="Nothing here"
-                      message={
-                        isSearching
-                          ? "Kupo? Nothing matches that search..."
-                          : "No entries of that kind yet, kupo..."
+                )}
+              </div>
+            ) : (
+              <div
+                key={`content-${activeFilter ?? "all"}-${deferredSearchQuery.trim()}`}
+                className={`journal relative pl-10 sm:pl-12 pr-6 sm:pr-10 py-9 sm:py-12 transition-opacity duration-200 animate-[fadeIn_0.2s_ease-out] ${isTransitioning ? "opacity-50" : "opacity-100"}`}
+                role="feed"
+                aria-label="Chronicle timeline"
+              >
+                <WashiTape
+                  color="var(--accent)"
+                  className="absolute -top-3 left-10 w-20 h-7 -rotate-3 opacity-85 z-10"
+                />
+                <WashiTape
+                  color="var(--secondary)"
+                  className="absolute -top-3 right-12 w-16 h-7 rotate-2 opacity-85 z-10"
+                />
+
+                {dayGroups.map((group, gi) => {
+                  const { tilt, Sticker, tapeColor, stickerColor } = dayDecor(
+                    group.key,
+                    gi,
+                  );
+                  return (
+                    <section
+                      key={group.key}
+                      className={
+                        gi > 0
+                          ? "mt-11 pt-9 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]"
+                          : ""
                       }
-                      imageSrc={moogleMail}
-                      onClear={handleClearAll}
-                      clearLabel={
-                        isSearching && hasActiveFilter
-                          ? "Clear search & filter"
-                          : isSearching
-                            ? "Clear search"
-                            : "Clear filter"
-                      }
-                    />
-                  ) : (
-                    <EmptyState
-                      title="No entries yet"
-                      message="The chronicle awaits its first entry, kupo~"
-                      imageSrc={moogleMail}
-                    />
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key={`content-${activeFilter ?? "all"}-${deferredSearchQuery.trim()}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`journal relative pl-10 sm:pl-12 pr-6 sm:pr-10 py-9 sm:py-12 transition-opacity duration-200 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
-                  role="feed"
-                  aria-label="Chronicle timeline"
-                >
-                  <WashiTape
-                    color="var(--accent)"
-                    className="absolute -top-3 left-10 w-20 h-7 -rotate-3 opacity-85 z-10"
-                  />
-                  <WashiTape
-                    color="var(--secondary)"
-                    className="absolute -top-3 right-12 w-16 h-7 rotate-2 opacity-85 z-10"
-                  />
-
-                  {dayGroups.map((group, gi) => {
-                    const { tilt, Sticker, tapeColor, stickerColor } = dayDecor(
-                      group.key,
-                      gi,
-                    );
-                    return (
-                      <section
-                        key={group.key}
-                        className={
-                          gi > 0
-                            ? "mt-11 pt-9 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]"
-                            : ""
-                        }
-                        aria-label={`Entries from ${group.label}`}
-                      >
-                        <header className="relative mb-5 sm:mb-6 flex items-center gap-2.5">
-                          <div
-                            className="relative inline-flex items-center gap-1.5"
-                            style={{ transform: `rotate(${tilt}deg)` }}
-                          >
-                            <WashiTape
-                              color={tapeColor}
-                              className="absolute -top-2.5 left-2 w-9 h-3.5 -rotate-6 opacity-85"
-                            />
-                            <KawaiiStar className="relative w-4 h-4 shrink-0 text-[var(--accent)]" />
-                            <h2 className="relative font-accent font-bold text-2xl sm:text-3xl text-[var(--primary)] leading-none">
-                              {group.label}
-                            </h2>
-                            <span className="relative font-accent text-lg text-[var(--text-subtle)] leading-none">
-                              · {group.items.length}
-                            </span>
-                          </div>
-                          <span
-                            className="shrink-0"
-                            style={{ transform: `rotate(${-tilt * 2.5}deg)` }}
-                            aria-hidden="true"
-                          >
-                            <Sticker className="w-5 h-5" color={stickerColor} />
-                          </span>
-                          <span
-                            className="flex-1 self-center border-b-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_20%,transparent)]"
-                            aria-hidden="true"
-                          />
-                        </header>
-
-                        <ol className="divide-y divide-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]">
-                          {group.items.map((item, i) => (
-                            <JournalEntry
-                              key={`${item.isRealtime ? "rt" : "h"}-${getEventKey(item.event, i)}`}
-                              item={item}
-                            />
-                          ))}
-                        </ol>
-                      </section>
-                    );
-                  })}
-
-                  {hasNextPage && (
-                    <div
-                      ref={sentinelRef}
-                      className="flex items-center justify-center py-8"
-                      aria-hidden={!isFetchingNextPage}
+                      aria-label={`Entries from ${group.label}`}
                     >
-                      {isFetchingNextPage ? (
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="flex items-center gap-2.5 text-[var(--text-muted)]"
-                          role="status"
+                      <header className="relative mb-5 sm:mb-6 flex items-center gap-2.5">
+                        <div
+                          className="relative inline-flex items-center gap-1.5"
+                          style={{ transform: `rotate(${tilt}deg)` }}
                         >
-                          <Loader2
-                            className="w-5 h-5 animate-spin text-[var(--primary)]"
-                            aria-hidden="true"
+                          <WashiTape
+                            color={tapeColor}
+                            className="absolute -top-2.5 left-2 w-9 h-3.5 -rotate-6 opacity-85"
                           />
-                          <span className="font-soft text-sm font-medium">
-                            Turning the page...
+                          <KawaiiStar className="relative w-4 h-4 shrink-0 text-[var(--accent)]" />
+                          <h2 className="relative font-accent font-bold text-2xl sm:text-3xl text-[var(--primary)] leading-none">
+                            {group.label}
+                          </h2>
+                          <span className="relative font-accent text-lg text-[var(--text-subtle)] leading-none">
+                            · {group.items.length}
                           </span>
-                        </motion.div>
-                      ) : (
-                        <span className="text-xs text-[var(--text-muted)]/50">
-                          &#8203;
+                        </div>
+                        <span
+                          className="shrink-0"
+                          style={{ transform: `rotate(${-tilt * 2.5}deg)` }}
+                          aria-hidden="true"
+                        >
+                          <Sticker className="w-5 h-5" color={stickerColor} />
                         </span>
-                      )}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                        <span
+                          className="flex-1 self-center border-b-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_20%,transparent)]"
+                          aria-hidden="true"
+                        />
+                      </header>
+
+                      <ol className="divide-y divide-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]">
+                        {group.items.map((item, i) => (
+                          <JournalEntry
+                            key={`${item.isRealtime ? "rt" : "h"}-${getEventKey(item.event, i)}`}
+                            item={item}
+                          />
+                        ))}
+                      </ol>
+                    </section>
+                  );
+                })}
+
+                {hasNextPage && (
+                  <div
+                    ref={sentinelRef}
+                    className="flex items-center justify-center py-8"
+                    aria-hidden={!isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? (
+                      <div
+                        className="flex items-center gap-2.5 text-[var(--text-muted)] animate-[fadeIn_0.2s_ease-out]"
+                        role="status"
+                      >
+                        <Loader2
+                          className="w-5 h-5 animate-spin text-[var(--primary)]"
+                          aria-hidden="true"
+                        />
+                        <span className="font-soft text-sm font-medium">
+                          Turning the page...
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[var(--text-muted)]/50">
+                        &#8203;
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "motion/react";
 import {
   FileText,
   Check,
@@ -55,13 +54,7 @@ function SubmissionCard({
       : submission.biography;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="surface p-4 touch-manipulation"
-    >
+    <div className="surface p-4 touch-manipulation animate-[fadeSlideIn_0.3s_ease-out]">
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
         <div className="flex items-center gap-3 sm:gap-2.5 min-w-0">
           {submitter ? (
@@ -148,7 +141,7 @@ function SubmissionCard({
           {isRejecting ? "Rejecting..." : "Reject"}
         </Button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -296,30 +289,24 @@ export function PendingSubmissions() {
           </div>
 
           <div className="overflow-y-auto max-h-[400px] sm:max-h-[500px] pr-1 -mr-1 space-y-3 scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent">
-            <AnimatePresence mode="popLayout">
-              {pendingSubmissions.map((submission) => (
-                <SubmissionCard
-                  key={submission.submissionId}
-                  submission={submission}
-                  submitter={staffByDiscordId.get(
-                    submission.submittedByDiscordId,
-                  )}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                  isApproving={approvingId === submission.submissionId}
-                  isRejecting={rejectingId === submission.submissionId}
-                />
-              ))}
-            </AnimatePresence>
+            {pendingSubmissions.map((submission) => (
+              <SubmissionCard
+                key={submission.submissionId}
+                submission={submission}
+                submitter={staffByDiscordId.get(
+                  submission.submittedByDiscordId,
+                )}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                isApproving={approvingId === submission.submissionId}
+                isRejecting={rejectingId === submission.submissionId}
+              />
+            ))}
           </div>
 
           {/* kept outside the scroll area so it stays visible */}
           {(approveMutation.isError || rejectMutation.isError) && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-3 flex-shrink-0"
-            >
+            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-3 flex-shrink-0 animate-[fadeSlideIn_0.3s_ease-out]">
               <AlertCircle
                 className="w-4 h-4 text-red-500 flex-shrink-0"
                 aria-hidden="true"
@@ -328,7 +315,7 @@ export function PendingSubmissions() {
                 Failed to {approveMutation.isError ? "approve" : "reject"}{" "}
                 submission. Please try again.
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
       )}

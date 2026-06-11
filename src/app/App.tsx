@@ -2,17 +2,13 @@ import { lazy, Suspense, Component, useEffect } from "react";
 import type { ReactNode, ErrorInfo } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MotionConfig } from "motion/react";
 import { Navbar } from "@/app/Navbar";
 import { ScrapbookNav } from "@/app/ScrapbookNav";
 import { ProtectedRoute } from "@/app/ProtectedRoute";
 import { KnightRoute } from "@/app/KnightRoute";
 import { MissingUserDataDialog } from "@/app/MissingUserDataDialog";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
-import {
-  AccessibilityProvider,
-  useAccessibility,
-} from "@/shared/contexts/AccessibilityContext";
+import { AccessibilityProvider } from "@/shared/contexts/AccessibilityContext";
 import { ThemeProvider } from "@/shared/contexts/ThemeContext";
 import {
   NavExpandedProvider,
@@ -104,7 +100,6 @@ function PageLoader() {
 }
 
 function AppContent() {
-  const { settings } = useAccessibility();
   const { expanded: navExpanded } = useNavExpanded();
   const location = useLocation();
   // Home has its own bg; every other page gets the page pattern.
@@ -142,40 +137,36 @@ function AppContent() {
   }, []);
 
   return (
-    <MotionConfig
-      reducedMotion={settings.reducedMotion ? "always" : "never"}
-      transition={settings.reducedMotion ? { duration: 0 } : undefined}
-    >
-      <div>
-        {/* The page background lives on the <html> element (base.css) so the
+    <div>
+      {/* The page background lives on the <html> element (base.css) so the
             browser canvas paints it across the whole viewport - no fixed layer
             that undershoots on iOS, no chin/forehead. */}
 
-        {/* Home's warm ambient glow lives inside the content area, so the fixed
+      {/* Home's warm ambient glow lives inside the content area, so the fixed
             nav's left gutter (md:pl-16) would otherwise read as a dark seam -
             most visible at tablet widths. This app-level wash bathes that strip
             in the same warm light, behind the nav. */}
-        {isHome && (
-          <div
-            className="hidden md:block fixed inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
-            aria-hidden="true"
-            style={{
-              background:
-                "radial-gradient(60% 50% at 0% 18%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 70%)",
-            }}
-          />
-        )}
+      {isHome && (
+        <div
+          className="hidden md:block fixed inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(60% 50% at 0% 18%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 70%)",
+          }}
+        />
+      )}
 
-        <MissingUserDataDialog />
+      <MissingUserDataDialog />
 
-        {/* keyboard skip link */}
-        <a href="#main-content" className="skip-link">
-          Skip to main content
-        </a>
+      {/* keyboard skip link */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
 
-        <ScrapbookNav />
+      <ScrapbookNav />
 
-        {/* The viewport scrolls the document natively. This wrapper just holds
+      {/* The viewport scrolls the document natively. This wrapper just holds
             the page; pad left on desktop to clear the fixed nav (slim edge rail,
             or the wider gutter the pinned expanded sidebar needs - animated
             either way). overflow-x-clip is the horizontal guard for stray
@@ -191,46 +182,45 @@ function AppContent() {
             grows with its content is what lets content render behind the toolbar
             (verified against a bare HTML page). Pages fill the screen via their
             own min-h-[100lvh] (PageLayout / Home), not a flex stretch. */}
-        <div
-          className={`min-h-[100lvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
-        >
-          <Navbar />
+      <div
+        className={`min-h-[100lvh] overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
+      >
+        <Navbar />
 
-          <main id="main-content" tabIndex={-1}>
-            <ChunkErrorBoundary>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/members" element={<Members />} />
-                  <Route
-                    path="/chronicle"
-                    element={
-                      <ProtectedRoute>
-                        <Chronicle />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/auth/logout" element={<Logout />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <KnightRoute>
-                        <KnightDashboard />
-                      </KnightRoute>
-                    }
-                  />
-                  <Route path="/debug" element={<Debug />} />
-                </Routes>
-              </Suspense>
-            </ChunkErrorBoundary>
-          </main>
-        </div>
+        <main id="main-content" tabIndex={-1}>
+          <ChunkErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/members" element={<Members />} />
+                <Route
+                  path="/chronicle"
+                  element={
+                    <ProtectedRoute>
+                      <Chronicle />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/about" element={<About />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/auth/logout" element={<Logout />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <KnightRoute>
+                      <KnightDashboard />
+                    </KnightRoute>
+                  }
+                />
+                <Route path="/debug" element={<Debug />} />
+              </Routes>
+            </Suspense>
+          </ChunkErrorBoundary>
+        </main>
       </div>
-    </MotionConfig>
+    </div>
   );
 }
 
