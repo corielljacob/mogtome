@@ -47,9 +47,9 @@ export function MissingUserDataDialog() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-[fadeIn_0.3s_ease-out]">
+    <div className="fixed inset-x-0 top-0 h-[100dvh] z-[100] flex items-center justify-center p-4 animate-[fadeIn_0.3s_ease-out]">
       <div
-        className="absolute inset-0 bg-black/50 animate-[fadeIn_0.3s_ease-out]"
+        className="absolute inset-x-0 top-0 h-full bg-black/50 animate-[fadeIn_0.3s_ease-out]"
         onClick={handleClose}
         aria-hidden="true"
       />

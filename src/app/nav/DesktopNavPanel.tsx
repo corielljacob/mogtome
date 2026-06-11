@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ChevronsLeft } from "lucide-react";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 import { KawaiiStar, KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
-import type { Tab } from "@/app/nav/tabs";
+import type { Tab } from "@/shared/nav/tabs";
 import { useNavExpanded } from "@/shared/contexts/NavExpandedContext";
 import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 

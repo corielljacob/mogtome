@@ -110,7 +110,7 @@ export const ThemeAurora = memo(function ThemeAurora() {
 
   return (
     <div
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       <div

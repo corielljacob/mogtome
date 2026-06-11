@@ -36,7 +36,7 @@ export const ThemeDawn = memo(function ThemeDawn() {
 
   return (
     <div
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       {/* the sun's reflection - a soft light pillar down onto the sea */}

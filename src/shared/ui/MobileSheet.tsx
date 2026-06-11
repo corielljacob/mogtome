@@ -88,7 +88,7 @@ export const MobileSheet = memo(function MobileSheet({
     <>
       {/* z-[60] to sit above the bottom nav (z-50) */}
       <div
-        className="fixed inset-0 z-[60] bg-black md:hidden"
+        className="fixed inset-x-0 top-0 h-[100dvh] z-[60] bg-black md:hidden"
         style={
           dragY
             ? { opacity: 0.5 * dragFade }

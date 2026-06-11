@@ -35,7 +35,7 @@ export const ThemeEmbers = memo(function ThemeEmbers() {
 
   return (
     <div
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       {/* flame glow along the bottom edge */}

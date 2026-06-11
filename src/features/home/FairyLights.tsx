@@ -12,7 +12,7 @@ export function FairyLights({
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       {displayLights.map((light, i) => (

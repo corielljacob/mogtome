@@ -1,5 +1,12 @@
 import { useState, useCallback, useMemo, type ReactNode } from "react";
-import { Loader2, AlertCircle, RefreshCw, Sparkles, Wand2, Link2 } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  RefreshCw,
+  Sparkles,
+  Wand2,
+  Link2,
+} from "lucide-react";
 import { Button } from "@/shared/ui/Button";
 import { Modal } from "@/shared/ui/Modal";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
@@ -159,7 +166,9 @@ export function CharacterMapping() {
             aria-label="Refresh unmapped lists"
             className="shrink-0 grid place-items-center w-9 h-9 rounded-full border-2 border-white bg-[color:color-mix(in_srgb,var(--primary)_18%,var(--card))] text-[var(--primary)] shadow-[0_3px_8px_-3px_var(--shadow)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110 hover:rotate-[-12deg] active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+            />
           </button>
         }
         footer={

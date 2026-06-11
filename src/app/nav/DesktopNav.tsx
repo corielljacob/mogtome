@@ -1,4 +1,4 @@
-import type { Tab } from "@/app/nav/tabs";
+import type { Tab } from "@/shared/nav/tabs";
 import { DesktopNavRail } from "@/app/nav/DesktopNavRail";
 import { DesktopNavPanel } from "@/app/nav/DesktopNavPanel";
 import { useNavExpanded } from "@/shared/contexts/NavExpandedContext";

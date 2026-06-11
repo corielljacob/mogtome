@@ -1,6 +1,6 @@
 import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import type { Tab } from "@/app/nav/tabs";
+import type { Tab } from "@/shared/nav/tabs";
 
 // One item in the floating bottom pill. Inactive tabs are an icon-only circle in
 // their own colour; the active tab fills with that colour and smoothly expands to

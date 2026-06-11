@@ -1,4 +1,5 @@
 import type { MoogleConfig } from "@/shared/ui/FloatingMoogles";
+import type { SeasonalEvent } from "@/shared/constants/seasonalEvents";
 
 import wizardMoogle from "@/assets/moogles/wizard moogle.webp";
 import flyingMoogles from "@/assets/moogles/moogles flying.webp";
@@ -168,6 +169,36 @@ export const COZY_STARS = [
     delay: 2.2,
   },
 ];
+
+/** Whole days remaining until the event's end (handles year wrap). */
+export function getEventDaysLeft(range: SeasonalEvent["dateRange"]): number {
+  const now = new Date();
+  let end = new Date(
+    now.getFullYear(),
+    range.endMonth - 1,
+    range.endDay,
+    23,
+    59,
+    59,
+  );
+  if (end.getTime() < now.getTime()) {
+    end = new Date(
+      now.getFullYear() + 1,
+      range.endMonth - 1,
+      range.endDay,
+      23,
+      59,
+      59,
+    );
+  }
+  return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / 86_400_000));
+}
+
+export function eventCountdownLabel(daysLeft: number): string {
+  if (daysLeft <= 0) return "last day!";
+  if (daysLeft === 1) return "1 day left";
+  return `${daysLeft} days left`;
+}
 
 export function getTimeGreeting(): string {
   const hour = new Date().getHours();

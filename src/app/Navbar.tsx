@@ -46,7 +46,7 @@ function UserMenu() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          group flex items-center gap-2 px-1.5 py-1 rounded-full hover-bounce
+          group flex items-center gap-2 px-1.5 py-1.5 rounded-full hover-bounce
           cursor-pointer transition-[background-color] duration-200
           focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
           ${isOpen ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]" : "hover:bg-[color:color-mix(in_srgb,var(--primary)_9%,transparent)]"}
@@ -167,14 +167,13 @@ function LoginButton() {
   return (
     <button
       onClick={login}
-      className="gel flex items-center gap-2 px-3.5 py-2.5 md:px-3 md:py-1.5 text-white font-display text-sm font-bold cursor-pointer hover-bounce focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
+      className="gel flex items-center justify-center gap-2 h-11 w-11 rounded-2xl md:h-auto md:w-auto md:rounded-full md:px-3 md:py-1.5 text-white font-display text-sm font-bold cursor-pointer hover-bounce focus-visible:ring-2 focus-visible:ring-[#5865F2] focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
       style={{ "--gel-color": "#5865F2" } as CSSProperties}
       aria-label="Login with Discord"
     >
       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/10 border border-white/12 md:h-6 md:w-6">
         <DiscordIcon className="w-4 h-4 md:w-3.5 md:h-3.5" aria-hidden="true" />
       </span>
-      <span className="md:hidden">Login</span>
       <span className="hidden lg:inline">Login</span>
     </button>
   );
@@ -203,32 +202,9 @@ export function Navbar() {
             <LogoIcon hovered={false} />
           </Link>
 
-          <div
-            className="pointer-events-auto relative flex items-center gap-2 p-2 surface rounded-2xl"
-            style={{
-              border:
-                "2px solid color-mix(in srgb, var(--primary) 30%, var(--card))",
-              boxShadow:
-                "0 0 0 3px var(--card), 4px 5px 0 0 color-mix(in srgb, var(--primary) 24%, transparent), 0 6px 16px -8px var(--shadow)",
-            }}
-          >
-            {/* taped on with two washi strips */}
-            <span
-              className="absolute -top-2 left-2 w-10 h-4 -rotate-[10deg] rounded-[2px] opacity-85 z-10"
-              style={{
-                background:
-                  "repeating-linear-gradient(45deg, color-mix(in srgb, var(--primary) 48%, transparent) 0 5px, color-mix(in srgb, var(--primary) 26%, transparent) 5px 10px)",
-              }}
-              aria-hidden="true"
-            />
-            <span
-              className="absolute -top-2 right-2 w-10 h-4 rotate-[10deg] rounded-[2px] opacity-85 z-10"
-              style={{
-                background:
-                  "repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 48%, transparent) 0 5px, color-mix(in srgb, var(--secondary) 26%, transparent) 5px 10px)",
-              }}
-              aria-hidden="true"
-            />
+          {/* plain surface pill, matched to the logo on the left (no washi /
+              heavy border) so the two top controls read as a consistent pair */}
+          <div className="pointer-events-auto relative flex items-center gap-2 p-2 surface rounded-2xl">
             <LoginButton />
             <UserMenu />
           </div>

@@ -236,7 +236,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     requestAnimationFrame(() => {
       const bgColor =
         getComputedStyle(root).getPropertyValue("--bg").trim() ||
-        (isDarkMode ? "#1A1722" : "#FFF9F5");
+        // fallback MUST match the real palette --bg (palette.css) exactly, or the
+        // Safari toolbar tint ends up a hair off from the page background and
+        // reads as a faint band on non-scrolling pages.
+        (isDarkMode ? "#16131f" : "#fff6f4");
       // NEVER paint a background-IMAGE (e.g. an event gradient) onto the root:
       // on the very tall root document iOS Safari tiles it across the whole page,
       // exceeds its max painted-surface size, and renders stale "blocks" that
