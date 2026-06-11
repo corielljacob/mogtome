@@ -180,7 +180,9 @@ describe("CharacterMapping", () => {
     });
     expect(screen.getByText("Perfect match!")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /confirm miko cocoa with miko cocoa/i }),
+      screen.getByRole("button", {
+        name: /confirm miko cocoa with miko cocoa/i,
+      }),
     ).toBeInTheDocument();
   });
 
