@@ -16,11 +16,11 @@ interface PageLayoutProps {
   maxWidth?: string;
   className?: string;
   /**
-   * Phones only: when the page's content is a full `.corkboard`, pass `bleed` so
-   * this layout drops its own top/bottom clearance and the board itself runs to
-   * the screen edges (behind the status bar + floating nav). The board provides
-   * the chrome clearance via its own padding (see components.css). Non-corkboard
-   * pages leave this off so their content still clears the chrome.
+   * Phones only: when the page's content is a full `.corkboard`, pass `bleed`.
+   * The page keeps its TOP clearance (so the whole board is pushed down below the
+   * status bar + top pills) but drops its BOTTOM clearance, letting the board
+   * bleed behind the floating nav at the bottom (see components.css). Non-corkboard
+   * pages leave this off so their content clears the chrome top and bottom.
    */
   bleed?: boolean;
 }
@@ -48,7 +48,7 @@ export function PageLayout({
       <FloatingBubbles />
 
       <div
-        className={`relative ${bleed ? "" : "pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))]"} md:py-12 px-3 sm:px-4 z-10 ${className}`}
+        className={`relative pt-[calc(5rem+env(safe-area-inset-top))] ${bleed ? "" : "pb-[calc(5rem+env(safe-area-inset-bottom))]"} md:py-12 px-3 sm:px-4 z-10 ${className}`}
       >
         <div className={`${maxWidth} mx-auto`}>{children}</div>
       </div>

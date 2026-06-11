@@ -280,29 +280,21 @@
   }
 }
 
-/* Phones (below md, where the floating nav + status bar live): the corkboard
-   bleeds all the way to BOTH screen edges, its board background running behind
-   the status bar (top) and the floating MobileNav pill (bottom) so the page
-   reads continuous edge-to-edge. The board's own padding becomes the chrome
-   clearance - the title clears the top Navbar, the last row clears the bottom
-   pill - while the board fills behind them. Un-layered + !important so it beats
-   the per-page py-* . (PageShell zeroes its own top/bottom padding on phones so
-   the board can reach the edges.) */
+/* Phones (below md, where the floating nav + status bar live): the WHOLE
+   corkboard is pushed DOWN below the top chrome as a unit (via PageLayout's top
+   padding on `bleed` pages), so the status bar + top pills sit over the flat page
+   background rather than the board. The board still bleeds to the BOTTOM edge
+   behind the floating MobileNav pill; padding-bottom keeps the last row clear of
+   it. (PageShell keeps its top padding but drops its bottom padding on bleed.) */
 @media (max-width: 767px) {
-  /* The board runs to BOTH screen edges (behind the status bar + floating nav)
-     so the page reads continuous edge-to-edge. The page itself drops its
-     clearance via PageLayout's `bleed` prop; the board re-adds it as its own
-     padding so the title/last row still clear the chrome. min-height fills the
-     screen so a short page's board still reaches the bottom edge instead of
-     ending mid-screen with empty space below it. */
   .corkboard {
-    /* fill the screen so a short page's board reaches the bottom edge instead of
-       ending mid-screen. 100dvh tracks the REAL current viewport (grows as the
-       iOS toolbar collapses on scroll); 100lvh resolved short of the actual
-       viewport on-device and left a gap when scrolled. Tall pages exceed this so
-       it's a no-op for them. */
-    min-height: 100dvh;
-    padding-top: calc(4rem + env(safe-area-inset-top)) !important;
+    /* fill from just below the top chrome to the bottom edge. 100dvh tracks the
+       REAL current viewport (grows as the iOS toolbar collapses on scroll); the
+       subtracted offset matches PageLayout's top padding so the board ends right
+       at the bottom edge. Tall pages exceed this so it's a no-op for them. */
+    min-height: calc(100dvh - 5rem - env(safe-area-inset-top));
+    /* no top clearance override: the board's own py-* sits below its top edge,
+       which the page has already pushed below the chrome. */
     padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
   }
 }
