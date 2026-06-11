@@ -1,6 +1,6 @@
 import { memo, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import type { Tab } from "@/app/nav/tabs";
+import type { Tab } from "@/shared/nav/tabs";
 
 export const SheetTab = memo(function SheetTab({
   tab,

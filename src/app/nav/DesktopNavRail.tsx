@@ -1,6 +1,6 @@
 import { type CSSProperties } from "react";
 import { ChevronsRight } from "lucide-react";
-import type { Tab } from "@/app/nav/tabs";
+import type { Tab } from "@/shared/nav/tabs";
 import { MoogleLogoButton } from "@/app/nav/MoogleLogoButton";
 import { DesktopTab } from "@/app/nav/DesktopTab";
 import { useNavExpanded } from "@/shared/contexts/NavExpandedContext";
