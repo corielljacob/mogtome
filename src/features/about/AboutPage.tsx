@@ -1,5 +1,4 @@
 import { useMemo, type CSSProperties } from "react";
-import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { Quote } from "lucide-react";
 import { membersApi } from "@/shared/api/members";
@@ -10,6 +9,8 @@ import {
   ErrorState,
   EmptyState,
 } from "@/shared/ui/PageShell";
+import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
+import { PullToRefresh } from "@/shared/ui/PullToRefresh";
 import { KawaiiStar, KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import { Tag } from "@/shared/ui/Tag";
 import {
@@ -63,7 +64,10 @@ export function About() {
   const hasStaff = !isLoading && !isError && staff.length > 0;
 
   return (
-    <PageLayout bleed moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}>
+    <PageLayout
+      bleed
+      moogles={{ primary: wizardMoogle, secondary: flyingMoogles }}
+    >
       <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-9 md:py-11">
         <span
           className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
@@ -125,12 +129,7 @@ export function About() {
           }
         />
 
-        <motion.section
-          className="relative mb-10 sm:mb-14 max-w-3xl mx-auto"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
+        <section className="relative mb-10 sm:mb-14 max-w-3xl mx-auto">
           {/* confetti dots tying the note to the board */}
           <Dot
             className="hidden sm:block -left-2 top-14 h-2.5 w-2.5"
@@ -145,7 +144,7 @@ export function About() {
             color="var(--primary)"
           />
 
-          <div className="surface relative p-6 sm:p-9 -rotate-[0.5deg]">
+          <div className="surface bg-none relative p-6 sm:p-9">
             {/* washi tape pinning the note to the board */}
             <TapeStrip className="-top-3 left-10 -rotate-[8deg]" />
             <TapeStrip
@@ -233,7 +232,7 @@ export function About() {
               </figure>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         <div className="flex items-center gap-3 mb-6 sm:mb-8">
           <div
@@ -312,6 +311,9 @@ export function About() {
           </div>
         )}
       </div>
+
+      <PullToRefresh onRefresh={() => refetch()} />
+      <ScrollToTopButton />
     </PageLayout>
   );
 }

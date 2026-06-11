@@ -1,5 +1,4 @@
 import { type CSSProperties } from "react";
-import { motion } from "motion/react";
 import { X } from "lucide-react";
 import { KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 import { getRankColor } from "@/shared/constants/rankColors";
@@ -77,16 +76,14 @@ export function RankFilter({
             const rankColor = getRankColor(rank.name);
             const RankIcon = rankColor.icon;
             return (
-              <motion.button
+              <button
                 key={rank.name}
                 onClick={() => toggleRank(rank.name)}
                 aria-pressed={isSelected}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
                 className={`
                       inline-flex items-center gap-1.5
                       pl-1.5 pr-3 py-1.5 rounded-full text-sm font-display font-bold
-                      cursor-pointer transition-colors duration-200 touch-manipulation
+                      cursor-pointer transition-all duration-200 touch-manipulation hover:scale-[1.04] active:scale-[0.96]
                       focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
                       ${isSelected ? "gel text-white" : "bg-[var(--card)] border-2 text-[var(--text)]"}
                     `}
@@ -120,7 +117,7 @@ export function RankFilter({
                 >
                   {count}
                 </span>
-              </motion.button>
+              </button>
             );
           })}
         </div>

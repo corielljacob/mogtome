@@ -1,4 +1,3 @@
-import { AnimatePresence } from "motion/react";
 import type { Tab } from "@/app/nav/tabs";
 import { DesktopNavRail } from "@/app/nav/DesktopNavRail";
 import { DesktopNavPanel } from "@/app/nav/DesktopNavPanel";
@@ -16,13 +15,9 @@ export function DesktopNav({
 }) {
   const { expanded } = useNavExpanded();
 
-  return (
-    <AnimatePresence initial={false}>
-      {expanded ? (
-        <DesktopNavPanel key="panel" tabs={tabs} currentPath={currentPath} />
-      ) : (
-        <DesktopNavRail key="rail" tabs={tabs} currentPath={currentPath} />
-      )}
-    </AnimatePresence>
+  return expanded ? (
+    <DesktopNavPanel key="panel" tabs={tabs} currentPath={currentPath} />
+  ) : (
+    <DesktopNavRail key="rail" tabs={tabs} currentPath={currentPath} />
   );
 }

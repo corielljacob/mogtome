@@ -1,5 +1,3 @@
-import { motion } from "motion/react";
-
 export function CardShine({
   delay = 0,
   intensity = "normal",
@@ -11,14 +9,12 @@ export function CardShine({
   const opacity = opacityMap[intensity];
 
   return (
-    <motion.div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay, duration: 0.3 }}
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg animate-[fadeIn_0.3s_ease-out_both]"
+      style={{ animationDelay: `${delay}s` }}
     >
-      <motion.div
-        className="absolute inset-y-0 w-[250%] -left-[150%]"
+      <div
+        className="absolute inset-y-0 w-[250%] -left-[150%] animate-[shimmer_1s_cubic-bezier(0.25,0.46,0.45,0.94)_both]"
         style={{
           background: `linear-gradient(
             105deg,
@@ -30,17 +26,11 @@ export function CardShine({
             transparent 65%,
             transparent 100%
           )`,
-        }}
-        initial={{ x: "0%" }}
-        animate={{ x: "100%" }}
-        transition={{
-          delay: delay,
-          duration: 1.0,
-          ease: [0.25, 0.46, 0.45, 0.94],
+          animationDelay: `${delay}s`,
         }}
       />
-      <motion.div
-        className="absolute inset-y-0 w-[200%] -left-full"
+      <div
+        className="absolute inset-y-0 w-[200%] -left-full animate-[shimmer_0.9s_cubic-bezier(0.25,0.46,0.45,0.94)_both]"
         style={{
           background: `linear-gradient(
             95deg,
@@ -52,15 +42,9 @@ export function CardShine({
             transparent 64%,
             transparent 100%
           )`,
-        }}
-        initial={{ x: "0%" }}
-        animate={{ x: "100%" }}
-        transition={{
-          delay: delay + 0.15,
-          duration: 0.9,
-          ease: [0.25, 0.46, 0.45, 0.94],
+          animationDelay: `${delay + 0.15}s`,
         }}
       />
-    </motion.div>
+    </div>
   );
 }

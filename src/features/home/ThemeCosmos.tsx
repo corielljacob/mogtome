@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // Endwalker's cosmos: a deep starfield with the moon hanging in the upper sky
@@ -106,25 +106,44 @@ export const ThemeCosmos = memo(function ThemeCosmos() {
 
       {/* the moon, hanging in the upper sky - the heart of Endwalker. A static
           sphere inside a gently drifting wrapper, ringed by a breathing halo. */}
-      <motion.div
+      <div
         className="absolute"
-        style={{ right: "7%", top: "9%", width: "20vmax", height: "20vmax" }}
-        animate={reduceMotion ? undefined : { y: [0, -9, 0] }}
-        transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          reduceMotion
+            ? { right: "7%", top: "9%", width: "20vmax", height: "20vmax" }
+            : ({
+                right: "7%",
+                top: "9%",
+                width: "20vmax",
+                height: "20vmax",
+                "--home-bob": "-9px",
+                animation: "home-float-bob 13s ease-in-out infinite",
+              } as CSSProperties)
+        }
       >
         {/* warm halo */}
-        <motion.div
+        <div
           className="absolute inset-[-38%]"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent) 0%, color-mix(in srgb, var(--secondary) 22%, transparent) 38%, transparent 68%)",
-            filter: "blur(24px)",
-            mixBlendMode: "screen",
-          }}
-          animate={
-            reduceMotion ? { opacity: 0.6 } : { opacity: [0.42, 0.7, 0.5, 0.42] }
+          style={
+            reduceMotion
+              ? {
+                  background:
+                    "radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent) 0%, color-mix(in srgb, var(--secondary) 22%, transparent) 38%, transparent 68%)",
+                  filter: "blur(24px)",
+                  mixBlendMode: "screen",
+                  opacity: 0.6,
+                }
+              : ({
+                  background:
+                    "radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent) 0%, color-mix(in srgb, var(--secondary) 22%, transparent) 38%, transparent 68%)",
+                  filter: "blur(24px)",
+                  mixBlendMode: "screen",
+                  "--home-op-1": 0.42,
+                  "--home-op-2": 0.7,
+                  "--home-op-3": 0.5,
+                  animation: "home-halo-breathe 8s ease-in-out infinite",
+                } as CSSProperties)
           }
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         {/* moon body - lit from the upper left, shadowed lower right */}
         <div
@@ -161,65 +180,56 @@ export const ThemeCosmos = memo(function ThemeCosmos() {
             }}
           />
         </div>
-      </motion.div>
+      </div>
 
       {/* drifting, twinkling stardust */}
       {motes.map((m) => (
-        <motion.div
+        <div
           key={`m${m.key}`}
           className="absolute rounded-full"
-          style={{
-            left: `${m.left}%`,
-            top: `${m.top}%`,
-            width: m.size,
-            height: m.size,
-            background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
-            boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
-            mixBlendMode: "screen",
-          }}
-          animate={
+          style={
             reduceMotion
-              ? { opacity: m.op * 0.7 }
-              : {
-                  y: [0, -m.bob, 0],
-                  opacity: [
-                    m.op * 0.25,
-                    m.op,
-                    m.op * 0.4,
-                    m.op * 0.85,
-                    m.op * 0.25,
-                  ],
+              ? {
+                  left: `${m.left}%`,
+                  top: `${m.top}%`,
+                  width: m.size,
+                  height: m.size,
+                  background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
+                  mixBlendMode: "screen",
+                  opacity: m.op * 0.7,
                 }
+              : ({
+                  left: `${m.left}%`,
+                  top: `${m.top}%`,
+                  width: m.size,
+                  height: m.size,
+                  background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
+                  mixBlendMode: "screen",
+                  "--home-bob": `${m.bob}px`,
+                  "--home-op": m.op,
+                  animation: `home-mote-twinkle ${m.dur}s ease-in-out ${m.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: m.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: m.delay,
-          }}
         />
       ))}
 
-      {/* slow comets */}
+      {/* slow comets - active fraction folded into the keyframe; period = dur + gap */}
       {!reduceMotion &&
         COMETS.map((c, i) => (
-          <motion.div
+          <div
             key={`c${i}`}
             className="absolute"
-            style={{ top: `${c.top}%`, left: `${c.left}%` }}
-            initial={{ x: 0, y: 0, opacity: 0 }}
-            animate={{
-              x: ["0vw", `${c.dx}vw`],
-              y: ["0vh", `${c.dy}vh`],
-              opacity: [0, 0.9, 0.9, 0],
-            }}
-            transition={{
-              duration: c.dur,
-              repeat: Infinity,
-              repeatDelay: c.gap,
-              ease: "easeOut",
-              delay: c.delay,
-            }}
+            style={
+              {
+                top: `${c.top}%`,
+                left: `${c.left}%`,
+                "--home-dx": `${c.dx}vw`,
+                "--home-dy": `${c.dy}vh`,
+                animation: `home-shooting-star ${c.dur + c.gap}s ease-out ${c.delay}s infinite`,
+              } as CSSProperties
+            }
           >
             <div
               style={{
@@ -232,7 +242,7 @@ export const ThemeCosmos = memo(function ThemeCosmos() {
                 borderRadius: 2,
               }}
             />
-          </motion.div>
+          </div>
         ))}
     </div>
   );

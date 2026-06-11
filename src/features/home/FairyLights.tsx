@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 import { DEFAULT_FAIRY_LIGHTS } from "@/features/home/homeData";
 
@@ -17,7 +16,7 @@ export function FairyLights({
       aria-hidden="true"
     >
       {displayLights.map((light, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute rounded-full"
           style={{
@@ -26,13 +25,7 @@ export function FairyLights({
             width: light.size,
             height: light.size,
             backgroundColor: light.color,
-          }}
-          animate={{ opacity: [0.1, 0.85, 0.1], scale: [0.8, 1.3, 0.8] }}
-          transition={{
-            duration: light.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: light.delay,
+            animation: `home-fairy-light ${light.dur}s ease-in-out ${light.delay}s infinite`,
           }}
         />
       ))}

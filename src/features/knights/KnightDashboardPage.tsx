@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
 import {
   FileText,
   Link2,
@@ -52,13 +51,11 @@ function StatTile({
   };
 
   return (
-    <motion.button
+    <button
       type="button"
       onClick={handleClick}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className="surface hover-lift p-4 sm:p-5 flex items-center gap-4 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+      style={{ animationDelay: `${delay}s` }}
+      className="surface hover-lift p-4 sm:p-5 flex items-center gap-4 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 animate-[fadeSlideIn_0.4s_ease-out_both]"
       aria-label={`${count} ${label} - ${hint}. Jump to section.`}
     >
       <span className="icon-badge w-11 h-11 shrink-0 text-[var(--primary)]">
@@ -84,7 +81,7 @@ function StatTile({
           {isClear ? "all clear, kupo!" : hint}
         </span>
       </span>
-    </motion.button>
+    </button>
   );
 }
 

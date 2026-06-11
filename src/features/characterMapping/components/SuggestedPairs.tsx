@@ -1,5 +1,4 @@
 import { type CSSProperties } from "react";
-import { AnimatePresence } from "motion/react";
 import { Check, Loader2, Wand2 } from "lucide-react";
 import { PairCard } from "@/features/characterMapping/components/PairCard";
 import { pairKey } from "@/features/characterMapping/hooks/useCharacterMapping";
@@ -79,18 +78,16 @@ export function SuggestedPairs({
       </div>
 
       <div className="space-y-3 overflow-y-auto pr-1 -mr-1 pb-2 pt-1">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {pairs.map((pair) => (
-            <PairCard
-              key={pairKey(pair)}
-              pair={pair}
-              isConfirming={confirmingPairKey === pairKey(pair)}
-              disabled={isConfirmingAll}
-              onConfirm={() => onConfirm(pair)}
-              onSkip={() => onSkip(pair)}
-            />
-          ))}
-        </AnimatePresence>
+        {pairs.map((pair) => (
+          <PairCard
+            key={pairKey(pair)}
+            pair={pair}
+            isConfirming={confirmingPairKey === pairKey(pair)}
+            disabled={isConfirmingAll}
+            onConfirm={() => onConfirm(pair)}
+            onSkip={() => onSkip(pair)}
+          />
+        ))}
       </div>
     </div>
   );

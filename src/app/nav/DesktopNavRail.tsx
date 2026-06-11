@@ -1,5 +1,4 @@
 import { type CSSProperties } from "react";
-import { motion } from "motion/react";
 import { ChevronsRight } from "lucide-react";
 import type { Tab } from "@/app/nav/tabs";
 import { MoogleLogoButton } from "@/app/nav/MoogleLogoButton";
@@ -46,20 +45,10 @@ export function DesktopNavRail({
   currentPath: string;
 }) {
   return (
-    <motion.nav
+    <nav
       aria-label="Main navigation"
-      initial={{ opacity: 0, x: -22, scale: 0.9, y: "-50%" }}
-      animate={{ opacity: 1, x: 0, scale: 1, y: "-50%" }}
-      exit={{
-        opacity: 0,
-        x: -18,
-        scale: 0.88,
-        y: "-50%",
-        transition: { duration: 0.14, ease: "easeIn" },
-      }}
-      transition={{ type: "spring", damping: 24, stiffness: 320 }}
       style={{ transformOrigin: "left center" }}
-      className="hidden md:flex fixed left-0 top-1/2 z-40 flex-col items-start gap-2.5 max-h-screen py-2"
+      className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 flex-col items-start gap-2.5 max-h-screen py-2 animate-[fadeIn_0.3s_ease-out]"
     >
       <MoogleLogoButton />
 
@@ -72,6 +61,6 @@ export function DesktopNavRail({
       ))}
 
       <ExpandHandle />
-    </motion.nav>
+    </nav>
   );
 }

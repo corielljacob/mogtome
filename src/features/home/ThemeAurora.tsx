@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // Shadowbringers' "divided sky": the golden Light flickers in from BOTH sides,
@@ -123,137 +123,138 @@ export const ThemeAurora = memo(function ThemeAurora() {
       />
 
       {/* golden Light pouring in from the left, flickering */}
-      <motion.div
+      <div
         className="absolute inset-y-[-10%] left-[-10%] w-[42%]"
-        style={{
-          background:
-            "linear-gradient(to right, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
-          filter: "blur(28px)",
-          mixBlendMode: "screen",
-        }}
-        animate={
+        style={
           reduceMotion
-            ? { opacity: 0.85 }
-            : { opacity: [0.62, 0.95, 0.72, 0.9, 0.62] }
+            ? {
+                background:
+                  "linear-gradient(to right, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
+                filter: "blur(28px)",
+                mixBlendMode: "screen",
+                opacity: 0.85,
+              }
+            : ({
+                background:
+                  "linear-gradient(to right, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
+                filter: "blur(28px)",
+                mixBlendMode: "screen",
+                "--home-op-1": 0.62,
+                "--home-op-2": 0.95,
+                "--home-op-3": 0.72,
+                "--home-op-4": 0.9,
+                animation: "home-light-flicker 6s ease-in-out infinite",
+              } as CSSProperties)
         }
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
       {/* ...and from the right */}
-      <motion.div
+      <div
         className="absolute inset-y-[-10%] right-[-10%] w-[42%]"
-        style={{
-          background:
-            "linear-gradient(to left, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
-          filter: "blur(28px)",
-          mixBlendMode: "screen",
-        }}
-        animate={
+        style={
           reduceMotion
-            ? { opacity: 0.85 }
-            : { opacity: [0.72, 0.6, 0.94, 0.68, 0.72] }
+            ? {
+                background:
+                  "linear-gradient(to left, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
+                filter: "blur(28px)",
+                mixBlendMode: "screen",
+                opacity: 0.85,
+              }
+            : ({
+                background:
+                  "linear-gradient(to left, color-mix(in srgb, var(--accent) 62%, transparent), color-mix(in srgb, var(--accent) 22%, transparent) 42%, transparent 72%)",
+                filter: "blur(28px)",
+                mixBlendMode: "screen",
+                "--home-op-1": 0.72,
+                "--home-op-2": 0.6,
+                "--home-op-3": 0.94,
+                "--home-op-4": 0.68,
+                animation: "home-light-flicker 7s ease-in-out 1.2s infinite",
+              } as CSSProperties)
         }
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1.2,
-        }}
       />
 
       {/* violet / cyan beams in the dark gap */}
       {BEAMS.map((b, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute top-[-15%] h-[130%]"
-          style={{
-            left: `${b.left}%`,
-            width: `${b.w}%`,
-            background: `linear-gradient(to top, transparent 4%, color-mix(in srgb, ${b.hue} 72%, transparent) 48%, color-mix(in srgb, ${b.hue} 26%, transparent) 74%, transparent)`,
-            filter: "blur(34px)",
-            mixBlendMode: "screen",
-          }}
-          initial={{ opacity: b.max * 0.7, x: 0, rotate: b.rot }}
-          animate={
+          style={
             reduceMotion
-              ? { opacity: b.max * 0.8, rotate: b.rot }
-              : {
-                  opacity: [
-                    b.max * 0.5,
-                    b.max,
-                    b.max * 0.65,
-                    b.max,
-                    b.max * 0.5,
-                  ],
-                  x: [-16, 16, -16],
-                  rotate: b.rot,
+              ? {
+                  left: `${b.left}%`,
+                  width: `${b.w}%`,
+                  background: `linear-gradient(to top, transparent 4%, color-mix(in srgb, ${b.hue} 72%, transparent) 48%, color-mix(in srgb, ${b.hue} 26%, transparent) 74%, transparent)`,
+                  filter: "blur(34px)",
+                  mixBlendMode: "screen",
+                  opacity: b.max * 0.8,
+                  transform: `rotate(${b.rot}deg)`,
                 }
+              : ({
+                  left: `${b.left}%`,
+                  width: `${b.w}%`,
+                  background: `linear-gradient(to top, transparent 4%, color-mix(in srgb, ${b.hue} 72%, transparent) 48%, color-mix(in srgb, ${b.hue} 26%, transparent) 74%, transparent)`,
+                  filter: "blur(34px)",
+                  mixBlendMode: "screen",
+                  "--home-rot": `${b.rot}deg`,
+                  "--home-op-1": b.max * 0.5,
+                  "--home-op-2": b.max,
+                  "--home-op-3": b.max * 0.65,
+                  "--home-op-4": b.max,
+                  animation: `home-beam-sway ${b.dur}s ease-in-out ${b.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: b.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: b.delay,
-          }}
         />
       ))}
 
       {/* drifting, twinkling aether motes */}
       {motes.map((m) => (
-        <motion.div
+        <div
           key={`m${m.key}`}
           className="absolute rounded-full"
-          style={{
-            left: `${m.left}%`,
-            top: `${m.top}%`,
-            width: m.size,
-            height: m.size,
-            background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
-            boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
-            mixBlendMode: "screen",
-          }}
-          animate={
+          style={
             reduceMotion
-              ? { opacity: m.op * 0.7 }
-              : {
-                  y: [0, -m.bob, 0],
-                  opacity: [
-                    m.op * 0.25,
-                    m.op,
-                    m.op * 0.4,
-                    m.op * 0.85,
-                    m.op * 0.25,
-                  ],
+              ? {
+                  left: `${m.left}%`,
+                  top: `${m.top}%`,
+                  width: m.size,
+                  height: m.size,
+                  background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
+                  mixBlendMode: "screen",
+                  opacity: m.op * 0.7,
                 }
+              : ({
+                  left: `${m.left}%`,
+                  top: `${m.top}%`,
+                  width: m.size,
+                  height: m.size,
+                  background: `radial-gradient(circle, ${m.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${m.size * 1.8}px ${m.size * 0.5}px ${m.color}`,
+                  mixBlendMode: "screen",
+                  "--home-bob": `${m.bob}px`,
+                  "--home-op": m.op,
+                  animation: `home-mote-twinkle ${m.dur}s ease-in-out ${m.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: m.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: m.delay,
-          }}
         />
       ))}
 
-      {/* shooting stars */}
+      {/* shooting stars - active fraction = dur / (dur + gap) folded into the
+          keyframe; period = dur + gap */}
       {!reduceMotion &&
         SHOOTING.map((s, i) => (
-          <motion.div
+          <div
             key={`s${i}`}
             className="absolute"
-            style={{ top: `${s.top}%`, left: `${s.left}%` }}
-            initial={{ x: 0, y: 0, opacity: 0 }}
-            animate={{
-              x: ["0vw", `${s.dx}vw`],
-              y: ["0vh", `${s.dy}vh`],
-              opacity: [0, 0.9, 0.9, 0],
-            }}
-            transition={{
-              duration: s.dur,
-              repeat: Infinity,
-              repeatDelay: s.gap,
-              ease: "easeOut",
-              delay: s.delay,
-            }}
+            style={
+              {
+                top: `${s.top}%`,
+                left: `${s.left}%`,
+                "--home-dx": `${s.dx}vw`,
+                "--home-dy": `${s.dy}vh`,
+                animation: `home-shooting-star ${s.dur + s.gap}s ease-out ${s.delay}s infinite`,
+              } as CSSProperties
+            }
           >
             <div
               style={{
@@ -266,7 +267,7 @@ export const ThemeAurora = memo(function ThemeAurora() {
                 borderRadius: 2,
               }}
             />
-          </motion.div>
+          </div>
         ))}
     </div>
   );

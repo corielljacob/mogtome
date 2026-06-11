@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { KawaiiBow, KawaiiCloud } from "@/shared/ui/kawaiiMotifs";
@@ -64,26 +63,19 @@ export function HeroMoogle() {
 
   return (
     <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
-      {/* bubble sits above the moogle in DOM flow */}
-      <motion.div
-        className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ y: [0, -8, 0], opacity: 1, scale: 1 }}
-        transition={{
-          opacity: { delay: 1, duration: 0.4 },
-          scale: { type: "spring", delay: 1, bounce: 0.5 },
-          y: {
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.4,
-          },
-        }}
+      {/* bubble sits above the moogle in DOM flow. Outer = entrance (scale/fade),
+          inner = perpetual gentle bob (separate transform layers so they don't
+          fight). */}
+      <div
+        className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20 animate-[scaleIn_0.4s_ease-out_1s_both]"
         role="region"
         aria-label="Moogle greeting"
       >
         <div
-          className="
+          style={{ animation: "home-bubble-bob 4s ease-in-out 1.4s infinite" }}
+        >
+          <div
+            className="
           relative bg-[var(--card)]
           px-5 sm:px-7 py-3 sm:py-4
           rounded-[1.9rem]
@@ -92,49 +84,34 @@ export function HeroMoogle() {
           w-[16rem] sm:w-[18rem] min-h-[3.75rem] sm:min-h-[4.25rem]
           flex items-center justify-center
         "
-        >
-          <KawaiiBow
-            className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm"
-            aria-hidden="true"
-          />
-          {/* tail: card-colored body covers the bubble's bottom border (hides
+          >
+            <KawaiiBow
+              className="absolute -top-3.5 -left-2.5 w-8 h-8 text-[var(--primary)] -rotate-12 drop-shadow-sm"
+              aria-hidden="true"
+            />
+            {/* tail: card-colored body covers the bubble's bottom border (hides
               the seam), the two bordered outer edges form the pointed tip */}
-          <div
-            className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-[18px] h-[18px] bg-[var(--card)] border-b-2 border-r-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))] rotate-45 rounded-br-[6px]"
-            aria-hidden="true"
-          />
+            <div
+              className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-[18px] h-[18px] bg-[var(--card)] border-b-2 border-r-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))] rotate-45 rounded-br-[6px]"
+              aria-hidden="true"
+            />
 
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.p
+            <p
               key={quoteIndex < 0 ? "greeting" : quoteIndex}
-              className="font-accent text-base sm:text-lg md:text-xl text-[var(--primary)] text-center leading-snug font-bold"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+              className="font-accent text-base sm:text-lg md:text-xl text-[var(--primary)] text-center leading-snug font-bold animate-[home-quote-in_0.28s_cubic-bezier(0.4,0,0.2,1)]"
               aria-live="polite"
               aria-atomic="true"
             >
               &ldquo;{displayQuote}&rdquo;
-            </motion.p>
-          </AnimatePresence>
+            </p>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* scale via CSS transform only - doesn't affect flex layout, so the
           speech bubble above stays exactly put */}
       <div className="origin-center scale-105 sm:scale-110 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
-        <motion.div
-          className="relative pointer-events-auto"
-          initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{
-            type: "spring",
-            bounce: 0.5,
-            duration: 1.5,
-            delay: 0.3,
-          }}
-        >
+        <div className="relative pointer-events-auto animate-[popIn_1.5s_ease-out_0.3s_both]">
           <div
             className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[116%] pointer-events-none drop-shadow-[0_12px_14px_rgba(0,0,0,0.15)]"
             aria-hidden="true"
@@ -144,41 +121,26 @@ export function HeroMoogle() {
           <WarmMoogleAura eventId={eventId} />
           <MoogleCharms eventId={eventId} />
 
-          <motion.img
-            src={welcomingMoogle}
-            alt="A magical mogtome moogle"
-            className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl z-20 cursor-grab active:cursor-grabbing select-none"
-            drag
-            dragConstraints={{
-              left: -20,
-              right: 20,
-              top: -15,
-              bottom: 15,
-            }}
-            dragElastic={0.15}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95, rotate: -5 }}
-            onClick={() =>
-              setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
-            }
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            animate={{
-              y: [-8, 12, -8],
-              rotate: [-1.5, 2.5, -1.5],
-            }}
-            transition={{
-              y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-              rotate: {
-                duration: 7,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-            }}
-          />
+          {/* idle bob/sway runs on a wrapper so the hover/tap transform on the
+              img below isn't overridden by the perpetual keyframes */}
+          <div
+            className="relative z-20"
+            style={{ animation: "home-moogle-idle 5s ease-in-out infinite" }}
+          >
+            <img
+              src={welcomingMoogle}
+              alt="A magical mogtome moogle"
+              className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95 active:-rotate-3"
+              onClick={() =>
+                setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
+              }
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+          </div>
           <WarmMotes motes={warmMotes} />
-        </motion.div>
+        </div>
       </div>
     </div>
   );

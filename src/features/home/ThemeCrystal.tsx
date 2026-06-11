@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // A Realm Reborn's Mothercrystal: a large faceted crystal glowing in deep navy
@@ -53,7 +53,7 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
           top: 8 + ((seed * 37) % 80),
           size: 2 + ((seed * 7) % 4),
           color: SPARK_COLORS[seed % SPARK_COLORS.length],
-          op: 0.4 + (((seed * 13) % 55) / 100),
+          op: 0.4 + ((seed * 13) % 55) / 100,
           bob: 5 + ((seed * 5) % 9),
           dur: 4 + ((seed * 3) % 5),
           delay: -((seed * 1.6) % 6),
@@ -79,37 +79,66 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
       />
 
       {/* aura glow behind the crystal, breathing (opacity only) */}
-      <motion.div
+      <div
         className="absolute"
-        style={{
-          left: `${CX}%`,
-          top: `${CY}%`,
-          width: "40vmax",
-          height: "40vmax",
-          marginLeft: "-20vmax",
-          marginTop: "-20vmax",
-          background:
-            "radial-gradient(circle, color-mix(in srgb, var(--secondary) 36%, transparent) 0%, color-mix(in srgb, var(--primary) 18%, transparent) 40%, transparent 66%)",
-          filter: "blur(20px)",
-          mixBlendMode: "screen",
-        }}
-        animate={reduceMotion ? { opacity: 0.7 } : { opacity: [0.5, 0.8, 0.6, 0.5] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          reduceMotion
+            ? {
+                left: `${CX}%`,
+                top: `${CY}%`,
+                width: "40vmax",
+                height: "40vmax",
+                marginLeft: "-20vmax",
+                marginTop: "-20vmax",
+                background:
+                  "radial-gradient(circle, color-mix(in srgb, var(--secondary) 36%, transparent) 0%, color-mix(in srgb, var(--primary) 18%, transparent) 40%, transparent 66%)",
+                filter: "blur(20px)",
+                mixBlendMode: "screen",
+                opacity: 0.7,
+              }
+            : ({
+                left: `${CX}%`,
+                top: `${CY}%`,
+                width: "40vmax",
+                height: "40vmax",
+                marginLeft: "-20vmax",
+                marginTop: "-20vmax",
+                background:
+                  "radial-gradient(circle, color-mix(in srgb, var(--secondary) 36%, transparent) 0%, color-mix(in srgb, var(--primary) 18%, transparent) 40%, transparent 66%)",
+                filter: "blur(20px)",
+                mixBlendMode: "screen",
+                "--home-op-1": 0.5,
+                "--home-op-2": 0.8,
+                "--home-op-3": 0.6,
+                animation: "home-halo-breathe 7s ease-in-out infinite",
+              } as CSSProperties)
+        }
       />
 
       {/* the crystal itself - static shape inside a gently floating wrapper */}
-      <motion.div
+      <div
         className="absolute"
-        style={{
-          left: `${CX}%`,
-          top: `${CY}%`,
-          width: "18vmax",
-          height: "30vmax",
-          marginLeft: "-9vmax",
-          marginTop: "-15vmax",
-        }}
-        animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          reduceMotion
+            ? {
+                left: `${CX}%`,
+                top: `${CY}%`,
+                width: "18vmax",
+                height: "30vmax",
+                marginLeft: "-9vmax",
+                marginTop: "-15vmax",
+              }
+            : ({
+                left: `${CX}%`,
+                top: `${CY}%`,
+                width: "18vmax",
+                height: "30vmax",
+                marginLeft: "-9vmax",
+                marginTop: "-15vmax",
+                "--home-bob": "-10px",
+                animation: "home-float-bob 10s ease-in-out infinite",
+              } as CSSProperties)
+        }
       >
         <div
           className="absolute inset-0"
@@ -132,16 +161,25 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
             mixBlendMode: "screen",
           }}
         />
-      </motion.div>
+      </div>
 
       {/* shards circling the crystal */}
       {ORBITS.map((ring, ri) => (
-        <motion.div
+        <div
           key={`ring${ri}`}
           className="absolute"
-          style={{ left: `${CX}%`, top: `${CY}%`, width: 1, height: 1 }}
-          animate={reduceMotion ? undefined : { rotate: ring.dir * 360 }}
-          transition={{ duration: ring.dur, repeat: Infinity, ease: "linear" }}
+          style={
+            reduceMotion
+              ? { left: `${CX}%`, top: `${CY}%`, width: 1, height: 1 }
+              : ({
+                  left: `${CX}%`,
+                  top: `${CY}%`,
+                  width: 1,
+                  height: 1,
+                  "--home-rot-to": `${ring.dir * 360}deg`,
+                  animation: `home-orbit ${ring.dur}s linear infinite`,
+                } as CSSProperties)
+          }
         >
           {Array.from({ length: ring.count }).map((_, i) => (
             <span
@@ -156,43 +194,39 @@ export const ThemeCrystal = memo(function ThemeCrystal() {
               }}
             />
           ))}
-        </motion.div>
+        </div>
       ))}
 
       {/* drifting, twinkling crystal sparkles */}
       {sparks.map((s) => (
-        <motion.div
+        <div
           key={`s${s.key}`}
           className="absolute rounded-full"
-          style={{
-            left: `${s.left}%`,
-            top: `${s.top}%`,
-            width: s.size,
-            height: s.size,
-            background: `radial-gradient(circle, ${s.color}, transparent 70%)`,
-            boxShadow: `0 0 ${s.size * 1.8}px ${s.size * 0.5}px ${s.color}`,
-            mixBlendMode: "screen",
-          }}
-          animate={
+          style={
             reduceMotion
-              ? { opacity: s.op * 0.7 }
-              : {
-                  y: [0, -s.bob, 0],
-                  opacity: [
-                    s.op * 0.25,
-                    s.op,
-                    s.op * 0.4,
-                    s.op * 0.85,
-                    s.op * 0.25,
-                  ],
+              ? {
+                  left: `${s.left}%`,
+                  top: `${s.top}%`,
+                  width: s.size,
+                  height: s.size,
+                  background: `radial-gradient(circle, ${s.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${s.size * 1.8}px ${s.size * 0.5}px ${s.color}`,
+                  mixBlendMode: "screen",
+                  opacity: s.op * 0.7,
                 }
+              : ({
+                  left: `${s.left}%`,
+                  top: `${s.top}%`,
+                  width: s.size,
+                  height: s.size,
+                  background: `radial-gradient(circle, ${s.color}, transparent 70%)`,
+                  boxShadow: `0 0 ${s.size * 1.8}px ${s.size * 0.5}px ${s.color}`,
+                  mixBlendMode: "screen",
+                  "--home-bob": `${s.bob}px`,
+                  "--home-op": s.op,
+                  animation: `home-mote-twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: s.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: s.delay,
-          }}
         />
       ))}
     </div>

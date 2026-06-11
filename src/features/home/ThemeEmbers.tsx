@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // Stormblood's fire: a flickering flame glow hugging the bottom of the Home
@@ -39,45 +39,41 @@ export const ThemeEmbers = memo(function ThemeEmbers() {
       aria-hidden="true"
     >
       {/* flame glow along the bottom edge */}
-      <motion.div
+      <div
         className="absolute inset-x-0 bottom-0 h-2/5"
         style={{
           background:
             "linear-gradient(0deg, color-mix(in srgb, var(--accent) 32%, transparent) 0%, color-mix(in srgb, var(--primary) 24%, transparent) 38%, transparent 78%)",
           filter: "blur(6px)",
+          ...(reduceMotion
+            ? undefined
+            : { animation: "home-flame-glow 5s ease-in-out infinite" }),
         }}
-        animate={
-          reduceMotion ? undefined : { opacity: [0.75, 1, 0.82, 0.95, 0.75] }
-        }
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* embers rising and fading on the way up */}
       {!reduceMotion &&
         embers.map((e) => (
-          <motion.div
+          <div
             key={e.key}
             className="absolute bottom-0"
-            style={{ left: `${e.left}%` }}
-            initial={{ y: 0, opacity: 0 }}
-            animate={{
-              y: `-${e.rise}vh`,
-              opacity: [0, e.opacity, e.opacity, 0],
-            }}
-            transition={{
-              duration: e.dur,
-              repeat: Infinity,
-              ease: "easeOut",
-              delay: e.delay,
-            }}
+            style={
+              {
+                left: `${e.left}%`,
+                opacity: 0,
+                "--home-rise": `${e.rise}vh`,
+                "--home-op": e.opacity,
+                animation: `home-rise-fade ${e.dur}s ease-out ${e.delay}s infinite`,
+              } as CSSProperties
+            }
           >
-            <motion.div
-              animate={{ x: [-e.sway / 2, e.sway / 2, -e.sway / 2] }}
-              transition={{
-                duration: e.swayDur,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+            <div
+              style={
+                {
+                  "--home-sway": `${e.sway}px`,
+                  animation: `home-sway ${e.swayDur}s ease-in-out infinite`,
+                } as CSSProperties
+              }
             >
               <span
                 className="block rounded-full"
@@ -89,8 +85,8 @@ export const ThemeEmbers = memo(function ThemeEmbers() {
                   boxShadow: "0 0 6px 1px rgba(255,140,60,0.6)",
                 }}
               />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         ))}
     </div>
   );

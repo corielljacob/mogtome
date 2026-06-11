@@ -13,47 +13,16 @@
        `overflow-x: clip` (App.tsx) instead - clip clips without creating a
        scroller.
 
-       The page background lives HERE on the root element. The browser paints the
-       root's background across the entire canvas (the whole viewport, always),
-       so there's no chin/forehead - unlike a `position: fixed` layer, which
-       undershoots the viewport on iOS. The flat colour is also set inline by the
-       boot script / ThemeContext; these dots layer on top of it. */
+       The page background lives HERE on the root element - the browser paints the
+       root background across the whole canvas (no chin, no `position: fixed` layer
+       undershoot on iOS). It MUST stay a FLAT colour fill: a tiled
+       background-image (the old dot pattern) forces iOS Safari to tile the root
+       background across the entire (very tall) document, which exceeds its render
+       limit and shows up as stale "blocks" that cover content on long pages. A
+       solid fill has no such limit. Driven by var(--bg) so it updates live on
+       theme toggle (no JS-baked inline colour to go stale). */
     background-color: var(--bg);
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 10%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 8%, transparent) 0 2px,
-        transparent 2.6px
-      );
-    background-size:
-      40px 40px,
-      40px 40px;
-    background-position:
-      0 0,
-      20px 20px;
     transition: background-color 0.3s ease;
-  }
-  /* gentler dots on the deep dark base */
-  html.dark {
-    background-image:
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--primary) 7%, transparent) 0 2px,
-        transparent 2.6px
-      ),
-      radial-gradient(
-        circle,
-        color-mix(in srgb, var(--secondary) 6%, transparent) 0 2px,
-        transparent 2.6px
-      );
-  }
-  html.high-contrast {
-    background-image: none;
   }
 
   body {
@@ -209,16 +178,6 @@
    */
 
   /* Native mobile app feel - make the web app feel more like a native iOS/Android app. */
-
-  /* Prevent overscroll bounce on the whole page (iOS) */
-  html {
-    overscroll-behavior: none;
-  }
-
-  /* Allow overscroll bounce only within scrollable containers */
-  .overscroll-contain {
-    overscroll-behavior: contain;
-  }
 
   /* Native-like active states for interactive elements */
   @media (hover: none) and (pointer: coarse) {

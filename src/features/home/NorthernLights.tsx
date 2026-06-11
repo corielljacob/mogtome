@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { memo, type CSSProperties } from "react";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
 // Evercold's Norse night: the aurora borealis - broad ribbons of green, cyan and
@@ -45,39 +45,35 @@ export const NorthernLights = memo(function NorthernLights() {
       />
 
       {RIBBONS.map((r, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute inset-x-0"
-          style={{
-            top: `${r.top}%`,
-            height: `${r.h}%`,
-            background: `linear-gradient(to bottom, transparent 0%, ${r.hue} 50%, transparent 100%)`,
-            filter: "blur(34px)",
-            mixBlendMode: "screen",
-          }}
-          initial={{ opacity: r.max * 0.6 }}
           // opacity-only shimmer (no transform) - animating this heavy blurred,
           // screen-blended layer's transform re-rasterizes it every frame and
           // flickers; staggered fades still read as living aurora.
-          animate={
+          style={
             reduceMotion
-              ? { opacity: r.max * 0.7 }
-              : {
-                  opacity: [
-                    r.max * 0.4,
-                    r.max,
-                    r.max * 0.55,
-                    r.max * 0.85,
-                    r.max * 0.4,
-                  ],
+              ? {
+                  top: `${r.top}%`,
+                  height: `${r.h}%`,
+                  background: `linear-gradient(to bottom, transparent 0%, ${r.hue} 50%, transparent 100%)`,
+                  filter: "blur(34px)",
+                  mixBlendMode: "screen",
+                  opacity: r.max * 0.7,
                 }
+              : ({
+                  top: `${r.top}%`,
+                  height: `${r.h}%`,
+                  background: `linear-gradient(to bottom, transparent 0%, ${r.hue} 50%, transparent 100%)`,
+                  filter: "blur(34px)",
+                  mixBlendMode: "screen",
+                  "--home-op-1": r.max * 0.4,
+                  "--home-op-2": r.max,
+                  "--home-op-3": r.max * 0.55,
+                  "--home-op-4": r.max * 0.85,
+                  animation: `home-aurora-shimmer ${r.dur}s ease-in-out ${r.delay}s infinite`,
+                } as CSSProperties)
           }
-          transition={{
-            duration: r.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: r.delay,
-          }}
         />
       ))}
     </div>

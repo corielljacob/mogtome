@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { motion } from "motion/react";
 
 const AMBIENT_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   id: i,
@@ -27,9 +26,9 @@ export const AmbientGlow = memo(function AmbientGlow({
       aria-hidden="true"
     >
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-float-gentle"
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
@@ -37,19 +36,9 @@ export const AmbientGlow = memo(function AmbientGlow({
             height: p.size,
             background: `radial-gradient(circle, ${p.color} 0%, transparent 70%)`,
             boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
-          }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0, 0.6, 0.4, 0],
-            scale: [0, 1, 1.2, 0],
-            y: [0, p.rise],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: "easeOut",
-            repeat: Infinity,
-            repeatDelay: 1,
+            opacity: 0.5,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
           }}
         />
       ))}

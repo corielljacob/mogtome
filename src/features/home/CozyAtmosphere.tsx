@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { type CSSProperties } from "react";
 import { Star } from "lucide-react";
 import { COZY_STARS } from "@/features/home/homeData";
 
@@ -37,27 +37,25 @@ export function CozyAtmosphere({ eventId }: { eventId: string | null }) {
         }}
       />
       {COZY_STARS.map((s, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute"
-          style={{ left: s.left, top: s.top }}
-          animate={{
-            y: [0, s.drift, 0],
-            rotate: [0, s.spin, 0],
-            opacity: [s.op * 0.5, s.op, s.op * 0.5],
-          }}
-          transition={{
-            duration: s.dur,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: s.delay,
-          }}
+          style={
+            {
+              left: s.left,
+              top: s.top,
+              "--home-drift": `${s.drift}px`,
+              "--home-spin": `${s.spin}deg`,
+              "--home-op": s.op,
+              animation: `home-cozy-star ${s.dur}s ease-in-out ${s.delay}s infinite`,
+            } as CSSProperties
+          }
         >
           <Star
             style={{ width: s.size, height: s.size, color: "var(--accent)" }}
             strokeWidth={1.25}
           />
-        </motion.div>
+        </div>
       ))}
     </div>
   );

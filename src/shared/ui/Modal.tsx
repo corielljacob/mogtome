@@ -1,6 +1,12 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+  type TouchEvent as ReactTouchEvent,
+} from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useDragControls } from "motion/react";
 import { X } from "lucide-react";
 import { KawaiiSparkle, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
 import { TapeStrip } from "@/shared/ui/stickers";
@@ -40,6 +46,10 @@ interface ModalProps {
 // rounded top, a grab handle that swipes-to-dismiss, and safe-area aware padding
 // so action bars clear the home indicator. Handles scroll-lock, Escape, focus
 // and backdrop-close so callers just pass content. Shared across the app.
+//
+// NOTE: animations are pure CSS (see animations.css: sheetSlideUp / modalPop /
+// fadeIn) and the swipe-to-dismiss is plain touch handlers - Framer Motion was
+// removed app-wide because its mount/unmount churned the iOS Safari compositor.
 export function Modal({
   open,
   onClose,
@@ -57,9 +67,29 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const isMobile = useIsMobile();
-  // swipe-to-dismiss is driven only from the grab handle, so dragging never
-  // hijacks scrolling inside the sheet body.
-  const dragControls = useDragControls();
+
+  // swipe-to-dismiss for the mobile sheet (replaces Framer's drag). Driven only
+  // from the grab handle so it never hijacks scrolling inside the body. Follows
+  // the finger downward; release past a threshold closes, else snaps back.
+  const [dragY, setDragY] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+
+  const onHandleTouchStart = (e: ReactTouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+  };
+  const onHandleTouchMove = (e: ReactTouchEvent) => {
+    if (dragStartY.current === null) return;
+    const dy = e.touches[0].clientY - dragStartY.current;
+    // rubbery: follow at full speed down, ignore upward
+    setDragY(dy > 0 ? dy : 0);
+  };
+  const onHandleTouchEnd = () => {
+    if (dragStartY.current === null) return;
+    const shouldClose = dragY > 120;
+    dragStartY.current = null;
+    setDragY(0);
+    if (shouldClose) onClose();
+  };
 
   // lock the page behind the modal (html is the document scroller)
   useEffect(() => {
@@ -90,6 +120,8 @@ export function Modal({
     };
   }, [open, onClose]);
 
+  if (!open) return null;
+
   // header controls (close + any caller actions) - identical on both layouts
   const controls = (
     <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
@@ -112,7 +144,9 @@ export function Modal({
       >
         <KawaiiSparkle className="w-3.5 h-3.5 text-[var(--accent)]" />
         {icon ? (
-          <span className="icon-badge w-9 h-9 text-[var(--primary)]">{icon}</span>
+          <span className="icon-badge w-9 h-9 text-[var(--primary)]">
+            {icon}
+          </span>
         ) : (
           <KawaiiBow className="w-6 h-6 text-[var(--primary)]" />
         )}
@@ -137,7 +171,9 @@ export function Modal({
   const body = (
     <div
       className={`flex-1 min-h-0 ${padded ? "px-4 sm:px-5 py-4" : ""} ${
-        scroll ? "overflow-y-auto overscroll-contain" : "overflow-hidden flex flex-col"
+        scroll
+          ? "overflow-y-auto overscroll-contain"
+          : "overflow-hidden flex flex-col"
       } ${isMobile && !footer ? "pb-[calc(1rem+env(safe-area-inset-bottom))]" : ""}`}
     >
       {children}
@@ -160,105 +196,95 @@ export function Modal({
   );
 
   return createPortal(
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          key="modal"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className={`fixed inset-0 z-50 flex justify-center ${
-            isMobile ? "items-end" : "items-center p-4 sm:p-6"
-          }`}
+    <div
+      className={`fixed inset-0 z-50 flex justify-center ${
+        isMobile ? "items-end" : "items-center p-4 sm:p-6"
+      }`}
+    >
+      {/* dim the page behind */}
+      <div
+        onClick={closeOnBackdrop ? onClose : undefined}
+        className="absolute inset-0 bg-black/45"
+        style={{ animation: "fadeIn 0.2s ease-out" }}
+        aria-hidden="true"
+      />
+
+      {isMobile ? (
+        /* ---- phone: bottom sheet ---- */
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+          className="relative z-10 w-full max-w-[40rem] focus:outline-none"
+          style={
+            dragY
+              ? { transform: `translateY(${dragY}px)` }
+              : {
+                  animation:
+                    "sheetSlideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
+                }
+          }
         >
-          {/* dim the page behind */}
-          <div
-            onClick={closeOnBackdrop ? onClose : undefined}
-            className="absolute inset-0 bg-black/45"
-            aria-hidden="true"
-          />
-
-          {isMobile ? (
-            /* ---- phone: bottom sheet ---- */
-            <motion.div
-              ref={dialogRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              tabIndex={-1}
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 32, stiffness: 320 }}
-              drag="y"
-              dragControls={dragControls}
-              dragListener={false}
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={{ top: 0, bottom: 0.6 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.y > 120 || info.velocity.y > 600) onClose();
-              }}
-              className="relative z-10 w-full max-w-[40rem] focus:outline-none"
+          <div className="surface relative flex max-h-[92dvh] flex-col overflow-hidden rounded-t-3xl rounded-b-none">
+            {/* grab handle - the swipe-to-dismiss grip */}
+            <div
+              onTouchStart={onHandleTouchStart}
+              onTouchMove={onHandleTouchMove}
+              onTouchEnd={onHandleTouchEnd}
+              style={{ touchAction: "none" }}
+              className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing"
             >
-              <div className="surface relative flex max-h-[92dvh] flex-col overflow-hidden rounded-t-3xl rounded-b-none">
-                {/* grab handle - the swipe-to-dismiss grip */}
-                <div
-                  onPointerDown={(e) => dragControls.start(e)}
-                  style={{ touchAction: "none" }}
-                  className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing"
-                >
-                  <div
-                    className="h-1.5 w-10 rounded-full bg-[color:color-mix(in_srgb,var(--text-subtle)_40%,transparent)]"
-                    aria-hidden="true"
-                  />
-                </div>
-
-                <div className="relative px-6 pt-1 pb-4 text-center shrink-0">
-                  {controls}
-                  {titleBlock}
-                </div>
-
-                {divider}
-                {body}
-                {footerBlock}
-              </div>
-            </motion.div>
-          ) : (
-            /* ---- desktop: taped scrapbook dialog ---- */
-            <motion.div
-              ref={dialogRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              tabIndex={-1}
-              initial={{ opacity: 0, scale: 0.92, y: 18, rotate: -1.5 }}
-              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-              transition={{ type: "spring", damping: 24, stiffness: 280 }}
-              className={`relative z-10 w-full ${SIZES[size]} max-h-[88vh] focus:outline-none`}
-            >
-              <div className="surface relative flex max-h-[88vh] flex-col overflow-hidden">
-                <div className="relative px-6 pt-7 pb-4 text-center shrink-0">
-                  {controls}
-                  {titleBlock}
-                </div>
-
-                {divider}
-                {body}
-                {footerBlock}
-              </div>
-
-              {/* washi tape pinning the page to the board */}
-              <TapeStrip className="z-20 -top-3 left-10 -rotate-[10deg]" />
-              <TapeStrip
-                className="z-20 -top-3 right-10 rotate-[10deg]"
-                color="var(--accent)"
+              <div
+                className="h-1.5 w-10 rounded-full bg-[color:color-mix(in_srgb,var(--text-subtle)_40%,transparent)]"
+                aria-hidden="true"
               />
-            </motion.div>
-          )}
-        </motion.div>
+            </div>
+
+            <div className="relative px-6 pt-1 pb-4 text-center shrink-0">
+              {controls}
+              {titleBlock}
+            </div>
+
+            {divider}
+            {body}
+            {footerBlock}
+          </div>
+        </div>
+      ) : (
+        /* ---- desktop: taped scrapbook dialog ---- */
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+          className={`relative z-10 w-full ${SIZES[size]} max-h-[88vh] focus:outline-none`}
+          style={{
+            animation: "modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
+        >
+          <div className="surface relative flex max-h-[88vh] flex-col overflow-hidden">
+            <div className="relative px-6 pt-7 pb-4 text-center shrink-0">
+              {controls}
+              {titleBlock}
+            </div>
+
+            {divider}
+            {body}
+            {footerBlock}
+          </div>
+
+          {/* washi tape pinning the page to the board */}
+          <TapeStrip className="z-20 -top-3 left-10 -rotate-[10deg]" />
+          <TapeStrip
+            className="z-20 -top-3 right-10 rotate-[10deg]"
+            color="var(--accent)"
+          />
+        </div>
       )}
-    </AnimatePresence>,
+    </div>,
     document.body,
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { type CSSProperties } from "react";
 import {
   Ghost,
   Skull,
@@ -16,219 +16,219 @@ export function MoogleCharms({ eventId }: { eventId: string | null }) {
   if (IS_MOBILE) return null;
   if (eventId === "all-saints-wake") {
     return (
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 0.6 }}
+      <div
+        className="absolute inset-0 pointer-events-none animate-[fadeIn_0.6s_ease-out_0.7s_both]"
         aria-hidden="true"
       >
-        <motion.div
+        <div
           className="absolute -top-1 left-1/4"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
+          style={
+            {
+              "--home-scale-max": 1.3,
+              "--home-op-min": 0.5,
+              "--home-op-max": 1,
+              animation: "home-charm-pulse 2s ease-in-out 1s infinite",
+            } as CSSProperties
+          }
         >
           <Ghost className="w-4 h-4 text-purple-400" strokeWidth={1.5} />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute top-1/5 -left-6 md:-left-10"
-          animate={{ y: [0, -6, 0], rotate: [0, -15, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          style={
+            {
+              "--home-y": "-6px",
+              "--home-rot": "-15deg",
+              animation: "home-charm-bob-rot 3.2s ease-in-out infinite",
+            } as CSSProperties
+          }
         >
           <Skull
             className="w-4 h-4 md:w-5 md:h-5 text-orange-400"
             strokeWidth={1.5}
           />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute top-1/4 -right-6 md:-right-10"
-          animate={{ y: [0, -5, 0], scale: [1, 1.2, 1] }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 0.5,
-          }}
+          style={
+            {
+              "--home-y": "-5px",
+              "--home-scale-max": 1.2,
+              animation: "home-charm-bob-scale 2.5s ease-in-out 0.5s infinite",
+            } as CSSProperties
+          }
         >
           <Moon
             className="w-4 h-4 md:w-5 md:h-5 text-purple-300 fill-purple-300/30"
             strokeWidth={1.5}
           />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute bottom-1/4 -right-5 md:-right-8"
-          animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.5,
-          }}
+          style={
+            {
+              "--home-y": "-4px",
+              "--home-op-min": 0.4,
+              "--home-op-max": 1,
+              animation: "home-charm-bob-op 2s ease-in-out 1.5s infinite",
+            } as CSSProperties
+          }
         >
           <Ghost className="w-3.5 h-3.5 text-green-400" strokeWidth={1.5} />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute bottom-1/3 -left-5 md:-left-8"
-          animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
+          style={
+            {
+              "--home-scale-max": 1.2,
+              "--home-rot": "10deg",
+              animation: "home-charm-scale-rot 3s ease-in-out 2s infinite",
+            } as CSSProperties
+          }
         >
           <Skull className="w-3.5 h-3.5 text-orange-300" strokeWidth={1.5} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     );
   }
 
   if (eventId === "starlight") {
     return (
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 0.6 }}
+      <div
+        className="absolute inset-0 pointer-events-none animate-[fadeIn_0.6s_ease-out_0.7s_both]"
         aria-hidden="true"
       >
-        <motion.div
+        <div
           className="absolute -top-2 left-1/4"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.5, 1, 0.5],
-            rotate: [0, 90, 0],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
+          style={
+            {
+              "--home-scale-max": 1.3,
+              "--home-rot": "90deg",
+              "--home-op-min": 0.5,
+              "--home-op-max": 1,
+              animation: "home-charm-scale-rot-op 3s ease-in-out 1s infinite",
+            } as CSSProperties
+          }
         >
           <Snowflake className="w-4 h-4 text-blue-300" strokeWidth={1.5} />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute top-1/5 -left-6 md:-left-10"
-          animate={{ y: [0, -5, 0], rotate: [0, 12, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          style={
+            {
+              "--home-y": "-5px",
+              "--home-rot": "12deg",
+              animation: "home-charm-bob-rot 3.2s ease-in-out infinite",
+            } as CSSProperties
+          }
         >
           <Gift
             className="w-4 h-4 md:w-5 md:h-5 text-red-400"
             strokeWidth={1.5}
           />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute top-1/4 -right-6 md:-right-10"
-          animate={{ y: [0, -4, 0], scale: [1, 1.3, 1] }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 0.5,
-          }}
+          style={
+            {
+              "--home-y": "-4px",
+              "--home-scale-max": 1.3,
+              animation: "home-charm-bob-scale 2.5s ease-in-out 0.5s infinite",
+            } as CSSProperties
+          }
         >
           <Star
             className="w-4 h-4 md:w-5 md:h-5 text-amber-300 fill-amber-300"
             strokeWidth={1.5}
           />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute bottom-1/4 -right-5 md:-right-8"
-          animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
-          transition={{
-            duration: 3.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.5,
-          }}
+          style={
+            {
+              "--home-y": "-3px",
+              "--home-rot": "-8deg",
+              animation: "home-charm-bob-rot 3.5s ease-in-out 1.5s infinite",
+            } as CSSProperties
+          }
         >
           <TreePine className="w-4 h-4 text-green-500" strokeWidth={1.5} />
-        </motion.div>
+        </div>
 
-        <motion.div
+        <div
           className="absolute bottom-1/3 -left-5 md:-left-8"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.4, 1, 0.4],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
+          style={
+            {
+              "--home-scale-max": 1.2,
+              "--home-op-min": 0.4,
+              "--home-op-max": 1,
+              animation: "home-charm-spin-pulse 4s ease-in-out 2s infinite",
+            } as CSSProperties
+          }
         >
           <Snowflake className="w-3.5 h-3.5 text-blue-200" strokeWidth={1.5} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      className="absolute inset-0 pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.7, duration: 0.6 }}
+    <div
+      className="absolute inset-0 pointer-events-none animate-[fadeIn_0.6s_ease-out_0.7s_both]"
       aria-hidden="true"
     >
-      <motion.div
+      <div
         className="absolute -top-1 left-1/4"
-        animate={{ y: [0, -7, 0] }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
+        style={
+          {
+            "--home-y": "-7px",
+            animation: "home-charm-bob 3s ease-in-out 1s infinite",
+          } as CSSProperties
+        }
       >
         <KawaiiHeart className="w-5 h-5 text-[var(--primary)]" />
-      </motion.div>
-      <motion.div
+      </div>
+      <div
         className="absolute top-1/5 -left-6 md:-left-10"
-        animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        style={
+          {
+            "--home-y": "-6px",
+            "--home-rot": "10deg",
+            animation: "home-charm-bob-rot 4s ease-in-out infinite",
+          } as CSSProperties
+        }
       >
         <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--accent)]" />
-      </motion.div>
-      <motion.div
+      </div>
+      <div
         className="absolute top-1/4 -right-6 md:-right-10"
-        animate={{ y: [0, -5, 0] }}
-        transition={{
-          duration: 3.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.5,
-        }}
+        style={
+          {
+            "--home-y": "-5px",
+            animation: "home-charm-bob 3.5s ease-in-out 0.5s infinite",
+          } as CSSProperties
+        }
       >
         <KawaiiStar className="w-5 h-5 md:w-6 md:h-6 text-[var(--secondary)]" />
-      </motion.div>
-      <motion.div
+      </div>
+      <div
         className="absolute bottom-1/4 -right-4 md:-right-8"
-        animate={{ y: [0, -4, 0] }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1.5,
-        }}
+        style={
+          {
+            "--home-y": "-4px",
+            animation: "home-charm-bob 3s ease-in-out 1.5s infinite",
+          } as CSSProperties
+        }
       >
         <KawaiiHeart className="w-4 h-4 text-[var(--secondary)]" />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

@@ -10,10 +10,11 @@
     isolation: isolate;
     border-radius: var(--radius-2xl);
     background-color: var(--card);
-    /* Faint paper grain so cards aren't perfectly flat - soft-light blended with
-       the card colour, so it adapts to light/dark cards. Reset in high-contrast. */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23cg)' opacity='0.6'/%3E%3C/svg%3E");
-    background-blend-mode: soft-light;
+    /* Flat fill - NO grain image + blend-mode. On iOS Safari `background-blend-mode`
+       promotes every .surface to its own GPU compositor layer; on a long page with
+       many cards iOS can't re-composite them all fast enough during the toolbar
+       collapse/expand repaint, so the safe-area edges flash blank "bands" until it
+       catches up (the scroll-to-top banding bug). A flat fill repaints instantly. */
     border: 2px solid color-mix(in srgb, var(--primary) 16%, var(--card));
     box-shadow:
       0 2px 0 0 color-mix(in srgb, var(--primary) 10%, transparent),
@@ -137,11 +138,11 @@
     border-radius: var(--radius-3xl);
     border: 3px solid color-mix(in srgb, var(--primary) 20%, var(--card));
     background-color: color-mix(in srgb, var(--primary) 5%, var(--card));
-    /* a whisper of the shared fractal-noise paper grain (soft-light) - the same
-       grain the .surface cards use - so the page reads as soft paper, not flat fill. */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23cg)' opacity='0.5'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-    background-blend-mode: soft-light;
+    /* NOTE: the paper-grain background-image + `background-blend-mode: soft-light`
+       was removed here. On a very long board (unpaginated pages like About) the
+       blend-mode forces the whole element onto one GPU compositor layer, and iOS
+       Safari's max texture size clips it on scroll. Flat fill renders at any
+       height. Re-add grain only via a height-safe method if wanted. */
     box-shadow:
       0 2px 0 0 color-mix(in srgb, var(--primary) 12%, transparent),
       0 22px 50px -22px var(--shadow),
@@ -295,7 +296,12 @@
      screen so a short page's board still reaches the bottom edge instead of
      ending mid-screen with empty space below it. */
   .corkboard {
-    min-height: 100lvh;
+    /* fill the screen so a short page's board reaches the bottom edge instead of
+       ending mid-screen. 100dvh tracks the REAL current viewport (grows as the
+       iOS toolbar collapses on scroll); 100lvh resolved short of the actual
+       viewport on-device and left a gap when scrolled. Tall pages exceed this so
+       it's a no-op for them. */
+    min-height: 100dvh;
     padding-top: calc(4rem + env(safe-area-inset-top)) !important;
     padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
   }

@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { motion } from "motion/react";
+import { useMemo, type CSSProperties } from "react";
 import { Snowflake, Sparkles } from "lucide-react";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
@@ -131,38 +130,18 @@ export function StarlightOverlay() {
       aria-hidden="true"
     >
       {snowflakes.map((flake, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute"
-          style={{ left: flake.left, top: "-5%" }}
-          animate={{
-            y: [
-              0,
-              typeof window !== "undefined" ? window.innerHeight + 40 : 1000,
-            ],
-            x: [0, flake.drift, 0],
-            rotate: [0, 360],
-          }}
-          transition={{
-            y: {
-              duration: flake.duration,
-              repeat: Infinity,
-              ease: "linear",
-              delay: flake.delay,
-            },
-            x: {
-              duration: flake.duration * 0.7,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: flake.delay,
-            },
-            rotate: {
-              duration: flake.duration * 2,
-              repeat: Infinity,
-              ease: "linear",
-              delay: flake.delay,
-            },
-          }}
+          style={
+            {
+              left: flake.left,
+              top: "-5%",
+              "--home-fall": "115vh",
+              "--home-drift": `${flake.drift}px`,
+              animation: `home-starlight-fall ${flake.duration}s linear ${flake.delay}s infinite`,
+            } as CSSProperties
+          }
         >
           {flake.variant === "flake" ? (
             <Snowflake
@@ -184,7 +163,7 @@ export function StarlightOverlay() {
               }}
             />
           )}
-        </motion.div>
+        </div>
       ))}
 
       {/* wire and bulbs share one SVG so they live in the same coordinate space */}
@@ -225,51 +204,49 @@ export function StarlightOverlay() {
           const r = bulb.size * 0.4;
           return (
             <g key={i}>
-              <motion.circle
+              <circle
                 cx={cx}
                 cy={cy}
                 r={r * 5}
                 fill={`url(#bulb-glow-${i})`}
-                animate={{
-                  opacity: [0.35, 0.75, 0.35],
-                  r: [r * 4.5, r * 5.5, r * 4.5],
-                }}
-                transition={{
-                  duration: 2.5 + (i % 3) * 0.6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: bulb.delay,
-                }}
+                style={
+                  {
+                    transformBox: "fill-box",
+                    transformOrigin: "center",
+                    "--home-op-min": 0.35,
+                    "--home-op-max": 0.75,
+                    animation: `home-bulb-glow ${2.5 + (i % 3) * 0.6}s ease-in-out ${bulb.delay}s infinite`,
+                  } as CSSProperties
+                }
               />
-              <motion.circle
+              <circle
                 cx={cx}
                 cy={cy}
                 r={r * 2}
                 fill={bulb.color}
-                opacity={0.35}
-                style={{ filter: "blur(1px)" }}
-                animate={{ opacity: [0.25, 0.45, 0.25] }}
-                transition={{
-                  duration: 1.8 + (i % 4) * 0.4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: bulb.delay + 0.1,
-                }}
+                style={
+                  {
+                    filter: "blur(1px)",
+                    "--home-op-min": 0.25,
+                    "--home-op-max": 0.45,
+                    animation: `home-bulb-twinkle ${1.8 + (i % 4) * 0.4}s ease-in-out ${bulb.delay + 0.1}s infinite`,
+                  } as CSSProperties
+                }
               />
               {/* bulb body, slightly elongated */}
-              <motion.ellipse
+              <ellipse
                 cx={cx}
                 cy={cy + r * 0.15}
                 rx={r}
                 ry={r * 1.2}
                 fill={bulb.color}
-                animate={{ opacity: [0.8, 1, 0.8] }}
-                transition={{
-                  duration: 2 + (i % 3) * 0.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: bulb.delay,
-                }}
+                style={
+                  {
+                    "--home-op-min": 0.8,
+                    "--home-op-max": 1,
+                    animation: `home-bulb-twinkle ${2 + (i % 3) * 0.5}s ease-in-out ${bulb.delay}s infinite`,
+                  } as CSSProperties
+                }
               />
               {/* specular highlight */}
               <ellipse
@@ -285,14 +262,13 @@ export function StarlightOverlay() {
         })}
       </svg>
 
-      <motion.div
+      <div
         className="absolute bottom-0 inset-x-0 h-[30%]"
         style={{
           background:
             "linear-gradient(to top, rgba(217,119,6,0.10), rgba(251,191,36,0.05) 40%, transparent)",
+          animation: "home-glow-pulse 4s ease-in-out infinite",
         }}
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div
@@ -311,25 +287,17 @@ export function StarlightOverlay() {
         { left: "85%", top: "60%", delay: 3.5 },
         { left: "45%", top: "85%", delay: 5.5 },
       ].map((sparkle, i) => (
-        <motion.div
+        <div
           key={`sparkle-${i}`}
           className="absolute"
-          style={{ left: sparkle.left, top: sparkle.top }}
-          animate={{
-            opacity: [0, 0.6, 0],
-            scale: [0.5, 1.2, 0.5],
-            rotate: [0, 180],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: sparkle.delay,
-            repeatDelay: 4,
+          style={{
+            left: sparkle.left,
+            top: sparkle.top,
+            animation: `home-sparkle-twinkle 7s ease-in-out ${sparkle.delay}s infinite`,
           }}
         >
           <Sparkles className="w-4 h-4 text-amber-300/60" strokeWidth={1.5} />
-        </motion.div>
+        </div>
       ))}
     </div>
   );

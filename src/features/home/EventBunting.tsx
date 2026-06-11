@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { CalendarDays } from "lucide-react";
 import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
 import type { SeasonalEvent } from "@/shared/constants/seasonalEvents";
@@ -66,12 +65,7 @@ export function EventBunting({ event }: { event: SeasonalEvent }) {
       role="status"
       aria-label={`Now celebrating ${event.name}. ${dates}. ${countdown}.`}
     >
-      <motion.div
-        className="relative -rotate-1"
-        initial={{ opacity: 0, y: -12, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: "spring", bounce: 0.4, duration: 0.7, delay: 0.3 }}
-      >
+      <div className="relative -rotate-1 animate-[fadeIn_0.7s_ease-out_0.3s_both]">
         {/* washi tape */}
         <span
           className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 rotate-[-3deg] rounded-[2px] opacity-80 z-10"
@@ -125,7 +119,7 @@ export function EventBunting({ event }: { event: SeasonalEvent }) {
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

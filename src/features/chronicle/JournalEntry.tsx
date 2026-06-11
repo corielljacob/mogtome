@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { motion } from "motion/react";
 import { Tag } from "@/shared/ui/Tag";
 import { getEventTypeConfig } from "@/features/chronicle/eventTypes";
 import { formatRelativeTime } from "@/shared/lib/dateFormatters";
@@ -14,11 +13,10 @@ export const JournalEntry = memo(function JournalEntry({
   const { Icon, hex, label } = getEventTypeConfig(event.type);
 
   return (
-    <motion.li
-      className="relative flex gap-3 sm:gap-4 py-4 sm:py-5 first:pt-0"
-      initial={isRealtime && isUnseen ? { opacity: 0, y: -8 } : false}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
+    <li
+      className={`relative flex gap-3 sm:gap-4 py-4 sm:py-5 first:pt-0${
+        isRealtime && isUnseen ? " animate-[fadeSlideIn_0.4s_ease-out]" : ""
+      }`}
     >
       <span
         className="icon-badge w-9 h-9 shrink-0 mt-0.5"
@@ -50,6 +48,6 @@ export const JournalEntry = memo(function JournalEntry({
           {event.text}
         </p>
       </div>
-    </motion.li>
+    </li>
   );
 });

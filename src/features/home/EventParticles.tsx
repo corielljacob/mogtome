@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { motion } from "motion/react";
+import { useMemo, type CSSProperties } from "react";
 import type { EventParticle } from "@/shared/constants/seasonalEvents";
 import { IS_MOBILE } from "@/shared/lib/motionConfig";
 
@@ -56,31 +55,25 @@ export function EventParticles({ particles }: { particles: EventParticle[] }) {
       aria-hidden="true"
     >
       {items.map((item, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute"
-          style={{
-            left: item.left,
-            top: item.top,
-          }}
-          animate={{
-            y: [0, -15, 0],
-            x: [0, item.drift, 0],
-            opacity: [item.opacity * 0.6, item.opacity, item.opacity * 0.6],
-            rotate: [0, item.drift > 0 ? 8 : -8, 0],
-          }}
-          transition={{
-            duration: item.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: item.delay,
-          }}
+          style={
+            {
+              left: item.left,
+              top: item.top,
+              "--home-drift": `${item.drift}px`,
+              "--home-rot": `${item.drift > 0 ? 8 : -8}deg`,
+              "--home-op": item.opacity,
+              animation: `home-event-particle ${item.duration}s ease-in-out ${item.delay}s infinite`,
+            } as CSSProperties
+          }
         >
           <item.Icon
             style={{ width: item.size, height: item.size, color: item.color }}
             strokeWidth={1.5}
           />
-        </motion.div>
+        </div>
       ))}
     </div>
   );

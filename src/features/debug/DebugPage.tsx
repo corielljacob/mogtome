@@ -1,5 +1,10 @@
-import { useState, useEffect, useCallback, memo } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  memo,
+  type CSSProperties,
+} from "react";
 import { Play, RotateCcw, X } from "lucide-react";
 import { MembershipCard } from "@/shared/ui/MembershipCard";
 import { getTheme } from "@/shared/ui/membershipCardThemes";
@@ -41,28 +46,21 @@ const Sparkles = memo(function Sparkles() {
       aria-hidden="true"
     >
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
-          className="absolute rounded-full"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            background: `radial-gradient(circle, ${p.color} 0%, transparent 70%)`,
-            boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
-          }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0, 1, 1, 0],
-            scale: [0, 1.2, 1, 0],
-            y: [0, p.rise],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: [0.23, 1, 0.32, 1],
-          }}
+          className="absolute rounded-full animate-[popIn_var(--dur)_cubic-bezier(0.23,1,0.32,1)_var(--delay)_both]"
+          style={
+            {
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: p.size,
+              height: p.size,
+              background: `radial-gradient(circle, ${p.color} 0%, transparent 70%)`,
+              boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+              "--dur": `${p.duration}s`,
+              "--delay": `${p.delay}s`,
+            } as CSSProperties
+          }
         />
       ))}
     </div>
@@ -71,27 +69,19 @@ const Sparkles = memo(function Sparkles() {
 
 function CardShine({ delay = 0 }: { delay?: number }) {
   return (
-    <motion.div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay }}
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg animate-[fadeIn_0.3s_ease-out_both]"
+      style={{ animationDelay: `${delay}s` }}
     >
-      <motion.div
-        className="absolute inset-y-0 w-[200%] -left-full"
+      <div
+        className="absolute inset-y-0 w-[200%] -left-full animate-[shimmer_0.8s_cubic-bezier(0.23,1,0.32,1)_both]"
         style={{
           background:
             "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 60%, transparent 100%)",
-        }}
-        initial={{ x: "0%" }}
-        animate={{ x: "100%" }}
-        transition={{
-          delay: delay + 0.2,
-          duration: 0.8,
-          ease: [0.23, 1, 0.32, 1],
+          animationDelay: `${delay + 0.2}s`,
         }}
       />
-    </motion.div>
+    </div>
   );
 }
 
@@ -120,12 +110,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
   const firstName = MOCK_USER.memberName.split(" ")[0];
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg)]/95"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg)]/95 animate-[fadeIn_0.3s_ease-out]">
       <button
         onClick={onClose}
         className="absolute top-4 right-4 p-2 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--primary)]/10 transition-colors cursor-pointer z-10"
@@ -146,84 +131,35 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="w-full max-w-md px-6" key={runCount}>
-        <motion.div
-          className="text-center py-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              duration: 0.6,
-              ease: [0.23, 1, 0.32, 1],
-            }}
-          >
-            <motion.p
-              className="text-[var(--text-muted)] font-soft text-sm mb-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+        <div className="text-center py-2 animate-[fadeIn_0.3s_ease-out]">
+          <div className="mb-8 animate-[fadeSlideIn_0.6s_cubic-bezier(0.23,1,0.32,1)]">
+            <p
+              className="text-[var(--text-muted)] font-soft text-sm mb-2 animate-[fadeIn_0.5s_ease-out_0.2s_both]"
             >
               Welcome to the family, {firstName}
-            </motion.p>
-            <motion.p
-              className="font-accent text-2xl text-[var(--primary)]"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: 0.3,
-                duration: 0.5,
-                ease: [0.23, 1, 0.32, 1],
-              }}
+            </p>
+            <p
+              className="font-accent text-2xl text-[var(--primary)] animate-[scaleIn_0.5s_cubic-bezier(0.23,1,0.32,1)_0.3s_both]"
             >
               Your card is ready
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
 
           <div className="relative mb-6 text-left">
-            <motion.div
-              className="absolute -inset-12 rounded-[2rem] pointer-events-none"
+            <div
+              className={`absolute -inset-12 rounded-[2rem] pointer-events-none transition-opacity duration-700 ${
+                phase >= 1 ? "opacity-40 animate-float-gentle" : "opacity-0"
+              }`}
               style={{
                 background: `radial-gradient(ellipse at center, ${theme.glow} 0%, transparent 70%)`,
                 filter: "blur(40px)",
               }}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{
-                opacity: phase >= 1 ? [0.3, 0.5, 0.4] : 0,
-                scale: phase >= 1 ? 1 : 0.6,
-              }}
-              transition={{
-                opacity: {
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                },
-                scale: { duration: 0.8, ease: [0.23, 1, 0.32, 1] },
-              }}
             />
 
-            <motion.div
-              className="relative"
-              initial={{
-                opacity: 0,
-                y: 60,
-                scale: 0.85,
-                rotateX: 25,
-                filter: "blur(8px)",
-              }}
-              animate={{
-                opacity: phase >= 1 ? 1 : 0,
-                y: phase >= 1 ? 0 : 60,
-                scale: phase >= 1 ? 1 : 0.85,
-                rotateX: phase >= 1 ? 0 : 25,
-                filter: phase >= 1 ? "blur(0px)" : "blur(8px)",
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.23, 1, 0.32, 1],
-              }}
+            <div
+              className={`relative transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                phase >= 1 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-[60px] scale-[0.85]"
+              }`}
               style={{
                 perspective: "1000px",
                 transformStyle: "preserve-3d",
@@ -239,53 +175,39 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
               />
 
               {phase >= 2 && <CardShine delay={0} />}
-            </motion.div>
+            </div>
 
-            <AnimatePresence>{phase >= 3 && <Sparkles />}</AnimatePresence>
+            {phase >= 3 && <Sparkles />}
           </div>
 
           <div className="min-h-[5.5rem] flex flex-col items-center justify-center gap-4">
-            <AnimatePresence mode="wait">
-              {phase >= 3 && (
-                <motion.p
-                  className="font-accent text-base text-[var(--secondary)]"
-                  initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                >
-                  ✨ You're officially one of us, kupo! ✨
-                </motion.p>
-              )}
-            </AnimatePresence>
+            {phase >= 3 && (
+              <p className="font-accent text-base text-[var(--secondary)] animate-[fadeSlideIn_0.5s_cubic-bezier(0.23,1,0.32,1)]">
+                ✨ You're officially one of us, kupo! ✨
+              </p>
+            )}
 
             {phase >= 4 && (
-              <motion.button
-                initial={{ opacity: 0, y: 16, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{
-                  duration: 0.4,
-                  ease: [0.23, 1, 0.32, 1],
-                }}
+              <button
                 onClick={onClose}
                 className="
                   px-8 py-3 rounded-lg
                   bg-[var(--primary)]
                   text-white font-soft font-semibold text-sm
                   shadow-[2px_2px_0_color-mix(in_srgb,var(--primary)_40%,black)]
-                  transition-shadow duration-150
-                  hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)]
+                  transition-all duration-150
+                  hover:shadow-[3px_3px_0_color-mix(in_srgb,var(--primary)_45%,black)] hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.97]
                   cursor-pointer
+                  animate-[fadeSlideIn_0.4s_cubic-bezier(0.23,1,0.32,1)]
                 "
               >
                 Let's go, kupo! →
-              </motion.button>
+              </button>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -347,11 +269,9 @@ export function Debug() {
         </ContentCard>
       </div>
 
-      <AnimatePresence>
-        {showPreview && (
-          <CardRevealPreview onClose={() => setShowPreview(false)} />
-        )}
-      </AnimatePresence>
+      {showPreview && (
+        <CardRevealPreview onClose={() => setShowPreview(false)} />
+      )}
     </div>
   );
 }
