@@ -197,14 +197,14 @@ export function Modal({
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex justify-center ${
+      className={`fixed inset-x-0 top-0 h-[100dvh] z-50 flex justify-center ${
         isMobile ? "items-end" : "items-center p-4 sm:p-6"
       }`}
     >
       {/* dim the page behind */}
       <div
         onClick={closeOnBackdrop ? onClose : undefined}
-        className="absolute inset-0 bg-black/45"
+        className="absolute inset-x-0 top-0 h-full bg-black/45"
         style={{ animation: "fadeIn 0.2s ease-out" }}
         aria-hidden="true"
       />

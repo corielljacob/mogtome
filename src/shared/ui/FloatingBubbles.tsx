@@ -86,7 +86,7 @@ const MOTIF = {
 export const FloatingBubbles = memo(function FloatingBubbles() {
   return (
     <div
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       {ITEMS.map((it, i) => {

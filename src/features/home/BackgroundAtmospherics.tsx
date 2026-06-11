@@ -145,7 +145,7 @@ export function BackgroundAtmospherics() {
   return (
     <>
       <div
-        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-1000"
+        className="absolute inset-0 pointer-events-none z-0 transition-colors duration-1000"
         style={{
           background:
             isEventThemeActive && activeEvent
@@ -156,7 +156,7 @@ export function BackgroundAtmospherics() {
       />
       {heavensward && (
         <div
-          className="fixed inset-0 z-0 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{
             background:
               "radial-gradient(ellipse 82% 74% at 50% 36%, transparent 52%, rgba(6, 10, 20, 0.38) 100%)",
@@ -166,7 +166,7 @@ export function BackgroundAtmospherics() {
       )}
       {heavensNight && (
         <div
-          className="fixed inset-0 z-0 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{
             backgroundImage: HEAVENSWARD_STARS,
             backgroundSize: "260px 260px",
@@ -180,7 +180,7 @@ export function BackgroundAtmospherics() {
           gradient instead, so render the dots on top here just for events. */}
       {isEventThemeActive && activeEvent && (
         <div
-          className="fixed inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
+          className="absolute inset-0 z-0 pointer-events-none kawaii-dots opacity-80"
           aria-hidden="true"
         />
       )}

@@ -88,7 +88,7 @@ export function StarlightOverlay() {
   if (IS_MOBILE) {
     return (
       <div
-        className="fixed inset-0 pointer-events-none overflow-hidden"
+        className="absolute inset-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
         {[12, 28, 45, 62, 78, 90].map((left, i) => (
@@ -126,7 +126,7 @@ export function StarlightOverlay() {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none overflow-hidden"
+      className="absolute inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       {snowflakes.map((flake, i) => (
