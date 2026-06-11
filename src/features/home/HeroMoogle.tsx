@@ -62,12 +62,12 @@ export function HeroMoogle() {
   const eventId = isEventThemeActive && activeEvent ? activeEvent.id : null;
 
   return (
-    <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-4 lg:mt-0 z-10">
+    <div className="w-full lg:flex-1 lg:h-full relative flex flex-col items-center justify-center mt-1 lg:mt-0 z-10">
       {/* bubble sits above the moogle in DOM flow. Outer = entrance (scale/fade),
           inner = perpetual gentle bob (separate transform layers so they don't
           fight). */}
       <div
-        className="pointer-events-none relative z-40 mb-4 sm:mb-5 lg:mb-7 lg:mr-10 xl:mr-20 animate-[scaleIn_0.4s_ease-out_1s_both]"
+        className="pointer-events-none relative z-40 mb-2 sm:mb-4 lg:mb-7 lg:mr-10 xl:mr-20 animate-[scaleIn_0.4s_ease-out_1s_both]"
         role="region"
         aria-label="Moogle greeting"
       >
@@ -77,11 +77,11 @@ export function HeroMoogle() {
           <div
             className="
           relative bg-[var(--card)]
-          px-5 sm:px-7 py-3 sm:py-4
+          px-5 sm:px-7 py-2.5 sm:py-3.5
           rounded-[1.9rem]
           border-2 border-[color:color-mix(in_srgb,var(--primary)_28%,var(--card))]
           shadow-[0_0_0_3px_var(--card),3px_4px_0_0_color-mix(in_srgb,var(--primary)_22%,transparent)]
-          w-[16rem] sm:w-[18rem] min-h-[3.75rem] sm:min-h-[4.25rem]
+          w-[15rem] sm:w-[18rem] min-h-[3.25rem] sm:min-h-[4.25rem]
           flex items-center justify-center
         "
           >
@@ -110,7 +110,7 @@ export function HeroMoogle() {
 
       {/* scale via CSS transform only - doesn't affect flex layout, so the
           speech bubble above stays exactly put */}
-      <div className="origin-center scale-105 sm:scale-110 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
+      <div className="origin-center scale-[0.82] sm:scale-100 md:scale-[1.15] lg:scale-[1.25] xl:scale-[1.32] lg:mr-10 xl:mr-20">
         <div className="relative pointer-events-auto animate-[popIn_1.5s_ease-out_0.3s_both]">
           <div
             className="absolute left-1/2 -translate-x-1/2 bottom-[2%] w-[116%] pointer-events-none drop-shadow-[0_12px_14px_rgba(0,0,0,0.15)]"
@@ -130,7 +130,7 @@ export function HeroMoogle() {
             <img
               src={welcomingMoogle}
               alt="A magical mogtome moogle"
-              className="relative w-60 sm:w-72 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95 active:-rotate-3"
+              className="relative w-52 sm:w-64 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95 active:-rotate-3"
               onClick={() =>
                 setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)
               }

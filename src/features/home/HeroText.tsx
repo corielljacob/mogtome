@@ -92,7 +92,7 @@ export function HeroText() {
   return (
     <div className="w-full lg:flex-1 flex flex-col items-center lg:items-start text-center lg:text-left z-20">
       <div className="animate-[fadeSlideIn_1.2s_ease-out_both]">
-        <p className="eyebrow-script text-2xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-2 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md inline-flex items-center gap-2">
+        <p className="eyebrow-script text-xl sm:text-3xl md:text-5xl text-[var(--secondary)] mb-1 md:mb-4 -rotate-3 ml-2 lg:ml-6 filter drop-shadow-md inline-flex items-center gap-2">
           Welcome to
           <KawaiiStar
             className="w-5 h-5 sm:w-7 sm:h-7 text-[var(--accent)] rotate-12"
@@ -105,7 +105,7 @@ export function HeroText() {
         className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2 animate-[fadeSlideIn_0.8s_ease-out_0.2s_both]"
         style={h1Style}
       >
-        <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--primary)] flex whitespace-nowrap">
+        <span className="sticker-text block text-6xl sm:text-7xl md:text-[8rem] lg:text-[10rem] text-[var(--primary)] flex whitespace-nowrap">
           {Array.from("Mog").map((char, i) => (
             <span
               key={`mog-${i}`}
@@ -123,7 +123,7 @@ export function HeroText() {
             </span>
           ))}
         </span>
-        <span className="sticker-text block text-7xl sm:text-8xl md:text-[8rem] lg:text-[10rem] text-[var(--secondary)] ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
+        <span className="sticker-text block text-6xl sm:text-7xl md:text-[8rem] lg:text-[10rem] text-[var(--secondary)] ml-4 sm:ml-12 lg:ml-24 flex whitespace-nowrap">
           {Array.from("Tome").map((char, i) => (
             <span
               key={`tome-${i}`}
@@ -143,8 +143,8 @@ export function HeroText() {
         </span>
       </h1>
 
-      <div className="flex flex-col items-center lg:items-start gap-3 mb-10 ml-4 sm:ml-12 lg:ml-24 animate-[fadeIn_1s_ease-out_0.6s_both]">
-        <p className="text-xl sm:text-2xl md:text-[1.75rem] text-[var(--text-subtle)] font-display italic tracking-wide">
+      <div className="flex flex-col items-center lg:items-start gap-2 mb-4 lg:mb-10 ml-4 sm:ml-12 lg:ml-24 animate-[fadeIn_1s_ease-out_0.6s_both]">
+        <p className="text-lg sm:text-2xl md:text-[1.75rem] text-[var(--text-subtle)] font-display italic tracking-wide">
           {defaultTagline.split("Kupo Life!").map((part, i, arr) => (
             <span key={i}>
               {part}
