@@ -43,12 +43,15 @@ export function MobileNav({
   const moreActive = moreOpen || moreTabs.some((t) => isActive(t.path));
   const MORE_COLOR = "#9b8cce";
 
-  // shared "floating bubble" styling for the pill + the More card, so they read
-  // as one nav. Solid fill (NOT backdrop-filter - that goes stale on iOS scroll).
+  // shared "frosted bubble" styling for the pill + the More card, so they read as
+  // one nav. Translucent fill + a backdrop blur for a glassy look, and no drop
+  // shadow. The blur is an inline style, not a `backdrop-blur-*` class (base.css
+  // strips those on mobile).
   const floatStyle: CSSProperties = {
-    background: "var(--card)",
+    background: "color-mix(in srgb, var(--card) 72%, transparent)",
     border: "2px solid color-mix(in srgb, var(--primary) 16%, var(--card))",
-    boxShadow: "0 12px 30px -10px var(--shadow), 0 4px 10px -4px var(--shadow)",
+    backdropFilter: "blur(16px) saturate(1.4)",
+    WebkitBackdropFilter: "blur(16px) saturate(1.4)",
   };
 
   return (
@@ -121,7 +124,7 @@ export function MobileNav({
           aria-haspopup="menu"
           aria-expanded={moreOpen}
           aria-label="More"
-          className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none cursor-pointer transition-[background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90"
+          className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none cursor-pointer transition-[background-color,box-shadow,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90 touch-manipulation"
           style={
             moreActive
               ? ({
@@ -134,7 +137,7 @@ export function MobileNav({
         >
           <MoreIcon className="w-[22px] h-[22px]" />
           <span
-            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
               moreActive
                 ? "max-w-[5rem] opacity-100 ml-1.5"
                 : "max-w-0 opacity-0"

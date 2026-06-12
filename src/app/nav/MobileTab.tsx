@@ -18,7 +18,7 @@ export const MobileTab = memo(function MobileTab({
       to={path}
       aria-current={isActive ? "page" : undefined}
       aria-label={label}
-      className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none transition-[background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90"
+      className="relative flex h-11 items-center justify-center rounded-full px-3 font-display font-bold text-[13px] leading-none transition-[background-color,box-shadow,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-90 touch-manipulation"
       style={
         isActive
           ? ({
@@ -35,7 +35,7 @@ export const MobileTab = memo(function MobileTab({
       />
       {/* label expands in on the active tab */}
       <span
-        className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isActive ? "max-w-[7rem] opacity-100 ml-1.5" : "max-w-0 opacity-0"
         }`}
       >

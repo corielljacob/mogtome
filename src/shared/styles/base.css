@@ -248,7 +248,11 @@
     }
   }
 
-  /* Pull-to-refresh prevention (we handle our own refresh) */
+  /* We no longer ship a custom pull-to-refresh - native scrolling + the rubber-band
+     bounce/overshoot are back. `contain` keeps that bounce while stopping scroll
+     chaining and the Chrome/Android pull-to-refresh. (iOS couples its bounce and
+     pull-to-refresh into one gesture, so iOS's native refresh stays - browser
+     default, as intended.) */
   body {
     overscroll-behavior-y: contain;
   }

@@ -9,7 +9,6 @@ import {
   EmptyState,
 } from "@/shared/ui/PageShell";
 import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
-import { PullToRefresh } from "@/shared/ui/PullToRefresh";
 import { KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import {
   Sticker,
@@ -196,7 +195,6 @@ export function Members() {
         </div>
       </div>
 
-      <PullToRefresh onRefresh={() => refetch()} />
       <ScrollToTopButton />
     </PageLayout>
   );
