@@ -10,7 +10,6 @@ import {
   EmptyState,
 } from "@/shared/ui/PageShell";
 import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
-import { PullToRefresh } from "@/shared/ui/PullToRefresh";
 import { KawaiiStar, KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import { Tag } from "@/shared/ui/Tag";
 import {
@@ -312,7 +311,6 @@ export function About() {
         )}
       </div>
 
-      <PullToRefresh onRefresh={() => refetch()} />
       <ScrollToTopButton />
     </PageLayout>
   );
