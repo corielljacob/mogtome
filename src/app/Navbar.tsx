@@ -199,17 +199,22 @@ export function Navbar() {
           bar. Keeping the fixed box off the edge lets content run edge-to-edge
           under the status bar (mirrors the bottom MobileNav fix).
 
-          On scroll-down it slides up off the top edge (translateY past its own
-          height + the safe-area offset); scroll-up brings it back. */}
+          CRITICAL: the hide-on-scroll slide lives on the INNER row, never on this
+          fixed <nav>. A transform/translate on a fixed element (even translate:0,
+          which Tailwind v4 emits for translate-y-0) promotes it to its own iOS
+          compositor layer and makes Safari treat it as a top bar again - the solid
+          safe-area band. The fixed box stays transform-free; the row slides. */}
       <nav
-        className={`md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          hidden
-            ? "-translate-y-[calc(100%+env(safe-area-inset-top)+1rem)]"
-            : "translate-y-0"
-        }`}
+        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
         aria-label="Mobile header"
       >
-        <div className="flex items-center justify-between">
+        <div
+          className={`flex items-center justify-between transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            hidden
+              ? "-translate-y-[calc(100%+env(safe-area-inset-top)+1rem)]"
+              : "translate-y-0"
+          }`}
+        >
           <Link
             to="/"
             className="pointer-events-auto flex items-center gap-2 p-2 rounded-2xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"
