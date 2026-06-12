@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useHideOnScroll } from "@/shared/hooks/useHideOnScroll";
+import { useScrollReveal } from "@/shared/hooks/useScrollReveal";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
@@ -183,12 +183,12 @@ function LoginButton() {
 
 // floating account chrome only - the page nav lives in ScrapbookNav
 export function Navbar() {
-  // Auto-hide the mobile top chrome on scroll-down, reveal it on scroll-up. Under
-  // reduced motion we keep it pinned (no surprise slide). The slide is a pure CSS
-  // transform on an always-mounted element - no mount/unmount churn (see
-  // ScrollToTopButton / the iOS banding notes).
+  // Scroll-linked reveal for the mobile top chrome: it rides up off-screen as you
+  // scroll down and back in as you scroll up, tracking the scroll 1:1 and clamped
+  // to a range (no transition). Under reduced motion it stays pinned.
   const prefersReducedMotion = useReducedMotion();
-  const hidden = useHideOnScroll({ enabled: !prefersReducedMotion });
+  const rowRef = useRef<HTMLDivElement>(null);
+  useScrollReveal(rowRef, { enabled: !prefersReducedMotion });
 
   return (
     <>
@@ -199,22 +199,16 @@ export function Navbar() {
           bar. Keeping the fixed box off the edge lets content run edge-to-edge
           under the status bar (mirrors the bottom MobileNav fix).
 
-          CRITICAL: the hide-on-scroll slide lives on the INNER row, never on this
-          fixed <nav>. A transform/translate on a fixed element (even translate:0,
-          which Tailwind v4 emits for translate-y-0) promotes it to its own iOS
-          compositor layer and makes Safari treat it as a top bar again - the solid
-          safe-area band. The fixed box stays transform-free; the row slides. */}
+          CRITICAL: the scroll-reveal transform lives on the INNER row (rowRef),
+          never on this fixed <nav>. A transform/translate on a fixed element
+          promotes it to its own iOS compositor layer and makes Safari treat it as
+          a top bar again - the solid safe-area band. The fixed box stays
+          transform-free; the row slides within it. */}
       <nav
         className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
         aria-label="Mobile header"
       >
-        <div
-          className={`flex items-center justify-between transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            hidden
-              ? "-translate-y-[calc(100%+env(safe-area-inset-top)+1rem)]"
-              : "translate-y-0"
-          }`}
-        >
+        <div ref={rowRef} className="flex items-center justify-between">
           <Link
             to="/"
             className="pointer-events-auto flex items-center gap-2 p-2 rounded-2xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"

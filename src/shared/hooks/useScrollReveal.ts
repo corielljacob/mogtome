@@ -1,72 +1,81 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, type RefObject } from "react";
 
 interface Options {
-  /** Stay revealed until scrolled past this many px from the top (default 72). */
-  revealAbove?: number;
-  /** Min scroll delta before flipping direction - ignores iOS rubber-band jitter
-   *  (default 6). */
-  delta?: number;
-  /** When false the result is pinned to `false` (never hide) - pass the user's
-   *  reduced-motion preference here. Default true. */
+  /** When false the element is pinned fully revealed (transform cleared) - pass
+   *  the user's reduced-motion preference here. Default true. */
   enabled?: boolean;
 }
 
+// Extra px past the element's box so its drop-shadow clears the top edge too,
+// otherwise a faint shadow line peeks while it's "hidden".
+const SHADOW_CLEARANCE = 28;
+
 /**
- * Auto-hide-on-scroll. Returns `hidden` = true while the user scrolls DOWN, and
- * false while scrolling UP or near the top - the headroom.js pattern for a
- * floating header.
+ * Scroll-linked header reveal - no transition, no animation. Translates `ref` up
+ * as the user scrolls DOWN and back down as they scroll UP, tracking the scroll
+ * delta 1:1 and clamped to a range: fully revealed at its rest spot (offset 0) ..
+ * fully hidden just above the top edge. So it rides off-screen with the content,
+ * parks just above the viewport, and rides back in on scroll-up, stopping exactly
+ * at its rest position - the "fixed within a range" feel.
  *
- * Watches the document (window) scroll: the app scrolls the document natively
- * (see App.tsx / base.css), so there is no inner scroll container to attach to.
- * The caller animates the hide with a CSS transform on an always-mounted element
- * (never mount/unmount - that churns the iOS Safari compositor and bands the
- * safe-area edges; see ScrollToTopButton).
+ * Drives the transform imperatively (no React state) so it follows every frame
+ * without re-rendering. The transform MUST live on this inner element, never on a
+ * fixed ancestor: a transform/translate on a fixed element promotes it to an iOS
+ * Safari compositor layer and bands the safe-area edge (see Navbar). At rest the
+ * transform is cleared entirely, so no lingering layer.
  */
-export function useHideOnScroll({
-  revealAbove = 72,
-  delta = 6,
-  enabled = true,
-}: Options = {}): boolean {
-  const [hidden, setHidden] = useState(false);
-  const lastY = useRef(0);
-
+export function useScrollReveal<T extends HTMLElement>(
+  ref: RefObject<T | null>,
+  { enabled = true }: Options = {},
+): void {
   useEffect(() => {
-    // Disabled (e.g. reduced motion): attach no listener. The hook returns false
-    // below so the header stays pinned - no setState here, since calling it
-    // synchronously in an effect triggers cascading renders.
-    if (!enabled) return;
+    const el = ref.current;
+    if (!el) return;
 
-    lastY.current = window.scrollY;
+    if (!enabled) {
+      el.style.transform = "";
+      return;
+    }
+
+    let offset = 0; // current hide distance in px (0 = fully revealed)
+    let lastY = Math.max(0, window.scrollY);
+    let maxHide = 0;
     let frame = 0;
 
-    const update = () => {
+    // Distance to park it fully above the top edge = the element's bottom (its
+    // distance from the viewport top at rest) plus shadow clearance. Measured with
+    // the transform cleared so the current offset doesn't skew the reading.
+    const measure = () => {
+      const prev = el.style.transform;
+      el.style.transform = "";
+      maxHide = Math.ceil(el.getBoundingClientRect().bottom) + SHADOW_CLEARANCE;
+      el.style.transform = prev;
+      // a shrunk range can leave the old offset out of bounds
+      offset = Math.min(offset, maxHide);
+    };
+
+    const apply = () => {
       frame = 0;
       const y = Math.max(0, window.scrollY);
-
-      // near the top: always reveal (and don't let the header hide the first row)
-      if (y < revealAbove) {
-        setHidden(false);
-        lastY.current = y;
-        return;
-      }
-
-      const diff = y - lastY.current;
-      if (Math.abs(diff) < delta) return; // accumulate tiny moves until they matter
-      setHidden(diff > 0); // scrolling down -> hide, up -> reveal
-      lastY.current = y;
+      const delta = y - lastY;
+      lastY = y;
+      // pinned fully revealed at the very top; otherwise track the scroll 1:1
+      offset = y <= 0 ? 0 : Math.min(maxHide, Math.max(0, offset + delta));
+      el.style.transform = offset > 0 ? `translateY(${-offset}px)` : "";
     };
 
     const onScroll = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
+      if (!frame) frame = window.requestAnimationFrame(apply);
     };
 
+    measure();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
       if (frame) window.cancelAnimationFrame(frame);
+      el.style.transform = "";
     };
-  }, [revealAbove, delta, enabled]);
-
-  return enabled ? hidden : false;
+  }, [ref, enabled]);
 }
