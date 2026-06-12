@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useScrollReveal } from "@/shared/hooks/useScrollReveal";
-import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 
@@ -183,48 +181,43 @@ function LoginButton() {
 
 // floating account chrome only - the page nav lives in ScrapbookNav
 export function Navbar() {
-  // Scroll-linked reveal for the mobile top chrome: it rides up off-screen as you
-  // scroll down and back in as you scroll up, tracking the scroll 1:1 and clamped
-  // to a range (no transition). Under reduced motion it stays pinned.
-  const prefersReducedMotion = useReducedMotion();
-  const rowRef = useRef<HTMLDivElement>(null);
-  useScrollReveal(rowRef, { enabled: !prefersReducedMotion });
-
+  const isHome = useLocation().pathname === "/";
   return (
     <>
-      {/* mobile: top header, logo left + account controls right.
-          Offset DOWN from the top edge (top-[...safe...]) rather than pinned
-          flush (top-0 + matching pt): iOS Safari treats a fixed element touching
-          top:0 as a top bar and won't let page content render behind the status
-          bar. Keeping the fixed box off the edge lets content run edge-to-edge
-          under the status bar (mirrors the bottom MobileNav fix).
+      {/* mobile: top header (logo + account), HOME ONLY - it's cut from every
+          other view to reclaim the vertical space (the bottom nav covers getting
+          around there). Home is a fixed-height no-scroll screen, so it just sits
+          at the top.
 
-          CRITICAL: the scroll-reveal transform lives on the INNER row (rowRef),
-          never on this fixed <nav>. A transform/translate on a fixed element
-          promotes it to its own iOS compositor layer and makes Safari treat it as
-          a top bar again - the solid safe-area band. The fixed box stays
-          transform-free; the row slides within it. */}
-      <nav
-        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
-        aria-label="Mobile header"
-      >
-        <div ref={rowRef} className="flex items-center justify-between">
-          <Link
-            to="/"
-            className="pointer-events-auto flex items-center gap-2 p-2 rounded-2xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"
-            aria-label="MogTome - Go to home page"
+          It's position:absolute inside a zero-height in-flow anchor, NOT fixed: a
+          fixed element here promotes to an iOS compositor layer and bands the
+          safe-area edge. `h-0` so the anchor claims no layout space - the header
+          floats over MobileHome, below the status bar, content edge-to-edge. */}
+      {isHome && (
+        <div className="md:hidden relative h-0">
+          <nav
+            className="absolute top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
+            aria-label="Mobile header"
           >
-            <LogoIcon hovered={false} />
-          </Link>
+            <div className="flex items-center justify-between">
+              <Link
+                to="/"
+                className="pointer-events-auto flex items-center gap-2 p-2 rounded-2xl surface hover-bounce focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none touch-manipulation"
+                aria-label="MogTome - Go to home page"
+              >
+                <LogoIcon hovered={false} />
+              </Link>
 
-          {/* plain surface pill, matched to the logo on the left (no washi /
+              {/* plain surface pill, matched to the logo on the left (no washi /
               heavy border) so the two top controls read as a consistent pair */}
-          <div className="pointer-events-auto relative flex items-center gap-2 p-2 surface rounded-2xl">
-            <LoginButton />
-            <UserMenu />
-          </div>
+              <div className="pointer-events-auto relative flex items-center gap-2 p-2 surface rounded-2xl">
+                <LoginButton />
+                <UserMenu />
+              </div>
+            </div>
+          </nav>
         </div>
-      </nav>
+      )}
 
       {/* desktop: top-right floating pill */}
       <header
