@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, ChevronDown, FileText } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useHideOnScroll } from "@/shared/hooks/useHideOnScroll";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
 import { LogoIcon } from "@/shared/ui/LogoIcon";
 
@@ -181,6 +183,13 @@ function LoginButton() {
 
 // floating account chrome only - the page nav lives in ScrapbookNav
 export function Navbar() {
+  // Auto-hide the mobile top chrome on scroll-down, reveal it on scroll-up. Under
+  // reduced motion we keep it pinned (no surprise slide). The slide is a pure CSS
+  // transform on an always-mounted element - no mount/unmount churn (see
+  // ScrollToTopButton / the iOS banding notes).
+  const prefersReducedMotion = useReducedMotion();
+  const hidden = useHideOnScroll({ enabled: !prefersReducedMotion });
+
   return (
     <>
       {/* mobile: top header, logo left + account controls right.
@@ -188,9 +197,16 @@ export function Navbar() {
           flush (top-0 + matching pt): iOS Safari treats a fixed element touching
           top:0 as a top bar and won't let page content render behind the status
           bar. Keeping the fixed box off the edge lets content run edge-to-edge
-          under the status bar (mirrors the bottom MobileNav fix). */}
+          under the status bar (mirrors the bottom MobileNav fix).
+
+          On scroll-down it slides up off the top edge (translateY past its own
+          height + the safe-area offset); scroll-up brings it back. */}
       <nav
-        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none"
+        className={`md:hidden fixed top-[calc(env(safe-area-inset-top)+0.5rem)] left-0 right-0 z-50 px-3 pointer-events-none transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          hidden
+            ? "-translate-y-[calc(100%+env(safe-area-inset-top)+1rem)]"
+            : "translate-y-0"
+        }`}
         aria-label="Mobile header"
       >
         <div className="flex items-center justify-between">
