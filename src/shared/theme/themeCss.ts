@@ -9,8 +9,8 @@ import {
 
 /**
  * Palettes carry only their three identity colours (+ optional bg); the derived
- * tokens (--shadow, the gradient mesh) are computed via color-mix the same way
- * for every palette, so they never have to be repeated by hand.
+ * --shadow token is computed via color-mix the same way for every palette, so it
+ * never has to be repeated by hand.
  */
 function paletteBlock(
   selector: string,
@@ -19,9 +19,6 @@ function paletteBlock(
   font?: string,
 ): string {
   const shadowPct = isDark ? 24 : 18;
-  const g1 = isDark ? 12 : 14;
-  const g2 = isDark ? 13 : 16;
-  const g4 = isDark ? 9 : 11;
 
   const lines: string[] = [];
   if (p.bg) lines.push(`  --bg: ${p.bg};`);
@@ -32,18 +29,6 @@ function paletteBlock(
   lines.push(`  --accent: ${p.accent};`);
   lines.push(
     `  --shadow: color-mix(in srgb, var(--primary) ${shadowPct}%, transparent);`,
-  );
-  lines.push(
-    `  --gradient-1: color-mix(in srgb, var(--secondary) ${g1}%, transparent);`,
-  );
-  lines.push(
-    `  --gradient-2: color-mix(in srgb, var(--primary) ${g2}%, transparent);`,
-  );
-  lines.push(
-    `  --gradient-3: color-mix(in srgb, var(--accent) 9%, transparent);`,
-  );
-  lines.push(
-    `  --gradient-4: color-mix(in srgb, var(--secondary) ${g4}%, transparent);`,
   );
 
   return `${selector} {\n${lines.join("\n")}\n}`;

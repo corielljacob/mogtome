@@ -1,22 +1,5 @@
-/* animations - keyframes + animate-* helpers (+ .glass-card @layer components)
+/* animations - keyframes + animate-* helpers
    Split out of the old monolithic index.css; imported in order from src/index.css. */
-
-@layer components {
-  .glass-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--panel-shadow);
-  }
-
-  /* glass-card: styled via border/shadow only - backdrop-blur removed for performance
-     since glass cards don't overlap scrollable content */
-
-  .dark .glass-card {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: var(--panel-shadow);
-  }
-}
 
 @keyframes shimmer {
   0% {
@@ -286,19 +269,10 @@
     opacity: var(--float-opacity-max, 0.2);
   }
 
-  /* Disable craft animations for reduced motion */
-  .watercolor-wash::before {
-    animation: none;
-  }
-
   /* Keep visibility for status indicators */
   .animate-ping-slow {
     opacity: 1;
   }
-}
-
-.perspective-1000 {
-  perspective: 1000px;
 }
 
 .preserve-3d {

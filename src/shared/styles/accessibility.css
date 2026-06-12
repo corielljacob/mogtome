@@ -20,12 +20,6 @@
   --warning: #cc6600;
   --border: rgba(0, 0, 0, 0.3);
   --shadow: rgba(0, 0, 0, 0.3);
-  --glass: rgba(255, 255, 255, 1);
-  /* Remove background gradients for cleaner high-contrast experience */
-  --gradient-1: transparent;
-  --gradient-2: transparent;
-  --gradient-3: transparent;
-  --gradient-4: transparent;
 }
 
 :root.dark.high-contrast {
@@ -38,11 +32,6 @@
   --warning: #ffcc00;
   --border: rgba(255, 255, 255, 0.4);
   --shadow: rgba(255, 255, 255, 0.2);
-  --glass: rgba(10, 10, 10, 1);
-  --gradient-1: transparent;
-  --gradient-2: transparent;
-  --gradient-3: transparent;
-  --gradient-4: transparent;
 }
 
 /* A Realm Reborn - High Contrast (Hydaelyn crystal blue & cyan) */
@@ -159,7 +148,6 @@
   --text-muted: #b0b0b0;
   --text-subtle: #808080;
   --border: rgba(255, 255, 255, 0.08);
-  --glass: rgba(5, 5, 5, 0.98);
 }
 
 /* Extra Dark + High Contrast combined */
