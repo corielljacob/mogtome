@@ -160,6 +160,27 @@ function AppContent() {
     };
   }, []);
 
+  // Warm the lazy route chunks during idle so tapping a nav tab never has to fetch
+  // a chunk and suspend. With the destination already in cache, navigation renders
+  // immediately instead of render-blocking on the load - the nav stays snappy. The
+  // bundler dedupes these with the lazy() imports, so it just primes the cache.
+  useEffect(() => {
+    const warm = () => {
+      void import("@/features/members/MembersPage");
+      void import("@/features/chronicle/ChroniclePage");
+      void import("@/features/about/AboutPage");
+      void import("@/features/profile/ProfilePage");
+      void import("@/features/settings/SettingsPage");
+      void import("@/features/knights/KnightDashboardPage");
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(warm, { timeout: 3000 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(warm, 1200);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <div>
       {/* The page background lives on the <html> element (base.css) so the
