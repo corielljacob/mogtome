@@ -31,10 +31,10 @@ export function useHideOnScroll({
   const lastY = useRef(0);
 
   useEffect(() => {
-    if (!enabled) {
-      setHidden(false);
-      return;
-    }
+    // Disabled (e.g. reduced motion): attach no listener. The hook returns false
+    // below so the header stays pinned - no setState here, since calling it
+    // synchronously in an effect triggers cascading renders.
+    if (!enabled) return;
 
     lastY.current = window.scrollY;
     let frame = 0;
@@ -68,5 +68,5 @@ export function useHideOnScroll({
     };
   }, [revealAbove, delta, enabled]);
 
-  return hidden;
+  return enabled ? hidden : false;
 }
