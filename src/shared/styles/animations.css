@@ -471,6 +471,25 @@ html[data-resizing] *::after {
   }
 }
 
+/* Hero title: each MogTome letter drops in from above, fading + scaling up, and
+   the bouncy cubic-bezier on the animation overshoots so it springs into place.
+   Per-letter animation-delay (set inline) staggers the drop so the word assembles
+   one letter at a time - the CSS-keyframe replacement for the old Framer Motion
+   staggerChildren. Use it with fill-mode `backwards` (NOT forwards/both): that
+   shows the pre-drop state during the stagger delay but does NOT lock the
+   transform afterwards, so the letter's own :hover lift/rotate is free to take
+   over once it lands. */
+@keyframes home-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.42em) scale(0.72) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
 /* HeroMoogle main moogle idle: independent y bob + rotate sway.
    Original: y [-8,12,-8] over 5s, rotate [-1.5,2.5,-1.5] over 7s. Combined
    into one keyframe whose 35/70 stops approximate the differing periods. */
