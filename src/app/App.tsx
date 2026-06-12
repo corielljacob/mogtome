@@ -105,6 +105,20 @@ function AppContent() {
   // Home has its own bg; every other page gets the page pattern.
   const isHome = location.pathname === "/";
 
+  // Content pages get a left gutter so the centered corkboard clears the fixed
+  // nav rail (or the wider pinned sidebar). HOME gets NO gutter: its background
+  // atmosphere + glow run edge to edge under the floating nav, so a gutter there
+  // would cut the glow off at the padding line and leave a seam beside the nav.
+  const contentClass = [
+    isHome ? "h-[100dvh] md:h-auto md:min-h-[100lvh]" : "min-h-[100lvh]",
+    "overflow-x-clip",
+    isHome
+      ? ""
+      : `transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   // Start each view at the top on navigation - the document (window) is the
   // scroller, and its scroll position carries across client-side route changes.
   useEffect(() => {
@@ -150,22 +164,9 @@ function AppContent() {
     <div>
       {/* The page background lives on the <html> element (base.css) so the
             browser canvas paints it across the whole viewport - no fixed layer
-            that undershoots on iOS, no chin/forehead. */}
-
-      {/* Home's warm ambient glow lives inside the content area, so the fixed
-            nav's left gutter (md:pl-16) would otherwise read as a dark seam -
-            most visible at tablet widths. This app-level wash bathes that strip
-            in the same warm light, behind the nav. */}
-      {isHome && (
-        <div
-          className="hidden md:block fixed inset-y-0 left-0 w-48 z-[-1] pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(60% 50% at 0% 18%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 70%)",
-          }}
-        />
-      )}
+            that undershoots on iOS, no chin/forehead. On desktop home, the full-
+            viewport atmosphere (BackgroundAtmospherics) paints behind the nav too,
+            so the nav reads as a card floating on it - no left-edge seam. */}
 
       <MissingUserDataDialog />
 
@@ -177,9 +178,8 @@ function AppContent() {
       <ScrapbookNav />
 
       {/* The viewport scrolls the document natively. This wrapper just holds
-            the page; pad left on desktop to clear the fixed nav (slim edge rail,
-            or the wider gutter the pinned expanded sidebar needs - animated
-            either way). overflow-x-clip is the horizontal guard for stray
+            the page (left-gutter logic for the fixed nav lives in contentClass
+            above). overflow-x-clip is the horizontal guard for stray
             decorations: it clips sideways overflow WITHOUT creating a scroll
             container, so the native body scroll (and iOS toolbar-collapse) keeps
             working.
@@ -192,9 +192,7 @@ function AppContent() {
             grows with its content is what lets content render behind the toolbar
             (verified against a bare HTML page). Pages fill the screen via their
             own min-h-[100lvh] (PageLayout / Home), not a flex stretch. */}
-      <div
-        className={`${isHome ? "h-[100dvh] md:h-auto md:min-h-[100lvh]" : "min-h-[100lvh]"} overflow-x-clip transition-[padding] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navExpanded ? "md:pl-[17rem]" : "md:pl-16"}`}
-      >
+      <div className={contentClass}>
         <Navbar />
 
         <main id="main-content" tabIndex={-1}>

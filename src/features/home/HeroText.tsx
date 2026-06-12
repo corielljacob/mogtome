@@ -102,16 +102,17 @@ export function HeroText() {
       </div>
 
       <h1
-        className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2 animate-[fadeSlideIn_0.8s_ease-out_0.2s_both]"
+        className="font-title-latin font-black tracking-tighter leading-[0.8] mb-1 sm:mb-2"
         style={h1Style}
       >
         <span className="sticker-text block text-6xl sm:text-7xl md:text-[8rem] lg:text-[10rem] text-[var(--primary)] flex whitespace-nowrap">
           {Array.from("Mog").map((char, i) => (
             <span
               key={`mog-${i}`}
-              className={`inline-block hover:text-[var(--primary)] transition-[transform,color] duration-200 cursor-default hover:-translate-y-[15px] hover:scale-105 ${
+              className={`inline-block cursor-default animate-[home-letter-in_0.55s_cubic-bezier(0.34,1.56,0.64,1)_backwards] transition-[translate,rotate,scale,color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:text-[var(--primary)] hover:-translate-y-[15px] hover:scale-105 ${
                 i % 2 === 0 ? "hover:-rotate-6" : "hover:rotate-6"
               }`}
+              style={{ animationDelay: `${0.25 + i * 0.07}s` }}
             >
               {metalStyle ? (
                 <span className="inline-block" style={metalStyle}>
@@ -127,9 +128,10 @@ export function HeroText() {
           {Array.from("Tome").map((char, i) => (
             <span
               key={`tome-${i}`}
-              className={`inline-block hover:text-[var(--secondary)] transition-[transform,color] duration-200 cursor-default hover:-translate-y-[15px] hover:scale-105 ${
+              className={`inline-block cursor-default animate-[home-letter-in_0.55s_cubic-bezier(0.34,1.56,0.64,1)_backwards] transition-[translate,rotate,scale,color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:text-[var(--secondary)] hover:-translate-y-[15px] hover:scale-105 ${
                 i % 2 === 0 ? "hover:rotate-6" : "hover:-rotate-6"
               }`}
+              style={{ animationDelay: `${0.25 + (i + 3) * 0.07}s` }}
             >
               {metalStyle ? (
                 <span className="inline-block" style={metalStyle}>

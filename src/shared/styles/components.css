@@ -103,12 +103,6 @@
       19px 19px;
   }
 
-  /* Dashed "cut-here" sticker border */
-  .kawaii-dashed {
-    border: 2px dashed color-mix(in srgb, var(--primary) 38%, transparent);
-    border-radius: var(--radius-2xl);
-  }
-
   :root.high-contrast .kawaii-dots {
     background-image: none;
   }
@@ -243,10 +237,6 @@
     box-shadow: 0 1px 4px -1px var(--shadow);
   }
 
-  .surface-glass {
-    background: var(--card);
-  }
-
   .hover-lift {
     transition:
       transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -265,17 +255,6 @@
     border-radius: 50%;
     background: color-mix(in srgb, var(--primary) 8%, var(--bg));
     border: 1.5px solid color-mix(in srgb, var(--primary) 15%, var(--border));
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.9rem;
-    border-radius: 9999px;
-    background: var(--card);
-    border: 1.5px solid var(--border);
     box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.06);
   }
 }

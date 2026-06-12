@@ -1,9 +1,6 @@
 /* typography - font + text helpers (un-layered)
    Split out of the old monolithic index.css; imported in order from src/index.css. */
 
-.font-inter {
-  font-family: var(--font-body);
-}
 .font-display {
   font-family: var(--font-display);
 }
@@ -16,9 +13,6 @@
 }
 .font-soft {
   font-family: var(--font-body);
-}
-.font-title {
-  font-family: var(--font-display);
 }
 /* Latin rounded display - for the giant home title; Latin metrics keep hover
    hitboxes aligned (Zen Maru's CJK ascent pushed them too high). */
@@ -82,15 +76,4 @@
   height: 1px;
   border: none;
   background: var(--border);
-}
-
-/* Decorative tape-style divider - used in section labels */
-.washi-tape-strip {
-  height: 1px;
-  border: none;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--primary) 20%, transparent),
-    color-mix(in srgb, var(--primary) 8%, transparent)
-  );
 }
