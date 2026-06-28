@@ -51,6 +51,7 @@ src/
 
 A few habits the code follows (nothing strict, just keeps things tidy):
 
+- Follow [COPY_STYLE.md](COPY_STYLE.md) for user-facing wording.
 - `@/` is an alias for `src/`, so imports read `@/shared/ui/Button` instead of
   `../../../`.
 - No barrel/index files; import straight from the file you want.
