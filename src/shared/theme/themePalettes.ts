@@ -34,7 +34,7 @@ export const THEME_META: {
   {
     id: "pom-pom",
     name: "MogTome (Default)",
-    description: "Warm sunset orange, coral & honey",
+    description: "Strawberry pink, soft lavender & warm cream",
   },
   {
     id: "arr",
@@ -83,8 +83,8 @@ export const THEME_META: {
 /** "pom-pom" is the default and lives in :root */
 export const THEME_PALETTES: Record<string, ModePalette> = {
   "pom-pom": {
-    light: { primary: "#e8682e", secondary: "#ec5f7c", accent: "#f6bd6c" },
-    dark: { primary: "#f58a50", secondary: "#f0788e", accent: "#f8c888" },
+    light: { primary: "#ce536d", secondary: "#9c84bf", accent: "#e7ad62" },
+    dark: { primary: "#f38ba2", secondary: "#b9a0df", accent: "#f8c888" },
   },
   arr: {
     light: {

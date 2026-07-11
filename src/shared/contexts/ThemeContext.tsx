@@ -223,7 +223,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     THEME_DEFINITIONS.forEach((t) => {
       root.classList.remove(`theme-${t.id}`);
     });
-    root.classList.add(`theme-${settings.colorTheme}`);
+    // Holiday palettes replace the expansion palette; retaining both classes
+    // lets the later expansion CSS override Starlight and All Saints' Wake.
+    if (!activeEvent || settings.eventThemingDisabled) {
+      root.classList.add(`theme-${settings.colorTheme}`);
+    }
 
     SEASONAL_EVENTS.forEach((e) => {
       root.classList.remove(e.cssClass);
@@ -239,7 +243,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         // fallback MUST match the real palette --bg (palette.css) exactly, or the
         // Safari toolbar tint ends up a hair off from the page background and
         // reads as a faint band on non-scrolling pages.
-        (isDarkMode ? "#16131f" : "#fff6f4");
+        (isDarkMode ? "#16131f" : "#fffaf7");
       // NEVER paint a background-IMAGE (e.g. an event gradient) onto the root:
       // on the very tall root document iOS Safari tiles it across the whole page,
       // exceeds its max painted-surface size, and renders stale "blocks" that

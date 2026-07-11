@@ -6,23 +6,22 @@
   color-scheme: light;
   /* Cozy type system - storybook rounded display, clean body, handwritten accent */
   --font-display:
-    "Zen Maru Gothic", "Fredoka", "Manrope", system-ui, sans-serif;
+    "Fredoka", "Zen Maru Gothic", "Manrope", system-ui, sans-serif;
   /* page-title font - defaults to the display font; themes may override it
      (e.g. Heavensward -> Cinzel) without touching nav/buttons/body. */
   --font-heading: var(--font-display);
   --font-body: "Manrope", system-ui, sans-serif;
   --font-script: "Caveat", cursive;
-  /* Pop-kawaii "Pom-Pom Classic" palette (default) - warm Costa-del-Sol sunset:
-     candy orange, coral & honey on a milk-warm cream; --primary stays saturated
-     enough for white-on-primary buttons. */
-  --bg: #fff6f4;
+  /* Pom-Pom Classic: strawberry, lavender and honey on warm cream.
+     The primary stays saturated enough for white-on-primary buttons. */
+  --bg: #fffaf7;
   --card: #ffffff;
-  --text: #1f1a2e;
-  --text-muted: #635b70;
-  --text-subtle: #9890a3;
-  --primary: #e8682e;
-  --secondary: #ec5f7c;
-  --accent: #f6bd6c;
+  --text: #493e54;
+  --text-muted: #7b7083;
+  --text-subtle: #94889b;
+  --primary: #ce536d;
+  --secondary: #9c84bf;
+  --accent: #e7ad62;
   --success: #4fb877;
   --warning: #eaa53a;
   --border: rgba(31, 26, 46, 0.08);
@@ -46,8 +45,8 @@
   --text: #eee9f3;
   --text-muted: #b3adc2;
   --text-subtle: #7b7590;
-  --primary: #f58a50;
-  --secondary: #f0788e;
+  --primary: #f38ba2;
+  --secondary: #b9a0df;
   --accent: #f8c888;
   --success: #7fc493;
   --warning: #f0b840;
