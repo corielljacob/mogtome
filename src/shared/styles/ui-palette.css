@@ -1,0 +1,88 @@
+/* The same room, with distinct ink, paper, and interaction colors.
+   Keep illustration pigments in nook-palette.css; these roles are for the UI.
+   Even at night, the reading surfaces retain their warm stationery finish. */
+.nook-theme {
+  --ui-surface: color-mix(in srgb, var(--nook-paper) 78%, #fffdf7);
+  --ui-surface-raised: color-mix(in srgb, var(--nook-paper) 35%, #fffdf7);
+  --ui-surface-soft: color-mix(
+    in srgb,
+    var(--scene-wood-light) 18%,
+    var(--ui-surface)
+  );
+  --ui-ink: color-mix(in srgb, var(--nook-ink) 70%, #241e20);
+  --ui-muted: color-mix(in srgb, var(--nook-ink) 92%, #241e20);
+  --ui-heading: color-mix(in srgb, var(--nook-ink) 58%, #382839);
+  --ui-rule: color-mix(in srgb, var(--ui-ink) 28%, var(--ui-surface));
+  /* Deep rose, forest, and brass echo the existing ribbons, leaves, and lamps.
+     A dark anchor keeps pale theme/event colors readable on stationery. */
+  --ui-action: color-mix(in srgb, var(--primary) 20%, #592631);
+  --ui-on-action: #ffffff;
+  --ui-action-soft: color-mix(in srgb, var(--ui-action) 11%, var(--ui-surface));
+  --ui-secondary: color-mix(in srgb, var(--scene-leaf) 38%, #293f36);
+  --ui-secondary-soft: color-mix(
+    in srgb,
+    var(--scene-leaf-light) 23%,
+    var(--ui-surface)
+  );
+  --ui-accent: color-mix(in srgb, var(--accent) 15%, #493719);
+  --ui-accent-soft: color-mix(
+    in srgb,
+    var(--scene-gold) 19%,
+    var(--ui-surface)
+  );
+  --ui-focus: var(--ui-action);
+  --ui-wall-ink: color-mix(in srgb, var(--text) 75%, #352b2c);
+  --ui-wall-muted: color-mix(in srgb, var(--text-muted) 75%, #352b2c);
+  --ui-wall-heading: color-mix(
+    in srgb,
+    var(--ui-action) 65%,
+    var(--ui-wall-ink)
+  );
+  --ui-wall-focus: var(--ui-action);
+}
+.nook-theme[data-mode="dark"],
+:root.dark .nook-theme {
+  --ui-wall-ink: var(--text);
+  --ui-wall-muted: #d1c3d2;
+  --ui-wall-heading: #f0d5c9;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Accessible palettes own the controls as well as the decorative theme. */
+:root[class*="colorblind-"] .nook-theme {
+  --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);
+  --ui-secondary: color-mix(in srgb, var(--secondary) 20%, #303030);
+  --ui-accent: color-mix(in srgb, var(--accent) 20%, #303030);
+  --ui-secondary-soft: color-mix(
+    in srgb,
+    var(--secondary) 15%,
+    var(--ui-surface)
+  );
+  --ui-accent-soft: color-mix(in srgb, var(--accent) 15%, var(--ui-surface));
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme {
+  --ui-surface: var(--card);
+  --ui-surface-raised: var(--card);
+  --ui-surface-soft: var(--bg);
+  --ui-ink: var(--text);
+  --ui-muted: var(--text-muted);
+  --ui-heading: var(--text);
+  --ui-rule: var(--border);
+  --ui-action: var(--text);
+  --ui-on-action: var(--bg);
+  --ui-action-soft: var(--bg);
+  --ui-secondary: var(--text);
+  --ui-secondary-soft: var(--bg);
+  --ui-accent: var(--text);
+  --ui-accent-soft: var(--bg);
+  --ui-focus: var(--primary);
+  --ui-wall-ink: var(--text);
+  --ui-wall-muted: var(--text-muted);
+  --ui-wall-heading: var(--text);
+  --ui-wall-focus: var(--primary);
+  background: var(--bg);
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme::before,
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme > .nook-wallpaper {
+  display: none;
+}

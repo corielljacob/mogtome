@@ -21,3 +21,8 @@
 @import "./decorations.css"; /* whimsy + scrapbook kit (stickers, washi) */
 @import "./utilities.css"; /* sr-only, skip link, safe-area, page-bg */
 @import "./animations.css"; /* keyframes + animate-* helpers */
+@import "./nook-palette.css";
+@import "./ui-palette.css";
+@import "./cozy.css";
+@import "./storybook-fonts.css";
+@import "./nook-room.css";

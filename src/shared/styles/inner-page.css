@@ -1,0 +1,174 @@
+/* Inner chapters share one sheet; Home keeps its open room composition. */
+.cozy-app-content.is-inner-page {
+  --inner-page-paper: var(--ui-surface);
+  --inner-page-ink: var(--ui-ink);
+  --inner-page-muted: var(--ui-muted);
+  --inner-page-rule: var(--ui-rule);
+  position: relative;
+  isolation: isolate;
+}
+.inner-page-shell {
+  --nook-paper: var(--inner-page-paper);
+  --nook-ink: var(--inner-page-ink);
+  --nook-text: var(--inner-page-ink);
+  --nook-heading: var(--ui-heading);
+  --nook-muted: var(--inner-page-muted);
+  --nook-wall: var(--inner-page-paper);
+  --nook-wall-panel: var(--inner-page-paper);
+  position: relative;
+  isolation: isolate;
+  width: calc(100% - 2 * clamp(1rem, 2.6vw, 3rem));
+  max-width: calc(1220 * var(--layout-unit));
+  min-width: 0;
+  margin: clamp(1.5rem, 3vw, 2.75rem) auto
+    max(2.5rem, env(safe-area-inset-bottom));
+  padding: clamp(1.5rem, 3vw, calc(40 * var(--layout-unit)));
+  border: 1px solid var(--inner-page-rule);
+  border-radius: 9px 7px 11px 6px;
+  color: var(--nook-ink);
+  background: var(--inner-page-paper);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, var(--scene-wood-light) 36%, var(--nook-paper)),
+    0 12px 32px color-mix(in srgb, var(--scene-shadow) 13%, transparent);
+}
+.inner-page-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: var(--bg-noise);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+/* Keep the document as the scroller: sticky tools and open menus need visible overflow. */
+.inner-page-shell
+  > :is(
+    .family-screen,
+    .chronicle-screen,
+    .about-screen,
+    .dashboard-screen,
+    .settings-screen
+  ) {
+  min-height: 0;
+  padding: 0;
+}
+.inner-page-shell
+  :is(
+    .family-content,
+    .chronicle-content,
+    .about-content,
+    .dashboard-content,
+    .settings-content
+  ) {
+  padding-top: 0;
+}
+.inner-page-shell :is(.nook-room-decor, .nook-lights) {
+  display: none;
+}
+
+/* These are workspaces on the shared sheet, rather than another stack of sheets. */
+.inner-page-shell
+  :is(.chronicle-workspace, .dashboard-workspace, .settings-card) {
+  box-shadow: none;
+}
+.inner-page-shell :is(.about-welcome-note, .dashboard-note) {
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--scene-shadow) 8%, transparent);
+}
+.inner-page-shell .family-results {
+  --family-control-surface: var(--nook-paper);
+  --family-control-ink: var(--nook-ink);
+}
+
+/* Profile, authentication, and the debug tools still use the older structural tokens.
+   Bridge only their route root so Settings' live palette preview keeps the real app colors. */
+.inner-page-shell
+  > :not(
+    :is(
+      .family-screen,
+      .chronicle-screen,
+      .about-screen,
+      .dashboard-screen,
+      .settings-screen
+    )
+  ) {
+  --bg: var(--inner-page-paper);
+  --card: var(--ui-surface-raised);
+  --text: var(--inner-page-ink);
+  --text-muted: var(--inner-page-muted);
+  --text-subtle: var(--inner-page-muted);
+  --border: var(--inner-page-rule);
+  color: var(--inner-page-ink);
+  min-height: 0;
+  padding: 0;
+}
+.inner-page-shell
+  > :not(
+    :is(
+      .family-screen,
+      .chronicle-screen,
+      .about-screen,
+      .dashboard-screen,
+      .settings-screen
+    )
+  )
+  > .relative.z-10 {
+  min-height: 0;
+  padding: 0;
+}
+.inner-page-shell .journal-page {
+  padding: 0;
+}
+.inner-page-shell .journal-auth-gate {
+  min-height: 0;
+  padding: 1rem 0;
+}
+.inner-page-shell .app-page-loader {
+  min-height: min(45vh, 24rem);
+}
+
+:root:is(.high-contrast, .dark.extra-dark) .cozy-app-content.is-inner-page {
+  --inner-page-paper: var(--card);
+  --inner-page-ink: var(--text);
+  --inner-page-muted: var(--text-muted);
+  --inner-page-rule: var(--border);
+  background: var(--bg);
+}
+:root:is(.high-contrast, .dark.extra-dark)
+  .cozy-app-content.is-inner-page::before,
+:root:is(.high-contrast, .dark.extra-dark) .is-inner-page > .nook-wallpaper,
+:root:is(.high-contrast, .dark.extra-dark) .inner-page-shell::before {
+  display: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .inner-page-shell {
+  box-shadow: none;
+}
+:root.high-contrast .inner-page-shell {
+  border-color: var(--inner-page-ink);
+}
+
+@media (max-width: 760px) {
+  .inner-page-shell {
+    width: calc(100% - 1.5rem);
+    margin-top: 1.25rem;
+    padding: 1.125rem;
+    border-radius: 6px;
+  }
+}
+@media (max-width: 420px) {
+  .inner-page-shell {
+    width: calc(100% - 1rem);
+    padding: 0.875rem;
+    margin-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+@media (forced-colors: active) {
+  .inner-page-shell {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+  .inner-page-shell::before {
+    display: none;
+  }
+}
