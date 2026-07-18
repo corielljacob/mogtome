@@ -266,8 +266,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         memberRank: payload.memberRank,
         memberPortraitUrl: payload.memberPortraitUrl,
         hasKnighthood:
-          payload.memberRank == "Moogle Knight" ||
-          payload.memberRank == "Moogle Guardian",
+          payload.memberRank === "Moogle Knight" ||
+          payload.memberRank === "Moogle Guardian" ||
+          // Site permission exception; keep the member's actual FC rank.
+          payload.memberName === "W'ren Solei",
         hasTemporaryKnighthood: false,
         firstLoginDate: payload.firstMogTomeLoginDate,
         discordId: payload.discordId,
