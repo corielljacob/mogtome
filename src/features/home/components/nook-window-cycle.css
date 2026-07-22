@@ -1,0 +1,102 @@
+/* The exterior is a small independent stack, clipped to the actual arched glass.
+   Fixed scene palettes keep detailed paint out of the per-frame transition. */
+.nook-window-exterior {
+  position: absolute;
+  left: 15.909091%;
+  top: 10.545455%;
+  width: 59.545455%;
+  height: 67.818182%;
+  border-radius: 50% 50% 0 0 / 36.461126% 36.461126% 0 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  contain: paint;
+}
+.nook-cycle-surface {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform-box: border-box;
+}
+.nook-cycle-surface[data-cycle] {
+  will-change: opacity;
+}
+.nook-cycle-sun,
+.nook-cycle-moon,
+.nook-cycle-clouds {
+  will-change: transform, opacity;
+}
+.nook-cycle-landscape > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Ambient geometry stays still within cached, textured landscape surfaces. */
+.nook-cycle-landscape * {
+  animation: none !important;
+  transition: none !important;
+}
+.nook-cycle-sky {
+  background: linear-gradient(
+    var(--scene-sky),
+    var(--scene-sky-mid) 48%,
+    var(--scene-horizon) 72%
+  );
+}
+.nook-cycle-dusk {
+  background: linear-gradient(
+    #777598 0%,
+    #bd8d97 29%,
+    #e9af87 50%,
+    #f6ce9a 66%,
+    #c4a69b 100%
+  );
+}
+.nook-cycle-golden-hour {
+  background: linear-gradient(
+    135deg,
+    #f7cb8b00 10%,
+    #f7cb8b55 45%,
+    #e2a06a 100%
+  );
+}
+.nook-cycle-clouds {
+  opacity: 0.55;
+}
+.nook-cycle-dusk,
+.nook-cycle-moon,
+.nook-cycle-stars,
+.nook-cycle-sky--night,
+.nook-cycle-landscape--night,
+.nook-cycle-golden-hour {
+  opacity: 0;
+}
+.nook-window-exterior[data-mode="dark"]
+  :is(
+    .nook-cycle-moon,
+    .nook-cycle-stars,
+    .nook-cycle-sky--night,
+    .nook-cycle-landscape--night
+  ) {
+  opacity: 1;
+}
+.nook-window-exterior[data-mode="dark"] .nook-cycle-sun {
+  opacity: 0;
+}
+.nook-window-exterior[data-mode="dark"] .nook-cycle-clouds {
+  opacity: 0.06;
+}
+.nook-illustration {
+  position: relative;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-window-exterior [data-cycle] {
+    will-change: auto;
+  }
+}
+.reduce-motion .nook-window-exterior [data-cycle] {
+  will-change: auto;
+}
