@@ -1,0 +1,151 @@
+/* The cord spans the room's query container; its centre stays above the content.
+   Bulbs, ornaments and wall hooks keep their own undistorted coordinate spaces. */
+.nook-lights {
+  --nook-light-unit: var(--layout-unit, 1px);
+  position: absolute;
+  left: calc(50% - 50cqw);
+  top: calc(-12 * var(--layout-unit, 1px));
+  width: 100cqw;
+  height: calc(80 * var(--layout-unit, 1px));
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+
+.nook-light-strand {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.nook-light-hanger {
+  position: absolute;
+  display: block;
+  max-width: none;
+  overflow: visible;
+  transform: translateX(-50%);
+}
+
+.nook-light-hanger--bulb {
+  width: calc(12 * var(--nook-light-unit));
+  height: calc(19 * var(--nook-light-unit));
+}
+
+.nook-light-hanger--charm {
+  width: calc(34 * var(--nook-light-unit));
+  height: calc(36 * var(--nook-light-unit));
+}
+
+.nook-light-hanger--bat {
+  width: calc(24 * var(--nook-light-unit));
+  height: calc(18 * var(--nook-light-unit));
+}
+
+.nook-light-cord {
+  fill: none;
+  stroke: color-mix(
+    in srgb,
+    var(--scene-wood-light) 72%,
+    var(--scene-wood-dark)
+  );
+  stroke-opacity: 0.85;
+  stroke-width: calc(1.1 * var(--nook-light-unit));
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.nook-light-cord--shadow {
+  stroke: var(--scene-shadow);
+  stroke-opacity: 0.18;
+  stroke-width: calc(2.6 * var(--nook-light-unit));
+}
+
+.nook-light-anchor {
+  position: absolute;
+  top: 10%;
+  width: calc(15 * var(--nook-light-unit));
+  height: calc(17 * var(--nook-light-unit));
+  transform: translateY(-50%);
+  overflow: visible;
+}
+.nook-light-anchor--left {
+  left: 0;
+}
+.nook-light-anchor--right {
+  right: 0;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+/* The filter uses local units inside the already-scaled bulb SVG. */
+.nook-light-bulb {
+  fill: var(--scene-glow);
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--scene-glow) 25%, transparent)
+  );
+}
+
+:is(.home-screen, .family-screen, .chronicle-screen)[data-mode="dark"]
+  .nook-light-bulb {
+  filter: drop-shadow(
+      0 0 4px color-mix(in srgb, var(--scene-glow) 56%, transparent)
+    )
+    drop-shadow(0 0 12px color-mix(in srgb, var(--scene-glow) 33%, transparent));
+}
+
+:is(.home-screen, .family-screen, .chronicle-screen)[data-mode="dark"]
+  .nook-fairy-light {
+  animation: nook-fairy-warmth 7s ease-in-out infinite;
+}
+
+.nook-light-ornament {
+  transform-box: view-box;
+  transform-origin: 50% 0;
+  animation: nook-ornament-sway 11s ease-in-out infinite;
+}
+
+@keyframes nook-fairy-warmth {
+  0%,
+  100% {
+    opacity: 0.86;
+  }
+  48% {
+    opacity: 1;
+  }
+}
+
+@keyframes nook-ornament-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@container (min-width: 601px) and (max-width: 850px) {
+  .nook-lights {
+    height: calc(68 * var(--layout-unit, 1px));
+  }
+}
+
+@container (max-width: 600px) {
+  .nook-lights {
+    --nook-light-unit: calc(0.8 * var(--layout-unit, 1px));
+    top: calc(12 * var(--layout-unit, 1px));
+    height: calc(42 * var(--layout-unit, 1px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nook-lights .nook-fairy-light,
+  .nook-lights .nook-light-ornament {
+    animation: none !important;
+  }
+}
+
+.reduce-motion .nook-lights .nook-fairy-light,
+.reduce-motion .nook-lights .nook-light-ornament {
+  animation: none !important;
+}
