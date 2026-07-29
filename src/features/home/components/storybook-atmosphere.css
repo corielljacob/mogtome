@@ -1,0 +1,172 @@
+/* Small, fixed illustrations frame the page. No timers, canvas, blur, or random particles. */
+.storybook-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  --storybook-ink: color-mix(in srgb, var(--secondary) 44%, transparent);
+  --storybook-pink: color-mix(in srgb, var(--primary) 66%, var(--card));
+  --storybook-lilac: color-mix(in srgb, var(--secondary) 57%, var(--card));
+  --storybook-gold: color-mix(in srgb, var(--accent) 72%, var(--card));
+}
+
+.storybook-atmosphere__garland {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  width: max(100%, 950px);
+  height: auto;
+  transform: translateX(-50%);
+  opacity: 0.62;
+}
+
+.storybook-atmosphere__cord,
+.storybook-atmosphere__string {
+  fill: none;
+  stroke: var(--storybook-ink);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.storybook-atmosphere__charm {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: storybook-charm-sway 12s ease-in-out infinite alternate;
+}
+
+.storybook-atmosphere__charm:nth-of-type(even) {
+  animation-delay: -5s;
+  animation-duration: 15s;
+}
+
+.storybook-atmosphere__charm--pink {
+  fill: var(--storybook-pink);
+}
+.storybook-atmosphere__charm--lilac {
+  fill: var(--storybook-lilac);
+}
+.storybook-atmosphere__charm--gold {
+  fill: var(--storybook-gold);
+}
+.storybook-atmosphere__shine,
+.storybook-orbit__shine {
+  fill: none;
+  stroke: var(--card);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.storybook-atmosphere__sparkle {
+  position: absolute;
+  width: 23px;
+  height: 23px;
+  color: var(--storybook-gold);
+  opacity: 0.48;
+}
+.storybook-atmosphere__sparkle--one {
+  top: 24%;
+  left: 3.5%;
+  width: 29px;
+  height: 29px;
+  transform: rotate(-12deg);
+}
+.storybook-atmosphere__sparkle--two {
+  top: 13%;
+  left: 49%;
+  width: 19px;
+  height: 19px;
+  transform: rotate(15deg);
+  color: var(--storybook-lilac);
+}
+.storybook-flower-center {
+  fill: var(--card);
+}
+.storybook-flower-seeds {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.storybook-orbit {
+  position: absolute;
+  inset: -3%;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.storybook-orbit > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.storybook-orbit__line {
+  stroke: color-mix(in srgb, var(--secondary) 34%, transparent);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.storybook-orbit__pom {
+  fill: color-mix(in srgb, var(--primary) 58%, var(--card));
+  stroke: var(--card);
+  stroke-width: 3;
+}
+.storybook-orbit > .storybook-orbit__flower {
+  position: absolute;
+  top: 22%;
+  left: 8%;
+  width: 33px;
+  height: 33px;
+  color: color-mix(in srgb, var(--primary) 45%, var(--card));
+  transform: rotate(-15deg);
+}
+
+.dark .storybook-atmosphere {
+  --storybook-ink: color-mix(in srgb, var(--secondary) 55%, transparent);
+}
+.dark .storybook-atmosphere__garland {
+  opacity: 0.74;
+}
+.high-contrast .storybook-atmosphere,
+.high-contrast .storybook-orbit {
+  opacity: 0.3;
+}
+
+@keyframes storybook-charm-sway {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+@media (max-width: 767px) {
+  .storybook-atmosphere__garland {
+    top: -29px;
+    width: 760px;
+    opacity: 0.52;
+  }
+  .storybook-atmosphere__sparkle--one {
+    left: 2%;
+    top: 18%;
+    width: 18px;
+    height: 18px;
+  }
+  .storybook-atmosphere__sparkle--two {
+    display: none;
+  }
+  .storybook-orbit > .storybook-orbit__flower {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.reduce-motion .storybook-atmosphere__charm {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .storybook-atmosphere__charm {
+    animation: none;
+  }
+}
