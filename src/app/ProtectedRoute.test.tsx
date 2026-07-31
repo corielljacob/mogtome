@@ -44,7 +44,7 @@ describe("ProtectedRoute", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Members Only, Kupo!")).toBeInTheDocument();
+      expect(screen.getByText("Members only")).toBeInTheDocument();
     });
 
     expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
@@ -66,7 +66,7 @@ describe("ProtectedRoute", () => {
       expect(screen.getByText("Protected Content")).toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Members Only, Kupo!")).not.toBeInTheDocument();
+    expect(screen.queryByText("Members only")).not.toBeInTheDocument();
   });
 
   it("shows Discord login button when not authenticated", async () => {
@@ -95,7 +95,7 @@ describe("ProtectedRoute", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Kupo Life! FC members/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kupo Life FC members/i)).toBeInTheDocument();
     });
   });
 
@@ -140,5 +140,43 @@ describe("ProtectedRoute", () => {
         screen.getByRole("button", { name: "Click me" }),
       ).toBeInTheDocument();
     });
+  });
+
+  it("renders a custom signed-out fallback without mounting protected children", async () => {
+    const PrivateContent = vi.fn(() => <div>Private content mounted</div>);
+    render(
+      <AuthProvider>
+        <ProtectedRoute signedOut={<p>Sign in to read this Chronicle</p>}>
+          <PrivateContent />
+        </ProtectedRoute>
+      </AuthProvider>,
+    );
+
+    expect(
+      await screen.findByText("Sign in to read this Chronicle"),
+    ).toBeInTheDocument();
+    expect(PrivateContent).not.toHaveBeenCalled();
+    expect(
+      screen.queryByText("Private content mounted"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Members only")).not.toBeInTheDocument();
+  });
+
+  it("renders authenticated children instead of a supplied signed-out fallback", async () => {
+    localStorage.setItem("mogtome_auth_token", createMockJwt(mockUserPayload));
+    render(
+      <AuthProvider>
+        <ProtectedRoute signedOut={<p>Sign in to read this Chronicle</p>}>
+          <div>Private Chronicle content</div>
+        </ProtectedRoute>
+      </AuthProvider>,
+    );
+
+    expect(
+      await screen.findByText("Private Chronicle content"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Sign in to read this Chronicle"),
+    ).not.toBeInTheDocument();
   });
 });
