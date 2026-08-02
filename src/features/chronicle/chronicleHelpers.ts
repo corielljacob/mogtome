@@ -8,12 +8,13 @@ import {
 import type { ChronicleEvent } from "@/shared/types";
 
 const PLACEHOLDER_TIMESTAMP = 0;
-const PLACEHOLDER_CREATION_TIME = "1970-01-01T00:00:00Z";
+const PLACEHOLDER_CREATION_TIME_MS = 0;
 
 export function hasValidId(event: ChronicleEvent): boolean {
   return (
     event.id.timestamp !== PLACEHOLDER_TIMESTAMP ||
-    event.id.creationTime !== PLACEHOLDER_CREATION_TIME
+    // The same epoch placeholder can include milliseconds or a UTC offset.
+    Date.parse(event.id.creationTime) !== PLACEHOLDER_CREATION_TIME_MS
   );
 }
 
@@ -62,6 +63,21 @@ export interface DayGroup {
   key: string;
   label: string;
   items: EntryItem[];
+}
+
+export function chronicleDayId(key: string) {
+  return `chronicle-day-${key}`;
+}
+
+export function formatChronicleDay(group: DayGroup) {
+  const date = new Date(group.items[0]?.event.createdAt ?? "");
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
 }
 
 // input must already be newest-first; preserves that order within each group
