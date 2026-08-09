@@ -1,0 +1,256 @@
+.chronicle-day-index {
+  grid-area: index;
+  position: sticky;
+  top: 24px;
+  min-width: 0;
+  margin: 18px 24px 28px 0;
+  border: 1px solid var(--ui-rule);
+  border-radius: 6px;
+  background: var(--ui-surface-raised);
+  color: var(--nook-ink);
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--nook-ink) 4%, transparent);
+}
+.chronicle-index-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 15px 14px;
+  border-bottom: 1px solid var(--ui-rule);
+  border-radius: 5px 5px 0 0;
+  background: var(--ui-secondary-soft);
+}
+.chronicle-index-heading > svg {
+  flex-shrink: 0;
+  color: var(--ui-secondary);
+}
+.chronicle-index-heading h3 {
+  margin: 0;
+  color: inherit;
+  font: 600 0.875rem/1.5 var(--font-navigation);
+}
+.chronicle-index-heading p {
+  margin: 2px 0 0;
+  color: inherit;
+  font: 400 0.6875rem/1.5 var(--font-navigation);
+}
+.chronicle-index-toggle {
+  display: none;
+}
+.chronicle-index-months {
+  max-height: min(52dvh, 490px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--nook-ink) 30%, transparent)
+    transparent;
+  padding: 14px 8px 10px;
+}
+.chronicle-index-month + .chronicle-index-month {
+  margin-top: 18px;
+}
+.chronicle-index-month h4 {
+  margin: 0 8px 7px;
+  color: inherit;
+  font: 600 0.625rem/1.6 var(--font-navigation);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.chronicle-index-month ol {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chronicle-index-day {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 58px;
+  padding: 8px 9px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.chronicle-index-day:hover {
+  background: var(--ui-secondary-soft);
+}
+.chronicle-index-day[aria-current="date"] {
+  border-color: var(--ui-action);
+  background: var(--ui-action-soft);
+  box-shadow: inset 3px 0 var(--ui-action);
+  color: var(--ui-action);
+}
+.chronicle-index-number {
+  flex: 0 0 27px;
+  text-align: center;
+  font: 400 1.25rem/1.2 var(--font-navigation);
+  font-variant-numeric: tabular-nums;
+}
+.chronicle-index-day-copy {
+  flex: 1;
+  min-width: 0;
+}
+.chronicle-index-day-copy strong,
+.chronicle-index-toggle strong {
+  display: block;
+  font: 500 0.75rem/1.5 var(--font-navigation);
+  overflow-wrap: anywhere;
+}
+.chronicle-index-day-copy small,
+.chronicle-index-toggle small {
+  display: block;
+  margin-top: 2px;
+  font: 400 0.625rem/1.5 var(--font-navigation);
+}
+.chronicle-index-marker {
+  flex-shrink: 0;
+  visibility: hidden;
+}
+.chronicle-index-day[aria-current="date"] .chronicle-index-marker {
+  visibility: visible;
+}
+.chronicle-index-footer {
+  padding: 10px 15px 6px;
+  border-top: 1px solid var(--ui-rule);
+}
+.chronicle-index-footer p {
+  margin: 0 0 4px;
+  color: inherit;
+  font: 400 0.625rem/1.5 var(--font-navigation);
+}
+.chronicle-index-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 4px 0;
+  background: transparent;
+  color: inherit;
+  font: 500 0.6875rem/1.5 var(--font-navigation);
+  cursor: pointer;
+}
+.chronicle-index-back:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 850px) {
+  .chronicle-reading-layout.has-day-index {
+    display: flex;
+    flex-direction: column;
+  }
+  .chronicle-day-index {
+    z-index: 3;
+    top: 8px;
+    align-self: stretch;
+    margin: 18px 28px 0;
+    background: var(--nook-paper);
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--nook-ink) 10%, transparent);
+  }
+  .chronicle-index-heading {
+    display: none;
+  }
+  .chronicle-index-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    background: var(--ui-secondary-soft);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .chronicle-index-toggle > span {
+    flex: 1;
+    min-width: 0;
+  }
+  .chronicle-index-toggle > svg {
+    flex-shrink: 0;
+  }
+  .chronicle-index-toggle strong {
+    font-size: 0.8125rem;
+  }
+  .chronicle-index-toggle small {
+    font-size: 0.6875rem;
+  }
+  .chronicle-index-toggle[aria-expanded="true"] .chronicle-index-chevron {
+    transform: rotate(180deg);
+  }
+  .chronicle-index-panel {
+    display: none;
+    position: absolute;
+    inset: calc(100% - 2px) -1px auto;
+    border: 1px solid var(--ui-rule);
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    background: var(--nook-paper);
+    box-shadow: 0 8px 12px color-mix(in srgb, var(--nook-ink) 12%, transparent);
+  }
+  .chronicle-day-index.is-open .chronicle-index-panel {
+    display: block;
+  }
+  .chronicle-index-months {
+    max-height: min(46dvh, 360px);
+    padding-inline: 10px;
+  }
+  .chronicle-index-month ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .chronicle-index-day {
+    gap: 8px;
+    min-height: 56px;
+  }
+  .chronicle-index-marker {
+    display: none;
+  }
+  .chronicle-index-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 16px;
+  }
+  .chronicle-index-footer p {
+    margin: 0;
+  }
+  .chronicle-index-back {
+    width: auto;
+  }
+  .chronicle-reading-layout.has-day-index .chronicle-timeline {
+    width: 100%;
+  }
+  .chronicle-reading-layout.has-day-index .chronicle-day-heading h3 {
+    scroll-margin-top: 96px;
+  }
+}
+@media (max-width: 600px) {
+  .chronicle-day-index {
+    margin: 16px 16px 0;
+  }
+}
+@media (max-width: 360px) {
+  .chronicle-index-month ol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .chronicle-index-footer {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+}
+@media (forced-colors: active) {
+  .chronicle-day-index {
+    border: 1px solid CanvasText;
+  }
+  .chronicle-index-day[aria-current="date"] {
+    border: 2px solid Highlight;
+  }
+}
