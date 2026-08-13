@@ -1,0 +1,207 @@
+/* Search and activity type share one aligned row on the Chronicle paper. */
+.chronicle-toolbar {
+  --chronicle-control-type: var(--chronicle-type-unit, 0.0625rem);
+  --chronicle-control-sage: var(--ui-secondary);
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(190px, 1fr);
+  align-items: end;
+  gap: 16px;
+  min-width: 0;
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--ui-rule);
+  background: var(--ui-surface-soft);
+  color: var(--nook-ink);
+}
+.chronicle-toolbar:has(.chronicle-clear-all) {
+  grid-template-columns: minmax(0, 2fr) minmax(190px, 1fr) auto;
+}
+.chronicle-search-field,
+.chronicle-type-select-field {
+  min-width: 0;
+}
+.chronicle-search-field > label,
+.chronicle-type-select-field > label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--nook-ink);
+  font: 500 calc(13 * var(--chronicle-control-type))/1.4 var(--font-navigation);
+}
+.chronicle-search-box,
+.chronicle-type-select-wrap {
+  position: relative;
+  min-width: 0;
+}
+.chronicle-search-box {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 5px;
+  background: var(--ui-surface-raised);
+  box-shadow: inset 0 1px 3px
+    color-mix(in srgb, var(--nook-ink) 8%, transparent);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.chronicle-search-box:focus-within {
+  border-color: var(--ui-focus);
+  box-shadow:
+    inset 0 1px 3px color-mix(in srgb, var(--nook-ink) 5%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--ui-focus) 20%, transparent);
+}
+.chronicle-search-box > svg {
+  position: absolute;
+  left: 14px;
+  color: var(--chronicle-control-sage);
+  pointer-events: none;
+}
+.chronicle-search-box input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 48px 10px 44px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--nook-ink);
+  font: 400 calc(15 * var(--chronicle-control-type))/1.5 var(--font-navigation);
+}
+.chronicle-search-box input::placeholder {
+  opacity: 1;
+  color: var(--ui-muted);
+}
+.chronicle-search-box input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.chronicle-clear-search {
+  position: absolute;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--nook-ink);
+  cursor: pointer;
+}
+.chronicle-clear-search:hover:not(:disabled) {
+  background: var(--ui-action-soft);
+}
+.chronicle-search-shortcut {
+  position: absolute;
+  right: 15px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 25px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 3px;
+  background: var(--nook-paper);
+  color: var(--ui-muted);
+  font: 400 calc(13 * var(--chronicle-control-type))/1 var(--font-navigation);
+  pointer-events: none;
+}
+.chronicle-type-select-wrap select {
+  appearance: none;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 35px 10px 12px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 5px;
+  background: var(--ui-surface-raised);
+  box-shadow: inset 0 1px 2px
+    color-mix(in srgb, var(--nook-ink) 6%, transparent);
+  color: var(--nook-ink);
+  font: 400 calc(15 * var(--chronicle-control-type))/1.5 var(--font-navigation);
+  cursor: pointer;
+}
+.chronicle-type-select-wrap > svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  color: var(--nook-ink);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.chronicle-clear-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 48px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--nook-ink);
+  font: 400 calc(12 * var(--chronicle-control-type))/1.5 var(--font-navigation);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--nook-ink) 40%, transparent);
+  text-underline-offset: 4px;
+}
+.chronicle-clear-all:hover:not(:disabled) {
+  text-decoration-color: var(--nook-ink);
+}
+.chronicle-toolbar :is(button, input, select):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.chronicle-toolbar :disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+@media (max-width: 700px) {
+  .chronicle-toolbar,
+  .chronicle-toolbar:has(.chronicle-clear-all) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 18px 16px 14px;
+  }
+  .chronicle-search-field > label,
+  .chronicle-type-select-field > label {
+    margin-bottom: 5px;
+    font-size: 0.75rem;
+  }
+  .chronicle-type-select-field {
+    display: grid;
+    grid-template-columns: 78px minmax(130px, 1fr);
+    align-items: center;
+    gap: 10px;
+  }
+  .chronicle-type-select-field > label {
+    margin-bottom: 0;
+  }
+  .chronicle-search-box input,
+  .chronicle-type-select-wrap select {
+    font-size: 1rem;
+  }
+  .chronicle-search-shortcut {
+    display: none;
+  }
+  .chronicle-clear-all {
+    justify-self: end;
+    min-height: 44px;
+    margin-top: -8px;
+    font-size: 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chronicle-search-box {
+    transition: none;
+  }
+}
+.reduce-motion .chronicle-search-box {
+  transition: none;
+}
+@media (forced-colors: active) {
+  .chronicle-search-box,
+  .chronicle-type-select-wrap select {
+    border-color: CanvasText;
+  }
+}
