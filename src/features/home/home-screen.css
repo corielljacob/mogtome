@@ -1,0 +1,1000 @@
+/* The room fills the window, but grows with its contents on smaller screens. */
+.cozy-app-content.is-home {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  padding: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.is-home > main {
+  min-width: 0;
+  display: grid;
+}
+.home-screen {
+  --nook-text: var(--ui-wall-ink);
+  --nook-muted: var(--ui-wall-muted);
+  --nook-heading: var(--ui-wall-heading);
+  --nook-type-unit: calc(0.0625rem + var(--layout-unit) - 1px);
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  display: grid;
+}
+/* Keep rem-based copy responsive to browser font size and Large Text as the room grows. */
+@media (min-width: 768px) {
+  .large-text .home-screen {
+    --nook-type-unit: calc(0.0625rem + 1.2 * (var(--layout-unit) - 1px));
+  }
+}
+.home-screen::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: clamp(
+    calc(42 * var(--layout-unit)),
+    12%,
+    calc(90 * var(--layout-unit))
+  );
+  z-index: -2;
+  pointer-events: none;
+  border-top: calc(3 * var(--layout-unit)) double
+    color-mix(in srgb, var(--scene-wood) 24%, transparent);
+  box-shadow:
+    0 calc(-1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-paper) 35%, transparent),
+    0 calc(3 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(-5 * var(--layout-unit)) var(--scene-shadow) inset;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(119 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-wood) 7%, transparent)
+        calc(119 * var(--layout-unit)) calc(120 * var(--layout-unit))
+    ),
+    linear-gradient(
+      180deg,
+      var(--nook-wall-panel),
+      color-mix(in srgb, var(--nook-wall-panel) 94%, var(--scene-wood))
+    );
+}
+.nook-layout {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: calc(28 * var(--layout-unit));
+  padding: calc(24 * var(--layout-unit))
+    clamp(calc(24 * var(--layout-unit)), 4cqw, calc(64 * var(--layout-unit)))
+    max(calc(12 * var(--layout-unit)), env(safe-area-inset-bottom, 0px));
+}
+.home-nook {
+  width: 100%;
+  max-width: calc(1120 * var(--layout-unit));
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.45fr);
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(
+    calc(26 * var(--layout-unit)),
+    4cqw,
+    calc(56 * var(--layout-unit))
+  );
+  row-gap: calc(20 * var(--layout-unit));
+  padding: calc(90 * var(--layout-unit)) 0 calc(20 * var(--layout-unit));
+}
+.nook-window-scene {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-width: 0;
+  animation: nook-arrive 900ms ease-out both;
+}
+.nook-illustration-frame {
+  width: min(100%, calc(380 * var(--layout-unit)));
+  aspect-ratio: 440 / 550;
+  position: relative;
+  flex-shrink: 0;
+}
+.nook-illustration {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.nook-moogle {
+  appearance: none;
+  position: absolute;
+  z-index: 2;
+  left: 24%;
+  bottom: 20.3%;
+  width: 38.5%;
+  height: 38.5%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform-origin: 50% 90%;
+  transition: transform 0.25s;
+  border-radius: 40%;
+}
+.nook-moogle-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 97.6%;
+}
+.nook-moogle__bobble {
+  transform-box: view-box;
+  transform-origin: 101px 84px;
+  animation: pom-sway 7s ease-in-out infinite;
+}
+.nook-moogle__affection {
+  transform-box: view-box;
+  transform-origin: 100px 130px;
+  animation: moogle-affection 1.8s ease-out both;
+}
+.nook-moogle__wings {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 400ms ease;
+}
+.nook-moogle__belly {
+  transform-box: view-box;
+  transform-origin: 100px 239px;
+  animation: moogle-breathe 6.8s ease-in-out infinite;
+}
+.nook-ivy-leaf {
+  animation: ivy-sway 10s ease-in-out infinite;
+}
+.nook-posy {
+  transform-origin: 317px 391px;
+  animation: posy-sway 11s -3s ease-in-out infinite;
+}
+.nook-lantern-halo {
+  animation: lantern-warmth 6.5s ease-in-out infinite;
+}
+.nook-window-star {
+  animation: star-glimmer 8s ease-in-out infinite;
+}
+.nook-moogle:is(:hover, :focus-visible) .nook-moogle__wings {
+  transform: scale(1.07, 1.03);
+}
+.nook-moogle:hover {
+  transform: translateY(calc(-4 * var(--layout-unit))) rotate(-3deg);
+}
+.nook-moogle-note {
+  margin: calc(-5 * var(--layout-unit)) 0 0;
+  width: 100%;
+  min-height: 1.25em;
+  padding-inline: calc(5 * var(--layout-unit));
+  font: 400
+    clamp(
+      calc(18 * var(--layout-unit)),
+      2cqw,
+      calc(25 * var(--layout-unit))
+    )/1.25
+    var(--font-script);
+  color: var(--nook-muted);
+  text-align: center;
+  transform: rotate(-3deg);
+}
+.nook-welcome {
+  grid-column: 2;
+  grid-row: 1;
+  padding-left: calc(5 * var(--layout-unit));
+  padding-top: calc(8 * var(--layout-unit));
+  animation: nook-arrive 900ms 100ms ease-out both;
+}
+.nook-eyebrow {
+  color: var(--nook-muted);
+  font: 400 calc(11 * var(--nook-type-unit))/1.5 var(--font-navigation);
+  letter-spacing: 0.035em;
+  margin: 0 0 calc(14 * var(--layout-unit));
+}
+.nook-eyebrow span {
+  padding-inline: calc(5 * var(--layout-unit));
+  color: var(--scene-rose);
+}
+@media (min-width: 1200px) {
+  .nook-eyebrow {
+    display: none;
+  }
+}
+.nook-welcome h1 {
+  position: relative;
+  font: 400
+    clamp(
+      calc(33 * var(--nook-type-unit)),
+      4.4cqw,
+      calc(49 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+  letter-spacing: -0.035em;
+  color: var(--nook-heading);
+  margin: 0;
+  width: fit-content;
+}
+.nook-welcome h1::after {
+  content: "";
+  position: absolute;
+  height: calc(8 * var(--layout-unit));
+  left: 1%;
+  right: 8%;
+  bottom: calc(-8 * var(--layout-unit));
+  border-top: calc(1 * var(--layout-unit)) solid var(--scene-rose);
+  border-radius: 50%;
+  opacity: 0.65;
+  transform: rotate(-1deg);
+}
+.nook-welcome h1 > span {
+  display: inline-block;
+  font-size: 0.65em;
+  color: var(--primary);
+  transform: rotate(10deg) translateY(-0.3em);
+  margin-left: 0.2em;
+}
+.nook-keepsakes {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(
+    calc(20 * var(--layout-unit)),
+    2.8cqw,
+    calc(35 * var(--layout-unit))
+  );
+  padding-top: calc(19 * var(--layout-unit));
+  padding-right: calc(4 * var(--layout-unit));
+}
+.nook-photo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: calc(10 * var(--layout-unit)) calc(10 * var(--layout-unit))
+    calc(12 * var(--layout-unit));
+  color: var(--ui-secondary);
+  background: var(--ui-surface-raised);
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) #624b3420,
+    calc(2 * var(--layout-unit)) calc(10 * var(--layout-unit))
+      calc(14 * var(--layout-unit)) calc(-9 * var(--layout-unit)) #382c4747;
+  transform: rotate(-4deg);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+  animation: photo-arrive 950ms 180ms ease both;
+}
+.nook-holiday-keepsake {
+  position: absolute;
+  z-index: 4;
+  top: calc(-16 * var(--layout-unit));
+  right: calc(-17 * var(--layout-unit));
+  width: calc(62 * var(--layout-unit));
+  height: calc(85 * var(--layout-unit));
+  transform: rotate(11deg);
+  filter: drop-shadow(2px 3px 1px #38223530);
+  pointer-events: none;
+}
+.nook-halloween-ghost {
+  transform-origin: 296px 159px;
+  animation: ghost-swing 8s ease-in-out infinite;
+}
+.nook-pumpkin-light {
+  animation: pumpkin-glow 5.7s ease-in-out infinite;
+}
+.nook-autumn-leaf {
+  transform-origin: 0 0;
+  animation: ivy-sway 9s ease-in-out infinite;
+}
+@keyframes ghost-swing {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes pumpkin-glow {
+  0%,
+  100% {
+    opacity: 0.76;
+  }
+  31%,
+  68% {
+    opacity: 0.98;
+  }
+  45% {
+    opacity: 0.87;
+  }
+}
+.nook-photo::before {
+  content: "";
+  position: absolute;
+  inset: calc(5 * var(--layout-unit)) calc(-3 * var(--layout-unit))
+    calc(-3 * var(--layout-unit)) calc(4 * var(--layout-unit));
+  z-index: -1;
+  background: color-mix(in srgb, var(--nook-paper) 88%, var(--scene-wood));
+  transform: rotate(2deg);
+}
+.nook-photo:hover {
+  transform: rotate(-1deg) translateY(calc(-4 * var(--layout-unit)));
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) #624b3420,
+    calc(2 * var(--layout-unit)) calc(14 * var(--layout-unit))
+      calc(17 * var(--layout-unit)) calc(-8 * var(--layout-unit)) #382c4747;
+}
+.nook-tape {
+  position: absolute;
+  z-index: 2;
+  height: calc(25 * var(--layout-unit));
+  width: calc(86 * var(--layout-unit));
+  top: calc(-13 * var(--layout-unit));
+  left: calc(50% - calc(43 * var(--layout-unit)));
+  transform: rotate(3deg);
+  background: var(--nook-washi);
+  opacity: 0.67;
+  clip-path: polygon(
+    2% 0,
+    97% 0,
+    100% 15%,
+    98% 30%,
+    100% 50%,
+    97% 75%,
+    100% 100%,
+    0 100%,
+    3% 75%,
+    0 50%,
+    2% 25%
+  );
+}
+.nook-photo-image {
+  aspect-ratio: 1.2;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--nook-paper) 76%, #e7dac4);
+}
+.nook-photo-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.home-screen[data-mode="dark"] .nook-photo-image {
+  background: #d3bfa8;
+}
+.nook-photo-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(4 * var(--nook-type-unit));
+  padding: calc(8 * var(--nook-type-unit)) calc(1 * var(--nook-type-unit)) 0;
+  font: 400
+    clamp(
+      calc(18 * var(--nook-type-unit)),
+      2cqw,
+      calc(24 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+}
+.nook-photo-caption svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+  flex-shrink: 0;
+}
+.nook-photo-label {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--layout-unit));
+  margin-top: calc(5 * var(--layout-unit));
+  font: 400 calc(9 * var(--nook-type-unit))/1.5 var(--font-navigation);
+  letter-spacing: 0.03em;
+  color: var(--ui-muted);
+}
+.nook-photo-label svg {
+  color: var(--scene-rose);
+  width: calc(11 * var(--layout-unit));
+  height: calc(11 * var(--layout-unit));
+}
+.nook-notes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: calc(26 * var(--layout-unit));
+}
+.nook-letter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: calc(28 * var(--layout-unit)) calc(17 * var(--layout-unit))
+    calc(19 * var(--layout-unit));
+  background: transparent;
+  color: var(--ui-ink);
+  filter: drop-shadow(
+    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) #35244218
+  );
+  border-radius: calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(8 * var(--layout-unit)) calc(1 * var(--layout-unit));
+  transform: rotate(1deg);
+  transition: transform 0.25s;
+  animation: note-arrive 950ms 300ms ease both;
+}
+.nook-letter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(
+      transparent 0 calc(27 * var(--layout-unit)),
+      #a488681c calc(27 * var(--layout-unit)) calc(28 * var(--layout-unit))
+    ),
+    linear-gradient(112deg, var(--ui-surface), var(--ui-accent-soft));
+  clip-path: polygon(
+    0 1%,
+    9% 0,
+    16% 1%,
+    29% 0,
+    34% 1%,
+    47% 0,
+    59% 1%,
+    68% 0,
+    79% 1%,
+    91% 0,
+    100% 1%,
+    99.5% 19%,
+    100% 36%,
+    99% 58%,
+    100% 76%,
+    99% 99%,
+    88% 100%,
+    76% 99%,
+    66% 100%,
+    52% 99%,
+    41% 100%,
+    31% 99%,
+    20% 100%,
+    9% 99%,
+    0 100%,
+    0.6% 79%,
+    0 66%,
+    0.7% 45%,
+    0 27%
+  );
+}
+.nook-pressed-flower {
+  position: absolute;
+  z-index: 1;
+  width: calc(42 * var(--layout-unit));
+  height: calc(89 * var(--layout-unit));
+  right: calc(8 * var(--layout-unit));
+  top: calc(-59 * var(--layout-unit));
+  transform: rotate(9deg);
+  pointer-events: none;
+}
+.nook-letter::after {
+  content: "";
+  width: 35%;
+  height: calc(8 * var(--layout-unit));
+  position: absolute;
+  bottom: calc(-2 * var(--layout-unit));
+  right: calc(6 * var(--layout-unit));
+  box-shadow: 0 calc(5 * var(--layout-unit)) calc(5 * var(--layout-unit))
+    #634c4720;
+  transform: rotate(-3deg);
+  z-index: -1;
+}
+.nook-letter:hover {
+  transform: translateY(calc(-4 * var(--layout-unit)));
+}
+.nook-paperclip {
+  position: absolute;
+  z-index: 2;
+  top: calc(-15 * var(--layout-unit));
+  right: calc(17 * var(--layout-unit));
+  height: calc(34 * var(--layout-unit));
+  width: calc(11 * var(--layout-unit));
+  border: calc(2 * var(--layout-unit)) solid var(--scene-brass);
+  border-radius: calc(8 * var(--layout-unit));
+  transform: rotate(10deg);
+  box-shadow: calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit))
+    calc(1 * var(--layout-unit)) #75655130;
+}
+.nook-paperclip::after {
+  content: "";
+  position: absolute;
+  inset: calc(4 * var(--layout-unit)) calc(1 * var(--layout-unit))
+    calc(-3 * var(--layout-unit)) calc(2 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) solid var(--scene-brass);
+  border-radius: calc(6 * var(--layout-unit));
+}
+.nook-letter-title {
+  color: var(--ui-action);
+  font: 400
+    clamp(
+      calc(21 * var(--nook-type-unit)),
+      2.6cqw,
+      calc(30 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+}
+.nook-letter-copy {
+  margin-top: calc(11 * var(--layout-unit));
+  font: 400 calc(13 * var(--nook-type-unit))/1.65 var(--font-navigation);
+}
+.nook-letter-bottom {
+  color: var(--ui-action);
+  border-top: 1px solid var(--ui-rule);
+  padding-top: calc(10 * var(--layout-unit));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(4 * var(--layout-unit));
+  margin-top: calc(23 * var(--layout-unit));
+  font: 400 calc(10 * var(--nook-type-unit))/1.2 var(--font-navigation);
+}
+.nook-letter-bottom svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+}
+.nook-about {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(44 * var(--layout-unit));
+  gap: calc(7 * var(--layout-unit));
+  color: var(--nook-text);
+  font: 400
+    clamp(
+      calc(18 * var(--layout-unit)),
+      2cqw,
+      calc(23 * var(--layout-unit))
+    )/1.2
+    var(--font-script);
+}
+.nook-about svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+  flex-shrink: 0;
+}
+.nook-about svg:first-child {
+  color: var(--scene-rose);
+}
+.nook-about:hover span {
+  text-decoration: underline;
+  text-decoration-color: var(--scene-rose);
+  text-underline-offset: calc(5 * var(--layout-unit));
+}
+.home-footer {
+  justify-self: center;
+  width: 100%;
+  max-width: calc(1120 * var(--layout-unit));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(10 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+  font: 400 calc(9 * var(--nook-type-unit))/1.4 var(--font-navigation);
+  color: var(--nook-muted);
+}
+.home-footer > a:last-child {
+  min-height: calc(44 * var(--layout-unit));
+  display: inline-flex;
+  align-items: center;
+  text-align: right;
+}
+.home-appearance {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+}
+.home-appearance svg {
+  width: calc(14 * var(--layout-unit));
+  height: calc(14 * var(--layout-unit));
+}
+.home-appearance i {
+  width: calc(7 * var(--layout-unit));
+  height: calc(7 * var(--layout-unit));
+  border-radius: 50%;
+  background: var(--scene-rose);
+  margin-left: calc(2 * var(--layout-unit));
+}
+.home-appearance i:nth-last-child(2) {
+  background: var(--scene-leaf);
+  margin-left: calc(-4 * var(--layout-unit));
+}
+.home-appearance i:last-child {
+  background: var(--scene-gold);
+  margin-left: calc(-4 * var(--layout-unit));
+}
+.home-screen a:focus-visible,
+.home-screen button:focus-visible {
+  outline: calc(2 * var(--layout-unit)) solid var(--ui-wall-focus);
+  outline-offset: calc(6 * var(--layout-unit));
+}
+.nook-tea-steam path {
+  animation: tea-steam 6s linear infinite;
+}
+.nook-tea-steam path + path {
+  animation-delay: -3s;
+}
+.nook-candle-flame {
+  animation: candle-glow 4s ease-in-out infinite;
+  transform-origin: 374px 410px;
+}
+.is-booped {
+  animation: nook-boop 0.85s ease;
+}
+@keyframes nook-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(12 * var(--layout-unit));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes photo-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(18 * var(--layout-unit));
+    rotate: 4deg;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+@keyframes note-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(15 * var(--layout-unit));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes nook-boop {
+  18% {
+    transform: scale(1.07, 0.93);
+  }
+  42% {
+    transform: translateY(calc(-9 * var(--layout-unit))) scale(0.97, 1.04)
+      rotate(4deg);
+  }
+  68% {
+    transform: scale(1.03, 0.97) rotate(-2deg);
+  }
+  86% {
+    transform: scale(0.99, 1.01);
+  }
+}
+@keyframes moogle-affection {
+  0% {
+    opacity: 0;
+    transform: translateY(7px) scale(0.75);
+  }
+  20%,
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-19px) scale(1.1);
+  }
+}
+@keyframes pom-sway {
+  25% {
+    transform: rotate(6deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+@keyframes tea-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  25%,
+  55% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-9px);
+  }
+}
+@keyframes candle-glow {
+  22%,
+  62% {
+    opacity: 0.9;
+    transform: scale(0.92, 1.04) rotate(-2deg);
+  }
+  38%,
+  79% {
+    opacity: 1;
+    transform: scale(1.03, 0.94) rotate(3deg);
+  }
+}
+@keyframes moogle-breathe {
+  46%,
+  54% {
+    transform: scale(1.018, 1.016);
+  }
+}
+@keyframes ivy-sway {
+  0%,
+  100% {
+    transform: rotate(-0.6deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+@keyframes posy-sway {
+  0%,
+  100% {
+    transform: rotate(-0.6deg);
+  }
+  50% {
+    transform: rotate(0.8deg);
+  }
+}
+@keyframes lantern-warmth {
+  0%,
+  100% {
+    opacity: 0.86;
+  }
+  48% {
+    opacity: 1;
+  }
+}
+@keyframes star-glimmer {
+  0%,
+  100% {
+    opacity: 0.48;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+@container (max-width: 850px) {
+  .nook-layout {
+    padding-inline: calc(26 * var(--layout-unit));
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    column-gap: calc(20 * var(--layout-unit));
+    row-gap: calc(18 * var(--layout-unit));
+    padding-top: calc(80 * var(--layout-unit));
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(30 * var(--nook-type-unit)),
+      4.5cqw,
+      calc(38 * var(--nook-type-unit))
+    );
+  }
+  .nook-eyebrow {
+    font-size: calc(9 * var(--nook-type-unit));
+    letter-spacing: 0.03em;
+  }
+  .nook-keepsakes {
+    gap: calc(18 * var(--layout-unit));
+    padding-top: calc(12 * var(--layout-unit));
+  }
+  .nook-letter {
+    padding: calc(22 * var(--layout-unit)) calc(12 * var(--layout-unit))
+      calc(14 * var(--layout-unit));
+  }
+  .nook-letter-title {
+    font-size: calc(23 * var(--nook-type-unit));
+  }
+  .nook-letter-copy {
+    font-size: calc(11 * var(--nook-type-unit));
+  }
+  .nook-letter-bottom {
+    margin-top: calc(17 * var(--layout-unit));
+    font-size: calc(9 * var(--nook-type-unit));
+  }
+  .nook-about {
+    font-size: calc(18 * var(--layout-unit));
+    gap: calc(5 * var(--layout-unit));
+  }
+  .nook-about > svg:first-child {
+    display: none;
+  }
+  .nook-photo-caption {
+    font-size: calc(19 * var(--nook-type-unit));
+  }
+  .nook-photo-caption svg {
+    width: calc(13 * var(--layout-unit));
+    height: calc(13 * var(--layout-unit));
+  }
+  .nook-notes {
+    gap: calc(18 * var(--layout-unit));
+  }
+}
+@container (max-width: 600px) {
+  .nook-holiday-keepsake {
+    width: calc(46 * var(--layout-unit));
+    height: calc(63 * var(--layout-unit));
+    top: calc(-12 * var(--layout-unit));
+    right: calc(-12 * var(--layout-unit));
+  }
+  .nook-layout {
+    padding-top: calc(18 * var(--layout-unit));
+    padding-inline: calc(20 * var(--layout-unit));
+    gap: calc(24 * var(--layout-unit));
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: calc(15 * var(--layout-unit));
+    row-gap: calc(32 * var(--layout-unit));
+    padding: calc(76 * var(--layout-unit)) 0 calc(16 * var(--layout-unit));
+  }
+  .nook-window-scene {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    justify-content: center;
+  }
+  .nook-illustration-frame {
+    width: min(100%, calc(230 * var(--layout-unit)));
+  }
+  .nook-moogle-note {
+    font-size: calc(18 * var(--layout-unit));
+    margin-top: 0;
+    width: calc(100% + calc(10 * var(--layout-unit)));
+  }
+  .nook-welcome {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
+    align-self: center;
+  }
+  .nook-eyebrow {
+    font-size: calc(8 * var(--layout-unit));
+    line-height: 1.7;
+    margin-bottom: calc(12 * var(--layout-unit));
+  }
+  .nook-eyebrow span {
+    padding-inline: calc(2 * var(--layout-unit));
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(28 * var(--nook-type-unit)),
+      8cqw,
+      calc(39 * var(--nook-type-unit))
+    );
+    line-height: 1.12;
+    max-width: calc(200 * var(--nook-type-unit));
+  }
+  .nook-welcome h1 > span {
+    display: block;
+    margin-top: calc(15 * var(--layout-unit));
+    margin-left: 38%;
+    font-size: 0.8em;
+  }
+  .nook-welcome h1::after {
+    bottom: calc(28 * var(--layout-unit));
+    right: 5%;
+  }
+  .nook-keepsakes {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: calc(22 * var(--layout-unit));
+    padding: calc(12 * var(--layout-unit)) calc(5 * var(--layout-unit))
+      calc(5 * var(--layout-unit));
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+  .nook-photo {
+    padding: calc(7 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(9 * var(--layout-unit));
+  }
+  .nook-tape {
+    width: calc(70 * var(--layout-unit));
+    height: calc(21 * var(--layout-unit));
+    left: calc(50% - calc(35 * var(--layout-unit)));
+    top: calc(-11 * var(--layout-unit));
+  }
+  .nook-photo-caption {
+    font-size: calc(19 * var(--nook-type-unit));
+    padding-top: calc(6 * var(--nook-type-unit));
+  }
+  .nook-photo-caption svg {
+    display: none;
+  }
+  .nook-photo-label {
+    font-size: calc(8 * var(--layout-unit));
+    margin-top: calc(4 * var(--layout-unit));
+  }
+  .nook-letter {
+    padding: calc(22 * var(--layout-unit)) calc(12 * var(--layout-unit))
+      calc(13 * var(--layout-unit));
+  }
+  .nook-letter-title {
+    font-size: calc(25 * var(--nook-type-unit));
+  }
+  .nook-letter-copy {
+    font-size: calc(11 * var(--nook-type-unit));
+    line-height: 1.6;
+    margin-top: calc(8 * var(--layout-unit));
+  }
+  .nook-letter-bottom {
+    margin-top: calc(17 * var(--layout-unit));
+    font-size: calc(9 * var(--layout-unit));
+  }
+  .nook-notes {
+    gap: calc(12 * var(--layout-unit));
+  }
+  .nook-about {
+    font-size: calc(19 * var(--layout-unit));
+  }
+  .home-footer {
+    font-size: calc(10 * var(--nook-type-unit));
+    gap: calc(8 * var(--layout-unit));
+  }
+  .home-footer > a:last-child {
+    max-width: calc(115 * var(--layout-unit));
+  }
+  .home-appearance {
+    gap: calc(5 * var(--layout-unit));
+  }
+  .home-appearance i {
+    display: none;
+  }
+}
+.dyslexia-font .home-screen :is(h1, p, span, a) {
+  font-family: var(--font-body);
+}
+.dyslexia-font .nook-welcome h1 {
+  font-size: clamp(
+    calc(22 * var(--nook-type-unit)),
+    3.5cqw,
+    calc(38 * var(--nook-type-unit))
+  );
+}
+.dyslexia-font .nook-letter-title {
+  font-size: calc(16 * var(--nook-type-unit));
+}
+@container (max-width: 600px) {
+  .dyslexia-font .nook-illustration-frame {
+    width: min(100%, calc(230 * var(--layout-unit)));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-screen *,
+  .home-screen *::before,
+  .home-screen *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.reduce-motion .home-screen *,
+.reduce-motion .home-screen *::before,
+.reduce-motion .home-screen *::after {
+  animation: none !important;
+  transition: none !important;
+}

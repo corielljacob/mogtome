@@ -24,7 +24,7 @@ const SB_GOLD =
   "linear-gradient(180deg, #fff8da 0%, #fde89c 26%, #f8dc83 48%, #fff2b8 60%, #f5da88 82%, #edcb6c 100%)";
 
 const QUICK_LINKS = [
-  { to: "/members", label: "Family", color: "var(--secondary)" },
+  { to: "/members", label: "Members", color: "var(--secondary)" },
   { to: "/chronicle", label: "Chronicle", color: "var(--accent)" },
   { to: "/about", label: "About", color: "#a886d6" },
 ];

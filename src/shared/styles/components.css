@@ -259,20 +259,11 @@
   }
 }
 
-/* Phones (below md, where the floating nav + status bar live): the corkboard sits
-   just below the status bar (the top header is home-only now, so there are no top
-   pills to clear here) and bleeds to the BOTTOM edge behind the floating MobileNav
-   pill; padding-bottom keeps the last row clear of it. (PageShell keeps a small top
-   padding but drops its bottom padding on bleed.) */
+/* Phone corkboards fill the space below the shared header and PageLayout's
+   top spacing, keeping their own bottom padding clear of the safe area. */
 @media (max-width: 767px) {
   .corkboard {
-    /* fill from just below the status bar to the bottom edge. 100dvh tracks the
-       REAL current viewport (grows as the iOS toolbar collapses on scroll); the
-       subtracted offset matches PageLayout's top padding so the board ends right
-       at the bottom edge. Tall pages exceed this so it's a no-op for them. */
-    min-height: calc(100dvh - 1rem - env(safe-area-inset-top));
-    /* no top clearance override: the board's own py-* sits below its top edge,
-       which the page has already pushed below the status bar. */
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+    min-height: calc(100dvh - var(--app-header-height, 100px) - 1rem);
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom)) !important;
   }
 }
