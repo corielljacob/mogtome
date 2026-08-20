@@ -13,7 +13,7 @@ export function ErrorScreen({
         <AlertCircle className="w-8 h-8 text-red-500" />
       </div>
       <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
-        Oh no, kupo!
+        Couldn't sign in
       </h2>
       <p className="text-[var(--text-muted)] font-soft text-sm mb-5">{error}</p>
       <button

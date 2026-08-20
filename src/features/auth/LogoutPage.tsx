@@ -6,11 +6,11 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 import wavingMoogle from "@/assets/moogles/4478593_moogle-moogle-ff-hd-png-download.webp";
 
 const FAREWELL_MESSAGES = [
-  "May your adventures be grand, kupo~!",
-  "Until we meet again, kupo!",
-  "Safe travels, adventurer~!",
-  "The moogles will miss you, kupo!",
-  "Farewell for now, dear friend~!",
+  "See you later!",
+  "See you in-game!",
+  "Until next time!",
+  "Catch you later!",
+  "See you around!",
 ];
 
 function getRandomFarewell(): string {
@@ -49,7 +49,7 @@ export function Logout() {
   }, [logout, navigate]);
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
+    <div className="min-h-[calc(100dvh-var(--app-header-height,100px))] flex items-center justify-center px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] relative overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none overflow-hidden"
         aria-hidden="true"
@@ -99,7 +99,7 @@ export function Logout() {
           </div>
 
           <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)] animate-[fadeIn_0.3s_ease-out_0.5s_both]">
-            <span className="font-soft">Returning to home...</span>
+            <span className="font-soft">Returning to the home page...</span>
           </div>
         </div>
       </div>

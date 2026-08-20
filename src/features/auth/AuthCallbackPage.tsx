@@ -35,7 +35,10 @@ export function AuthCallback() {
 
       if (errorParam) {
         setStatus("error");
-        setError(errorDescription || "Authentication was cancelled or failed");
+        setError(
+          errorDescription ||
+            "Sign-in was cancelled or failed. Please try again.",
+        );
         return;
       }
 
@@ -50,9 +53,7 @@ export function AuthCallback() {
       }
 
       setStatus("error");
-      setError(
-        "No authentication token received. Please try logging in again.",
-      );
+      setError("We couldn't complete sign-in. Please try again.");
     }
 
     handleCallback();
@@ -61,7 +62,7 @@ export function AuthCallback() {
   const handleReturnHome = () => navigate("/", { replace: true });
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[calc(4rem+env(safe-area-inset-top))] md:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative overflow-hidden">
+    <div className="min-h-[calc(100dvh-var(--app-header-height,100px))] flex items-center justify-center px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] relative overflow-hidden">
       <img
         src={moogleWizard}
         alt=""

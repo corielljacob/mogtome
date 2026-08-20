@@ -30,10 +30,10 @@ export function ReturningUserWelcome({
     >
       <div className="mb-4 animate-[fadeSlideIn_0.4s_ease-out_0.1s_both]">
         <p className="text-[var(--text-muted)] font-soft text-sm mb-1">
-          Welcome back, kupo!
+          Welcome back
         </p>
         <p className="font-accent text-lg text-[var(--primary)] animate-[scaleIn_0.3s_ease-out]">
-          Good to see you again~
+          Good to see you again!
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export function ReturningUserWelcome({
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]" />
         </span>
-        <span className="font-soft">Taking you home...</span>
+        <span className="font-soft">Opening MogTome...</span>
       </div>
     </div>
   );

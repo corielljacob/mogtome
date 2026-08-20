@@ -296,7 +296,7 @@ export function MembershipCard({
                 />
                 <p className="flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] whitespace-nowrap">
                   <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
-                  part of the moogle family
+                  member of Kupo Life
                   <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
                 </p>
                 <span
