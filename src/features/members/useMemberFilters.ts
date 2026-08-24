@@ -6,7 +6,11 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigationType,
+  useSearchParams,
+} from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { membersApi } from "@/shared/api/members";
 import { FC_RANKS } from "@/shared/types";
@@ -18,7 +22,7 @@ const RANK_ORDER = new Map<string, number>(FC_RANKS.map((r, i) => [r.name, i]));
 
 export type SortOption = "name-asc" | "name-desc" | "rank-asc";
 export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "rank-asc", label: "Rank" },
+  { value: "rank-asc", label: "FC rank" },
   { value: "name-asc", label: "Name (A → Z)" },
   { value: "name-desc", label: "Name (Z → A)" },
 ];
@@ -26,6 +30,8 @@ const DEFAULT_SORT: SortOption = "rank-asc";
 
 export function useMemberFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigationType = useNavigationType();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // search/filter/sort state lives in the URL
@@ -34,13 +40,33 @@ export function useMemberFilters() {
 
   const selectedRanks = useMemo(() => {
     if (!ranksParam) return [];
-    return ranksParam.split(",").filter((r) => VALID_RANK_NAMES.has(r));
+    return [
+      ...new Set(ranksParam.split(",").filter((r) => VALID_RANK_NAMES.has(r))),
+    ];
   }, [ranksParam]);
 
   const sortBy = (searchParams.get("sort") as SortOption) || DEFAULT_SORT;
   const validSortBy = SORT_OPTIONS.some((o) => o.value === sortBy)
     ? sortBy
     : DEFAULT_SORT;
+  const groupByRank =
+    searchParams.get("group") === "rank" && validSortBy === "rank-asc";
+
+  const setGroupByRank = useCallback(
+    (grouped: boolean) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (grouped) next.set("group", "rank");
+          else next.delete("group");
+          next.delete("page");
+          return next;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
 
   const setSearchQuery = useCallback(
     (query: string) => {
@@ -67,11 +93,14 @@ export function useMemberFilters() {
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
-          const currentRanks =
-            prev
-              .get("ranks")
-              ?.split(",")
-              .filter((r) => VALID_RANK_NAMES.has(r)) || [];
+          const currentRanks = [
+            ...new Set(
+              prev
+                .get("ranks")
+                ?.split(",")
+                .filter((r) => VALID_RANK_NAMES.has(r)) || [],
+            ),
+          ];
           const newRanks =
             typeof updater === "function" ? updater(currentRanks) : updater;
 
@@ -99,6 +128,7 @@ export function useMemberFilters() {
           } else {
             next.set("sort", sort);
           }
+          if (sort !== "rank-asc") next.delete("group");
           next.delete("page");
           return next;
         },
@@ -114,10 +144,20 @@ export function useMemberFilters() {
   // re-sync when the URL changes out from under us (e.g. back button) by
   // adjusting state during render instead of in an effect — see
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
-  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
-  if (searchQuery !== prevSearchQuery) {
-    setPrevSearchQuery(searchQuery);
-    setInputValue(searchQuery);
+  const [previousLocation, setPreviousLocation] = useState({
+    key: location.key,
+    query: searchQuery,
+  });
+  if (
+    location.key !== previousLocation.key ||
+    searchQuery !== previousLocation.query
+  ) {
+    setPreviousLocation({ key: location.key, query: searchQuery });
+    // Back/Forward can restore only a rank, sort, or page while q is unchanged.
+    // Cancel any draft then, but preserve typing through our own filter updates.
+    if (searchQuery !== previousLocation.query || navigationType === "POP") {
+      setInputValue(searchQuery);
+    }
   }
 
   useEffect(() => {
@@ -132,17 +172,27 @@ export function useMemberFilters() {
   // Press "/" anywhere to jump to the search box
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "/") return;
+      if (
+        e.key !== "/" ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.altKey ||
+        e.isComposing ||
+        e.defaultPrevented
+      )
+        return;
       const t = e.target as HTMLElement | null;
       if (
         t &&
         (t.tagName === "INPUT" ||
           t.tagName === "TEXTAREA" ||
-          t.isContentEditable)
+          t.tagName === "SELECT" ||
+          t.isContentEditable ||
+          t.closest('[contenteditable="true"]'))
       )
         return;
       e.preventDefault();
-      searchInputRef.current?.focus({ preventScroll: true });
+      searchInputRef.current?.focus();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -151,6 +201,7 @@ export function useMemberFilters() {
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
   const isFiltering =
+    inputValue.trim() !== searchQuery.trim() ||
     searchQuery !== deferredSearchQuery ||
     selectedRanks !== deferredSelectedRanks;
 
@@ -162,17 +213,18 @@ export function useMemberFilters() {
 
   const allMembers = useMemo(() => data?.items ?? [], [data]);
 
-  const filteredMembers = useMemo(() => {
-    let result = allMembers;
+  const searchMatches = useMemo(() => {
+    const query = deferredSearchQuery.trim().toLowerCase();
+    if (!query) return allMembers;
+    return allMembers.filter(
+      (member) =>
+        member.name.toLowerCase().includes(query) ||
+        member.freeCompanyRank.toLowerCase().includes(query),
+    );
+  }, [allMembers, deferredSearchQuery]);
 
-    if (deferredSearchQuery.trim()) {
-      const query = deferredSearchQuery.toLowerCase();
-      result = result.filter(
-        (member) =>
-          member.name.toLowerCase().includes(query) ||
-          member.freeCompanyRank.toLowerCase().includes(query),
-      );
-    }
+  const filteredMembers = useMemo(() => {
+    let result = searchMatches;
 
     if (deferredSelectedRanks.length > 0) {
       result = result.filter((member) =>
@@ -198,7 +250,7 @@ export function useMemberFilters() {
     });
 
     return result;
-  }, [allMembers, deferredSearchQuery, deferredSelectedRanks, validSortBy]);
+  }, [searchMatches, deferredSelectedRanks, validSortBy]);
 
   // single-pass grouping: O(n) instead of O(n * ranks)
   const membersByRank = useMemo(() => {
@@ -253,20 +305,26 @@ export function useMemberFilters() {
     );
   }, [setSearchParams]);
 
-  const hasActiveFilters = searchQuery.length > 0 || selectedRanks.length > 0;
+  const clearRanks = useCallback(
+    () => setSelectedRanks([]),
+    [setSelectedRanks],
+  );
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 || selectedRanks.length > 0;
 
   // single-pass O(n) instead of O(n * ranks)
   const rankCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    for (const member of allMembers) {
+    for (const member of searchMatches) {
       counts[member.freeCompanyRank] =
         (counts[member.freeCompanyRank] || 0) + 1;
     }
     return counts;
-  }, [allMembers]);
+  }, [searchMatches]);
 
   return {
     searchInputRef,
+    searchQuery,
     inputValue,
     setInputValue,
     setSearchQuery,
@@ -275,6 +333,9 @@ export function useMemberFilters() {
     setSortBy,
     toggleRank,
     clearFilters,
+    clearRanks,
+    groupByRank,
+    setGroupByRank,
     hasActiveFilters,
     deferredSearchQuery,
     deferredSelectedRanks,
@@ -286,5 +347,6 @@ export function useMemberFilters() {
     filteredMembers,
     membersByRank,
     rankCounts,
+    searchMatchCount: searchMatches.length,
   };
 }
