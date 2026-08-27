@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@/shared/test/test-utils";
+import { fireEvent, render, screen } from "@/shared/test/test-utils";
 import {
   MemberCard,
   MemberCardSkeleton,
@@ -36,6 +36,42 @@ describe("MemberCard", () => {
       `img[src="${mockMember.avatarLink}"]`,
     );
     expect(avatar).toBeInTheDocument();
+  });
+
+  it("keeps a broken portrait usable with the member's initials and profile link", () => {
+    const { container } = render(<MemberCard member={mockMember} />);
+    fireEvent.error(container.querySelector("img")!);
+
+    expect(screen.getByText("TC")).toBeInTheDocument();
+    expect(screen.getByText("No portrait")).toBeInTheDocument();
+    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "https://na.finalfantasyxiv.com/lodestone/character/12345",
+    );
+  });
+
+  it("retries the portrait when the member's avatar changes after an error", () => {
+    const { container, rerender } = render(<MemberCard member={mockMember} />);
+    fireEvent.error(container.querySelector("img")!);
+    const replacement = "https://example.com/replacement.png";
+    rerender(
+      <MemberCard member={{ ...mockMember, avatarLink: replacement }} />,
+    );
+
+    const avatar = container.querySelector("img")!;
+    expect(avatar).toHaveAttribute("src", replacement);
+    fireEvent.load(avatar);
+    expect(screen.queryByText("TC")).not.toBeInTheDocument();
+    expect(screen.queryByText("No portrait")).not.toBeInTheDocument();
+  });
+
+  it("does not request an empty avatar URL", () => {
+    const { container } = render(
+      <MemberCard member={{ ...mockMember, avatarLink: "" }} />,
+    );
+    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(screen.getByText("TC")).toBeInTheDocument();
   });
 
   it("renders link to Lodestone profile", () => {

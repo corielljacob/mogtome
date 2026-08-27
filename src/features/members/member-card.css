@@ -1,0 +1,355 @@
+.family-member-card {
+  /* The same paper, ink, and layered print as the Home keepsake. */
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  color: var(--nook-ink);
+  background: var(--ui-surface-raised);
+  border-radius: 1px;
+  box-shadow:
+    1px 2px 3px color-mix(in srgb, var(--scene-shadow) 13%, transparent),
+    2px 10px 14px -9px color-mix(in srgb, var(--scene-shadow) 28%, transparent);
+  transform: rotate(var(--member-tilt, 0deg));
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+.family-member-card::before,
+.family-member-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+  background: var(--ui-surface-raised);
+  border: 1px solid var(--ui-rule);
+}
+.family-member-card::before {
+  inset: 5px -3px -3px 4px;
+  z-index: -2;
+  background: color-mix(in srgb, var(--nook-paper) 88%, var(--scene-wood));
+  transform: rotate(1.5deg);
+}
+.family-member-card::after {
+  inset: 0;
+  z-index: -1;
+  background: var(--nook-paper);
+  border: 1px solid color-mix(in srgb, var(--nook-ink) 9%, transparent);
+}
+.family-member-card > a {
+  display: block;
+  color: inherit;
+  padding: 0.7rem 0.7rem 1.15rem;
+  text-decoration: none;
+  border-radius: inherit;
+  cursor: pointer;
+}
+.family-member-card:has(> a:hover),
+.family-member-card:has(> a:focus-visible) {
+  z-index: 1;
+  transform: translateY(-3px) rotate(0deg);
+  box-shadow:
+    1px 3px 3px color-mix(in srgb, var(--scene-shadow) 13%, transparent),
+    2px 14px 17px -8px color-mix(in srgb, var(--scene-shadow) 28%, transparent);
+}
+.family-member-card > a:focus-visible,
+.family-member-compact:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 4px;
+}
+.family-member-tape {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  width: 3.5rem;
+  height: 1.1rem;
+  top: -0.6rem;
+  left: calc(50% - 1.75rem);
+  transform: rotate(var(--member-tape-tilt, 3deg));
+  background: var(--nook-washi);
+  opacity: 0.67;
+  clip-path: polygon(
+    2% 0,
+    97% 0,
+    100% 15%,
+    98% 30%,
+    97% 50%,
+    97% 75%,
+    100% 100%,
+    0 100%,
+    3% 75%,
+    0 50%,
+    2% 25%
+  );
+}
+.family-member-photo {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--nook-ink) 16%, transparent);
+  background: var(--ui-secondary-soft);
+}
+.family-member-portrait {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: var(--ui-secondary-soft);
+}
+.family-member-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition:
+    opacity 250ms ease,
+    transform 450ms ease;
+}
+.family-member-portrait[data-image-state="ready"] img {
+  opacity: 1;
+}
+.family-member-card > a:hover .family-member-portrait img {
+  transform: scale(1.025);
+}
+.family-member-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  color: var(--nook-ink);
+  background:
+    radial-gradient(
+      ellipse at 15% 20%,
+      color-mix(in srgb, var(--scene-rose) 12%, transparent),
+      transparent 70%
+    ),
+    color-mix(in srgb, var(--scene-leaf-light) 13%, var(--nook-paper));
+}
+.family-member-placeholder > span {
+  font: 400 2rem/1.15 var(--font-script);
+}
+.family-member-placeholder small {
+  font: 400 0.625rem/1.4 var(--font-navigation);
+  letter-spacing: 0.04em;
+}
+.family-member-placeholder-flower {
+  color: color-mix(in srgb, var(--scene-leaf) 60%, var(--nook-ink));
+  opacity: 0.8;
+}
+.family-member-portrait[data-image-state="loading"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 25%,
+    color-mix(in srgb, var(--nook-paper) 50%, transparent) 50%,
+    transparent 75%
+  );
+  background-size: 250% 100%;
+  animation: family-portrait-loading 2s ease-in-out infinite;
+}
+.family-member-profile {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  color: var(--ui-action);
+  opacity: 0.65;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+.family-member-card > a:is(:hover, :focus-visible) .family-member-profile {
+  opacity: 1;
+  transform: translate(1px, -1px);
+}
+.family-member-caption {
+  padding: 0.9rem 0.1rem 0;
+  text-align: center;
+}
+.family-member-caption h3 {
+  margin: 0;
+  color: var(--ui-heading);
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-wrap: anywhere;
+  font: 400 1.25rem/1.3 var(--font-script);
+  letter-spacing: -0.015em;
+}
+.family-member-caption p {
+  margin: 0.25rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font: 400 0.625rem/1.4 var(--font-navigation);
+  color: var(--ui-secondary);
+}
+.family-member-caption p svg {
+  flex-shrink: 0;
+  color: var(--ui-secondary);
+}
+.family-member-skeleton {
+  padding: 0.7rem 0.7rem 1.15rem;
+}
+.family-member-skeleton-photo {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: color-mix(
+    in srgb,
+    var(--scene-leaf-light) 16%,
+    var(--nook-paper)
+  );
+  color: color-mix(in srgb, var(--nook-ink) 28%, var(--nook-paper));
+  border: 1px solid color-mix(in srgb, var(--nook-ink) 8%, transparent);
+}
+.family-member-skeleton-caption {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.5rem 0 0.75rem;
+}
+.family-member-skeleton-caption span {
+  width: 80%;
+  height: 0.8rem;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--nook-ink) 10%, var(--nook-paper));
+}
+.family-member-skeleton-caption span:last-child {
+  width: 55%;
+  height: 0.55rem;
+}
+.family-member-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.65rem 0.85rem 0.65rem 0.65rem;
+  color: var(--nook-ink);
+  background: var(--ui-surface-raised);
+  border: 1px solid var(--ui-rule);
+  border-radius: 3px;
+  text-decoration: none;
+  transition: box-shadow 180ms ease;
+}
+.family-member-compact:hover {
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--scene-shadow) 12%, transparent);
+}
+.family-member-compact-photo {
+  width: 2.8rem;
+  height: 2.8rem;
+  flex-shrink: 0;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--nook-ink) 23%, transparent);
+}
+.family-member-compact .family-member-placeholder > span {
+  font-size: 1.1rem;
+}
+.family-member-compact .family-member-placeholder :is(svg, small) {
+  display: none;
+}
+.family-member-compact-caption {
+  flex: 1;
+  min-width: 0;
+}
+.family-member-compact-caption p {
+  margin: 0 0 0.1rem;
+  color: var(--ui-heading);
+  font: 400 1.1rem/1.3 var(--font-script);
+  overflow-wrap: anywhere;
+}
+.family-member-compact-caption > span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font: 400 0.625rem/1.4 var(--font-navigation);
+}
+.family-member-compact-caption svg,
+.family-member-compact-external {
+  flex-shrink: 0;
+}
+@keyframes family-portrait-loading {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@media (max-width: 479px) {
+  .family-member-card > a,
+  .family-member-skeleton {
+    padding: 0.5rem 0.5rem 1.1rem;
+  }
+  .family-member-caption {
+    padding-top: 0.7rem;
+  }
+  .family-member-profile {
+    right: 0.4rem;
+    bottom: 0.2rem;
+  }
+  .family-member-caption h3 {
+    font-size: 1.05rem;
+  }
+  .family-member-caption p {
+    font-size: 0.6rem;
+    gap: 0.2rem;
+  }
+  .family-member-caption p svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+.high-contrast .family-member-card {
+  --nook-paper: var(--card);
+  --nook-ink: var(--text);
+  background: var(--nook-paper);
+}
+.high-contrast .family-member-card::after {
+  border-color: var(--nook-ink);
+}
+.high-contrast .family-member-card::before {
+  display: none;
+}
+.reduce-motion .family-member-card,
+.reduce-motion .family-member-portrait img,
+.reduce-motion .family-member-profile,
+.reduce-motion .family-member-compact {
+  transition: none;
+}
+.reduce-motion .family-member-portrait[data-image-state="loading"]::after,
+.reduce-motion .family-member-skeleton .animate-pulse {
+  animation: none;
+}
+@media (forced-colors: active) {
+  .family-member-card::before,
+  .family-member-tape {
+    display: none;
+  }
+  .family-member-card::after {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-member-card,
+  .family-member-portrait img,
+  .family-member-profile,
+  .family-member-compact {
+    transition: none;
+  }
+  .family-member-portrait[data-image-state="loading"]::after,
+  .family-member-skeleton .animate-pulse {
+    animation: none;
+  }
+}
