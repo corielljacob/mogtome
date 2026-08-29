@@ -1,10 +1,11 @@
-import { type CSSProperties, type RefObject } from "react";
-import { Search, X, ArrowUpDown } from "lucide-react";
-import { Dropdown } from "@/shared/ui/Dropdown";
+import { type RefObject } from "react";
 import {
   SORT_OPTIONS,
   type SortOption,
 } from "@/features/members/useMemberFilters";
+import { FamilyIcon } from "./FamilyIcons";
+import "./family-controls.css";
+import "./family-filters.css";
 
 export function MembersToolbar({
   searchInputRef,
@@ -13,6 +14,7 @@ export function MembersToolbar({
   setSearchQuery,
   validSortBy,
   setSortBy,
+  disabled = false,
 }: {
   searchInputRef: RefObject<HTMLInputElement | null>;
   inputValue: string;
@@ -20,91 +22,79 @@ export function MembersToolbar({
   setSearchQuery: (query: string) => void;
   validSortBy: SortOption;
   setSortBy: (sort: SortOption) => void;
+  disabled?: boolean;
 }) {
-  return (
-    <section className="sticky top-[calc(4rem+env(safe-area-inset-top))] md:top-4 z-30 lg:static lg:z-auto animate-[fadeSlideIn_0.3s_ease-out_0.1s_both]">
-      <span
-        className="pushpin absolute -top-2 left-8 z-10"
-        style={{ "--pin": "var(--secondary)" } as CSSProperties}
-        aria-hidden="true"
-      />
-      <span
-        className="pushpin absolute -top-2 right-8 z-10"
-        style={{ "--pin": "var(--primary)" } as CSSProperties}
-        aria-hidden="true"
-      />
-      <div className="surface paper p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
-          <div className="relative flex-1">
-            <label htmlFor="member-search" className="sr-only">
-              Search members by name or rank
-            </label>
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--primary)]/70 pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              ref={searchInputRef}
-              id="member-search"
-              type="search"
-              inputMode="search"
-              enterKeyHint="search"
-              placeholder="Find a friend, kupo~"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              aria-describedby="search-results-count"
-              className="
-                  w-full pl-11 pr-11 py-3
-                  bg-[var(--bg)] rounded-full
-                  border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]
-                  focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
-                  font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
-                  focus:outline-none transition-all touch-manipulation
-                "
-              style={{ fontSize: "16px" }}
-            />
-            {!inputValue && (
-              <kbd
-                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-md bg-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))] border border-[color:color-mix(in_srgb,var(--primary)_22%,var(--card))] text-[var(--text-subtle)] text-xs font-mono pointer-events-none"
-                aria-hidden="true"
-              >
-                /
-              </kbd>
-            )}
-            {inputValue && (
-              <button
-                onClick={() => {
-                  setInputValue("");
-                  setSearchQuery("");
-                }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary)]/12 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
-                aria-label="Clear search"
-              >
-                <X className="w-4 h-4 text-[var(--primary)]" />
-              </button>
-            )}
-          </div>
+  const clearSearch = () => {
+    setInputValue("");
+    setSearchQuery("");
+    searchInputRef.current?.focus({ preventScroll: true });
+  };
 
-          <div className="flex items-center gap-2 shrink-0 lg:w-full">
-            <span className="hidden sm:flex items-center gap-1.5 text-sm font-display font-bold text-[var(--text-muted)] pl-1">
-              <ArrowUpDown
-                className="w-4 h-4 text-[var(--secondary)]"
-                aria-hidden="true"
-              />
-              Sort
-            </span>
-            <Dropdown
-              options={SORT_OPTIONS}
-              value={validSortBy}
-              onChange={setSortBy}
-              icon={<ArrowUpDown className="w-4 h-4" />}
-              menuClassName="paper"
-              className="w-full sm:w-44 lg:flex-1"
-              aria-label="Sort members by"
-            />
-          </div>
+  return (
+    <div className="family-toolbar family-toolbar-refined">
+      <div className="family-search-field">
+        <label htmlFor="member-search">Search members</label>
+        <div className="family-search">
+          <FamilyIcon name="search" size={21} />
+          <input
+            ref={searchInputRef}
+            id="member-search"
+            type="search"
+            inputMode="search"
+            enterKeyHint="search"
+            placeholder="Name or rank…"
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.nativeEvent.isComposing) return;
+              if (event.key === "Escape") {
+                event.preventDefault();
+                clearSearch();
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                setSearchQuery(inputValue);
+              }
+            }}
+            aria-describedby="search-results-count"
+            aria-keyshortcuts="/"
+            disabled={disabled}
+          />
+          {inputValue ? (
+            <button
+              type="button"
+              onClick={clearSearch}
+              disabled={disabled}
+              aria-label="Clear search"
+            >
+              <FamilyIcon name="close" size={17} />
+            </button>
+          ) : (
+            <kbd aria-hidden="true" title="Press / to search">
+              /
+            </kbd>
+          )}
         </div>
       </div>
-    </section>
+      <div className="family-sort-field">
+        <label htmlFor="member-sort">Sort by</label>
+        <div className="family-sort">
+          <FamilyIcon name="sort" size={19} />
+          <select
+            id="member-sort"
+            value={validSortBy}
+            onChange={(event) => setSortBy(event.target.value as SortOption)}
+            disabled={disabled}
+            aria-label="Sort members by"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <FamilyIcon name="chevron-down" size={15} />
+        </div>
+      </div>
+    </div>
   );
 }
