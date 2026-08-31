@@ -1,62 +1,34 @@
-import {
-  useState,
-  useMemo,
-  useRef,
-  useEffect,
-  useCallback,
-  useTransition,
-  type CSSProperties,
-} from "react";
+import { useMemo, useRef, useEffect, useCallback, useTransition } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import type { FreeCompanyMember } from "@/shared/types";
 import { MemberCard } from "@/features/members/MemberCard";
-import { KawaiiStar } from "@/shared/ui/kawaiiMotifs";
-import { getRankColor } from "@/shared/constants/rankColors";
-import { scrollAppToTop } from "@/shared/lib/scroll";
+import { FamilyIcon, FamilyRankIcon } from "./FamilyIcons";
+import "./family-controls.css";
+import "./family-pagination.css";
 
 interface PaginatedMemberGridProps {
   members: FreeCompanyMember[];
-  /** when set, members render grouped by rank with section headers */
+  /** When set, members render grouped by rank with section headers. */
   membersByRank?: Map<string, FreeCompanyMember[]>;
   showGrouped?: boolean;
   pageSize?: number;
   pageParam?: string;
 }
 
-// matches Tailwind's default breakpoints
-// The grid measures its own container, which now varies: the full board on small
-// screens, or the narrower main column when the filter rail sits beside it on
-// large screens. So scale columns to the actual width - aim for ~184px per member
-// card (they cap at ~12rem and centre in the cell), clamped to 2..8.
-const CARD_TARGET_PX = 184;
+function visiblePages(current: number, total: number): (number | string)[] {
+  if (total <= 5) return Array.from({ length: total }, (_, index) => index);
 
-function getColumnCount(width: number): number {
-  return Math.max(2, Math.min(8, Math.floor(width / CARD_TARGET_PX)));
-}
-
-function useResponsiveColumns(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-) {
-  const [columnCount, setColumnCount] = useState(4);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateColumns = () => {
-      const width = container.offsetWidth;
-      setColumnCount(getColumnCount(width));
-    };
-
-    updateColumns();
-    const resizeObserver = new ResizeObserver(updateColumns);
-    resizeObserver.observe(container);
-
-    return () => resizeObserver.disconnect();
-  }, [containerRef]);
-
-  return columnCount;
+  const pages = [...new Set([0, current - 1, current, current + 1, total - 1])]
+    .filter((page) => page >= 0 && page < total)
+    .sort((a, b) => a - b);
+  const items: (number | string)[] = [];
+  pages.forEach((page, index) => {
+    if (index > 0 && page - pages[index - 1] > 1) {
+      items.push(`gap-${page}`);
+    }
+    items.push(page);
+  });
+  return items;
 }
 
 function RankHeader({
@@ -66,52 +38,21 @@ function RankHeader({
   rankName: string;
   memberCount: number;
 }) {
-  const rankColor = getRankColor(rankName);
-  const RankIcon = rankColor.icon;
-
   return (
-    <div className="flex items-center gap-3 py-3 sm:py-4">
-      <div
-        className="sticker px-3 py-1.5"
-        style={{
-          backgroundColor: `color-mix(in srgb, ${rankColor.hex} 15%, var(--card))`,
-          border: `2px solid color-mix(in srgb, ${rankColor.hex} 34%, var(--card))`,
-        }}
-      >
-        <span
-          className="flex items-center justify-center w-5 h-5 rounded-full shrink-0"
-          style={{ backgroundColor: rankColor.hex }}
-        >
-          <RankIcon className="w-3 h-3 text-white" aria-hidden="true" />
-        </span>
-        <h2 className="font-display font-bold text-sm sm:text-base text-[var(--text)] leading-none">
-          {rankColor.label}
-        </h2>
-        <span
-          className="text-xs font-display font-bold px-1.5 py-0.5 rounded-full leading-none"
-          style={{
-            backgroundColor: `color-mix(in srgb, ${rankColor.hex} 22%, var(--card))`,
-            color: `color-mix(in srgb, ${rankColor.hex} 62%, var(--text))`,
-          }}
-          aria-label={`${memberCount} members`}
-        >
-          {memberCount}
-        </span>
-      </div>
-      <div
-        className="flex-1 border-t-2 border-dashed"
-        style={{
-          borderColor: `color-mix(in srgb, ${rankColor.hex} 28%, transparent)`,
-        }}
-        aria-hidden="true"
-      />
-      <KawaiiStar className="w-4 h-4 shrink-0" color={rankColor.hex} />
+    <div className="family-rank-header">
+      <span className="family-rank-seal" aria-hidden="true">
+        <FamilyRankIcon rank={rankName} size={23} />
+      </span>
+      <h3>{rankName}</h3>
+      <span className="family-rank-rule" aria-hidden="true" />
+      <span className="family-rank-page-count">
+        {memberCount} <span>on this page</span>
+      </span>
     </div>
   );
 }
 
-// non-virtualized so form state survives in biography-edit mode (virtual rows would unmount).
-// pagination is URL-synced (bookmarkable, back-button works).
+// Keep cards mounted within a page, and keep each page bookmarkable.
 export function PaginatedMemberGrid({
   members,
   membersByRank,
@@ -122,72 +63,35 @@ export function PaginatedMemberGrid({
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
-  const columnCount = useResponsiveColumns(containerRef);
+  const totalPages = Math.max(1, Math.ceil(members.length / pageSize));
+  const pageValue = searchParams.get(pageParam);
+  const parsedPage = Number(pageValue ?? 1);
+  const urlPage =
+    Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  const currentPage = Math.min(totalPages, urlPage) - 1;
 
-  const totalPages = Math.ceil(members.length / pageSize);
-
-  // URL page is 1-indexed for users; convert to 0-indexed and clamp
-  const urlPage = parseInt(searchParams.get(pageParam) || "1", 10);
-  const currentPage = Math.max(0, Math.min(totalPages - 1, urlPage - 1));
-
-  // re-sync URL when the page falls out of bounds (e.g. filtering shrinks the list)
+  // Filtering resets the page in useMemberFilters. Only normalize invalid or
+  // out-of-range values here so a direct link to a later page survives mounting.
   useEffect(() => {
-    if (totalPages === 0) return;
+    if (pageValue === null || pageValue === String(currentPage + 1)) return;
 
-    const maxPageIdx = totalPages - 1;
-    const urlPageIdx = urlPage - 1;
-    const clampedPageIdx = Math.max(0, Math.min(maxPageIdx, urlPageIdx));
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (currentPage === 0) next.delete(pageParam);
+        else next.set(pageParam, String(currentPage + 1));
+        return next;
+      },
+      { replace: true },
+    );
+  }, [pageValue, currentPage, pageParam, setSearchParams]);
 
-    if (clampedPageIdx !== urlPageIdx) {
-      setSearchParams(
-        (prev) => {
-          const next = new URLSearchParams(prev);
-          if (clampedPageIdx === 0) {
-            next.delete(pageParam);
-          } else {
-            next.set(pageParam, String(clampedPageIdx + 1));
-          }
-          return next;
-        },
-        { replace: true },
-      );
-    }
-  }, [urlPage, totalPages, pageParam, setSearchParams]);
-
-  // reset to page 1 when the list content changes. track the first member's id
-  // too, since count alone misses same-size filter swaps.
-  const prevFirstMemberId = useRef<string | undefined>(undefined);
-  const prevMemberCount = useRef(members.length);
-
-  useEffect(() => {
-    const firstMemberId = members[0]?.characterId;
-    const countChanged = members.length !== prevMemberCount.current;
-    const contentChanged = firstMemberId !== prevFirstMemberId.current;
-
-    if ((countChanged || contentChanged) && currentPage !== 0) {
-      setSearchParams(
-        (prev) => {
-          const next = new URLSearchParams(prev);
-          next.delete(pageParam);
-          return next;
-        },
-        { replace: true },
-      );
-    }
-
-    prevFirstMemberId.current = firstMemberId;
-    prevMemberCount.current = members.length;
-  }, [members, currentPage, pageParam, setSearchParams]);
-
-  const paginatedMembers = useMemo(() => {
-    const start = currentPage * pageSize;
-    return members.slice(start, start + pageSize);
-  }, [members, currentPage, pageSize]);
+  const startIndex = currentPage * pageSize;
+  const paginatedMembers = members.slice(startIndex, startIndex + pageSize);
 
   const paginatedByRank = useMemo(() => {
     if (!showGrouped || !membersByRank) return null;
 
-    // flatten across ranks so pagination cuts at a global offset, then regroup
     const allWithRank: { member: FreeCompanyMember; rank: string }[] = [];
     for (const [rankName, rankMembers] of membersByRank) {
       for (const member of rankMembers) {
@@ -195,184 +99,202 @@ export function PaginatedMemberGrid({
       }
     }
 
-    const start = currentPage * pageSize;
-    const paginated = allWithRank.slice(start, start + pageSize);
-
     const grouped = new Map<string, FreeCompanyMember[]>();
-    for (const { member, rank } of paginated) {
+    for (const { member, rank } of allWithRank.slice(
+      startIndex,
+      startIndex + pageSize,
+    )) {
       const existing = grouped.get(rank) || [];
       existing.push(member);
       grouped.set(rank, existing);
     }
-
     return grouped;
-  }, [showGrouped, membersByRank, currentPage, pageSize]);
+  }, [showGrouped, membersByRank, startIndex, pageSize]);
 
-  // Scroll the app container to the top AFTER an explicit page change commits, so
-  // the smooth scroll isn't interrupted by the content swap. The flag keeps it from
-  // firing on filter-induced page resets - toggling a rank keeps you in place.
   const scrollOnPageChange = useRef(false);
   useEffect(() => {
-    if (scrollOnPageChange.current) {
-      scrollOnPageChange.current = false;
-      scrollAppToTop();
-    }
+    if (!scrollOnPageChange.current) return;
+    scrollOnPageChange.current = false;
+    const album = containerRef.current;
+    if (!album) return;
+
+    // Return to the portraits after turning a page, without revisiting the hero.
+    album.focus({ preventScroll: true });
+    album.scrollIntoView({
+      behavior:
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        document.documentElement.classList.contains("reduce-motion")
+          ? "instant"
+          : "smooth",
+      block: "start",
+    });
   }, [currentPage]);
 
   const navigateToPage = useCallback(
     (page: number) => {
+      if (page === currentPage || page < 0 || page >= totalPages) return;
       scrollOnPageChange.current = true;
       startTransition(() => {
         setSearchParams((prev) => {
           const next = new URLSearchParams(prev);
-          if (page === 0) {
-            next.delete(pageParam); // keep page 1 out of the URL
-          } else {
-            next.set(pageParam, String(page + 1));
-          }
+          if (page === 0) next.delete(pageParam);
+          else next.set(pageParam, String(page + 1));
           return next;
         });
       });
     },
-    [pageParam, setSearchParams],
+    [currentPage, totalPages, pageParam, setSearchParams],
   );
 
-  const handlePrevPage = useCallback(() => {
-    if (currentPage > 0) navigateToPage(currentPage - 1);
-  }, [currentPage, navigateToPage]);
+  const range = `Members ${startIndex + 1}–${Math.min(startIndex + pageSize, members.length)} of ${members.length}`;
+  const numberedPages = visiblePages(currentPage, totalPages);
 
-  const handleNextPage = useCallback(() => {
-    if (currentPage < totalPages - 1) navigateToPage(currentPage + 1);
-  }, [currentPage, totalPages, navigateToPage]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // ignore arrows while typing in a field
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      )
-        return;
-
-      if (e.key === "ArrowLeft" && currentPage > 0) {
-        e.preventDefault();
-        navigateToPage(currentPage - 1);
-      } else if (e.key === "ArrowRight" && currentPage < totalPages - 1) {
-        e.preventDefault();
-        navigateToPage(currentPage + 1);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentPage, totalPages, navigateToPage]);
+  function pageTurn(direction: "previous" | "next", top = false) {
+    const previous = direction === "previous";
+    return (
+      <button
+        type="button"
+        onClick={() => navigateToPage(currentPage + (previous ? -1 : 1))}
+        disabled={
+          isPending ||
+          (previous ? currentPage === 0 : currentPage === totalPages - 1)
+        }
+        aria-label={`Go to ${direction} page${top ? ", top" : ""}`}
+        className={`family-page-turn family-page-${direction}${top ? " family-page-turn-top" : ""}`}
+      >
+        {previous && <FamilyIcon name="arrow-left" size={19} />}
+        <span>{previous ? "Previous" : "Next"}</span>
+        {!previous && <FamilyIcon name="arrow-right" size={19} />}
+      </button>
+    );
+  }
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div
+      ref={containerRef}
+      className="family-album-pages"
+      tabIndex={-1}
+      role="region"
+      aria-label={`Members, page ${currentPage + 1} of ${totalPages}`}
+      aria-busy={isPending}
+    >
+      {totalPages > 1 ? (
+        <nav className="family-pagination-top" aria-label="Member pages, top">
+          <p className="family-page-summary">{range}</p>
+          <div className="family-page-tools">
+            {pageTurn("previous", true)}
+            <div className="family-page-jump">
+              <span>Page</span>
+              <span className="family-page-select">
+                <select
+                  aria-label="Go to page"
+                  value={currentPage + 1}
+                  disabled={isPending}
+                  onChange={(event) =>
+                    navigateToPage(Number(event.target.value) - 1)
+                  }
+                >
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <option key={index} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  ))}
+                </select>
+                <FamilyIcon name="chevron-down" size={12} />
+              </span>
+              <span>of {totalPages}</span>
+            </div>
+            {pageTurn("next", true)}
+          </div>
+        </nav>
+      ) : members.length > 0 ? (
+        <p className="family-page-single-count">
+          {members.length} {members.length === 1 ? "member" : "members"}
+        </p>
+      ) : null}
+
       {showGrouped && paginatedByRank ? (
         <div
           key={currentPage}
-          className="space-y-2 animate-[fadeIn_0.2s_ease-out]"
+          className="family-rank-sections family-page-enter"
         >
           {Array.from(paginatedByRank.entries()).map(
             ([rankName, rankMembers]) => (
-              <div key={rankName}>
+              <section key={rankName} className="family-rank-section">
                 <RankHeader
                   rankName={rankName}
                   memberCount={rankMembers.length}
                 />
-                <div
-                  className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5"
-                  style={{
-                    gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
-                  }}
-                >
-                  {rankMembers.map((member, idx) => (
+                <div className="family-member-grid">
+                  {rankMembers.map((member, index) => (
                     <MemberCard
                       key={member.characterId}
                       member={member}
-                      index={idx}
+                      index={index}
                     />
                   ))}
                 </div>
-              </div>
+              </section>
             ),
           )}
         </div>
       ) : (
-        <div
-          key={currentPage}
-          className="grid gap-2.5 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center py-1.5 animate-[fadeIn_0.2s_ease-out]"
-          style={{
-            gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
-          }}
-        >
-          {paginatedMembers.map((member, idx) => (
-            <MemberCard key={member.characterId} member={member} index={idx} />
+        <div key={currentPage} className="family-member-grid family-page-enter">
+          {paginatedMembers.map((member, index) => (
+            <MemberCard
+              key={member.characterId}
+              member={member}
+              index={index}
+            />
           ))}
         </div>
       )}
 
       {totalPages > 1 && (
         <nav
-          className="mt-8 sm:mt-10 pt-7 flex items-center justify-center gap-2.5 sm:gap-4"
-          aria-label="Pagination"
+          className="family-pagination-bottom"
+          aria-label="Member pages, bottom"
         >
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 0 || isPending}
-            aria-label="Go to previous page"
-            className="
-              flex items-center justify-center gap-1.5 h-11 px-4 sm:px-5
-              gel hover-bounce text-white font-display font-bold text-sm
-              disabled:opacity-35 disabled:cursor-not-allowed
-              focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
-              cursor-pointer touch-manipulation
-            "
-            style={{ "--gel-color": "var(--secondary)" } as CSSProperties}
-          >
-            <ChevronLeft className="w-5 h-5" aria-hidden="true" />
-            <span className="hidden sm:inline">Prev</span>
-          </button>
-
           <div
-            className="inline-flex items-center gap-2 h-11 px-4 sm:px-5 rounded-full bg-[var(--card)] border-2 border-[color:color-mix(in_srgb,var(--primary)_18%,var(--card))]"
+            className="family-page-bottom-summary"
             role="status"
             aria-live="polite"
+            aria-atomic="true"
           >
-            {isPending && (
-              <Loader2
-                className="w-4 h-4 text-[var(--primary)] animate-spin"
-                aria-hidden="true"
-              />
-            )}
-            <span
-              className="font-display font-bold text-sm text-[var(--text)] whitespace-nowrap"
-              aria-label={`Page ${currentPage + 1} of ${totalPages}`}
-            >
-              <span className="text-[var(--primary)]">{currentPage + 1}</span>
-              <span className="text-[var(--text-subtle)] font-soft px-0.5">
-                /
-              </span>
-              {totalPages}
+            <span>{range}</span>
+            <span>
+              Page {currentPage + 1} of {totalPages}
             </span>
           </div>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages - 1 || isPending}
-            aria-label="Go to next page"
-            className="
-              flex items-center justify-center gap-1.5 h-11 px-4 sm:px-5
-              gel hover-bounce text-white font-display font-bold text-sm
-              disabled:opacity-35 disabled:cursor-not-allowed
-              focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none
-              cursor-pointer touch-manipulation
-            "
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="w-5 h-5" aria-hidden="true" />
-          </button>
+          <div className="family-page-navigation">
+            {pageTurn("previous")}
+            <ol className="family-page-numbers">
+              {numberedPages.map((page) => (
+                <li
+                  key={page}
+                  aria-hidden={typeof page === "string" || undefined}
+                >
+                  {typeof page === "number" ? (
+                    <button
+                      type="button"
+                      onClick={() => navigateToPage(page)}
+                      aria-label={`Go to page ${page + 1}`}
+                      aria-current={page === currentPage ? "page" : undefined}
+                      disabled={isPending}
+                      className="family-page-number"
+                    >
+                      {page + 1}
+                    </button>
+                  ) : (
+                    <span className="family-page-ellipsis" aria-hidden="true">
+                      …
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ol>
+            {pageTurn("next")}
+          </div>
         </nav>
       )}
     </div>
