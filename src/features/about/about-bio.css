@@ -1,0 +1,138 @@
+.about-bio-note {
+  min-width: 0;
+  color: var(--nook-ink);
+}
+.about-bio-text {
+  margin: 0;
+  color: var(--nook-ink);
+  font: 400 1.0625rem/1.65 var(--font-navigation);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.about-bio-text.is-collapsed {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+.about-bio-text.about-bio-empty {
+  color: var(--ui-muted);
+  font-style: italic;
+}
+.about-bio-note button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ui-action);
+  font: 500 0.8125rem/1.45 var(--font-navigation);
+  cursor: pointer;
+}
+.about-bio-note button > svg {
+  flex-shrink: 0;
+  color: currentColor;
+}
+.about-bio-note :is(.about-bio-expand, .about-bio-edit) {
+  padding-left: 0;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ui-action) 50%, transparent);
+  text-underline-offset: 4px;
+}
+.about-bio-note :is(.about-bio-expand, .about-bio-edit):hover {
+  text-decoration-color: currentColor;
+}
+.about-bio-expand[aria-expanded="true"] > svg {
+  transform: rotate(180deg);
+}
+.about-bio-edit-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 2px;
+}
+.about-bio-editor > label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--nook-ink);
+  font: 500 0.875rem/1.5 var(--font-navigation);
+}
+.about-bio-editor textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 156px;
+  resize: vertical;
+  padding: 11px 12px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 5px;
+  background: var(--ui-surface-raised);
+  box-shadow: inset 0 1px 3px
+    color-mix(in srgb, var(--nook-ink) 6%, transparent);
+  color: var(--nook-ink);
+  font: 400 1rem/1.6 var(--font-navigation);
+}
+.about-bio-editor textarea::placeholder {
+  color: var(--ui-muted);
+  opacity: 1;
+}
+.about-bio-counter {
+  margin: 6px 0 8px;
+  color: var(--ui-muted);
+  text-align: right;
+  font: 400 0.75rem/1.5 var(--font-navigation);
+  font-variant-numeric: tabular-nums;
+}
+.about-bio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.about-bio-actions button {
+  padding-right: 14px;
+  padding-left: 14px;
+}
+.about-bio-actions .about-bio-save {
+  border: 1px solid var(--ui-action);
+  background: var(--ui-action);
+  color: var(--ui-on-action);
+}
+.about-bio-actions button:hover:not(:disabled) {
+  background: var(--ui-action-soft);
+}
+.about-bio-actions .about-bio-save:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ui-action) 88%, var(--ui-ink));
+}
+.about-bio-status,
+.about-bio-error {
+  margin: 8px 0 0;
+  color: var(--nook-ink);
+  font: 400 0.8125rem/1.5 var(--font-navigation);
+}
+.about-bio-edit-row .about-bio-status {
+  margin: 0;
+}
+.about-bio-error {
+  padding-left: 10px;
+  border-left: 2px solid var(--ui-action);
+}
+.about-bio-note :is(button, textarea):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.about-bio-note :disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+@media (forced-colors: active) {
+  .about-bio-editor textarea,
+  .about-bio-actions .about-bio-save {
+    border-color: CanvasText;
+  }
+}
