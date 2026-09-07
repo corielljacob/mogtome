@@ -1,25 +1,52 @@
-import { memo, useState } from "react";
-import { ExternalLink } from "lucide-react";
-import { Tag } from "@/shared/ui/Tag";
-import { KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
-import { getRankColor } from "@/shared/constants/rankColors";
+import { memo, useId, useState, type CSSProperties } from "react";
 import type { StaffMember } from "@/shared/types";
+import { FamilyRankIcon } from "@/features/members/FamilyIcons";
 import { StickyBioNote } from "@/features/about/StickyBioNote";
+import { AboutIcon } from "./AboutIcons";
+import "./about-staff.css";
 
-// deterministic per-member tilt, stable across renders (a hash, not Math.random,
-// so it never jitters). photo + note tilt independently in both directions for a
-// messy hand-pinned scatter rather than an orderly opposing lean.
-function scrapbookTilt(seed: string): { photo: number; note: number } {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+function photoTilt(seed: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index++) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
   }
-  h >>>= 0;
-  return {
-    photo: ((h % 1000) / 1000) * 11 - 5.5, // ≈ -5.5 .. +5.5
-    note: (((h >>> 11) % 1000) / 1000) * 11 - 5.5, // ≈ -5.5 .. +5.5
-  };
+  return (((hash >>> 0) % 5) - 2) * 0.6;
+}
+
+function StaffPortrait({ member }: { member: StaffMember }) {
+  const [imageState, setImageState] = useState<
+    "loading" | "ready" | "unavailable"
+  >(member.avatarLink ? "loading" : "unavailable");
+  const initials = member.name
+    .trim()
+    .split(/\s+/)
+    .map((part) => Array.from(part)[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
+
+  return (
+    <div className="about-staff-portrait" data-image-state={imageState}>
+      {imageState !== "ready" && (
+        <span className="about-staff-portrait-placeholder" aria-hidden="true">
+          <span>{initials || "?"}</span>
+          {imageState === "unavailable" && <small>No portrait</small>}
+        </span>
+      )}
+      {imageState !== "unavailable" && (
+        <img
+          src={member.avatarLink}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          onLoad={() => setImageState("ready")}
+          onError={() => setImageState("unavailable")}
+        />
+      )}
+    </div>
+  );
 }
 
 export const StaffCard = memo(function StaffCard({
@@ -33,103 +60,70 @@ export const StaffCard = memo(function StaffCard({
   isCurrentUser?: boolean;
   isOwnEditable?: boolean;
 }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const rankColor = getRankColor(member.freeCompanyRank);
-  const RankIcon = rankColor.icon;
-  const lodestoneUrl = `https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`;
-  const shortRank = member.freeCompanyRank.replace("Moogle ", "");
-  const tilt = scrapbookTilt(member.characterId);
+  const nameId = useId();
+  const rankInk = "color-mix(in srgb, var(--scene-leaf) 60%, var(--nook-ink))";
 
   return (
-    <article className="relative flex items-start">
-      {/* polaroid */}
-      <a
-        href={lodestoneUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="paper group relative z-10 shrink-0 focus-visible:outline-none"
-        style={{ transform: `rotate(${tilt.photo}deg)` }}
-        aria-label={`${member.name} on the Lodestone (opens in new tab)`}
-      >
-        <span
-          className="absolute -top-2 left-1/2 -translate-x-1/2 w-11 h-4 -rotate-6 rounded-[2px] opacity-80 z-10"
-          style={{
-            background: `repeating-linear-gradient(45deg, color-mix(in srgb, ${rankColor.hex} 45%, transparent) 0 5px, color-mix(in srgb, ${rankColor.hex} 24%, transparent) 5px 10px)`,
-          }}
-          aria-hidden="true"
-        />
-        <div className="surface p-2 pb-2.5 w-32 sm:w-44 lg:w-52">
-          <div className="relative aspect-square rounded-lg overflow-hidden bg-[var(--bg)]">
-            {!imageLoaded && (
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--card)] to-[var(--bg)] animate-shimmer"
-                aria-hidden="true"
-              />
-            )}
-            <img
-              src={member.avatarLink}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              onLoad={() => setImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-            />
-            <div
-              className="absolute top-1 left-1 flex items-center justify-center w-5 h-5 rounded-full"
-              style={{
-                backgroundColor: `color-mix(in srgb, ${rankColor.hex} 22%, var(--card))`,
-                border: `2px solid color-mix(in srgb, ${rankColor.hex} 34%, var(--card))`,
-              }}
-            >
-              <RankIcon
-                className="w-3 h-3"
-                style={{ color: rankColor.hex }}
-                aria-hidden="true"
-              />
-            </div>
-            <span
-              className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity"
-              aria-hidden="true"
-            >
-              <ExternalLink className="w-4 h-4 text-white" />
-            </span>
-          </div>
-          <p className="font-accent font-bold text-sm text-center text-[var(--text)] truncate mt-1.5">
-            {member.name}
+    <article
+      className="about-staff-card"
+      aria-labelledby={nameId}
+      style={
+        {
+          "--staff-photo-tilt": `${photoTilt(member.characterId)}deg`,
+        } as CSSProperties
+      }
+    >
+      <div className="about-staff-layout">
+        <a
+          href={`https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="about-staff-polaroid"
+          aria-label={`View Lodestone profile for ${member.name} (opens in new tab)`}
+          title="View Lodestone profile (opens in new tab)"
+        >
+          <span className="about-staff-tape" aria-hidden="true" />
+          <StaffPortrait key={member.avatarLink} member={member} />
+          <span className="about-staff-lodestone">
+            View Lodestone <AboutIcon name="external" size={13} />
+          </span>
+        </a>
+
+        <header className="about-staff-heading">
+          <h4 id={nameId}>{member.name}</h4>
+          <p className="about-staff-rank">
+            <FamilyRankIcon rank={member.freeCompanyRank} size={20} />
+            <span>{member.freeCompanyRank}</span>
           </p>
-          <div className="flex justify-center mt-1.5">
-            <Tag
-              color={rankColor.hex}
-              icon={<RankIcon className="w-3 h-3" aria-hidden="true" />}
-            >
-              {shortRank}
-            </Tag>
-          </div>
           {(isLeader || member.recentlyPromoted || isCurrentUser) && (
-            <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 mt-1.5 text-[10px] font-display font-bold leading-none">
+            <div className="about-staff-details">
               {isLeader && (
-                <span className="text-[var(--secondary)]">leads</span>
+                <span className="about-staff-detail">FC leader</span>
               )}
               {member.recentlyPromoted && (
-                <span className="inline-flex items-center gap-0.5 text-[color:color-mix(in_srgb,var(--accent)_70%,var(--text))]">
-                  <KawaiiSparkle className="w-2.5 h-2.5" />
-                  promoted
+                <span className="about-staff-detail">
+                  <AboutIcon name="sparkle" size={13} /> Recently promoted
                 </span>
               )}
               {isCurrentUser && (
-                <span className="text-[var(--primary)]">that's you!</span>
+                <span className="about-staff-detail about-staff-detail--you">
+                  <AboutIcon name="heart" size={12} /> That’s you
+                </span>
               )}
             </div>
           )}
-        </div>
-      </a>
+        </header>
 
-      <StickyBioNote
-        bio={member.biography}
-        rankHex={rankColor.hex}
-        editable={isOwnEditable}
-        tilt={tilt.note}
-      />
+        <div className="about-staff-biography">
+          <StickyBioNote
+            bio={member.biography}
+            memberName={member.name}
+            rankHex={rankInk}
+            editable={isOwnEditable}
+            tilt={0}
+          />
+        </div>
+      </div>
     </article>
   );
 });
