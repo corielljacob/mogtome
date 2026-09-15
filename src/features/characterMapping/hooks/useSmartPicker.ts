@@ -49,6 +49,8 @@ export interface UseSmartPickerResult {
   discordRows: DiscordRow[];
   selectCharacter: (c: UnmappedCharacter) => void;
   selectDiscordUser: (u: UnmappedDiscordUser) => void;
+  clearCharacter: () => void;
+  clearDiscordUser: () => void;
   reset: () => void;
 }
 
@@ -59,9 +61,8 @@ const info = (confidence: MatchInfo["confidence"], score = 0): MatchInfo => ({
 
 /**
  * useSmartPicker - the smarts behind the side-by-side board. Selecting one side
- * re-sorts the other column by the system's match ranking (best first) and
- * pre-fills the confident counterpart, so the knight is guided to the pair
- * instead of hunting both lists.
+ * re-sorts the other column by the system's match ranking (best first).
+ * Both accounts must be chosen explicitly; ranking never changes a selection.
  */
 export function useSmartPicker({
   allCharacters,
@@ -79,6 +80,17 @@ export function useSmartPicker({
   const charQ = useDeferredValue(characterSearch);
   const discQ = useDeferredValue(discordSearch);
 
+  // An account linked elsewhere can disappear while this picker stays mounted.
+  // Use the current lists for both the visible choices and their match ranking.
+  const currentCharacter =
+    allCharacters.find(
+      (character) => character.characterId === selectedCharacter?.characterId,
+    ) ?? null;
+  const currentDiscordUser =
+    allDiscordUsers.find(
+      (user) => user.discordId === selectedDiscordUser?.discordId,
+    ) ?? null;
+
   // Confident pairing lookups (a character/discord's own best match).
   const byChar = useMemo(() => {
     const m = new Map<string, MatchPair>();
@@ -93,24 +105,24 @@ export function useSmartPicker({
 
   // Ranking of the OPPOSITE column relative to the current single selection.
   const discordRank = useMemo(() => {
-    if (!selectedCharacter) return null;
-    const ranked = getRankedDiscordUsers(selectedCharacter) ?? [];
+    if (!currentCharacter) return null;
+    const ranked = getRankedDiscordUsers(currentCharacter) ?? [];
     const m = new Map<string, { order: number; info: MatchInfo }>();
     ranked.forEach((u, i) =>
       m.set(u.discordId, { order: i, info: info(u.confidence, u.score) }),
     );
     return m;
-  }, [selectedCharacter, getRankedDiscordUsers]);
+  }, [currentCharacter, getRankedDiscordUsers]);
 
   const characterRank = useMemo(() => {
-    if (!selectedDiscordUser) return null;
-    const ranked = getRankedCharacters(selectedDiscordUser) ?? [];
+    if (!currentDiscordUser) return null;
+    const ranked = getRankedCharacters(currentDiscordUser) ?? [];
     const m = new Map<string, { order: number; info: MatchInfo }>();
     ranked.forEach((c, i) =>
       m.set(c.characterId, { order: i, info: info(c.confidence, c.score) }),
     );
     return m;
-  }, [selectedDiscordUser, getRankedCharacters]);
+  }, [currentDiscordUser, getRankedCharacters]);
 
   const characterRows = useMemo<CharacterRow[]>(() => {
     const q = charQ.toLowerCase().trim();
@@ -150,7 +162,10 @@ export function useSmartPicker({
   const discordRows = useMemo<DiscordRow[]>(() => {
     const q = discQ.toLowerCase().trim();
     const filtered = allDiscordUsers.filter(
-      (u) => !q || u.serverNickName.toLowerCase().includes(q),
+      (u) =>
+        !q ||
+        u.serverNickName.toLowerCase().includes(q) ||
+        u.discordId.toLowerCase().includes(q),
     );
     if (discordRank) {
       return [...filtered]
@@ -178,34 +193,31 @@ export function useSmartPicker({
 
   const selectCharacter = useCallback(
     (c: UnmappedCharacter) => {
-      if (selectedCharacter?.characterId === c.characterId) {
-        setSelectedCharacter(null);
-        setSelectedDiscordUser(null);
-        return;
-      }
-      setSelectedCharacter(c);
-      // Pre-fill the confident Discord suggestion (or clear for a manual pick).
-      const sug = byChar.get(c.characterId);
-      setSelectedDiscordUser(sug ? sug.discordUser : null);
+      setSelectedCharacter(
+        currentCharacter?.characterId === c.characterId
+          ? null
+          : (allCharacters.find(
+              (character) => character.characterId === c.characterId,
+            ) ?? null),
+      );
     },
-    [selectedCharacter, byChar],
+    [currentCharacter, allCharacters],
   );
 
   const selectDiscordUser = useCallback(
     (u: UnmappedDiscordUser) => {
-      if (selectedDiscordUser?.discordId === u.discordId) {
-        setSelectedDiscordUser(null);
-        return;
-      }
-      setSelectedDiscordUser(u);
-      // If no character is chosen yet, pre-fill the suggested character.
-      if (!selectedCharacter) {
-        const sug = byDiscord.get(u.discordId);
-        if (sug) setSelectedCharacter(sug.character);
-      }
+      setSelectedDiscordUser(
+        currentDiscordUser?.discordId === u.discordId
+          ? null
+          : (allDiscordUsers.find((user) => user.discordId === u.discordId) ??
+              null),
+      );
     },
-    [selectedDiscordUser, selectedCharacter, byDiscord],
+    [currentDiscordUser, allDiscordUsers],
   );
+
+  const clearCharacter = useCallback(() => setSelectedCharacter(null), []);
+  const clearDiscordUser = useCallback(() => setSelectedDiscordUser(null), []);
 
   const reset = useCallback(() => {
     setSelectedCharacter(null);
@@ -215,9 +227,9 @@ export function useSmartPicker({
   }, []);
 
   return {
-    selectedCharacter,
-    selectedDiscordUser,
-    canLink: Boolean(selectedCharacter && selectedDiscordUser),
+    selectedCharacter: currentCharacter,
+    selectedDiscordUser: currentDiscordUser,
+    canLink: Boolean(currentCharacter && currentDiscordUser),
     characterSearch,
     discordSearch,
     setCharacterSearch,
@@ -226,6 +238,8 @@ export function useSmartPicker({
     discordRows,
     selectCharacter,
     selectDiscordUser,
+    clearCharacter,
+    clearDiscordUser,
     reset,
   };
 }
