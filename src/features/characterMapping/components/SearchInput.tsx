@@ -1,37 +1,58 @@
-import { Search } from "lucide-react";
-
-interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}
-
+import { useId, useRef, type RefObject } from "react";
+import { DashboardIcon } from "@/features/knights/DashboardIcons";
 export function SearchInput({
   value,
   onChange,
   placeholder,
-}: SearchInputProps) {
+  label,
+  disabled = false,
+  inputRef,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  label?: string;
+  disabled?: boolean;
+  inputRef?: RefObject<HTMLInputElement | null>;
+}) {
+  const id = useId();
+  const fallbackInput = useRef<HTMLInputElement>(null);
+  const input = inputRef ?? fallbackInput;
+  const clear = () => {
+    onChange("");
+    input.current?.focus();
+  };
   return (
-    <div className="relative mb-3 flex-shrink-0">
-      <Search
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--primary)]/70 pointer-events-none"
-        aria-hidden="true"
-      />
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="
-          w-full pl-10 pr-4 py-3 rounded-xl
-          bg-[color:color-mix(in_srgb,var(--bg)_80%,var(--card))]
-          border-2 border-[color:color-mix(in_srgb,var(--primary)_14%,var(--card))]
-          text-sm font-soft text-[var(--text)] placeholder:text-[var(--text-subtle)]
-          transition-all duration-200
-          focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 focus:bg-[var(--card)]
-        "
-        style={{ fontSize: "16px" }}
-      />
+    <div className="dash-mapping-search">
+      <label htmlFor={id}>{label ?? placeholder}</label>
+      <div className="dash-mapping-search-box">
+        <DashboardIcon name="search" size={18} />
+        <input
+          ref={input}
+          id={id}
+          type="search"
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && !event.nativeEvent.isComposing) {
+              event.preventDefault();
+              clear();
+            }
+          }}
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={clear}
+            disabled={disabled}
+            aria-label={`Clear ${label?.toLowerCase() ?? "search"}`}
+          >
+            <DashboardIcon name="close" size={16} />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

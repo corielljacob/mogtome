@@ -1,19 +1,45 @@
-import { type CSSProperties } from "react";
-import { Check, Loader2, Wand2 } from "lucide-react";
-import { PairCard } from "@/features/characterMapping/components/PairCard";
-import { pairKey } from "@/features/characterMapping/hooks/useCharacterMapping";
-import type { MatchPair } from "@/features/characterMapping/types";
-import mailMoogle from "@/assets/moogles/moogle mail.webp";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { DashboardIcon } from "@/features/knights/DashboardIcons";
+import { PairCard } from "./PairCard";
+import { EmptyState } from "./EmptyState";
+import { pairKey } from "../hooks/useCharacterMapping";
+import type { MatchPair } from "../types";
+import "../suggestion-browsing.css";
 
-interface SuggestedPairsProps {
+function SuggestionGroup({
+  id,
+  title,
+  pairs,
+  busy,
+  confirmingPairKey,
+  onConfirm,
+  onSkip,
+}: {
+  id: string;
+  title: string;
   pairs: MatchPair[];
-  exactCount: number;
+  busy: boolean;
   confirmingPairKey: string | null;
-  isConfirmingAll: boolean;
   onConfirm: (pair: MatchPair) => void;
   onSkip: (pair: MatchPair) => void;
-  onConfirmAllExact: () => void;
-  onGoManual: () => void;
+}) {
+  return (
+    <section className="dash-mapping-browse-group" aria-labelledby={id}>
+      <h3 id={id}>{title}</h3>
+      <div className="dash-mapping-pairs">
+        {pairs.map((pair) => (
+          <PairCard
+            key={pairKey(pair)}
+            pair={pair}
+            isConfirming={confirmingPairKey === pairKey(pair)}
+            disabled={busy}
+            onConfirm={() => onConfirm(pair)}
+            onSkip={() => onSkip(pair)}
+          />
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function SuggestedPairs({
@@ -21,74 +47,243 @@ export function SuggestedPairs({
   exactCount,
   confirmingPairKey,
   isConfirmingAll,
+  disabled = false,
   onConfirm,
   onSkip,
   onConfirmAllExact,
   onGoManual,
-}: SuggestedPairsProps) {
-  if (pairs.length === 0) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center text-center py-10">
-        <img
-          src={mailMoogle}
-          alt=""
-          aria-hidden="true"
-          className="w-24 sm:w-28 mb-3 object-contain"
-        />
-        <p className="font-display font-bold text-lg text-[var(--text)]">
-          No suggestions to confirm
-        </p>
-        <p className="font-soft text-sm text-[var(--text-muted)] mt-1 max-w-xs">
-          We couldn&apos;t find confident matches, kupo~ You can still pair the
-          rest by hand.
-        </p>
-        <button
-          onClick={onGoManual}
-          className="gel hover-bounce mt-4 inline-flex items-center gap-1.5 px-4 py-2 font-display font-bold text-sm text-white cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--primary)]"
-        >
-          <Wand2 className="w-4 h-4" aria-hidden="true" />
-          Match by hand
-        </button>
-      </div>
-    );
-  }
+}: {
+  pairs: MatchPair[];
+  exactCount: number;
+  confirmingPairKey: string | null;
+  isConfirmingAll: boolean;
+  disabled?: boolean;
+  onConfirm: (pair: MatchPair) => void;
+  onSkip: (pair: MatchPair) => void;
+  onConfirmAllExact: () => void;
+  onGoManual: () => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [skippedName, setSkippedName] = useState("");
+  const searchId = useId();
+  const input = useRef<HTMLInputElement>(null);
+  const results = useRef<HTMLParagraphElement>(null);
+  const pendingSkipFocus = useRef<{
+    key: string;
+    control: HTMLElement;
+  } | null>(null);
+  const busy = disabled || isConfirmingAll || confirmingPairKey !== null;
+  const query = search.trim().toLowerCase();
+  const visiblePairs = pairs.filter(
+    ({ character, discordUser }) =>
+      !query ||
+      character.name.toLowerCase().includes(query) ||
+      discordUser.serverNickName.toLowerCase().includes(query) ||
+      discordUser.discordId.toLowerCase().includes(query),
+  );
+  const groups = [
+    {
+      id: `${searchId}-exact`,
+      title: "Exact name matches",
+      pairs: visiblePairs.filter((pair) => pair.confidence === "exact"),
+    },
+    {
+      id: `${searchId}-other`,
+      title: "Other suggestions",
+      pairs: visiblePairs.filter((pair) => pair.confidence !== "exact"),
+    },
+  ];
 
+  useEffect(() => {
+    const cancelWhenFocusMoves = (event: FocusEvent) => {
+      if (event.target !== pendingSkipFocus.current?.control) {
+        pendingSkipFocus.current = null;
+      }
+    };
+    const cancel = () => {
+      pendingSkipFocus.current = null;
+    };
+    const cancelOnTab = (event: KeyboardEvent) => {
+      if (event.key === "Tab") cancel();
+    };
+    document.addEventListener("focusin", cancelWhenFocusMoves);
+    document.addEventListener("pointerdown", cancel);
+    document.addEventListener("keydown", cancelOnTab);
+    return () => {
+      document.removeEventListener("focusin", cancelWhenFocusMoves);
+      document.removeEventListener("pointerdown", cancel);
+      document.removeEventListener("keydown", cancelOnTab);
+    };
+  }, []);
+
+  useEffect(() => {
+    const request = pendingSkipFocus.current;
+    if (!request || pairs.some((pair) => pairKey(pair) === request.key)) return;
+    pendingSkipFocus.current = null;
+    if (
+      document.activeElement === request.control ||
+      document.activeElement === document.body
+    ) {
+      results.current?.focus({ preventScroll: true });
+    }
+  }, [pairs]);
+
+  const clearSearch = () => {
+    setSearch("");
+    setSkippedName("");
+    input.current?.focus();
+  };
+  const handleSkip = useCallback(
+    (pair: MatchPair) => {
+      if (busy) return;
+      const control = document.activeElement;
+      pendingSkipFocus.current =
+        control instanceof HTMLElement &&
+        control.getAttribute("aria-label") ===
+          `Skip the match for ${pair.character.name}`
+          ? { key: pairKey(pair), control }
+          : null;
+      setSkippedName(pair.character.name);
+      onSkip(pair);
+    },
+    [busy, onSkip],
+  );
   return (
-    <div className="mx-auto w-full max-w-2xl flex flex-1 flex-col min-h-0">
-      <div className="flex items-center justify-between gap-3 mb-3 shrink-0">
-        <p className="font-soft text-sm text-[var(--text-muted)]">
-          {pairs.length} suggested {pairs.length === 1 ? "pairing" : "pairings"}{" "}
-          &mdash; one tap to link, kupo~
-        </p>
-        {exactCount > 0 && (
-          <button
-            onClick={onConfirmAllExact}
-            disabled={isConfirmingAll}
-            className="gel hover-bounce shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 font-display font-bold text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--gel-color)]"
-            style={{ "--gel-color": "#22c55e" } as CSSProperties}
-          >
-            {isConfirmingAll ? (
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            ) : (
-              <Check className="w-4 h-4" aria-hidden="true" />
+    <div className="dash-mapping-suggestions">
+      {pairs.length > 0 && (
+        <div className="dash-mapping-suggestions-intro">
+          <p>
+            Exact matches contain the character's first and last name. Other
+            suggestions use similar names. Check each pair before linking.
+          </p>
+          {exactCount > 0 && !query && (
+            <button
+              type="button"
+              className="dash-mapping-button dash-mapping-bulk"
+              onClick={onConfirmAllExact}
+              disabled={busy}
+            >
+              <DashboardIcon
+                name={isConfirmingAll ? "refresh" : "check"}
+                size={17}
+              />
+              {isConfirmingAll
+                ? "Linking exact matches…"
+                : `Link ${exactCount} exact ${exactCount === 1 ? "match" : "matches"}`}
+            </button>
+          )}
+        </div>
+      )}
+      {(pairs.length > 0 || search) && (
+        <div className="dash-mapping-browse-search">
+          <label htmlFor={searchId}>Find a suggested pair</label>
+          <div className="dash-mapping-browse-input">
+            <DashboardIcon name="search" size={18} />
+            <input
+              ref={input}
+              id={searchId}
+              type="search"
+              value={search}
+              disabled={busy}
+              placeholder="Character, Discord name, or ID…"
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setSkippedName("");
+              }}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Escape" &&
+                  search &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  clearSearch();
+                }
+              }}
+            />
+            {search && (
+              <button
+                type="button"
+                disabled={busy}
+                aria-label="Clear suggested pair search"
+                onClick={clearSearch}
+              >
+                <DashboardIcon name="close" size={17} />
+              </button>
             )}
-            Confirm {exactCount} exact {exactCount === 1 ? "match" : "matches"}
-          </button>
-        )}
-      </div>
-
-      <div className="space-y-3 overflow-y-auto pr-1 -mr-1 pb-2 pt-1">
-        {pairs.map((pair) => (
-          <PairCard
-            key={pairKey(pair)}
-            pair={pair}
-            isConfirming={confirmingPairKey === pairKey(pair)}
-            disabled={isConfirmingAll}
-            onConfirm={() => onConfirm(pair)}
-            onSkip={() => onSkip(pair)}
-          />
-        ))}
-      </div>
+          </div>
+        </div>
+      )}
+      <p
+        ref={results}
+        className="dash-mapping-browse-status"
+        role="status"
+        aria-label="Suggestion results"
+        aria-atomic="true"
+        tabIndex={-1}
+      >
+        {skippedName && <span>Skipped the match for {skippedName}. </span>}
+        {visiblePairs.length} of {pairs.length} shown
+      </p>
+      {query && exactCount > 0 && (
+        <p className="dash-mapping-browse-hint">
+          Clear the search to review and link all exact matches together.
+        </p>
+      )}
+      {!pairs.length ? (
+        <EmptyState
+          icon={<DashboardIcon name="search" size={28} />}
+          title="No suggestions to review"
+          subtitle="Choose a character and Discord account by hand, or refresh to bring back skipped suggestions."
+          action={
+            <button
+              type="button"
+              className="dash-mapping-button"
+              onClick={onGoManual}
+              disabled={busy}
+            >
+              <DashboardIcon name="people" size={17} />
+              Choose by hand
+            </button>
+          }
+        />
+      ) : !visiblePairs.length ? (
+        <EmptyState
+          icon={<DashboardIcon name="search" size={28} />}
+          title="No matching suggestions"
+          subtitle="Try another character name, Discord name, or Discord ID."
+          action={
+            <button
+              type="button"
+              className="dash-mapping-button"
+              onClick={clearSearch}
+              disabled={busy}
+            >
+              Clear search
+            </button>
+          }
+        />
+      ) : (
+        groups.map((group) =>
+          group.pairs.length > 0 ? (
+            <SuggestionGroup
+              key={group.id}
+              {...group}
+              busy={busy}
+              confirmingPairKey={confirmingPairKey}
+              onConfirm={onConfirm}
+              onSkip={handleSkip}
+            />
+          ) : null,
+        )
+      )}
+      {pairs.length > 0 && (
+        <p className="dash-mapping-footnote">
+          Skipped pairs return when you refresh. No accounts are changed by
+          skipping.
+        </p>
+      )}
     </div>
   );
 }
