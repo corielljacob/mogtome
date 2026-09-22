@@ -110,9 +110,7 @@ export function ProfileView({
 
       <p className="flex items-center justify-center gap-1.5 text-center font-soft text-xs text-[var(--text-subtle)] mt-9">
         <KawaiiHeart className="w-3.5 h-3.5 text-[var(--primary)]" />
-        {viewer.isOwnProfile
-          ? "This is your corner of Kupo Life, kupo~"
-          : "A fellow member of Kupo Life, kupo~"}
+        {viewer.isOwnProfile ? "Your Kupo Life profile" : "Kupo Life member"}
       </p>
     </div>
   );

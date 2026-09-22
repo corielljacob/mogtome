@@ -81,7 +81,7 @@ export function ProfileBio({
         </p>
       ) : viewer.isOwnProfile ? (
         <p className="text-sm text-[var(--text-subtle)]">
-          You haven't written a bio yet - add a few words about yourself, kupo~
+          Add a bio to tell other members a little about yourself.
         </p>
       ) : (
         <p className="text-sm text-[var(--text-subtle)]">No biography yet.</p>

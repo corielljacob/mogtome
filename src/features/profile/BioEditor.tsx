@@ -75,7 +75,7 @@ export const BioEditor = memo(function BioEditor({
     mutationFn: (bio: string) => biographyApi.setBiography(bio),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["staff"] });
-      onMutationSuccess("Biography updated!");
+      onMutationSuccess("Biography saved.");
     },
   });
 
@@ -83,7 +83,7 @@ export const BioEditor = memo(function BioEditor({
     mutationFn: (bio: string) => biographyApi.submitBiography(bio),
     onSuccess: () => {
       onSubmissionUpdate();
-      onMutationSuccess("Submitted for review!");
+      onMutationSuccess("Submitted for review.");
     },
   });
 
@@ -92,7 +92,7 @@ export const BioEditor = memo(function BioEditor({
       biographyApi.editSubmission(submission!.submissionId, bio),
     onSuccess: () => {
       onSubmissionUpdate();
-      onMutationSuccess("Submission updated!");
+      onMutationSuccess("Submission updated.");
     },
   });
 
@@ -132,7 +132,7 @@ export const BioEditor = memo(function BioEditor({
             aria-hidden="true"
           />
           <p className="text-xs font-soft text-amber-600 dark:text-amber-400">
-            Awaiting a Knight's review - you can keep editing until then.
+            Waiting for a Knight to review your bio. You can still edit it.
           </p>
         </div>
       )}
@@ -143,7 +143,8 @@ export const BioEditor = memo(function BioEditor({
             aria-hidden="true"
           />
           <p className="text-xs font-soft text-red-600 dark:text-red-400">
-            Your last submission wasn't approved. Tweak it and resubmit, kupo~
+            Your last submission wasn't approved. You can edit it and submit it
+            again.
           </p>
         </div>
       )}
@@ -153,11 +154,15 @@ export const BioEditor = memo(function BioEditor({
           ref={textareaRef}
           value={biography}
           onChange={(e) => setBiography(e.target.value)}
-          placeholder="Tell us about yourself, kupo~ What brings you to Kupo Life? What do you love doing in Eorzea?"
+          placeholder="Tell us a little about yourself or what you like doing in FFXIV."
           rows={isMobile ? 6 : compact ? 4 : 6}
           maxLength={MAX_BIO_LENGTH + 50}
           disabled={isSubmitting}
-          error={isOverLimit ? "A touch long - trim it to 300." : undefined}
+          error={
+            isOverLimit
+              ? "Keep your bio to 300 characters or fewer."
+              : undefined
+          }
           style={{ fontSize: "16px" }}
         />
 
@@ -203,7 +208,9 @@ export const BioEditor = memo(function BioEditor({
             aria-hidden="true"
           />
           <p className="text-xs text-red-600 dark:text-red-400">
-            {error instanceof Error ? error.message : "Something went wrong"}
+            {error instanceof Error
+              ? error.message
+              : "We couldn't save your bio. Try again."}
           </p>
         </div>
       )}
