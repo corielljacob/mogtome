@@ -19,7 +19,7 @@ export function TriggerCard({
       type="button"
       className="dash-mapping-trigger"
       onClick={onOpen}
-      aria-label="Open Character Mapping"
+      aria-label="Open character linking"
     >
       <DashboardIcon name="link" size={25} />
       <span>

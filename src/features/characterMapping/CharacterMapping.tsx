@@ -79,6 +79,9 @@ function MappingWorkspace({
     getRankedCharacters,
   } = mapping;
   const busy = isMapping || isConfirmingAll || confirmingPairKey !== null;
+  const handleClose = useCallback(() => {
+    if (!busy) setIsOpen(false);
+  }, [busy]);
   const suggestedPairs = useMemo(
     () => [...visibleExactMatches, ...visibleSuggestedMatches],
     [visibleExactMatches, visibleSuggestedMatches],
@@ -275,138 +278,145 @@ function MappingWorkspace({
         <EmptyState
           icon={<DashboardIcon name="check" size={28} />}
           title="All accounts linked"
-          subtitle="There are no unlinked characters or Discord accounts in these lists."
-        />
-      ) : tab === "suggested" ? (
-        <SuggestedPairs
-          pairs={suggestedPairs}
-          exactCount={visibleExactMatches.length}
-          confirmingPairKey={confirmingPairKey}
-          isConfirmingAll={isConfirmingAll}
-          disabled={busy}
-          onConfirm={(pair) => void handleConfirm(pair)}
-          onSkip={(pair) => {
-            setSuccess("");
-            dismissPair(pair);
-          }}
-          onConfirmAllExact={() => {
-            setSuccess("");
-            void confirmAllExact();
-          }}
-          onGoManual={() => chooseTab("manual")}
+          subtitle="No characters or Discord accounts are waiting for a link."
         />
       ) : (
         <>
-          <p className="dash-mapping-help">
-            Choose one FFXIV character and one Discord account. Similar names
-            move to the top of the other list; you choose both sides.
-          </p>
-          <LinkBar
-            containerRef={selectionRef}
-            characterName={selectedCharacter?.name}
-            discordName={selectedDiscordUser?.serverNickName}
-            discordId={selectedDiscordUser?.discordId}
-            canLink={canLink}
-            isMapping={busy}
-            onClear={() => {
-              resetPicker();
-              setSuccess("");
-              characterInput.current?.focus();
-            }}
-            onChangeCharacter={changeCharacter}
-            onChangeDiscord={changeDiscord}
-            onLink={() => void handleLink()}
-          />
-          <div className="dash-mapping-columns">
-            <MappingColumn
-              icon={<MappingPlatformIcon platform="ffxiv" size={27} />}
-              title="FFXIV characters"
-              platform="ffxiv"
-              count={characterRows.length}
-              totalCount={allCharacters.length}
-              inputRef={characterInput}
-              searchValue={characterSearch}
-              onSearchChange={setCharacterSearch}
-              searchPlaceholder="Name or rank…"
-              searchLabel="Search characters"
+          <div hidden={tab !== "suggested"}>
+            <SuggestedPairs
+              pairs={suggestedPairs}
+              exactCount={visibleExactMatches.length}
+              confirmingPairKey={confirmingPairKey}
+              isConfirmingAll={isConfirmingAll}
               disabled={busy}
-              isEmpty={characterRows.length === 0}
-              emptyMessage={
-                characterSearch.trim()
-                  ? "No characters match this search."
-                  : "No unlinked characters."
-              }
-            >
-              {characterRows.map(({ character, matchInfo }) => (
-                <CharacterItem
-                  key={character.characterId}
-                  character={character}
-                  isSelected={
-                    selectedCharacter?.characterId === character.characterId
-                  }
-                  matchInfo={matchInfo}
-                  onClick={() => {
-                    setSuccess("");
-                    selectCharacter(character);
-                  }}
-                  disabled={busy}
-                />
-              ))}
-            </MappingColumn>
-            <MappingColumn
-              icon={<MappingPlatformIcon platform="discord" size={27} />}
-              title="Discord accounts"
-              platform="discord"
-              count={discordRows.length}
-              totalCount={allDiscordUsers.length}
-              inputRef={discordInput}
-              searchValue={discordSearch}
-              onSearchChange={setDiscordSearch}
-              searchPlaceholder="Name or Discord ID…"
-              searchLabel="Search Discord accounts"
-              disabled={busy}
-              isEmpty={discordRows.length === 0}
-              emptyMessage={
-                discordSearch.trim()
-                  ? "No accounts match this search."
-                  : "No unlinked Discord accounts."
-              }
-            >
-              {discordRows.map(({ user, matchInfo }) => (
-                <DiscordUserItem
-                  key={user.discordId}
-                  user={user}
-                  isSelected={selectedDiscordUser?.discordId === user.discordId}
-                  matchInfo={matchInfo}
-                  onClick={() => {
-                    setSuccess("");
-                    selectDiscordUser(user);
-                  }}
-                  disabled={busy}
-                />
-              ))}
-            </MappingColumn>
+              onConfirm={(pair) => void handleConfirm(pair)}
+              onSkip={(pair) => {
+                setSuccess("");
+                dismissPair(pair);
+              }}
+              onConfirmAllExact={() => {
+                setSuccess("");
+                void confirmAllExact();
+              }}
+              onGoManual={() => chooseTab("manual")}
+            />
           </div>
-          {canLink && (
-            <div className="dash-mapping-review-return">
-              <p>Both accounts are selected.</p>
-              <button
-                type="button"
-                className="dash-mapping-button"
+          <div hidden={tab !== "manual"}>
+            <p className="dash-mapping-help">
+              Choose a character and their Discord account. Once you select one,
+              similar names move to the top of the other list.
+            </p>
+            <LinkBar
+              containerRef={selectionRef}
+              characterName={selectedCharacter?.name}
+              discordName={selectedDiscordUser?.serverNickName}
+              discordId={selectedDiscordUser?.discordId}
+              canLink={canLink}
+              isMapping={busy}
+              onClear={() => {
+                resetPicker();
+                setSuccess("");
+                characterInput.current?.focus();
+              }}
+              onChangeCharacter={changeCharacter}
+              onChangeDiscord={changeDiscord}
+              onLink={() => void handleLink()}
+            />
+            <div className="dash-mapping-columns">
+              <MappingColumn
+                icon={<MappingPlatformIcon platform="ffxiv" size={27} />}
+                title="FFXIV characters"
+                platform="ffxiv"
+                count={characterRows.length}
+                totalCount={allCharacters.length}
+                inputRef={characterInput}
+                searchValue={characterSearch}
+                onSearchChange={setCharacterSearch}
+                searchPlaceholder="Name or rank…"
+                searchLabel="Search characters"
+                rankingKey={selectedDiscordUser?.discordId}
                 disabled={busy}
-                onClick={() => {
-                  selectionRef.current?.focus();
-                  selectionRef.current?.scrollIntoView({
-                    block: "center",
-                    behavior: reducedMotion ? "auto" : "smooth",
-                  });
-                }}
+                isEmpty={characterRows.length === 0}
+                emptyMessage={
+                  characterSearch.trim()
+                    ? "No characters match this search."
+                    : "No unlinked characters."
+                }
               >
-                <DashboardIcon name="check" size={18} />
-                Review selected pair
-              </button>
+                {characterRows.map(({ character, matchInfo }) => (
+                  <CharacterItem
+                    key={character.characterId}
+                    character={character}
+                    isSelected={
+                      selectedCharacter?.characterId === character.characterId
+                    }
+                    matchInfo={matchInfo}
+                    onClick={() => {
+                      setSuccess("");
+                      selectCharacter(character);
+                    }}
+                    disabled={busy}
+                  />
+                ))}
+              </MappingColumn>
+              <MappingColumn
+                icon={<MappingPlatformIcon platform="discord" size={27} />}
+                title="Discord accounts"
+                platform="discord"
+                count={discordRows.length}
+                totalCount={allDiscordUsers.length}
+                inputRef={discordInput}
+                searchValue={discordSearch}
+                onSearchChange={setDiscordSearch}
+                searchPlaceholder="Name or Discord ID…"
+                searchLabel="Search Discord accounts"
+                rankingKey={selectedCharacter?.characterId}
+                disabled={busy}
+                isEmpty={discordRows.length === 0}
+                emptyMessage={
+                  discordSearch.trim()
+                    ? "No accounts match this search."
+                    : "No unlinked Discord accounts."
+                }
+              >
+                {discordRows.map(({ user, matchInfo }) => (
+                  <DiscordUserItem
+                    key={user.discordId}
+                    user={user}
+                    isSelected={
+                      selectedDiscordUser?.discordId === user.discordId
+                    }
+                    matchInfo={matchInfo}
+                    onClick={() => {
+                      setSuccess("");
+                      selectDiscordUser(user);
+                    }}
+                    disabled={busy}
+                  />
+                ))}
+              </MappingColumn>
             </div>
-          )}
+            {canLink && (
+              <div className="dash-mapping-review-return">
+                <p>Both accounts are selected.</p>
+                <button
+                  type="button"
+                  className="dash-mapping-button"
+                  disabled={busy}
+                  onClick={() => {
+                    selectionRef.current?.focus({ preventScroll: true });
+                    selectionRef.current?.scrollIntoView({
+                      block: "center",
+                      behavior: reducedMotion ? "auto" : "smooth",
+                    });
+                  }}
+                >
+                  <DashboardIcon name="check" size={18} />
+                  Review selected pair
+                </button>
+              </div>
+            )}
+          </div>
         </>
       )}
     </section>
@@ -424,9 +434,7 @@ function MappingWorkspace({
       />
       <Modal
         open={isOpen}
-        onClose={() => {
-          if (!busy) setIsOpen(false);
-        }}
+        onClose={handleClose}
         size="xl"
         padded={false}
         icon={<DashboardIcon name="link" size={21} />}

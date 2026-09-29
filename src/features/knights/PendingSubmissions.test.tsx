@@ -200,6 +200,36 @@ describe("Biography review workspace", () => {
     expect(screen.getAllByRole("article")).toHaveLength(2);
   });
 
+  it("clears search with Escape without changing the review order or interrupting text composition", async () => {
+    const user = userEvent.setup();
+    renderReviews();
+    const search = await screen.findByRole("searchbox", {
+      name: "Find a biography",
+    });
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Review order" }),
+      "newest",
+    );
+    await user.type(search, "Ada");
+    expect(search).toHaveAccessibleDescription("1 of 2 pending biographies");
+
+    fireEvent.keyDown(search, { key: "Escape", isComposing: true });
+    expect(search).toHaveValue("Ada");
+    await user.keyboard("{Escape}");
+
+    expect(search).toHaveValue("");
+    expect(search).toHaveFocus();
+    expect(
+      screen.getByRole("status", { name: "Biography results" }),
+    ).toHaveTextContent("2 biographies waiting for review");
+    expect(screen.getByRole("combobox", { name: "Review order" })).toHaveValue(
+      "newest",
+    );
+    expect(screen.getAllByRole("article")[0]).toHaveAccessibleName(
+      "Bea Branch",
+    );
+  });
+
   it("approves by submissionId once, blocks conflicting decisions while pending, updates caches, and keeps success feedback", async () => {
     const user = userEvent.setup();
     let finishApproval!: () => void;
@@ -249,10 +279,10 @@ describe("Biography review workspace", () => {
         screen.queryByRole("article", { name: "Ada Bloom" }),
       ).not.toBeInTheDocument(),
     );
-    expect(screen.getByRole("status")).toHaveTextContent(
+    expect(screen.getByRole("status", { name: "" })).toHaveTextContent(
       "Ada Bloom's biography approved.",
     );
-    expect(screen.getByRole("status")).toHaveFocus();
+    expect(screen.getByRole("status", { name: "" })).toHaveFocus();
     expect(
       client
         .getQueryData<BiographySubmission[]>(["biography-submissions"])
@@ -289,7 +319,7 @@ describe("Biography review workspace", () => {
       "submission-ada",
     );
     expect(biographyApi.approveSubmission).not.toHaveBeenCalled();
-    expect(screen.getByRole("status")).toHaveTextContent(
+    expect(screen.getByRole("status", { name: "" })).toHaveTextContent(
       "Ada Bloom's biography rejected.",
     );
     expect(invalidate).toHaveBeenCalledWith({
@@ -337,7 +367,7 @@ describe("Biography review workspace", () => {
       );
       expect(api).toHaveBeenCalledTimes(2);
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-      expect(screen.getByRole("status")).toHaveTextContent(
+      expect(screen.getByRole("status", { name: "" })).toHaveTextContent(
         `${decision === "approve" ? "approved" : "rejected"}.`,
       );
     },

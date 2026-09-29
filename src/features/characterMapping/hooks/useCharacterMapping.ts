@@ -291,7 +291,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
       if (failed > 0)
         setMappingError(
           new Error(
-            `${failed} ${failed === 1 ? "link couldn't" : "links couldn't"} be saved. Successful links are complete; retry the remaining pairs.`,
+            `${failed} ${failed === 1 ? "link couldn't" : "links couldn't"} be saved. Try the remaining pairs again.`,
           ),
         );
       operationInProgress.current = false;

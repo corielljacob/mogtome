@@ -1,9 +1,10 @@
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { biographyApi } from "@/shared/api/biography";
 import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
 import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
@@ -81,6 +82,25 @@ export function KnightDashboard() {
   const [workspace, setWorkspace] = useState<Workspace>("biographies");
   const [mappingTab, setMappingTab] = useState<MappingTab>("suggested");
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const workspaceRef = useRef<HTMLElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const pendingTabScroll = useRef(false);
+  useStickyToolbar(workspaceRef, toolbarRef);
+  useLayoutEffect(() => {
+    if (!pendingTabScroll.current) return;
+    pendingTabScroll.current = false;
+    const panel = document.getElementById(`dashboard-panel-${workspace}`);
+    if (!panel) return;
+    const toolbar = toolbarRef.current;
+    const clearance =
+      toolbar?.dataset.stickyDisabled === "true"
+        ? 16
+        : (toolbar?.getBoundingClientRect().bottom ?? 0) + 16;
+    const top = panel.getBoundingClientRect().top;
+    if (top < clearance || top > window.innerHeight) {
+      panel.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [workspace]);
   const {
     data: submissions,
     isLoading: loadingBios,
@@ -108,6 +128,7 @@ export function KnightDashboard() {
   const firstName = user?.memberName?.split(" ")[0] || "friend";
 
   const openWorkspace = (next: Workspace, nextMappingTab?: MappingTab) => {
+    pendingTabScroll.current = false;
     setWorkspace(next);
     if (nextMappingTab) setMappingTab(nextMappingTab);
     requestAnimationFrame(() => {
@@ -120,6 +141,12 @@ export function KnightDashboard() {
     });
   };
 
+  const changeWorkspace = (next: Workspace) => {
+    if (next === workspace) return;
+    pendingTabScroll.current = true;
+    setWorkspace(next);
+  };
+
   const onTabKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -127,8 +154,8 @@ export function KnightDashboard() {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
     event.preventDefault();
     const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - index;
-    setWorkspace(next === 0 ? "biographies" : "links");
-    tabs.current[next]?.focus();
+    changeWorkspace(next === 0 ? "biographies" : "links");
+    tabs.current[next]?.focus({ preventScroll: true });
   };
 
   return (
@@ -194,7 +221,7 @@ export function KnightDashboard() {
               icon="sparkles"
               label="Suggested links"
               count={mapping.totalMatches}
-              detail="Possible pairs from the unlinked accounts"
+              detail="Characters and Discord accounts with similar names"
               loading={mapping.isLoading}
               error={mapping.isError}
               action="Review suggested links"
@@ -214,10 +241,12 @@ export function KnightDashboard() {
 
         <div className="dashboard-desk-layout">
           <section
+            ref={workspaceRef}
             className="dashboard-workspace"
             aria-label="Member care workspace"
           >
             <div
+              ref={toolbarRef}
               className="dashboard-tabs"
               role="tablist"
               aria-label="Dashboard tools"
@@ -243,7 +272,7 @@ export function KnightDashboard() {
                   aria-controls={`dashboard-panel-${tab.id}`}
                   aria-selected={workspace === tab.id}
                   tabIndex={workspace === tab.id ? 0 : -1}
-                  onClick={() => setWorkspace(tab.id)}
+                  onClick={() => changeWorkspace(tab.id)}
                   onKeyDown={(event) => onTabKeyDown(event, index)}
                 >
                   <DashboardIcon name={tab.icon} size={19} />
@@ -269,7 +298,7 @@ export function KnightDashboard() {
             >
               <header className="dashboard-panel-heading">
                 <p className="dashboard-paper-eyebrow">The review tray</p>
-                <h2>Member stories, ready to share.</h2>
+                <h2>Biographies to review</h2>
               </header>
               <PendingSubmissions />
             </div>
@@ -284,10 +313,7 @@ export function KnightDashboard() {
               <header className="dashboard-panel-heading">
                 <p className="dashboard-paper-eyebrow">Put a name to a face</p>
                 <h2>Link member accounts.</h2>
-                <p>
-                  Match an in-game character with the person behind their
-                  Discord account.
-                </p>
+                <p>Match each member’s character to their Discord account.</p>
               </header>
               <CharacterMapping
                 embedded
@@ -331,7 +357,7 @@ export function KnightDashboard() {
                 </>
               )}
               <span className="dashboard-note-signoff">
-                a little care goes a long way
+                when in doubt, ask the member
               </span>
             </section>
             <nav
@@ -361,7 +387,7 @@ export function KnightDashboard() {
         </div>
         <footer className="dashboard-footer">
           <DashboardIcon name="leaf" size={16} />
-          <span>For the FC, one little task at a time.</span>
+          <span>Thanks for lending a hand, kupo.</span>
         </footer>
       </div>
     </div>

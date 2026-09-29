@@ -168,6 +168,7 @@ export function PendingSubmissions() {
   const inputId = useId();
   const sortId = useId();
   const errorId = useId();
+  const resultsId = useId();
   const searchRef = useRef<HTMLInputElement>(null);
   const feedbackRef = useRef<HTMLParagraphElement>(null);
   const reviewLock = useRef(false);
@@ -292,7 +293,7 @@ export function PendingSubmissions() {
   return (
     <div className="dash-bio-workspace">
       <div className="dash-bio-intro">
-        <p>Read each member's note, then choose whether to publish it.</p>
+        <p>Read each biography before approving or rejecting it.</p>
         <button
           className="dash-bio-button dash-bio-refresh"
           type="button"
@@ -329,7 +330,7 @@ export function PendingSubmissions() {
           <DashboardIcon name="alert" size={20} aria-hidden="true" />
           <p>
             {submissions
-              ? "Couldn't refresh the reviews. The last loaded submissions are still here."
+              ? "Couldn't refresh the reviews. You're still seeing the previous list."
               : "Couldn't load biography submissions."}{" "}
             Try refreshing.
           </p>
@@ -339,7 +340,7 @@ export function PendingSubmissions() {
       {isLoading ? (
         <div className="dash-bio-empty" role="status">
           <DashboardIcon name="book" size={32} aria-hidden="true" />
-          <p>Opening the biography notes…</p>
+          <p>Checking the review tray…</p>
         </div>
       ) : submissions ? (
         <>
@@ -354,7 +355,19 @@ export function PendingSubmissions() {
                     id={inputId}
                     type="search"
                     value={search}
+                    aria-describedby={resultsId}
                     onChange={(event) => setSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Escape" &&
+                        search &&
+                        !event.nativeEvent.isComposing
+                      ) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        clearSearch();
+                      }
+                    }}
                     placeholder="Member name or biography…"
                     autoComplete="off"
                   />
@@ -393,7 +406,13 @@ export function PendingSubmissions() {
             </p>
           )}
 
-          <p className="dash-bio-count" aria-live="polite" aria-atomic="true">
+          <p
+            className="dash-bio-count"
+            id={resultsId}
+            role="status"
+            aria-label="Biography results"
+            aria-atomic="true"
+          >
             {query && pendingSubmissions.length > 0
               ? `${visibleSubmissions.length} of ${pendingSubmissions.length} pending biographies`
               : `${pendingSubmissions.length} ${pendingSubmissions.length === 1 ? "biography" : "biographies"} waiting for review`}
@@ -409,7 +428,7 @@ export function PendingSubmissions() {
             <div className="dash-bio-empty">
               <DashboardIcon name="search" size={30} aria-hidden="true" />
               <h3>No matching biographies</h3>
-              <p>Try another name or a few words from the note.</p>
+              <p>Try another name or a few words from the biography.</p>
               <button
                 className="dash-bio-button"
                 type="button"

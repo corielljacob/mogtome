@@ -1,4 +1,10 @@
-import { useId, type ReactNode, type RefObject } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { SearchInput } from "./SearchInput";
 export function MappingColumn({
   icon,
@@ -11,6 +17,7 @@ export function MappingColumn({
   onSearchChange,
   searchPlaceholder,
   searchLabel,
+  rankingKey,
   disabled,
   isEmpty,
   emptyMessage,
@@ -26,12 +33,29 @@ export function MappingColumn({
   onSearchChange: (value: string) => void;
   searchPlaceholder: string;
   searchLabel?: string;
+  rankingKey?: string;
   disabled?: boolean;
   isEmpty: boolean;
   emptyMessage: string;
   children: ReactNode;
 }) {
   const titleId = useId();
+  const resultsId = useId();
+  const listId = useId();
+  const listRef = useRef<HTMLDivElement>(null);
+  const fallbackInput = useRef<HTMLInputElement>(null);
+  const input = inputRef ?? fallbackInput;
+
+  // A new query or opposite-side selection puts the best results at the top.
+  // Reset only this inventory so searching never moves the surrounding page.
+  useLayoutEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [searchValue, rankingKey]);
+
+  const clearSearch = () => {
+    onSearchChange("");
+    input.current?.focus();
+  };
   return (
     <section
       className="dash-mapping-column"
@@ -42,7 +66,13 @@ export function MappingColumn({
         {icon}
         <h3 id={titleId}>{title}</h3>
       </header>
-      <p className="dash-mapping-column-count" aria-live="polite">
+      <p
+        id={resultsId}
+        className="dash-mapping-column-count"
+        role="status"
+        aria-label={`${title} results`}
+        aria-atomic="true"
+      >
         {searchValue.trim()
           ? `${count} of ${totalCount} shown`
           : `${totalCount} available`}
@@ -53,13 +83,25 @@ export function MappingColumn({
         placeholder={searchPlaceholder}
         label={searchLabel}
         disabled={disabled}
-        inputRef={inputRef}
+        inputRef={input}
+        describedBy={resultsId}
+        controls={listId}
       />
-      <div className="dash-mapping-list">
+      <div id={listId} ref={listRef} className="dash-mapping-list">
         {isEmpty ? (
-          <p className="dash-mapping-list-empty" role="status">
-            {emptyMessage}
-          </p>
+          <div className="dash-mapping-list-empty">
+            <p>{emptyMessage}</p>
+            {searchValue.trim() && totalCount > 0 && (
+              <button
+                type="button"
+                className="dash-mapping-text-button"
+                disabled={disabled}
+                onClick={clearSearch}
+              >
+                Clear search
+              </button>
+            )}
+          </div>
         ) : (
           children
         )}

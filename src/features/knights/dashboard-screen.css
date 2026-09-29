@@ -206,6 +206,7 @@
   border-bottom: 1px solid var(--ui-rule);
   background: var(--ui-surface-soft);
   border-radius: 4px 5px 0 0;
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--scene-shadow) 6%, transparent);
 }
 .dashboard-tabs > button {
   display: inline-flex;
@@ -253,7 +254,10 @@
 }
 .dashboard-panel {
   padding: 27px;
-  scroll-margin-top: 24px;
+  scroll-margin-top: calc(
+    var(--view-sticky-top, 12px) + var(--view-toolbar-height, 62px) +
+      var(--view-scroll-gap, 16px)
+  );
 }
 .dashboard-panel[hidden] {
   display: none;

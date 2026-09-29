@@ -7,6 +7,8 @@ export function SearchInput({
   label,
   disabled = false,
   inputRef,
+  describedBy,
+  controls,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -14,6 +16,8 @@ export function SearchInput({
   label?: string;
   disabled?: boolean;
   inputRef?: RefObject<HTMLInputElement | null>;
+  describedBy?: string;
+  controls?: string;
 }) {
   const id = useId();
   const fallbackInput = useRef<HTMLInputElement>(null);
@@ -33,11 +37,19 @@ export function SearchInput({
           type="search"
           value={value}
           disabled={disabled}
+          aria-describedby={describedBy}
+          aria-controls={controls}
+          autoComplete="off"
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
           onKeyDown={(event) => {
-            if (event.key === "Escape" && !event.nativeEvent.isComposing) {
+            if (
+              event.key === "Escape" &&
+              value &&
+              !event.nativeEvent.isComposing
+            ) {
               event.preventDefault();
+              event.stopPropagation();
               clear();
             }
           }}

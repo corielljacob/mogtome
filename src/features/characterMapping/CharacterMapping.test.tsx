@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { act, render, screen, waitFor, within } from "@/shared/test/test-utils";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@/shared/test/test-utils";
 import userEvent from "@testing-library/user-event";
 import { CharacterMapping } from "./CharacterMapping";
 import { useCharacterMapping } from "./hooks/useCharacterMapping";
@@ -70,7 +77,7 @@ describe("Character linking workspace", () => {
     );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Open Character Mapping" }),
+      screen.queryByRole("button", { name: "Open character linking" }),
     ).not.toBeInTheDocument();
   });
 
@@ -78,7 +85,7 @@ describe("Character linking workspace", () => {
     const user = userEvent.setup();
     render(<CharacterMapping />);
     await user.click(
-      screen.getByRole("button", { name: "Open Character Mapping" }),
+      screen.getByRole("button", { name: "Open character linking" }),
     );
     expect(
       screen.getByRole("dialog", { name: "Character linking" }),
@@ -88,6 +95,101 @@ describe("Character linking workspace", () => {
         name: "Link Ada Bloom to Ada Bloom",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("keeps focus while typing in the dialog and clears a search before Escape closes it", async () => {
+    const user = userEvent.setup();
+    render(<CharacterMapping initialTab="manual" />);
+    const trigger = screen.getByRole("button", {
+      name: "Open character linking",
+    });
+    await user.click(trigger);
+    const search = await screen.findByRole("searchbox", {
+      name: "Search characters",
+    });
+
+    await user.type(search, "Ada");
+    expect(search).toHaveValue("Ada");
+    expect(search).toHaveFocus();
+    expect(search).toHaveAccessibleDescription("1 of 2 shown");
+    fireEvent.keyDown(search, { key: "Escape", isComposing: true });
+    expect(search).toHaveValue("Ada");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(search).toHaveValue("");
+    expect(search).toHaveFocus();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("preserves suggestion searches when switching linking methods", async () => {
+    const user = userEvent.setup();
+    render(<CharacterMapping embedded />);
+    const search = await screen.findByRole("searchbox", {
+      name: "Find a suggested pair",
+    });
+    await user.type(search, "Bram");
+    await chooseManual(user);
+    await user.click(
+      within(screen.getByRole("group", { name: "Linking method" })).getByRole(
+        "button",
+        { name: /Suggestions/ },
+      ),
+    );
+
+    expect(
+      screen.getByRole("searchbox", { name: "Find a suggested pair" }),
+    ).toHaveValue("Bram");
+    expect(
+      screen.getByRole("status", { name: "Suggestion results" }),
+    ).toHaveTextContent("1 of 2 shown");
+    expect(
+      screen.queryByRole("button", { name: "Link Ada Bloom to Ada Bloom" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("resets only the affected inventory scroll after filtering or ranking and offers focused empty-search recovery", async () => {
+    const user = userEvent.setup();
+    render(<CharacterMapping embedded initialTab="manual" />);
+    const search = await screen.findByRole("searchbox", {
+      name: "Search characters",
+    });
+    const discordSearch = screen.getByRole("searchbox", {
+      name: "Search Discord accounts",
+    });
+    const characterList = document.getElementById(
+      search.getAttribute("aria-controls")!,
+    )!;
+    const discordList = document.getElementById(
+      discordSearch.getAttribute("aria-controls")!,
+    )!;
+    const scrollPage = vi.mocked(window.scrollTo).mockClear();
+    characterList.scrollTop = 180;
+    discordList.scrollTop = 240;
+
+    await user.type(search, "no such member");
+    expect(characterList.scrollTop).toBe(0);
+    expect(discordList.scrollTop).toBe(240);
+    expect(search).toHaveAccessibleDescription("0 of 2 shown");
+    await user.click(
+      within(
+        screen.getByRole("region", { name: "FFXIV characters" }),
+      ).getByRole("button", { name: "Clear search" }),
+    );
+    expect(search).toHaveFocus();
+    expect(search).toHaveValue("");
+    expect(search).toHaveAccessibleDescription("2 available");
+
+    characterList.scrollTop = 180;
+    await user.click(
+      screen.getByRole("button", { name: "Select Discord account Bram Fern" }),
+    );
+    expect(characterList.scrollTop).toBe(0);
+    expect(discordList.scrollTop).toBe(240);
+    expect(scrollPage).not.toHaveBeenCalled();
   });
 
   it("recovers an account-list error with an explicit retry", async () => {
@@ -209,7 +311,7 @@ describe("Character linking workspace", () => {
       await screen.findByRole("button", { name: "Link 2 exact matches" }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "1 link couldn't be saved. Successful links are complete; retry the remaining pairs.",
+      "1 link couldn't be saved. Try the remaining pairs again.",
     );
     expect(
       screen.queryByRole("button", { name: "Link Bram Fern to Bram Fern" }),

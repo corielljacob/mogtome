@@ -368,6 +368,7 @@
   padding: 4px;
   margin: -4px;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: var(--mapping-rule) transparent;
 }
@@ -408,6 +409,12 @@
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.6;
+}
+.dash-mapping-list-empty p {
+  margin: 0;
+}
+.dash-mapping-list-empty button {
+  margin-top: 10px;
 }
 .dash-mapping-selection {
   margin-top: 22px;
@@ -478,7 +485,9 @@
     gap: 24px;
   }
   .dash-mapping-list {
-    max-height: 285px;
+    max-height: none;
+    overflow-y: visible;
+    scrollbar-gutter: auto;
   }
   .dash-mapping-pair {
     padding: 13px 12px 8px;

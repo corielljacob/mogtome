@@ -312,6 +312,67 @@ describe("Knight dashboard workspace", () => {
     expect(screen.getAllByRole("tabpanel", { hidden: true })).toHaveLength(2);
   });
 
+  it("reveals a newly selected panel behind the sticky tabs and keeps keyboard focus on the tabs", async () => {
+    const user = userEvent.setup();
+    renderDashboard();
+    await screen.findByRole("button", { name: /^Biographies: 0\./ });
+    const biographyTab = screen.getByRole("tab", { name: "Biography reviews" });
+    const linksTab = screen.getByRole("tab", { name: "Character links" });
+    const toolbar = screen.getByRole("tablist", { name: "Dashboard tools" });
+    const biographyPanel = document.getElementById(
+      "dashboard-panel-biographies",
+    )!;
+    const linksPanel = document.getElementById("dashboard-panel-links")!;
+    vi.spyOn(toolbar, "getBoundingClientRect").mockReturnValue({
+      bottom: 74,
+    } as DOMRect);
+    const biographyRect = vi
+      .spyOn(biographyPanel, "getBoundingClientRect")
+      .mockReturnValue({
+        top: -500,
+      } as DOMRect);
+    const linksRect = vi
+      .spyOn(linksPanel, "getBoundingClientRect")
+      .mockReturnValue({
+        top: -500,
+      } as DOMRect);
+    const scroll = vi.mocked(Element.prototype.scrollIntoView);
+
+    await user.click(linksTab);
+    expect(scroll).toHaveBeenCalledExactlyOnceWith({
+      block: "start",
+      behavior: "instant",
+    });
+    expect(scroll.mock.instances[0]).toBe(linksPanel);
+    expect(linksTab).toHaveFocus();
+
+    scroll.mockClear();
+    await user.keyboard("{ArrowLeft}");
+    expect(scroll).toHaveBeenCalledExactlyOnceWith({
+      block: "start",
+      behavior: "instant",
+    });
+    expect(scroll.mock.instances[0]).toBe(biographyPanel);
+    expect(biographyTab).toHaveFocus();
+
+    scroll.mockClear();
+    linksRect.mockReturnValue({ top: 80 } as DOMRect);
+    await user.keyboard("{End}");
+    expect(scroll).toHaveBeenCalledOnce();
+    expect(linksTab).toHaveFocus();
+
+    scroll.mockClear();
+    biographyRect.mockReturnValue({ top: 200 } as DOMRect);
+    await user.keyboard("{Home}");
+    expect(scroll).not.toHaveBeenCalled();
+    expect(biographyTab).toHaveFocus();
+
+    linksRect.mockReturnValue({ top: window.innerHeight + 100 } as DOMRect);
+    await user.click(linksTab);
+    expect(scroll).toHaveBeenCalledOnce();
+    expect(linksTab).toHaveFocus();
+  });
+
   it("opens the chosen mapping mode from summaries and shares its model without performing a link", async () => {
     const user = userEvent.setup();
     mapping.allCharacters = [

@@ -184,6 +184,8 @@ export function SuggestedPairs({
               id={searchId}
               type="search"
               value={search}
+              aria-describedby={`${searchId}-results`}
+              autoComplete="off"
               disabled={busy}
               placeholder="Character, Discord name, or ID…"
               onChange={(event) => {
@@ -217,6 +219,7 @@ export function SuggestedPairs({
       )}
       <p
         ref={results}
+        id={`${searchId}-results`}
         className="dash-mapping-browse-status"
         role="status"
         aria-label="Suggestion results"
