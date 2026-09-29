@@ -1,0 +1,156 @@
+.nook-arr-view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* CSS owns the bounded motion and browser background-tab throttling.
+   Six held frames per sixteenth of an orbit give roughly 8–12 frames/second. */
+.nook-arr-orb {
+  transform: translate(var(--orbit-rest-x), var(--orbit-rest-y));
+  animation:
+    nook-arr-orbit var(--orbit-duration) steps(6, end) infinite,
+    nook-arr-orb-front var(--orbit-duration) step-end infinite;
+  animation-delay: var(--orbit-delay), var(--orbit-delay);
+}
+.nook-arr-orb--back {
+  opacity: 0;
+  animation-name: nook-arr-orbit, nook-arr-orb-back;
+}
+.nook-arr-orb--front {
+  opacity: 1;
+}
+.nook-arr-mothercrystal {
+  animation: nook-arr-crystal-drift 6s steps(24, end) infinite;
+}
+
+/* Explicit points keep every orbit elliptical, with the same front/back phase. */
+@keyframes nook-arr-orbit {
+  0%,
+  100% {
+    transform: translate(var(--orbit-x), 0);
+  }
+  6.25% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.924),
+      calc(var(--orbit-y) * 0.383)
+    );
+  }
+  12.5% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.707),
+      calc(var(--orbit-y) * 0.707)
+    );
+  }
+  18.75% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.383),
+      calc(var(--orbit-y) * 0.924)
+    );
+  }
+  25% {
+    transform: translate(0, var(--orbit-y));
+  }
+  31.25% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.383),
+      calc(var(--orbit-y) * 0.924)
+    );
+  }
+  37.5% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.707),
+      calc(var(--orbit-y) * 0.707)
+    );
+  }
+  43.75% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.924),
+      calc(var(--orbit-y) * 0.383)
+    );
+  }
+  50% {
+    transform: translate(calc(var(--orbit-x) * -1), 0);
+  }
+  56.25% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.924),
+      calc(var(--orbit-y) * -0.383)
+    );
+  }
+  62.5% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.707),
+      calc(var(--orbit-y) * -0.707)
+    );
+  }
+  68.75% {
+    transform: translate(
+      calc(var(--orbit-x) * -0.383),
+      calc(var(--orbit-y) * -0.924)
+    );
+  }
+  75% {
+    transform: translate(0, calc(var(--orbit-y) * -1));
+  }
+  81.25% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.383),
+      calc(var(--orbit-y) * -0.924)
+    );
+  }
+  87.5% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.707),
+      calc(var(--orbit-y) * -0.707)
+    );
+  }
+  93.75% {
+    transform: translate(
+      calc(var(--orbit-x) * 0.924),
+      calc(var(--orbit-y) * -0.383)
+    );
+  }
+}
+@keyframes nook-arr-orb-front {
+  0%,
+  49.999% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes nook-arr-orb-back {
+  0%,
+  49.999% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes nook-arr-crystal-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Each front knot has its own resting point; the paired rear copies disappear. */
+.reduce-motion .nook-arr-orb,
+.reduce-motion .nook-arr-mothercrystal {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-arr-orb,
+  .nook-arr-mothercrystal {
+    animation: none !important;
+  }
+}

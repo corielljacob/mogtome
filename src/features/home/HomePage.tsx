@@ -10,6 +10,10 @@ import { NookHolidayKeepsake } from "./components/NookHolidayKeepsake";
 import { NookFairyLights } from "./components/NookFairyLights";
 import { NookRoomDecor } from "./components/NookRoomDecor";
 import { NookWallHanging } from "./components/NookWallHanging";
+import {
+  NookArrCrystalCharm,
+  NookArrWayfinder,
+} from "./components/NookArrKeepsakes";
 import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
 import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
 import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
@@ -23,6 +27,7 @@ import {
 } from "./components/NookStationeryDetails";
 import "./home-screen.css";
 import "./nook-halloween.css";
+import "./nook-arr.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
@@ -35,6 +40,7 @@ export function Home() {
   const { activeEvent, isEventThemeActive, settings, isDarkMode } = useTheme();
   const event = isEventThemeActive ? activeEvent : null;
   const isHalloween = event?.id === "all-saints-wake";
+  const isArr = !event && settings.colorTheme === "arr";
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
@@ -52,13 +58,14 @@ export function Home() {
       <div className="nook-layout">
         <section className="home-nook" aria-label="Welcome to Kupo Life">
           {isHalloween && <NookHalloweenHearth />}
-          <NookWallHanging />
+          {isArr ? <NookArrWayfinder /> : <NookWallHanging />}
           <div className="nook-window-scene">
             <div className="nook-illustration-frame">
               <NookAppliqueBacking />
               <NookIllustration
                 isDark={isDarkMode}
                 eventId={event?.id ?? null}
+                colorTheme={settings.colorTheme}
               />
               <button
                 className="nook-moogle"
@@ -136,8 +143,14 @@ export function Home() {
               </p>
               <Link to="/chronicle" className="nook-letter">
                 <span className="nook-letter-fold" aria-hidden="true" />
-                {isHalloween ? <NookHalloweenNote /> : <NookPressedFlower />}
-                {!isHalloween && <NookPaperclip />}
+                {isHalloween ? (
+                  <NookHalloweenNote />
+                ) : isArr ? (
+                  <NookArrCrystalCharm />
+                ) : (
+                  <NookPressedFlower />
+                )}
+                {!isHalloween && !isArr && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">

@@ -1,20 +1,41 @@
 import { useLayoutEffect, useRef } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
+import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { NookShiroganeView } from "./NookShiroganeView";
+import { NookArrView } from "./NookArrView";
 import { NookWindowSky } from "./NookWindowSky";
 import { createDayCycle, setDayCycleTarget } from "./nookDayCycle";
 import { NookSkyEmbroidery } from "./NookSkyEmbroidery";
 import "./nook-window-cycle.css";
 
-/** Fixed paint surfaces; only their outer opacity/transform participates in time. */
-export function NookWindowView({
-  isDark,
-  eventId,
-}: {
+interface NookWindowViewProps {
   isDark: boolean;
   eventId: SeasonalEventId | null;
-}) {
+  colorTheme?: ColorTheme;
+}
+
+/** ARR looks into the aether, so the room's light switch never changes its sky. */
+export function NookWindowView(props: NookWindowViewProps) {
+  if (!props.eventId && props.colorTheme === "arr") {
+    return (
+      <div
+        className="nook-window-exterior nook-arr-exterior"
+        aria-hidden="true"
+      >
+        <NookArrView />
+      </div>
+    );
+  }
+  return <NookDayCycleWindow {...props} />;
+}
+
+/** Fixed paint surfaces; only their outer opacity/transform participates in time. */
+function NookDayCycleWindow({
+  isDark,
+  eventId,
+  colorTheme = "pom-pom",
+}: NookWindowViewProps) {
   const root = useRef<HTMLDivElement>(null);
   const initialDark = useRef(isDark);
   const animations = useRef<Animation[]>([]);
@@ -25,6 +46,7 @@ export function NookWindowView({
   } | null>(null);
   const reducedMotion = useReducedMotion();
   const isHalloween = eventId === "all-saints-wake";
+  const scene = eventId ?? colorTheme;
 
   useLayoutEffect(() => {
     if (!root.current) return;
@@ -68,7 +90,7 @@ export function NookWindowView({
       <div
         className="nook-cycle-surface nook-cycle-sky nook-cycle-sky--day nook-theme"
         data-mode="light"
-        data-scene={eventId ?? undefined}
+        data-scene={scene}
       >
         <NookSkyEmbroidery />
       </div>
@@ -76,7 +98,7 @@ export function NookWindowView({
         className="nook-cycle-surface nook-cycle-sky nook-cycle-sky--night nook-theme"
         data-cycle="night-sky"
         data-mode="dark"
-        data-scene={eventId ?? undefined}
+        data-scene={scene}
       >
         <NookSkyEmbroidery />
       </div>
@@ -96,7 +118,7 @@ export function NookWindowView({
           <svg
             className="nook-theme"
             data-mode={night ? "dark" : "light"}
-            data-scene={eventId ?? undefined}
+            data-scene={scene}
             viewBox="70 58 262 373"
             fill="none"
             focusable="false"

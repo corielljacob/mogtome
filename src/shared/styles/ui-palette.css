@@ -48,6 +48,26 @@
   --ui-wall-focus: var(--primary);
 }
 
+/* ARR's blue ink and brass carry through the navigation and every reading surface.
+   Equal specificity to dark's defaults; accessible palettes below still win. */
+.nook-theme[data-scene="arr"][data-mode] {
+  --ui-ink: #293e4c;
+  --ui-muted: #4e626d;
+  --ui-heading: #254c64;
+  --ui-action: #285b78;
+  --ui-secondary: #2c5967;
+  --ui-accent: #775829;
+  --ui-wall-ink: #29495e;
+  --ui-wall-muted: #4d6677;
+  --ui-wall-heading: #285b78;
+}
+.nook-theme[data-scene="arr"][data-mode="dark"] {
+  --ui-wall-ink: #e2edf0;
+  --ui-wall-muted: #b8cdd6;
+  --ui-wall-heading: #bce4f0;
+  --ui-wall-focus: var(--primary);
+}
+
 /* Accessible palettes own the controls as well as the decorative theme. */
 :root[class*="colorblind-"] .nook-theme {
   --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);

@@ -1,0 +1,21 @@
+/* ARR details live on the existing stationery and scale with the room. */
+.home-screen[data-scene="arr"] .nook-arr-crystal-charm {
+  position: absolute;
+  bottom: calc(100% - 12 * var(--layout-unit));
+  right: 2%;
+  width: min(26%, calc(64 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(1px 3px 1.5px #193d4c30);
+  transform: rotate(8deg);
+}
+.home-screen[data-scene="arr"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    125deg,
+    #5c91aa99 0 calc(7 * var(--layout-unit)),
+    #ecdfbdcc calc(7 * var(--layout-unit)) calc(9 * var(--layout-unit)),
+    #8bb8c8aa calc(9 * var(--layout-unit)) calc(16 * var(--layout-unit))
+  );
+}

@@ -1,11 +1,14 @@
 import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
+import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 
 /** A small, repeating botanical print, using the room's own leaf and rose inks. */
 export function NookWallpaper({
   eventId,
+  colorTheme,
 }: {
   eventId?: SeasonalEventId | null;
+  colorTheme?: ColorTheme;
 }) {
   const id = useId().replace(/:/g, "");
 
@@ -26,8 +29,32 @@ export function NookWallpaper({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          {!eventId ||
-          !["all-saints-wake", "starlight", "valentiones"].includes(eventId) ? (
+          {!eventId && colorTheme === "arr" ? (
+            <>
+              <path
+                d="M0-14 6-5 4 7 0 14-4 7-6-5Z"
+                fill="currentColor"
+                fillOpacity=".12"
+                strokeWidth=".75"
+              />
+              <path d="M0-14V14M-6-5 0-1 6-5M-4 7 0-1 4 7" strokeWidth=".55" />
+              <ellipse
+                cy="2"
+                rx="11"
+                ry="4"
+                transform="rotate(-28)"
+                strokeWidth=".7"
+              />
+              <path
+                d="M15-14v5m-2.5-2.5h5"
+                stroke="var(--scene-gold)"
+                strokeWidth=".75"
+              />
+            </>
+          ) : !eventId ||
+            !["all-saints-wake", "starlight", "valentiones"].includes(
+              eventId,
+            ) ? (
             <>
               <path d="M0 12C2 6-2 0 1-8" strokeWidth=".8" />
               <path

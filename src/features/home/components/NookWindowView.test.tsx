@@ -4,6 +4,9 @@ import { NookWindowView } from "./NookWindowView";
 
 vi.mock("./NookShiroganeView", () => ({ NookShiroganeView: () => null }));
 vi.mock("./NookSkyEmbroidery", () => ({ NookSkyEmbroidery: () => null }));
+vi.mock("./NookArrView", () => ({
+  NookArrView: () => <svg data-testid="mothercrystal" />,
+}));
 
 class Playback {
   currentTime = 0;
@@ -48,6 +51,36 @@ afterEach(() => {
   } else {
     Reflect.deleteProperty(Element.prototype, "animate");
   }
+});
+
+it("keeps ARR outside the day cycle and restores the seasonal sky when a holiday takes over", () => {
+  const { container, getByTestId, queryByTestId, rerender } = render(
+    <NookWindowView isDark={false} eventId={null} colorTheme="arr" />,
+  );
+  const crystal = getByTestId("mothercrystal");
+  expect(tracks).toHaveLength(0);
+  expect(container.querySelector("[data-cycle]")).toBeNull();
+
+  rerender(<NookWindowView isDark eventId={null} colorTheme="arr" />);
+  expect(getByTestId("mothercrystal")).toBe(crystal);
+  expect(tracks).toHaveLength(0);
+
+  rerender(
+    <NookWindowView isDark eventId="all-saints-wake" colorTheme="arr" />,
+  );
+  expect(queryByTestId("mothercrystal")).toBeNull();
+  expect(tracks.length).toBeGreaterThan(0);
+  expect(
+    container.querySelector('[data-scene="all-saints-wake"]'),
+  ).not.toBeNull();
+
+  const holidayTracks = tracks.splice(0);
+  rerender(<NookWindowView isDark eventId={null} colorTheme="arr" />);
+  expect(getByTestId("mothercrystal")).toBeInTheDocument();
+  holidayTracks.forEach(({ playback }) => {
+    expect(playback.cancel).toHaveBeenCalledOnce();
+  });
+  expect(tracks).toHaveLength(0);
 });
 
 it("binds replacement holiday sky models without restarting a reversed or settled cycle", () => {

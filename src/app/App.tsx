@@ -176,7 +176,10 @@ function AppContent() {
         data-scene={event?.id ?? settings.colorTheme}
         data-holiday={event ? "true" : undefined}
       >
-        <NookWallpaper eventId={event?.id ?? null} />
+        <NookWallpaper
+          eventId={event?.id ?? null}
+          colorTheme={settings.colorTheme}
+        />
         <Navbar />
 
         <main

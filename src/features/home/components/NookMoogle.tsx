@@ -13,27 +13,24 @@ interface NookMoogleProps {
   eventId?: SeasonalEventId | null;
 }
 
-// Ivory cotton picks up a little of the room's lamplight; rose and lavender
-// details stay soft in every seasonal palette.
+// Character-owned cotton and floss colors, resolved from the original light
+// palette. Room themes and color mode should never dye the moogle's materials.
 const materials = {
-  ink: "color-mix(in srgb, var(--scene-ink, #604b3d) 65%, var(--scene-wood-light, #cfb189))",
-  furLight:
-    "color-mix(in srgb, var(--moogle-fur-light, #fffdf5) 88%, var(--scene-paper, #f8ead5))",
-  fur: "color-mix(in srgb, var(--moogle-fur, #f7f3e8) 82%, var(--scene-paper, #f8ead5))",
-  furShade:
-    "color-mix(in srgb, var(--moogle-fur-shadow, #ddd6ca) 82%, var(--scene-pot, #c3a184))",
-  wingLight:
-    "color-mix(in srgb, var(--moogle-wing-light, #746477) 82%, var(--scene-paper, #f8ead5))",
-  wing: "color-mix(in srgb, var(--moogle-wing, #514656) 75%, var(--scene-rose, #bc8580))",
-  pomLight: "color-mix(in srgb, #f7c8ce 72%, var(--scene-paper, #f8ead5))",
-  pom: "color-mix(in srgb, #db8e9f 72%, var(--scene-rose, #bc8580))",
-  pomShade: "color-mix(in srgb, #b86c87 78%, var(--scene-rose, #bc8580))",
-  roseLight:
-    "color-mix(in srgb, var(--scene-rose, #bc8580) 53%, var(--scene-paper, #f8ead5))",
-  rose: "color-mix(in srgb, var(--scene-rose, #bc8580) 72%, #d9a8b0)",
-  roseShade:
-    "color-mix(in srgb, var(--scene-rose, #bc8580) 80%, var(--scene-ink, #604b3d))",
-};
+  ink: "#876f58",
+  furLight: "#fefbf1",
+  fur: "#f7f1e5",
+  furShade: "#d8ccbd",
+  wingLight: "#8c7c88",
+  wing: "#6c5661",
+  wingHighlight: "#b9a7bf",
+  wingGlint: "#b1a0b2",
+  pomLight: "#f7d2d0",
+  pom: "#d28b96",
+  pomShade: "#b97285",
+  roseLight: "#d8b4a8",
+  rose: "#c48f8d",
+  roseShade: "#aa7973",
+} as const;
 
 /** Padded cotton binding, with uneven wraps and soft catches of light. */
 function StitchedEdge({
@@ -219,7 +216,7 @@ function NookMoogleModel({
               part="wings"
               color={materials.wingLight}
               shade={materials.wing}
-              light="#b9a7bf"
+              light={materials.wingHighlight}
             />
           </g>
           <g stroke={materials.wingLight} strokeWidth=".85" opacity=".65">
@@ -228,7 +225,7 @@ function NookMoogleModel({
           </g>
           <path
             d="M29 160Q38 170 49 172M174 162Q165 172 153 174"
-            stroke="#b1a0b2"
+            stroke={materials.wingGlint}
             opacity=".28"
           />
           <StitchedEdge
@@ -236,7 +233,7 @@ function NookMoogleModel({
             d="M24 150C21 161 20 177 23 188C31 181 37 182 43 189C49 182 57 185 65 190M179 153C183 164 185 178 181 190C173 181 165 183 160 190C154 183 145 186 137 190"
             thread={materials.wingLight}
             shade={materials.wing}
-            light="#b9a7bf"
+            light={materials.wingHighlight}
             width={1.7}
           />
         </g>

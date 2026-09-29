@@ -39,7 +39,7 @@ export const THEME_META: {
   {
     id: "arr",
     name: "A Realm Reborn",
-    description: "Hydaelyn's crystal blues and gold",
+    description: "Hydaelyn's crystal blue, ivory, and gold",
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
@@ -88,17 +88,18 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
   },
   arr: {
     light: {
-      primary: "#3a7fd5",
-      secondary: "#4fb8e0",
-      accent: "#e6c155",
-      bg: "#eef3fb",
+      primary: "#2f7194",
+      secondary: "#58afc0",
+      accent: "#bd9554",
+      bg: "#e6edf0",
+      card: "#f8f4eb",
     },
     dark: {
-      primary: "#5e9ee8",
-      secondary: "#6fcdec",
-      accent: "#f0cf6e",
-      bg: "#08101f",
-      card: "#141d30",
+      primary: "#8bcce8",
+      secondary: "#73c5ce",
+      accent: "#dfbd78",
+      bg: "#101e2d",
+      card: "#1b3040",
     },
   },
   heavensward: {

@@ -1,5 +1,6 @@
 import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
+import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 import { NookSeasonalDecor } from "./NookSeasonalDecor";
 import { NookProps } from "./NookProps";
 import { NookThread } from "./NookThread";
@@ -10,6 +11,7 @@ import { threadVariation } from "./nookNeedlework";
 interface NookIllustrationProps {
   isDark: boolean;
   eventId: SeasonalEventId | null;
+  colorTheme?: ColorTheme;
 }
 
 const n = (value: number) => value.toFixed(2);
@@ -44,14 +46,22 @@ const frameStitches = [
 
 // One coordinate space keeps the window, shelf, and all seasonal objects grounded.
 // The room and its companion moogle are both editable SVG geometry.
-export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
+export function NookIllustration({
+  isDark,
+  eventId,
+  colorTheme,
+}: NookIllustrationProps) {
   const id = useId().replace(/:/g, "");
   const ref = (name: string) => `url(#${id}-${name})`;
   const hasGarland = eventId === "all-saints-wake" || eventId === "starlight";
 
   return (
     <>
-      <NookWindowView isDark={isDark} eventId={eventId} />
+      <NookWindowView
+        isDark={isDark}
+        eventId={eventId}
+        colorTheme={colorTheme}
+      />
       <svg
         className="nook-illustration"
         data-mode={isDark ? "dark" : "light"}
