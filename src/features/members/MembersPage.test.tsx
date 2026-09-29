@@ -88,9 +88,7 @@ describe("Members page states", () => {
     renderPage({ isError: true, allMembers: [], filteredMembers: [] });
     const alert = screen.getByRole("alert");
 
-    expect(alert).toHaveTextContent(
-      "We couldn’t load the member list. Please try again.",
-    );
+    expect(alert).toHaveTextContent("Please try again in a moment.");
     expect(screen.getByText("Member list unavailable.")).toBeInTheDocument();
     expect(screen.queryByText("Loading members…")).not.toBeInTheDocument();
     expect(screen.getByRole("searchbox")).toBeDisabled();
@@ -160,6 +158,64 @@ describe("Members page states", () => {
     );
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
+
+  it("waits for the current search before presenting an empty result", () => {
+    renderPage({
+      isFiltering: true,
+      hasActiveFilters: true,
+      searchQuery: "Nobody",
+      inputValue: "Ada",
+      filteredMembers: [],
+    });
+
+    expect(screen.getByText("Updating results…")).toBeInTheDocument();
+    expect(
+      screen.getByText("Looking for matching members…"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No members found")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [120, -50, true],
+    [-100, -50, true],
+    [120, 180, false],
+  ])(
+    "reveals settled results only when covered or above the viewport (toolbar %i, summary %i)",
+    (toolbarBottom, summaryTop, shouldScroll) => {
+      const { rerender } = renderPage();
+      const summary = screen.getByText(/member in Kupo Life/);
+      const toolbar = screen
+        .getByRole("searchbox")
+        .closest(".family-sticky-toolbar")!;
+      vi.spyOn(summary, "getBoundingClientRect").mockReturnValue({
+        top: summaryTop,
+      } as DOMRect);
+      vi.spyOn(toolbar, "getBoundingClientRect").mockReturnValue({
+        bottom: toolbarBottom,
+      } as DOMRect);
+      vi.mocked(Element.prototype.scrollIntoView).mockClear();
+      screen.getByRole("searchbox").focus();
+
+      filters.searchQuery = "Ada";
+      filters.inputValue = "Ada";
+      filters.hasActiveFilters = true;
+      rerender(
+        <MemoryRouter>
+          <Members />
+        </MemoryRouter>,
+      );
+
+      if (shouldScroll) {
+        expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+          block: "start",
+          behavior: "instant",
+        });
+      } else {
+        expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+      }
+      expect(screen.getByRole("searchbox")).toHaveFocus();
+    },
+  );
 
   it("shows a continuous directory by default and groups portraits only when selected", () => {
     const { rerender } = renderPage();

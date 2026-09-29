@@ -25,6 +25,7 @@ function FilterHarness() {
     searchInputRef,
     inputValue,
     setInputValue,
+    setSearchQuery,
     validSortBy,
     setSortBy,
     toggleRank,
@@ -64,6 +65,7 @@ function FilterHarness() {
       </button>
       <button onClick={clearFilters}>Clear filters</button>
       <button onClick={clearRanks}>Clear ranks</button>
+      <button onClick={() => setSearchQuery(inputValue)}>Apply search</button>
       <button
         onClick={() => setGroupByRank(!groupByRank)}
         aria-pressed={groupByRank}
@@ -72,6 +74,7 @@ function FilterHarness() {
       </button>
       <button onClick={() => navigate(-1)}>Back</button>
       <output aria-label="URL parameters">{location.search}</output>
+      <output aria-label="Navigation key">{location.key}</output>
       <output aria-label="Matching members">
         {filteredMembers.map((member) => member.name).join(", ")}
       </output>
@@ -273,6 +276,67 @@ describe("useMemberFilters", () => {
 
     expect(screen.getByLabelText("Matching members")).toHaveTextContent(
       /^Bram Fern$/,
+    );
+  });
+
+  it("matches pasted names and ranks with repeated whitespace", () => {
+    renderFilters();
+    fireEvent.change(screen.getByLabelText("Search members"), {
+      target: { value: "  bRaM   fERN  " },
+    });
+    act(() => vi.advanceTimersByTime(300));
+
+    expect(screen.getByLabelText("Matching members")).toHaveTextContent(
+      /^Bram Fern$/,
+    );
+
+    fireEvent.change(screen.getByLabelText("Search members"), {
+      target: { value: "Moogle   Knight" },
+    });
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.getByLabelText("Matching members")).toHaveTextContent(
+      "Bram Fern, Zora Willow",
+    );
+  });
+
+  it.each(["moogle", "MOOGLE", "  moogle  "])(
+    "keeps pagination and avoids a false update when reapplying %j",
+    (query) => {
+      renderFilters(["/members?q=moogle&page=2"]);
+      const navigationKey = screen.getByLabelText("Navigation key").textContent;
+      fireEvent.change(screen.getByLabelText("Search members"), {
+        target: { value: query },
+      });
+      expect(screen.getByLabelText("Filtering pending")).toHaveTextContent(
+        "false",
+      );
+
+      act(() => vi.advanceTimersByTime(300));
+      fireEvent.click(screen.getByRole("button", { name: "Apply search" }));
+
+      expect(urlParams().get("page")).toBe("2");
+      expect(screen.getByLabelText("Navigation key").textContent).toBe(
+        navigationKey,
+      );
+      expect(screen.getByLabelText("Search members")).toHaveValue(query);
+    },
+  );
+
+  it("ignores a whitespace-only draft without repeatedly replacing the URL", () => {
+    renderFilters(["/members?page=3"]);
+    const navigationKey = screen.getByLabelText("Navigation key").textContent;
+    fireEvent.change(screen.getByLabelText("Search members"), {
+      target: { value: "   " },
+    });
+    act(() => vi.advanceTimersByTime(1500));
+
+    expect(urlParams().get("page")).toBe("3");
+    expect(urlParams().has("q")).toBe(false);
+    expect(screen.getByLabelText("Filtering pending")).toHaveTextContent(
+      "false",
+    );
+    expect(screen.getByLabelText("Navigation key").textContent).toBe(
+      navigationKey,
     );
   });
 

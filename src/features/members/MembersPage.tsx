@@ -8,6 +8,7 @@ import { RankFilter } from "./RankFilter";
 import { FamilyIcon, FamilyRankIcon } from "./FamilyIcons";
 import { FamilyAlbumArt } from "./FamilyAlbumArt";
 import { scrollAppToTop } from "@/shared/lib/scroll";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
 import { NookFairyLights } from "@/features/home/components/NookFairyLights";
@@ -42,7 +43,9 @@ export function Members() {
     searchMatchCount,
   } = useMemberFilters();
   const resultsSummaryRef = useRef<HTMLParagraphElement>(null);
+  const albumRef = useRef<HTMLElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
+  useStickyToolbar(albumRef, toolbarRef);
   const filterKey = JSON.stringify([
     searchQuery,
     selectedRanks,
@@ -61,7 +64,7 @@ export function Members() {
       summary &&
       toolbar &&
       summary.getBoundingClientRect().top <
-        toolbar.getBoundingClientRect().bottom
+        Math.max(0, toolbar.getBoundingClientRect().bottom)
     ) {
       summary.scrollIntoView({ block: "start", behavior: "instant" });
     }
@@ -117,7 +120,11 @@ export function Members() {
           </div>
         </header>
 
-        <section className="family-album" aria-label="Member directory">
+        <section
+          ref={albumRef}
+          className="family-album"
+          aria-label="Member directory"
+        >
           <h2 className="sr-only">Member directory</h2>
           <div className="family-sticky-toolbar" ref={toolbarRef}>
             <span className="family-note-tape" aria-hidden="true" />
@@ -251,8 +258,8 @@ export function Members() {
                 <span className="family-message-icon">
                   <FamilyIcon name="album" size={38} />
                 </span>
-                <h2>Members couldn’t load</h2>
-                <p>We couldn’t load the member list. Please try again.</p>
+                <h2>Couldn’t load the member list</h2>
+                <p>Please try again in a moment.</p>
                 <button
                   className="family-paper-button"
                   onClick={() => void refetch()}
@@ -260,6 +267,10 @@ export function Members() {
                   <FamilyIcon name="refresh" size={18} />
                   Try again
                 </button>
+              </div>
+            ) : isFiltering && filteredMembers.length === 0 ? (
+              <div className="family-message">
+                <p>Looking for matching members…</p>
               </div>
             ) : filteredMembers.length === 0 ? (
               <div className="family-message" role="status">
@@ -270,16 +281,14 @@ export function Members() {
                   />
                 </span>
                 <h2>
-                  {hasActiveFilters
-                    ? "No members found"
-                    : "No members yet"}
+                  {hasActiveFilters ? "No members found" : "No members yet"}
                 </h2>
                 <p>
                   {hasActiveFilters
                     ? selectedRanks.length > 0 && searchMatchCount > 0
                       ? "Your search matches members in other ranks. Try searching all ranks."
-                      : "Try a different name, part of a name, or an FC rank."
-                    : "There aren’t any members to show right now. Check back soon."}
+                      : "Try part of a name or search by rank."
+                    : "The member list is empty for now. Check back later."}
                 </p>
                 {hasActiveFilters && (
                   <div className="family-message-actions">

@@ -59,7 +59,7 @@ export const MemberCard = memo(function MemberCard({
       style={
         {
           "--member-tilt": `${(((index * 7 + 3) % 5) - 2) * 0.55}deg`,
-          "--member-tape-tilt": `${2 + (index % 3)}deg`,
+          "--member-tape-tilt": `${[-4, 3, -2, 5, 1][index % 5]}deg`,
         } as CSSProperties
       }
     >
@@ -67,7 +67,7 @@ export const MemberCard = memo(function MemberCard({
         href={`https://na.finalfantasyxiv.com/lodestone/character/${member.characterId}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`View ${member.name}'s Lodestone profile (opens in new tab)`}
+        aria-label={`View ${member.name}'s Lodestone profile, ${member.freeCompanyRank} (opens in new tab)`}
         title="View Lodestone profile (opens in new tab)"
       >
         <span className="family-member-tape" aria-hidden="true" />

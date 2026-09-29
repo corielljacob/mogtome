@@ -28,6 +28,10 @@ export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 ];
 const DEFAULT_SORT: SortOption = "rank-asc";
 
+function normalizeSearch(query: string) {
+  return query.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
 export function useMemberFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
@@ -70,6 +74,9 @@ export function useMemberFilters() {
 
   const setSearchQuery = useCallback(
     (query: string) => {
+      // Reapplying the same search should keep the current page and position.
+      if (normalizeSearch(query) === normalizeSearch(searchQuery)) return;
+
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev);
@@ -85,7 +92,7 @@ export function useMemberFilters() {
         { replace: true },
       );
     },
-    [setSearchParams],
+    [searchQuery, setSearchParams],
   );
 
   const setSelectedRanks = useCallback(
@@ -161,10 +168,10 @@ export function useMemberFilters() {
   }
 
   useEffect(() => {
+    if (normalizeSearch(inputValue) === normalizeSearch(searchQuery)) return;
+
     const timer = setTimeout(() => {
-      if (inputValue !== searchQuery) {
-        setSearchQuery(inputValue);
-      }
+      setSearchQuery(inputValue);
     }, 300);
     return () => clearTimeout(timer);
   }, [inputValue, searchQuery, setSearchQuery]);
@@ -201,8 +208,8 @@ export function useMemberFilters() {
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const deferredSelectedRanks = useDeferredValue(selectedRanks);
   const isFiltering =
-    inputValue.trim() !== searchQuery.trim() ||
-    searchQuery !== deferredSearchQuery ||
+    normalizeSearch(inputValue) !== normalizeSearch(searchQuery) ||
+    normalizeSearch(searchQuery) !== normalizeSearch(deferredSearchQuery) ||
     selectedRanks !== deferredSelectedRanks;
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -214,12 +221,12 @@ export function useMemberFilters() {
   const allMembers = useMemo(() => data?.items ?? [], [data]);
 
   const searchMatches = useMemo(() => {
-    const query = deferredSearchQuery.trim().toLowerCase();
+    const query = normalizeSearch(deferredSearchQuery);
     if (!query) return allMembers;
     return allMembers.filter(
       (member) =>
-        member.name.toLowerCase().includes(query) ||
-        member.freeCompanyRank.toLowerCase().includes(query),
+        normalizeSearch(member.name).includes(query) ||
+        normalizeSearch(member.freeCompanyRank).includes(query),
     );
   }, [allMembers, deferredSearchQuery]);
 
