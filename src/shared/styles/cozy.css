@@ -1,6 +1,5 @@
 /* A quiet book masthead, with a ribbon keeping the current chapter. */
 :root {
-  scrollbar-gutter: stable;
   --layout-unit: 1px;
   --app-header-height: calc(
     76 * var(--layout-unit) + env(safe-area-inset-top, 0px)
@@ -56,45 +55,102 @@
   z-index: -2;
 }
 .storybook-brand {
+  --brand-linen: #f6ecd7;
+  --brand-seam: #b29b74;
+  --brand-plum: #764c62;
+  --brand-sage: #50654e;
+  --brand-caption: #6b5948;
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: calc(9 * var(--layout-unit));
-  min-height: calc(44 * var(--layout-unit));
+  min-height: calc(64 * var(--layout-unit));
   width: fit-content;
+  flex-shrink: 0;
   color: var(--nav-ink);
   text-decoration: none;
+  isolation: isolate;
 }
 .storybook-brand-mark {
-  width: calc(36 * var(--layout-unit));
-  height: calc(36 * var(--layout-unit));
+  position: relative;
+  z-index: 1;
+  width: calc(66 * var(--layout-unit));
+  height: calc(66 * var(--layout-unit));
   flex: none;
-  transform: rotate(-5deg);
-  transition: transform 200ms ease;
+  transform: rotate(-7deg);
+  filter: drop-shadow(0 calc(2 * var(--layout-unit)) 1px #51382a33);
+  transition: transform 220ms ease;
 }
 .storybook-brand-type {
+  position: relative;
   display: grid;
-  gap: calc(3 * var(--layout-unit));
+  justify-items: center;
+  gap: calc(1 * var(--layout-unit));
+  margin-left: calc(-10 * var(--layout-unit));
+  padding: calc(4 * var(--layout-unit)) calc(13 * var(--layout-unit))
+    calc(8 * var(--layout-unit)) calc(16 * var(--layout-unit));
+  border: 1px solid color-mix(in srgb, var(--brand-seam) 75%, transparent);
+  border-radius: 5px 8px 7px 4px;
+  background:
+    repeating-linear-gradient(0deg, #907a5c0d 0 0.6px, transparent 0.6px 2px),
+    repeating-linear-gradient(90deg, #fffdf35c 0 0.6px, transparent 0.6px 2px),
+    linear-gradient(165deg, #fffdf466, transparent 52%, #a1845212),
+    var(--brand-linen);
+  box-shadow:
+    0 2px 2px #51382a24,
+    inset 0 0 0 1px #fff9e9cf,
+    inset 0 0 0 2px #baa47b33;
+  transform: rotate(-1deg);
+  transition: transform 220ms ease;
+}
+/* Running stitches turn the masthead into a little sewn-in book label. */
+.storybook-brand-type::before {
+  content: "";
+  position: absolute;
+  inset: calc(4 * var(--layout-unit));
+  border: 1px dashed var(--brand-seam);
+  border-radius: 3px 5px 4px 2px;
+  pointer-events: none;
+}
+.storybook-brand-type::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 28%;
+  right: calc(-5 * var(--layout-unit));
+  width: calc(5 * var(--layout-unit));
+  height: 43%;
+  border-radius: 0 2px 2px 0;
+  background:
+    repeating-linear-gradient(0deg, #ffffff30 0 1px, transparent 1px 3px),
+    #bb8584;
+  box-shadow: 1px 1px 1px #51382a1f;
 }
 .storybook-wordmark {
   display: block;
-  width: calc(130 * var(--layout-unit));
+  width: calc(160 * var(--layout-unit));
   height: auto;
+  overflow: visible;
 }
-.storybook-brand:hover .storybook-brand-mark {
-  transform: rotate(2deg) translateY(-1px);
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-mark {
+  transform: rotate(-3deg) translateY(-1px);
+}
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-type {
+  transform: rotate(0deg);
 }
 .nav-world {
   display: flex;
   align-items: center;
   gap: calc(6 * var(--layout-unit));
-  color: var(--nav-muted);
+  color: var(--brand-caption);
   font: 400 calc(0.5rem + 8 * (var(--layout-unit) - 1px))/1.2
     var(--font-navigation);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 .nav-world i {
+  color: var(--brand-plum);
+  font-size: 0.8em;
   font-style: normal;
 }
 .storybook-nav {
@@ -350,6 +406,22 @@
   --nav-rule: var(--text);
   background: var(--bg);
 }
+.high-contrast .storybook-brand {
+  --brand-linen: var(--bg);
+  --brand-seam: var(--text);
+  --brand-plum: var(--text);
+  --brand-sage: var(--text);
+  --brand-caption: var(--text);
+}
+.high-contrast .storybook-brand-type {
+  background: var(--brand-linen);
+  box-shadow: none;
+}
+.high-contrast .brand-letter-shadow,
+.high-contrast .brand-letter-texture,
+.high-contrast .brand-letter-stitches {
+  display: none;
+}
 .high-contrast .storybook-nav a[aria-current] > span:last-child {
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -371,7 +443,7 @@
 }
 @media (max-width: 900px) {
   :root {
-    --app-header-height: calc(104px + env(safe-area-inset-top, 0px));
+    --app-header-height: calc(108px + env(safe-area-inset-top, 0px));
   }
   .cozy-topbar {
     padding: calc(8px + env(safe-area-inset-top, 0px))
@@ -379,20 +451,24 @@
       max(20px, env(safe-area-inset-left, 0px));
   }
   .storybook-header {
-    min-height: 96px;
+    min-height: 100px;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto auto;
     gap: 0 8px;
   }
   .storybook-brand {
-    gap: 7px;
+    min-height: 52px;
   }
   .storybook-brand-mark {
-    width: 32px;
-    height: 32px;
+    width: 52px;
+    height: 52px;
+  }
+  .storybook-brand-type {
+    margin-left: -8px;
+    padding: 4px 9px 5px 12px;
   }
   .storybook-wordmark {
-    width: 122px;
+    width: 130px;
   }
   .storybook-nav {
     grid-column: 1 / -1;
@@ -422,21 +498,42 @@
   }
 }
 @media (max-width: 400px) {
+  :root {
+    --app-header-height: calc(104px + env(safe-area-inset-top, 0px));
+  }
   .cozy-topbar {
     padding-inline: max(12px, env(safe-area-inset-left, 0px))
       max(12px, env(safe-area-inset-right, 0px));
   }
   .storybook-header {
+    min-height: 96px;
     column-gap: 4px;
   }
   .storybook-brand {
-    gap: 5px;
+    min-height: 48px;
+  }
+  .storybook-brand-mark {
+    width: 44px;
+    height: 44px;
+  }
+  .storybook-brand-type {
+    margin-left: -6px;
+    padding: 4px 5px 5px 7px;
+  }
+  .storybook-brand-type::before {
+    inset: 2px;
+  }
+  .storybook-brand-type::after {
+    right: -3px;
+    width: 3px;
   }
   .storybook-wordmark {
     width: 104px;
   }
   .nav-world {
     font-size: 0.4375rem;
+    letter-spacing: 0.1em;
+    gap: 4px;
   }
   .storybook-nav a {
     padding-inline: 4px;
@@ -455,13 +552,38 @@
     grid-template-rows: 48px auto;
   }
 }
+@media (max-width: 360px) {
+  .storybook-brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+  .storybook-wordmark {
+    width: 96px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
+  .storybook-brand:is(:hover, :focus-visible) .storybook-brand-mark {
+    transform: rotate(-7deg);
+  }
+  .storybook-brand:is(:hover, :focus-visible) .storybook-brand-type {
+    transform: rotate(-1deg);
+  }
   .cozy-topbar *,
   .cozy-topbar *::before,
   .cozy-topbar *::after {
     animation: none !important;
     transition: none !important;
   }
+}
+.reduce-motion
+  .storybook-brand:is(:hover, :focus-visible)
+  .storybook-brand-mark {
+  transform: rotate(-7deg);
+}
+.reduce-motion
+  .storybook-brand:is(:hover, :focus-visible)
+  .storybook-brand-type {
+  transform: rotate(-1deg);
 }
 .reduce-motion .cozy-topbar *,
 .reduce-motion .cozy-topbar *::before,

@@ -146,7 +146,7 @@ export function Navbar() {
           <span className="storybook-brand-type">
             <MogTomeWordmark className="storybook-wordmark" />
             <span className="nav-world">
-              Kupo Life <i>·</i> Zalera
+              Kupo Life <i aria-hidden="true">✦</i> Zalera
             </span>
           </span>
         </Link>
