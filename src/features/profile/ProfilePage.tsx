@@ -49,7 +49,7 @@ export function Profile() {
   if (isLoading) {
     return (
       <PageLayout maxWidth="max-w-2xl">
-        <LoadingState message="Loading your profile…" />
+        <LoadingState message="Loading profile…" />
       </PageLayout>
     );
   }

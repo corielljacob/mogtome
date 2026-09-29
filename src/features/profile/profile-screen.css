@@ -1,0 +1,209 @@
+/* The same portrait and biography, on the other chapters' warm stationery. */
+.profile-screen {
+  min-width: 0;
+  color: var(--ui-ink);
+  font-family: var(--font-navigation);
+}
+.profile-screen .journal-profile-hero {
+  gap: 24px;
+  margin-top: 12px;
+  padding: 30px 27px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 6px 9px 7px 5px;
+  background-color: var(--ui-surface-soft);
+  background-image: repeating-linear-gradient(
+    transparent 0 30px,
+    color-mix(in srgb, var(--ui-rule) 18%, transparent) 30px 31px
+  );
+  box-shadow: 1px 3px 6px
+    color-mix(in srgb, var(--scene-shadow) 7%, transparent);
+}
+.profile-screen .journal-header-tape,
+.profile-screen .journal-auth-tape {
+  background: var(--nook-washi);
+  opacity: 0.65;
+}
+.profile-screen .journal-profile-portrait {
+  border: 1px solid var(--ui-rule);
+  background: var(--ui-surface-raised);
+  box-shadow: 2px 6px 10px -5px
+    color-mix(in srgb, var(--scene-shadow) 28%, transparent);
+  transform: rotate(-4deg);
+}
+.profile-screen .journal-profile-identity h1 {
+  color: var(--ui-heading);
+  font: 400 clamp(2.15rem, 3.7vw, 3rem) / 1.12 var(--font-script);
+  letter-spacing: -0.025em;
+}
+.profile-screen .profile-rank {
+  max-width: 100%;
+  min-height: 27px;
+  padding: 4px 9px;
+  border-radius: 4px;
+  font: 400 0.75rem / 1.45 var(--font-navigation);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.profile-screen .journal-profile-since {
+  margin-top: 14px;
+  color: var(--ui-muted);
+  font: 400 0.8125rem / 1.7 var(--font-navigation);
+}
+.profile-screen .journal-profile-link {
+  min-height: 44px;
+  margin-top: 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-action) 35%, transparent);
+  color: var(--ui-action);
+  font: 400 0.8125rem / 1.5 var(--font-navigation);
+}
+.profile-screen .journal-profile-link:hover {
+  border-bottom-color: currentColor;
+}
+.profile-screen .journal-profile-link:focus-visible,
+.profile-section-action > button:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 4px;
+}
+.profile-screen .journal-profile-heart {
+  color: var(--scene-rose);
+}
+.profile-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: 36px;
+  margin-top: 36px;
+}
+.profile-sections {
+  display: grid;
+  gap: 32px;
+  min-width: 0;
+}
+.profile-section {
+  position: relative;
+  min-width: 0;
+  padding: 21px 24px 25px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 4px 6px 5px 3px;
+  color: var(--ui-ink);
+  background: var(--ui-surface-raised);
+  box-shadow: 1px 3px 5px
+    color-mix(in srgb, var(--scene-shadow) 6%, transparent);
+  transform: rotate(var(--profile-section-tilt, 0deg));
+}
+.profile-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-rule) 65%, transparent);
+}
+.profile-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--ui-rule);
+  border-radius: 50%;
+  color: var(--ui-secondary);
+  background: color-mix(
+    in srgb,
+    var(--profile-section-accent) 13%,
+    var(--ui-surface-raised)
+  );
+}
+.profile-section-heading h2 {
+  margin: 0;
+  color: var(--ui-heading);
+  font: 400 1.75rem / 1.15 var(--font-script);
+}
+.profile-section-action {
+  margin-left: auto;
+}
+.profile-section-action > button {
+  min-height: 44px;
+  padding: 6px 8px;
+  color: var(--ui-action);
+  font: 400 0.8125rem / 1.5 var(--font-navigation);
+}
+.profile-section-action > button:hover {
+  color: var(--ui-action);
+  background: var(--ui-action-soft);
+}
+.profile-section-body {
+  color: var(--ui-muted);
+  font-family: var(--font-navigation);
+}
+.profile-section-body > p {
+  margin: 0;
+  color: var(--ui-muted);
+  font-family: inherit;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.profile-membership {
+  min-width: 0;
+}
+@media (max-width: 1023px) {
+  .profile-screen .journal-profile-hero {
+    gap: 17px;
+    padding: 28px 20px;
+  }
+  .profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .profile-membership {
+    position: relative;
+    top: auto;
+  }
+}
+@media (max-width: 639px) {
+  .profile-screen .journal-profile-hero {
+    gap: 18px 12px;
+    padding: 24px 18px;
+  }
+  .profile-screen .journal-profile-identity h1 {
+    font-size: clamp(2rem, 8.5vw, 2.6rem);
+  }
+  .profile-layout {
+    gap: 22px;
+    margin-top: 28px;
+  }
+  .profile-section {
+    padding: 17px 18px 21px;
+    transform: none;
+  }
+}
+:root:is(.high-contrast, .dark.extra-dark)
+  .profile-screen
+  :is(.journal-profile-hero, .journal-profile-portrait, .profile-section) {
+  box-shadow: none;
+  background-image: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .profile-screen .profile-rank {
+  color: var(--ui-ink) !important;
+  border-color: var(--ui-rule) !important;
+}
+.dyslexia-font
+  .profile-screen
+  :is(h1, h2, h3, p, span, button, a, label, textarea) {
+  font-family:
+    "OpenDyslexic", "Comic Sans MS", "Manrope", system-ui, sans-serif;
+  letter-spacing: 0.03em;
+}
+@media (forced-colors: active) {
+  .profile-screen
+    :is(.journal-profile-hero, .journal-profile-portrait, .profile-section) {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    background-image: none;
+  }
+  .profile-screen
+    :is(.journal-header-tape, .journal-auth-tape, .journal-profile-heart) {
+    display: none;
+  }
+}

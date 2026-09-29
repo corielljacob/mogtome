@@ -74,23 +74,23 @@ export function ProfileBio({
           compact
         />
       ) : isBioLoading ? (
-        <p className="text-sm text-[var(--text-muted)]">Loading biography…</p>
+        <p className="text-sm text-[var(--text-muted)]">Loading bio…</p>
       ) : bio ? (
         <p className="font-soft italic text-[15px] leading-relaxed text-[var(--text-muted)]">
           “{bio}”
         </p>
       ) : viewer.isOwnProfile ? (
         <p className="text-sm text-[var(--text-subtle)]">
-          Add a bio to tell other members a little about yourself.
+          Tell the FC a little about yourself.
         </p>
       ) : (
-        <p className="text-sm text-[var(--text-subtle)]">No biography yet.</p>
+        <p className="text-sm text-[var(--text-subtle)]">No bio yet.</p>
       )}
 
       <MobileSheet
         isOpen={isEditing && isMobile}
         onClose={() => setIsEditing(false)}
-        title={bio ? "Edit biography" : "Add biography"}
+        title={bio ? "Edit bio" : "Add bio"}
       >
         <BioEditor
           profile={profile}

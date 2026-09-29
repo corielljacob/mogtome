@@ -1,0 +1,465 @@
+.membership-card {
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+  padding-block: 8px;
+  container-type: inline-size;
+  perspective: 850px;
+}
+.membership-card-compact {
+  max-width: 340px;
+  padding-block: 0;
+}
+.membership-patch {
+  --patch-light-x: 30%;
+  --patch-light-y: 15%;
+  --patch-glint-x: -0.4px;
+  --patch-glint-y: -0.5px;
+  --patch-thread-shadow-x: 0.7px;
+  --patch-thread-shadow-y: 1px;
+  --patch-cloth: color-mix(
+    in srgb,
+    var(--ui-surface, var(--card)) 92%,
+    var(--scene-leaf, var(--secondary))
+  );
+  --patch-ink: var(--ui-ink, var(--text));
+  --patch-muted: var(--ui-muted, var(--text-muted));
+  --patch-thread: color-mix(
+    in srgb,
+    var(--scene-leaf, var(--secondary)) 72%,
+    var(--patch-ink)
+  );
+  --patch-thread-dark: color-mix(
+    in srgb,
+    var(--patch-thread) 70%,
+    var(--patch-ink)
+  );
+  --patch-thread-light: color-mix(
+    in srgb,
+    var(--patch-thread) 45%,
+    var(--patch-cloth)
+  );
+  position: relative;
+  min-height: 232px;
+  border: 1px solid
+    color-mix(in srgb, var(--patch-thread-dark) 60%, transparent);
+  border-radius: 29px 31px 28px 30px;
+  color: var(--patch-ink);
+  background-color: var(--patch-cloth);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      color-mix(in srgb, var(--patch-ink) 6%, transparent) 2px 3px,
+      transparent 3px 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-surface-raised, var(--card)) 70%, transparent)
+        0 1px,
+      transparent 1px 3px,
+      color-mix(in srgb, var(--patch-ink) 5%, transparent) 3px 4px
+    );
+  box-shadow:
+    inset 0 0 0 9px color-mix(in srgb, var(--patch-thread) 30%, transparent),
+    inset 0 0 12px 6px color-mix(in srgb, var(--patch-ink) 15%, transparent),
+    0 2px 1px color-mix(in srgb, var(--patch-ink) 25%, transparent),
+    2px 5px 7px
+      color-mix(in srgb, var(--scene-shadow, var(--text)) 15%, transparent);
+  font-family: var(--font-navigation, Georgia, serif);
+}
+.membership-patch-border,
+.membership-patch-thread-shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.membership-patch-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+  padding: 24px 27px 25px;
+}
+.membership-patch-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 9px;
+  border-bottom: 1px dashed var(--patch-thread-light);
+  box-shadow: 0 1px 0
+    color-mix(in srgb, var(--ui-surface-raised, var(--card)) 65%, transparent);
+}
+.membership-patch-paw {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px dashed var(--patch-thread);
+  border-radius: 50%;
+  color: var(--patch-thread);
+  background: color-mix(in srgb, var(--patch-thread) 10%, transparent);
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--patch-ink) 17%, transparent);
+  transform: rotate(-8deg);
+}
+.membership-patch-paw svg {
+  width: 24px;
+  height: 24px;
+}
+.membership-patch-brand p {
+  --embroidery-ink: var(--patch-thread-dark);
+  margin: 0;
+  color: var(--patch-thread-dark);
+  font: 700 1.45rem/1 var(--font-script, cursive);
+  text-shadow: 0 1px 0 var(--patch-thread-light);
+}
+.membership-patch-brand > span {
+  display: block;
+  margin-top: 4px;
+  color: var(--patch-muted);
+  font-size: 0.5625rem;
+  line-height: 1.4;
+  letter-spacing: 0.035em;
+}
+.membership-patch-greeting {
+  margin-left: auto;
+  color: var(--ui-action, var(--primary));
+  font: 600 1rem/1.2 var(--font-script, cursive);
+  white-space: nowrap;
+  transform: rotate(-5deg);
+}
+.membership-patch-member {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 15px;
+  padding-block: 16px;
+}
+.membership-patch-portrait {
+  position: relative;
+  flex-shrink: 0;
+  width: 73px;
+  height: 81px;
+  padding: 5px;
+  border: 2px solid var(--patch-thread-light);
+  border-radius: 10px;
+  background: var(--patch-cloth);
+  box-shadow: 1px 2px 2px color-mix(in srgb, var(--patch-ink) 24%, transparent);
+  transform: rotate(-3deg);
+}
+.membership-patch-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 1px dashed var(--patch-thread-dark);
+  border-radius: 7px;
+  pointer-events: none;
+}
+.membership-patch-portrait > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.membership-patch-rank-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: color-mix(in srgb, var(--patch-rank) 32%, var(--patch-ink));
+  background: var(--patch-cloth);
+  border: 2px solid var(--patch-thread);
+  outline: 1px dashed var(--patch-thread-light);
+  outline-offset: -3px;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--patch-ink) 25%, transparent);
+}
+.membership-patch-rank-badge svg {
+  width: 14px;
+  height: 14px;
+}
+.membership-patch-details {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.membership-patch-details dt {
+  margin-bottom: 3px;
+  color: var(--patch-muted);
+  font-size: 0.5625rem;
+  line-height: 1.35;
+}
+.membership-patch-details dd {
+  margin: 0;
+  font-size: 0.625rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.membership-patch-name dd {
+  --embroidery-ink: var(--patch-ink);
+  font: 700 1.4rem/1.1 var(--font-script, cursive);
+  text-shadow: 0 1px 0
+    color-mix(in srgb, var(--ui-surface-raised, var(--card)) 80%, transparent);
+}
+.membership-patch-name {
+  margin: 0;
+}
+/* Tiny alternating filaments follow the lettering, while a close shadow gives
+   the sewn text relief without sacrificing selectable, accessible text. */
+@supports (background-clip: text) {
+  .membership-thread-lettering {
+    /* Script strokes extend beyond their advance width. Expand the texture's
+       paint box so the first/last strokes and descenders stay fully inked. */
+    display: block;
+    padding: 0.15em 0.18em 0.2em;
+    margin: -0.15em -0.18em -0.2em;
+    line-height: 1.25;
+    background-image:
+      radial-gradient(
+        ellipse at var(--patch-light-x) var(--patch-light-y),
+        color-mix(in srgb, var(--patch-cloth) 24%, transparent),
+        transparent 65%
+      ),
+      repeating-linear-gradient(
+        112deg,
+        var(--embroidery-ink) 0 0.8px,
+        color-mix(in srgb, var(--embroidery-ink) 68%, var(--patch-cloth)) 0.8px
+          1.4px,
+        var(--embroidery-ink) 1.4px 2.3px
+      );
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(
+      var(--patch-thread-shadow-x) var(--patch-thread-shadow-y) 0.3px
+        color-mix(in srgb, var(--patch-ink) 35%, transparent)
+    );
+  }
+}
+.membership-patch-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 13px;
+  margin: 11px 0 0;
+}
+.membership-patch-facts > div {
+  min-width: 0;
+}
+.membership-patch-rank {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.membership-patch-rank svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--patch-rank) 32%, var(--patch-ink));
+}
+.membership-patch-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--patch-thread-light);
+  color: var(--patch-muted);
+}
+.membership-patch-footer p {
+  margin: 0;
+  font: 500 1rem/1 var(--font-script, cursive);
+}
+.membership-patch-footer svg {
+  width: 10px;
+  height: 10px;
+  color: var(--ui-action, var(--primary));
+}
+.membership-patch-moogle {
+  position: absolute;
+  right: -5px;
+  bottom: -8px;
+  width: 42px;
+  pointer-events: none;
+  transform: rotate(8deg);
+  filter: drop-shadow(
+    0 1px 1px color-mix(in srgb, var(--patch-ink) 35%, transparent)
+  );
+}
+.membership-patch-moogle svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* The backing, embroidery, portrait, and moogle sit at separate depths.
+   Keep this plane un-clipped and un-isolated so the browser preserves its 3D children. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root:not(.reduce-motion) .membership-patch {
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg) translateY(0) scale(1);
+    transition:
+      transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 350ms ease;
+  }
+  :root:not(.reduce-motion) .membership-patch::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--patch-thread-dark);
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+      0deg,
+      var(--patch-thread-dark) 0 1px,
+      var(--patch-thread) 1px 2px
+    );
+    box-shadow:
+      0 1px 0 var(--patch-thread-dark),
+      0 2px 0 var(--patch-thread),
+      0 3px 0 var(--patch-thread-dark);
+    transform: translateZ(-4px);
+    pointer-events: none;
+  }
+  :root:not(.reduce-motion) .membership-patch::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at var(--patch-light-x, 50%) var(--patch-light-y, 50%),
+      color-mix(
+        in srgb,
+        var(--ui-surface-raised, var(--card)) 32%,
+        transparent
+      ),
+      transparent 68%
+    );
+    opacity: 0;
+    transform: translateZ(1px);
+    transition: opacity 350ms ease;
+    pointer-events: none;
+  }
+  :root:not(.reduce-motion) .membership-patch-border {
+    transform: translateZ(4px);
+  }
+  :root:not(.reduce-motion) .membership-patch-thread-shadow {
+    transform: translateZ(0.5px);
+  }
+  :root:not(.reduce-motion) .membership-patch-content {
+    transform: translateZ(3px);
+    transform-style: preserve-3d;
+  }
+  :root:not(.reduce-motion) .membership-patch-member {
+    transform-style: preserve-3d;
+  }
+  :root:not(.reduce-motion) .membership-patch-portrait {
+    transform: translateZ(4px) rotate(-3deg);
+  }
+  :root:not(.reduce-motion) .membership-patch-moogle {
+    transform: translateZ(10px) rotate(8deg);
+  }
+  :root:not(.reduce-motion) .membership-card[data-tilted] .membership-patch {
+    --patch-light-x: inherit;
+    --patch-light-y: inherit;
+    --patch-glint-x: inherit;
+    --patch-glint-y: inherit;
+    --patch-thread-shadow-x: inherit;
+    --patch-thread-shadow-y: inherit;
+    transform: rotateX(var(--patch-rotate-x, 0deg))
+      rotateY(var(--patch-rotate-y, 0deg)) translateY(-7px) scale(1.025);
+    transition-duration: 140ms, 350ms;
+    box-shadow:
+      inset 0 0 0 9px color-mix(in srgb, var(--patch-thread) 30%, transparent),
+      inset 0 0 12px 6px color-mix(in srgb, var(--patch-ink) 15%, transparent),
+      0 3px 2px color-mix(in srgb, var(--patch-ink) 28%, transparent),
+      var(--patch-cast-x, 0px) 20px 26px -8px
+        color-mix(in srgb, var(--scene-shadow, var(--text)) 35%, transparent);
+  }
+  :root:not(.reduce-motion)
+    .membership-card[data-tilted]
+    .membership-patch::after {
+    opacity: 1;
+  }
+  :root:is(.high-contrast, .dark.extra-dark)
+    .membership-card[data-tilted]
+    .membership-patch {
+    box-shadow: none;
+  }
+  :root:is(.high-contrast, .dark.extra-dark) .membership-patch::after {
+    display: none;
+  }
+}
+@container (max-width: 305px) {
+  .membership-patch-content {
+    padding-inline: 23px;
+  }
+  .membership-patch-member {
+    gap: 10px;
+  }
+  .membership-patch-portrait {
+    width: 60px;
+    height: 70px;
+  }
+  .membership-patch-name dd {
+    font-size: 1.25rem;
+  }
+  .membership-patch-greeting {
+    font-size: 0.875rem;
+  }
+}
+:root:is(.high-contrast, .dark.extra-dark) .membership-patch {
+  --patch-cloth: var(--card);
+  --patch-ink: var(--text);
+  --patch-muted: var(--text-muted);
+  --patch-thread: var(--text);
+  --patch-thread-dark: var(--text);
+  --patch-thread-light: var(--border);
+  background-image: none;
+  box-shadow: none;
+}
+:root.high-contrast
+  .membership-patch
+  :is(.membership-patch-rank, .membership-patch-rank-badge)
+  svg {
+  color: var(--patch-ink);
+}
+:root:is(.high-contrast, .dark.extra-dark) .membership-thread-lettering {
+  color: var(--patch-ink);
+  background: none;
+  filter: none;
+}
+.dyslexia-font .membership-patch :is(p, span, dt, dd) {
+  font-family:
+    "OpenDyslexic", "Comic Sans MS", "Manrope", system-ui, sans-serif;
+  letter-spacing: 0.03em;
+}
+@media (forced-colors: active) {
+  .membership-patch {
+    border: 2px solid CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+  .membership-patch-border,
+  .membership-patch-thread-shadow,
+  .membership-patch-moogle,
+  .membership-patch::before,
+  .membership-patch::after {
+    display: none;
+  }
+  :root .membership-card[data-tilted] .membership-patch {
+    box-shadow: none;
+  }
+  .membership-thread-lettering {
+    color: CanvasText;
+    background: none;
+    filter: none;
+  }
+}

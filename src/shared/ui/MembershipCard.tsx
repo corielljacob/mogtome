@@ -1,63 +1,49 @@
-import { useRef, useState } from "react";
-import type { CSSProperties } from "react";
-
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
+import { useEffect, useId, useRef } from "react";
+import type { CSSProperties, PointerEvent } from "react";
 import { getRankColor } from "@/shared/constants/rankColors";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
-import { useTheme } from "@/shared/contexts/ThemeContext";
-import { KawaiiHeart, KawaiiStar } from "@/shared/ui/kawaiiMotifs";
-
-// on hover the card pivots toward the cursor and catches the light. pointer-tilt
-// is gated behind reduced-motion + hover pointers; lighting eases off in dark.
+import { KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
+import { MogTomeMark } from "@/shared/ui/MogTomeMark";
+import { MembershipPatchEmbroidery } from "@/shared/ui/MembershipPatchEmbroidery";
+import "./membership-card.css";
 
 export interface MembershipCardProps {
   name: string;
   rank: string;
   avatarUrl: string;
   characterId?: string;
-  /** MogTome first-login date (NOT the FC join date); shown in the "Member Since" field */
+  /** MogTome first-login date (NOT the FC join date); shown in the "Since" field */
   memberSince?: Date | string;
   compact?: boolean;
 }
 
-const MAX_TILT = 12; // degrees
-const HOVER_SCALE = 1.03;
-
-// handwritten face fonts, loaded in index.html
-const HAND = '"Yusei Magic", "Zen Maru Gothic", "Caveat", cursive';
-
-function PawPrint({ className = "" }: { className?: string }) {
+function PawPrint() {
+  const threadId = useId();
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      <ellipse cx="12" cy="16.2" rx="5.2" ry="4.3" />
-      <circle cx="5.4" cy="10.6" r="2.1" />
-      <circle cx="9.7" cy="7.1" r="2.2" />
-      <circle cx="14.3" cy="7.1" r="2.2" />
-      <circle cx="18.6" cy="10.6" r="2.1" />
-    </svg>
-  );
-}
-
-function Squiggle({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 100 6"
-      preserveAspectRatio="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M0,3 Q8,0 16,3 T32,3 T48,3 T64,3 T80,3 T100,3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern
+          id={threadId}
+          width="2"
+          height="2"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(-30)"
+        >
+          <rect width="2" height="2" fill="currentColor" />
+          <path
+            d="M0 .5H2"
+            stroke="var(--patch-thread-light)"
+            strokeWidth=".45"
+          />
+        </pattern>
+      </defs>
+      <g fill={`url(#${threadId})`}>
+        <ellipse cx="12" cy="16.2" rx="5.2" ry="4.3" />
+        <circle cx="5.4" cy="10.6" r="2.1" />
+        <circle cx="9.7" cy="7.1" r="2.2" />
+        <circle cx="14.3" cy="7.1" r="2.2" />
+        <circle cx="18.6" cy="10.6" r="2.1" />
+      </g>
     </svg>
   );
 }
@@ -79,285 +65,150 @@ export function MembershipCard({
   const rankColor = getRankColor(rank);
   const RankIcon = rankColor.icon;
   const since = printDate(memberSince);
-
-  const { isDarkMode } = useTheme();
+  const cardRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const [canHover] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(hover: hover) and (pointer: fine)").matches,
-  );
-  const enableTilt = !prefersReducedMotion && canHover;
 
-  // Lighting is gentler in dark mode (soft-light white blows out on a dark card).
-  const lit = {
-    glareWhite: isDarkMode ? 0.34 : 0.6,
-    glareMul: isDarkMode ? 0.55 : 1,
-    holoMul: isDarkMode ? 0.38 : 0.85,
-    topSheen: isDarkMode ? 0.07 : 0.16,
+  const resetTilt = () => cardRef.current?.removeAttribute("data-tilted");
+
+  useEffect(() => {
+    const card = cardRef.current;
+    const reset = () => card?.removeAttribute("data-tilted");
+    const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    reset();
+    hoverQuery.addEventListener("change", reset);
+    window.addEventListener("blur", reset);
+    window.addEventListener("scroll", reset, true);
+    return () => {
+      hoverQuery.removeEventListener("change", reset);
+      window.removeEventListener("blur", reset);
+      window.removeEventListener("scroll", reset, true);
+    };
+  }, [prefersReducedMotion]);
+
+  const tiltToPointer = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      prefersReducedMotion ||
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) {
+      resetTilt();
+      return;
+    }
+
+    // Measure the stationary wrapper so rotation never feeds back into the tilt.
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const x = Math.min(
+      1,
+      Math.max(0, (event.clientX - rect.left) / rect.width),
+    );
+    const y = Math.min(
+      1,
+      Math.max(0, (event.clientY - rect.top) / rect.height),
+    );
+    card.style.setProperty(
+      "--patch-rotate-x",
+      `${((0.5 - y) * 20).toFixed(2)}deg`,
+    );
+    card.style.setProperty(
+      "--patch-rotate-y",
+      `${((x - 0.5) * 20).toFixed(2)}deg`,
+    );
+    card.style.setProperty("--patch-light-x", `${(x * 100).toFixed(1)}%`);
+    card.style.setProperty("--patch-light-y", `${(y * 100).toFixed(1)}%`);
+    // Thread highlights face the light; their tiny contact shadows fall away
+    // from it. These offsets are much smaller than the card's overall depth.
+    card.style.setProperty(
+      "--patch-glint-x",
+      `${((x - 0.5) * 1.4).toFixed(2)}px`,
+    );
+    card.style.setProperty(
+      "--patch-glint-y",
+      `${((y - 0.5) * 1.4).toFixed(2)}px`,
+    );
+    card.style.setProperty(
+      "--patch-thread-shadow-x",
+      `${((0.5 - x) * 2.6).toFixed(2)}px`,
+    );
+    card.style.setProperty(
+      "--patch-thread-shadow-y",
+      `${((0.5 - y) * 2.6).toFixed(2)}px`,
+    );
+    card.style.setProperty(
+      "--patch-cast-x",
+      `${((0.5 - x) * 22).toFixed(1)}px`,
+    );
+    card.dataset.tilted = "true";
   };
-
-  const rootRef = useRef<HTMLDivElement>(null);
-  const rectRef = useRef<DOMRect | null>(null);
-
-  const setVar = (n: string, v: string) =>
-    rootRef.current?.style.setProperty(n, v);
-
-  const handleEnter = () => {
-    const el = rootRef.current;
-    if (!el) return;
-    rectRef.current = el.getBoundingClientRect();
-    setVar("--glow", "1");
-    setVar("--s", String(HOVER_SCALE));
-    setVar("--card-shadow", "var(--panel-shadow-strong)");
-  };
-
-  const handleMove = (e: React.MouseEvent) => {
-    const rect = rectRef.current;
-    if (!rect) return;
-    const px = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
-    const py = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 1);
-    setVar("--ry", `${((px - 0.5) * 2 * MAX_TILT).toFixed(2)}deg`);
-    setVar("--rx", `${((0.5 - py) * 2 * MAX_TILT).toFixed(2)}deg`);
-    setVar("--mx", `${(px * 100).toFixed(1)}%`);
-    setVar("--my", `${(py * 100).toFixed(1)}%`);
-  };
-
-  const handleLeave = () => {
-    setVar("--rx", "0deg");
-    setVar("--ry", "0deg");
-    setVar("--s", "1");
-    setVar("--glow", "0");
-    setVar("--card-shadow", "var(--panel-shadow)");
-  };
-
-  const sizeClass = compact
-    ? "max-w-[340px] sm:max-w-[360px]"
-    : "max-w-[360px]";
-  const dashColor =
-    "border-[color:color-mix(in_srgb,var(--text)_24%,transparent)]";
 
   return (
-    <div className={compact ? "" : "py-4"}>
+    <div
+      ref={cardRef}
+      className={`membership-card${compact ? " membership-card-compact" : ""}`}
+      onPointerEnter={tiltToPointer}
+      onPointerMove={tiltToPointer}
+      onPointerLeave={resetTilt}
+      onPointerCancel={resetTilt}
+    >
       <div
-        className={`relative w-full ${sizeClass} mx-auto`}
-        style={{ perspective: "1000px" }}
+        className="membership-patch"
+        style={{ "--patch-rank": rankColor.hex } as CSSProperties}
       >
-        <div
-          ref={rootRef}
-          onMouseEnter={enableTilt ? handleEnter : undefined}
-          onMouseMove={enableTilt ? handleMove : undefined}
-          onMouseLeave={enableTilt ? handleLeave : undefined}
-          className={`relative aspect-[1.6/1] ${
-            enableTilt
-              ? "preserve-3d"
-              : "transition-transform duration-300 hover:-translate-y-1"
-          }`}
-          style={
-            enableTilt
-              ? ({
-                  transform:
-                    "rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--s,1))",
-                  transition: "transform 0.2s cubic-bezier(0.23,1,0.32,1)",
-                } as CSSProperties)
-              : undefined
-          }
-        >
-          <div
-            className="absolute inset-0 rounded-[1.35rem] overflow-hidden border"
-            style={
-              {
-                borderColor:
-                  "color-mix(in srgb, var(--primary) 26%, var(--card))",
-                background: `linear-gradient(165deg, color-mix(in srgb, var(--primary) 7%, var(--card)), var(--card) 55%)`,
-                boxShadow: "var(--card-shadow, var(--panel-shadow))",
-                transition: "box-shadow 0.25s ease-out",
-              } as CSSProperties
-            }
-          >
-            <div
-              className="absolute inset-0 opacity-[0.3] pointer-events-none"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--text) 11%, transparent) 1px, transparent 1.4px)",
-                backgroundSize: "13px 13px",
-              }}
-              aria-hidden="true"
-            />
-            <KawaiiHeart className="absolute top-10 right-6 w-3 h-3 text-[var(--primary)] opacity-30 rotate-12" />
-            <KawaiiStar className="absolute bottom-8 left-7 w-3 h-3 text-[var(--accent)] opacity-30 -rotate-12" />
-
-            <div
-              className="relative h-full px-4 py-3 flex flex-col"
-              style={{ fontFamily: HAND }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="flex items-center justify-center w-6 h-6 rounded-full shrink-0 -rotate-6"
-                    style={{ backgroundColor: "var(--primary)" }}
-                  >
-                    <PawPrint className="w-3.5 h-3.5 text-white" />
-                  </span>
-                  <div className="leading-none">
-                    <p className="text-lg text-[var(--text)]">MogTome</p>
-                    <p className="text-[10px] text-[var(--text-muted)] -mt-0.5">
-                      Member's Card
-                    </p>
-                  </div>
-                </div>
-                <span className="text-[10px] text-[var(--text-subtle)] -rotate-3">
-                  Kupo Life!
-                </span>
-              </div>
-
-              <Squiggle className="w-full h-1.5 mt-1.5 text-[color:color-mix(in_srgb,var(--primary)_35%,transparent)]" />
-
-              <div className="flex-1 flex items-center gap-4 min-h-0">
-                <div className="relative shrink-0 rotate-[-3deg]">
-                  <div
-                    className="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-12 h-4 rotate-3 rounded-[2px]"
-                    style={{
-                      background:
-                        "repeating-linear-gradient(45deg, color-mix(in srgb, var(--secondary) 42%, transparent) 0 5px, color-mix(in srgb, var(--secondary) 24%, transparent) 5px 10px)",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
-                    }}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className="p-[5px] pb-3 rounded-[3px] bg-white"
-                    style={{ boxShadow: "0 2px 5px -2px rgba(0,0,0,0.25)" }}
-                  >
-                    <img
-                      src={avatarUrl}
-                      alt=""
-                      className="w-[4rem] h-[4rem] object-cover rounded-[2px]"
-                    />
-                  </div>
-                  <span
-                    className="absolute -bottom-1 -right-2 flex items-center justify-center w-6 h-6 rounded-full rotate-6"
-                    style={{
-                      backgroundColor: `color-mix(in srgb, ${rankColor.hex} 26%, var(--card))`,
-                      border: `2px solid color-mix(in srgb, ${rankColor.hex} 46%, var(--card))`,
-                    }}
-                    aria-hidden="true"
-                  >
-                    <RankIcon
-                      className="w-3 h-3"
-                      style={{ color: rankColor.hex }}
-                    />
-                  </span>
-                </div>
-
-                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                  <div>
-                    <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                      Name
-                    </span>
-                    <span className="block text-[var(--text)] text-xl leading-tight truncate">
-                      {name}
-                    </span>
-                    <Squiggle className="w-20 h-1 text-[color:color-mix(in_srgb,var(--accent)_55%,transparent)]" />
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="min-w-0">
-                      <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                        Rank
-                      </span>
-                      <span
-                        className="flex items-center gap-1 text-sm leading-tight truncate"
-                        style={{ color: rankColor.hex }}
-                      >
-                        <RankIcon
-                          className="w-3 h-3 shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span className="truncate">{rank}</span>
-                      </span>
-                    </div>
-                    {since && (
-                      <div className="shrink-0">
-                        <span className="block text-[10px] text-[var(--text-subtle)] leading-none">
-                          Since
-                        </span>
-                        <span className="block text-sm text-[var(--text)] leading-tight">
-                          {since}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <span
-                  className={`flex-1 border-t border-dashed ${dashColor}`}
-                  aria-hidden="true"
-                />
-                <p className="flex items-center gap-1.5 text-[13px] text-[var(--text-muted)] whitespace-nowrap">
-                  <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
-                  member of Kupo Life
-                  <KawaiiHeart className="w-3 h-3 text-[var(--primary)]" />
-                </p>
-                <span
-                  className={`flex-1 border-t border-dashed ${dashColor}`}
-                  aria-hidden="true"
-                />
-              </div>
+        <MembershipPatchEmbroidery />
+        <div className="membership-patch-content">
+          <div className="membership-patch-header">
+            <span className="membership-patch-paw">
+              <PawPrint />
+            </span>
+            <div className="membership-patch-brand">
+              <p>
+                <span className="membership-thread-lettering">MogTome</span>
+              </p>
+              <span>Member's Card</span>
             </div>
-
-            {/* holographic sheen - backgroundPositionX tracks the cursor (--mx) */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: `linear-gradient(105deg,
-                  transparent 30%,
-                  color-mix(in srgb, var(--secondary) 55%, transparent) 44%,
-                  color-mix(in srgb, var(--primary) 50%, transparent) 50%,
-                  color-mix(in srgb, var(--accent) 55%, transparent) 56%,
-                  transparent 70%)`,
-                backgroundSize: "220% 100%",
-                backgroundPositionX: "var(--mx,50%)",
-                mixBlendMode: "soft-light",
-                opacity: `calc(var(--glow,0) * ${lit.holoMul})`,
-                transition: "opacity 0.25s ease-out",
-              }}
-              aria-hidden="true"
-            />
-            {/* specular glare centered on the pointer (--mx/--my) */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: `radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,${lit.glareWhite}), rgba(255,255,255,0) 42%)`,
-                mixBlendMode: "soft-light",
-                opacity: `calc(var(--glow,0) * ${lit.glareMul})`,
-                transition: "opacity 0.25s ease-out",
-              }}
-              aria-hidden="true"
-            />
-            <div
-              className="absolute inset-x-0 top-0 h-1/4 pointer-events-none"
-              style={{
-                background: `linear-gradient(180deg, rgba(255,255,255,${lit.topSheen}), transparent)`,
-                opacity: "calc(0.5 + var(--glow,0) * 0.5)",
-              }}
-              aria-hidden="true"
-            />
+            <span className="membership-patch-greeting">Kupo Life!</span>
           </div>
-
-          {/* translateZ pops the moogle out of the card in 3D under tilt */}
-          <span
-            className="absolute -bottom-3 -right-3 z-10 pointer-events-none select-none"
-            style={enableTilt ? { transform: "translateZ(45px)" } : undefined}
-            aria-hidden="true"
-          >
-            <img
-              src={lilGuyMoogle}
-              alt=""
-              className="w-14 object-contain rotate-[-8deg] animate-float-gentle drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)]"
-            />
-          </span>
+          <div className="membership-patch-member">
+            <div className="membership-patch-portrait">
+              <img src={avatarUrl} alt="" />
+              <span className="membership-patch-rank-badge" aria-hidden="true">
+                <RankIcon />
+              </span>
+            </div>
+            <div className="membership-patch-details">
+              <dl className="membership-patch-name">
+                <dt>Name</dt>
+                <dd>
+                  <span className="membership-thread-lettering">{name}</span>
+                </dd>
+              </dl>
+              <dl className="membership-patch-facts">
+                <div>
+                  <dt>Rank</dt>
+                  <dd className="membership-patch-rank">
+                    <RankIcon aria-hidden="true" />
+                    <span>{rank}</span>
+                  </dd>
+                </div>
+                {since && (
+                  <div>
+                    <dt>Since</dt>
+                    <dd>{since}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          </div>
+          <div className="membership-patch-footer">
+            <KawaiiHeart />
+            <p>member of Kupo Life</p>
+            <KawaiiHeart />
+          </div>
         </div>
+        <span className="membership-patch-moogle" aria-hidden="true">
+          <MogTomeMark />
+        </span>
       </div>
     </div>
   );

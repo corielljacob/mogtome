@@ -26,7 +26,8 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
       <div className="journal-profile-identity">
         <h1>{profile.name}</h1>
         <Tag
-          color={rankColor.hex}
+          className="profile-rank"
+          color={`color-mix(in srgb, ${rankColor.hex} 35%, var(--ui-ink))`}
           icon={<RankIcon className="w-3 h-3" aria-hidden="true" />}
         >
           {profile.rank}

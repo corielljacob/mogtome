@@ -75,7 +75,7 @@ export const BioEditor = memo(function BioEditor({
     mutationFn: (bio: string) => biographyApi.setBiography(bio),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["staff"] });
-      onMutationSuccess("Biography saved.");
+      onMutationSuccess("Bio saved.");
     },
   });
 
@@ -115,7 +115,7 @@ export const BioEditor = memo(function BioEditor({
   };
 
   const buttonLabel = canSetDirectly
-    ? "Save biography"
+    ? "Save bio"
     : hasPendingSubmission
       ? "Update submission"
       : "Submit for review";
@@ -154,7 +154,7 @@ export const BioEditor = memo(function BioEditor({
           ref={textareaRef}
           value={biography}
           onChange={(e) => setBiography(e.target.value)}
-          placeholder="Tell us a little about yourself or what you like doing in FFXIV."
+          placeholder="What do you get up to in FFXIV?"
           rows={isMobile ? 6 : compact ? 4 : 6}
           maxLength={MAX_BIO_LENGTH + 50}
           disabled={isSubmitting}
