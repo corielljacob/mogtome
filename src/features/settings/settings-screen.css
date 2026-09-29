@@ -76,14 +76,22 @@
   gap: clamp(25px, 4cqw, 48px);
 }
 .settings-sidebar {
-  position: sticky;
-  top: 24px;
+  align-self: stretch;
   min-width: 0;
+}
+.settings-sidebar-details {
+  min-width: 0;
+}
+.settings-panels {
+  min-width: 0;
+  scroll-margin-top: calc(var(--view-sticky-top) + var(--view-scroll-gap));
 }
 .settings-nav {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: var(--inner-page-paper, var(--ui-surface));
+  border-radius: 5px;
 }
 .settings-nav > button {
   display: flex;
@@ -583,11 +591,23 @@
     font-size: 0.6875rem;
   }
   .settings-layout {
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 18px;
+    align-items: stretch;
   }
   .settings-sidebar {
-    position: static;
+    display: contents;
+  }
+  .settings-sidebar-details {
+    order: 2;
+  }
+  .settings-panels {
+    order: 1;
+    scroll-margin-top: calc(
+      var(--view-sticky-top) + var(--view-toolbar-height, 5rem) +
+        var(--view-scroll-gap)
+    );
   }
   .settings-nav {
     display: grid;

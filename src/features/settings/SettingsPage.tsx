@@ -1,7 +1,8 @@
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTheme, THEME_DEFINITIONS } from "@/shared/contexts/ThemeContext";
 import { useIsMobile } from "@/shared/hooks/useMobile";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
 import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { AppearanceSection } from "./AppearanceSection";
@@ -40,7 +41,26 @@ const SECTIONS: {
 export function Settings() {
   const [section, setSection] = useState("appearance");
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousSection = useRef(section);
+  useStickyToolbar(layoutRef, navRef);
   const isMobile = useIsMobile(760);
+  useLayoutEffect(() => {
+    if (previousSection.current === section) return;
+    previousSection.current = section;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const clearance =
+      isMobile && navRef.current?.dataset.stickyDisabled !== "true"
+        ? (navRef.current?.getBoundingClientRect().bottom ?? 0) + 16
+        : 28;
+    const top = panel.getBoundingClientRect().top;
+    if (top < clearance || top > window.innerHeight) {
+      panel.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [section, isMobile]);
   const { settings, isDarkMode, activeEvent, isEventThemeActive } = useTheme();
   const themeName = isEventThemeActive
     ? activeEvent?.name
@@ -61,7 +81,7 @@ export function Settings() {
           : (index + (event.key === nextKey ? 1 : -1) + SECTIONS.length) %
             SECTIONS.length;
     setSection(SECTIONS[next].id);
-    tabs.current[next]?.focus();
+    tabs.current[next]?.focus({ preventScroll: true });
   };
   return (
     <div className="settings-screen" data-mode={isDarkMode ? "dark" : "light"}>
@@ -79,16 +99,17 @@ export function Settings() {
             <h1>
               Settings <SettingsIcon name="sparkles" size={28} />
             </h1>
-            <p>A few little adjustments to feel more at home.</p>
+            <p>Pick a theme and get comfortable.</p>
           </div>
           <Link to="/" className="settings-home-link">
             Back to home <SettingsIcon name="arrow-right" size={17} />
           </Link>
         </header>
-        <div className="settings-layout">
+        <div className="settings-layout" ref={layoutRef}>
           <aside className="settings-sidebar">
             <div
               className="settings-nav"
+              ref={navRef}
               role="tablist"
               aria-label="Settings sections"
               aria-orientation={isMobile ? "horizontal" : "vertical"}
@@ -121,39 +142,41 @@ export function Settings() {
                 </button>
               ))}
             </div>
-            <div className="settings-browser-note">
-              <SettingsIcon name="monitor" size={19} />
-              <div>
-                <strong>Just for this browser</strong>
-                <p>
-                  Appearance and accessibility preferences stay in this browser
-                  and apply right away.
-                </p>
+            <div className="settings-sidebar-details">
+              <div className="settings-browser-note">
+                <SettingsIcon name="monitor" size={19} />
+                <div>
+                  <strong>Just for this browser</strong>
+                  <p>
+                    Appearance and accessibility preferences stay in this
+                    browser and apply right away.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="settings-room-preview"
-              aria-label="Current appearance"
-            >
-              <span className="settings-preview-tape" aria-hidden="true" />
-              <div className="settings-preview-window" aria-hidden="true">
-                <span className="settings-preview-swatch" />
-                <img src={gamingMoogle} alt="" />
-                <span className="settings-preview-lines">
-                  <i />
-                  <i />
-                  <i />
+              <div
+                className="settings-room-preview"
+                aria-label="Current appearance"
+              >
+                <span className="settings-preview-tape" aria-hidden="true" />
+                <div className="settings-preview-window" aria-hidden="true">
+                  <span className="settings-preview-swatch" />
+                  <img src={gamingMoogle} alt="" />
+                  <span className="settings-preview-lines">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                </div>
+                <p>{themeName}</p>
+                <span>
+                  {settings.colorMode === "system"
+                    ? `Following your device · ${isDarkMode ? "dark" : "light"}`
+                    : `${isDarkMode ? "Dark" : "Light"} appearance`}
                 </span>
               </div>
-              <p>{themeName}</p>
-              <span>
-                {settings.colorMode === "system"
-                  ? `Following your device · ${isDarkMode ? "dark" : "light"}`
-                  : `${isDarkMode ? "Dark" : "Light"} appearance`}
-              </span>
             </div>
           </aside>
-          <div className="settings-panels">
+          <div className="settings-panels" ref={panelRef}>
             <div
               id="settings-panel-appearance"
               role="tabpanel"
@@ -185,7 +208,9 @@ export function Settings() {
         </div>
         <footer className="settings-footer">
           <SettingsIcon name="book" size={18} />
-          <span>Your place in the tome, just the way you like it.</span>
+          <span>
+            Appearance and accessibility changes save right away, kupo.
+          </span>
         </footer>
       </div>
     </div>

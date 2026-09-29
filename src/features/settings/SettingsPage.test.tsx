@@ -41,6 +41,29 @@ beforeEach(() => {
 });
 
 describe("Settings navigation", () => {
+  it("reveals a new panel after scrolling down without taking focus from its tab", async () => {
+    const user = userEvent.setup();
+    const { container } = renderSettings();
+    const panels = container.querySelector<HTMLElement>(".settings-panels")!;
+    const rect = vi
+      .spyOn(panels, "getBoundingClientRect")
+      .mockReturnValue({ top: -500 } as DOMRect);
+    const scroll = vi.spyOn(panels, "scrollIntoView");
+    scroll.mockClear();
+    const accessibility = screen.getByRole("tab", { name: /^Accessibility/ });
+    await user.click(accessibility);
+    expect(scroll).toHaveBeenCalledWith({
+      block: "start",
+      behavior: "instant",
+    });
+    expect(accessibility).toHaveFocus();
+    expect(screen.getByRole("tabpanel")).toHaveAccessibleName(/^Accessibility/);
+    scroll.mockClear();
+    rect.mockReturnValue({ top: 200 } as DOMRect);
+    await user.click(screen.getByRole("tab", { name: /^Appearance/ }));
+    expect(scroll).not.toHaveBeenCalled();
+  });
+
   it("supports arrow, Home, and End keys with only the active tab in the tab order", async () => {
     const user = userEvent.setup();
     renderSettings();
@@ -80,9 +103,7 @@ describe("Settings navigation", () => {
       screen.getByRole("heading", { name: "You're signed out." }),
     ).toBeVisible();
     await user.click(screen.getByRole("tab", { name: /^Appearance/ }));
-    expect(
-      screen.getByRole("radio", { name: "Dark" }),
-    ).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Dark" })).toBeChecked();
     expect(
       screen.getByRole("button", { name: /Seasonal theme calendar/ }),
     ).toHaveAttribute("aria-expanded", "true");

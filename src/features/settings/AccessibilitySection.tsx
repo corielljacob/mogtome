@@ -22,7 +22,7 @@ export function AccessibilitySection() {
     <SettingsCard
       icon="eye"
       title="Accessibility"
-      description="Make MogTome comfortable to read and explore."
+      description="Adjust the text, colors, and motion to suit you."
     >
       <div className="settings-comfort-groups">
         <fieldset className="settings-fieldset settings-comfort-group">
@@ -121,7 +121,7 @@ export function AccessibilitySection() {
           </legend>
           <SettingRow
             label="Reduce motion"
-            description="Minimize animations, transitions, and smooth scrolling."
+            description="Reduce animations and turn off smooth scrolling."
           >
             <ToggleSwitch
               label="Reduce motion"
@@ -131,7 +131,7 @@ export function AccessibilitySection() {
           </SettingRow>
           <SettingRow
             label="Stronger focus outlines"
-            description="Make your place clearer when using the keyboard."
+            description="Make it easier to see where you are when using the keyboard."
           >
             <ToggleSwitch
               label="Stronger focus outlines"

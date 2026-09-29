@@ -149,7 +149,7 @@ export function AppearanceSection() {
     <SettingsCard
       icon="palette"
       title="Appearance"
-      description="Choose the light, colors, and seasonal touches around your nook."
+      description="Choose your colors and seasonal decorations."
     >
       <div className="settings-appearance">
         <fieldset
@@ -194,7 +194,7 @@ export function AppearanceSection() {
         >
           <legend className="settings-subheading">Base theme</legend>
           <p className="settings-description" id={`${id}-theme-help`}>
-            Your everyday colors. Each palette brings a little of Eorzea home.
+            Pick the colors you want between seasonal events.
           </p>
 
           {isEventThemeActive && activeEvent && (
@@ -246,7 +246,7 @@ export function AppearanceSection() {
         <div className="settings-seasonal-group">
           <SettingRow
             label="Seasonal event themes"
-            description="Let the nook change colors for FFXIV seasonal events. Your base theme stays saved."
+            description="Change colors for FFXIV seasonal events, then return to your base theme."
           >
             <ToggleSwitch
               buttonRef={seasonalSwitchRef}
@@ -274,7 +274,7 @@ export function AppearanceSection() {
               </p>
               {activeEvent && !isEventThemeActive && (
                 <>
-                  <p>{activeEvent.name} is available on the theme calendar.</p>
+                  <p>You can use the {activeEvent.name} theme now.</p>
                   <button
                     type="button"
                     className="settings-button settings-event-action"
