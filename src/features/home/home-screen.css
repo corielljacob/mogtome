@@ -11,15 +11,39 @@
   min-width: 0;
   display: grid;
 }
+.is-home .storybook-header {
+  max-width: none;
+}
 .home-screen {
+  --nook-ceiling-clearance: clamp(
+    calc(112 * var(--layout-unit)),
+    13dvh,
+    calc(156 * var(--layout-unit))
+  );
+  --nook-room-gutter: clamp(
+    calc(24 * var(--layout-unit)),
+    3cqw,
+    calc(72 * var(--layout-unit))
+  );
   --nook-text: var(--ui-wall-ink);
   --nook-muted: var(--ui-wall-muted);
   --nook-heading: var(--ui-wall-heading);
   --nook-type-unit: calc(0.0625rem + var(--layout-unit) - 1px);
+  --nook-contact-shadow: color-mix(
+    in srgb,
+    var(--scene-shadow) 32%,
+    transparent
+  );
+  --nook-lantern-spill: 16%;
+  --nook-lantern-reflection: 13%;
   position: relative;
   isolation: isolate;
   container-type: inline-size;
   display: grid;
+}
+.home-screen[data-mode="dark"] {
+  --nook-lantern-spill: 30%;
+  --nook-lantern-reflection: 22%;
 }
 /* Keep rem-based copy responsive to browser font size and Large Text as the room grows. */
 @media (min-width: 768px) {
@@ -61,27 +85,26 @@
 .nook-layout {
   display: grid;
   grid-template-rows: 1fr auto;
-  gap: calc(28 * var(--layout-unit));
-  padding: calc(24 * var(--layout-unit))
-    clamp(calc(24 * var(--layout-unit)), 4cqw, calc(64 * var(--layout-unit)))
+  gap: calc(24 * var(--layout-unit));
+  padding: var(--nook-ceiling-clearance) var(--nook-room-gutter)
     max(calc(12 * var(--layout-unit)), env(safe-area-inset-bottom, 0px));
 }
 .home-nook {
   width: 100%;
-  max-width: calc(1120 * var(--layout-unit));
   position: relative;
-  align-self: center;
-  justify-self: center;
+  isolation: isolate;
+  /* The furniture occupies the available wall; room trim has its own full-width layer. */
+  align-self: stretch;
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.45fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
   grid-template-rows: auto 1fr;
   column-gap: clamp(
     calc(26 * var(--layout-unit)),
-    4cqw,
-    calc(56 * var(--layout-unit))
+    3cqw,
+    calc(72 * var(--layout-unit))
   );
   row-gap: calc(20 * var(--layout-unit));
-  padding: calc(90 * var(--layout-unit)) 0 calc(20 * var(--layout-unit));
+  padding: 0 0 calc(80 * var(--layout-unit));
 }
 .nook-window-scene {
   grid-column: 1;
@@ -95,10 +118,76 @@
   animation: nook-arrive 900ms ease-out both;
 }
 .nook-illustration-frame {
-  width: min(100%, calc(380 * var(--layout-unit)));
+  --applique-linen: color-mix(
+    in srgb,
+    var(--scene-paper) 87%,
+    var(--scene-wood-light)
+  );
+  --applique-thread: color-mix(
+    in srgb,
+    var(--scene-wood) 70%,
+    var(--scene-paper)
+  );
+  width: min(
+    100%,
+    max(
+      calc(300 * var(--layout-unit)),
+      calc(
+        (
+            100dvh - var(--app-header-height) - var(--nook-ceiling-clearance) -
+              188 * var(--layout-unit)
+          ) *
+          0.8
+      )
+    )
+  );
   aspect-ratio: 440 / 550;
   position: relative;
+  isolation: isolate;
   flex-shrink: 0;
+}
+.nook-applique-backing {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(
+      calc(0.8 * var(--layout-unit)) calc(1.8 * var(--layout-unit))
+        calc(0.8 * var(--layout-unit)) var(--nook-contact-shadow)
+    )
+    drop-shadow(
+      calc(2 * var(--layout-unit)) calc(5 * var(--layout-unit))
+        calc(4 * var(--layout-unit))
+        color-mix(in srgb, var(--scene-shadow) 16%, transparent)
+    );
+  pointer-events: none;
+  user-select: none;
+}
+/* The light is centered on the actual lantern at (375, 400) in the artwork.
+   Its soft edge extends beyond the fabric onto the wall beside the board. */
+.nook-illustration-frame::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 25.2%;
+  top: 36.7%;
+  width: 120%;
+  height: 72%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse closest-side,
+    color-mix(
+      in srgb,
+      var(--scene-glow) var(--nook-lantern-spill),
+      transparent
+    ),
+    color-mix(in srgb, var(--scene-glow) 7%, transparent) 43%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 .nook-illustration {
   display: block;
@@ -129,6 +218,8 @@
   height: 100%;
   overflow: visible;
   transform-origin: 50% 97.6%;
+  /* A close contact shadow lifts the padded embroidery off the scene. */
+  filter: drop-shadow(0.5px 1.5px 0.7px var(--nook-contact-shadow));
 }
 .nook-moogle__bobble {
   transform-box: view-box;
@@ -233,7 +324,7 @@
   opacity: 0.65;
   transform: rotate(-1deg);
 }
-.nook-welcome h1 > span {
+.nook-welcome h1 > .nook-welcome-heart {
   display: inline-block;
   font-size: 0.65em;
   color: var(--primary);
@@ -241,6 +332,20 @@
   margin-left: 0.2em;
 }
 .nook-keepsakes {
+  --stationery-shadow: var(--nook-contact-shadow);
+  --noticeboard-light-origin: -8% 65%;
+  --stationery-edge: color-mix(
+    in srgb,
+    var(--scene-wood) 38%,
+    var(--ui-surface)
+  );
+  --noticeboard-linen: color-mix(
+    in srgb,
+    var(--ui-surface) 84%,
+    var(--scene-wood-light)
+  );
+  position: relative;
+  isolation: isolate;
   grid-column: 2;
   grid-row: 2;
   min-height: 0;
@@ -253,24 +358,126 @@
     2.8cqw,
     calc(35 * var(--layout-unit))
   );
-  padding-top: calc(19 * var(--layout-unit));
-  padding-right: calc(4 * var(--layout-unit));
+  margin-top: calc(12 * var(--layout-unit));
+  padding: calc(34 * var(--layout-unit)) calc(27 * var(--layout-unit))
+    calc(27 * var(--layout-unit));
+}
+/* The frame and running stitch gather the keepsakes onto one linen board. */
+.nook-keepsakes::before,
+.nook-keepsakes::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.nook-keepsakes::before {
+  inset: 0;
+  z-index: -2;
+  border: calc(7 * var(--layout-unit)) solid var(--scene-wood);
+  border-left-color: color-mix(
+    in srgb,
+    var(--scene-wood) 88%,
+    var(--scene-glow)
+  );
+  border-top-color: var(--scene-wood-light);
+  border-right-color: color-mix(
+    in srgb,
+    var(--scene-wood) 78%,
+    var(--scene-wood-dark)
+  );
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--scene-wood) 64%,
+    var(--scene-wood-dark)
+  );
+  border-radius: calc(5 * var(--layout-unit));
+  background:
+    radial-gradient(
+      ellipse at var(--noticeboard-light-origin),
+      color-mix(
+        in srgb,
+        var(--scene-glow) var(--nook-lantern-reflection),
+        transparent
+      ),
+      transparent 55%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-wood) 9%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--scene-paper) 38%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    linear-gradient(
+      120deg,
+      var(--noticeboard-linen),
+      color-mix(in srgb, var(--noticeboard-linen) 92%, var(--scene-wood))
+    );
+  background-clip: padding-box;
+  box-shadow:
+    0 0 0 calc(1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-wood-dark) 35%, transparent),
+    inset 0 0 0 calc(1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-wood-dark) 24%, transparent),
+    inset calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(6 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-shadow) 15%, transparent),
+    calc(2 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(10 * var(--layout-unit)) calc(-4 * var(--layout-unit))
+      var(--nook-contact-shadow);
+}
+.nook-keepsakes::after {
+  inset: calc(15 * var(--layout-unit));
+  z-index: -1;
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--scene-wood) 44%, transparent);
+  border-radius: calc(2 * var(--layout-unit));
+}
+.nook-keepsakes .nook-about {
+  color: var(--ui-ink);
+}
+.home-screen .nook-keepsakes a:focus-visible {
+  outline-color: var(--ui-focus);
+}
+:is(.high-contrast, .extra-dark) .nook-keepsakes::before {
+  background: var(--ui-surface);
+  border-color: var(--ui-rule);
+  box-shadow: none;
+}
+:is(.high-contrast, .extra-dark) .nook-keepsakes::after {
+  display: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-illustration-frame::before {
+  display: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-applique-backing {
+  opacity: 0.45;
+  filter: none;
 }
 .nook-photo {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   min-width: 0;
   padding: calc(10 * var(--layout-unit)) calc(10 * var(--layout-unit))
     calc(12 * var(--layout-unit));
   color: var(--ui-secondary);
-  background: var(--ui-surface-raised);
+  background: transparent;
   box-shadow:
-    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
-      calc(3 * var(--layout-unit)) #624b3420,
-    calc(2 * var(--layout-unit)) calc(10 * var(--layout-unit))
-      calc(14 * var(--layout-unit)) calc(-9 * var(--layout-unit)) #382c4747;
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit)) 0
+      var(--stationery-edge),
+    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) var(--stationery-shadow),
+    calc(4 * var(--layout-unit)) calc(14 * var(--layout-unit))
+      calc(12 * var(--layout-unit)) calc(-6 * var(--layout-unit))
+      var(--stationery-shadow);
   transform: rotate(-4deg);
+  transform-origin: 50% 0;
   transition:
     transform 0.25s,
     box-shadow 0.25s;
@@ -325,12 +532,51 @@
   position: absolute;
   inset: calc(5 * var(--layout-unit)) calc(-3 * var(--layout-unit))
     calc(-3 * var(--layout-unit)) calc(4 * var(--layout-unit));
-  z-index: -1;
-  background: color-mix(in srgb, var(--nook-paper) 88%, var(--scene-wood));
+  z-index: -2;
+  border: calc(1 * var(--layout-unit)) solid var(--stationery-edge);
+  background: var(--bg-noise), var(--ui-surface-soft);
+  box-shadow: calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(2 * var(--layout-unit)) var(--stationery-shadow);
   transform: rotate(2deg);
+  pointer-events: none;
 }
-.nook-photo:hover {
-  transform: rotate(-1deg) translateY(calc(-4 * var(--layout-unit)));
+.nook-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: calc(2 * var(--layout-unit));
+  background:
+    var(--bg-noise),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-wood) 6%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    linear-gradient(
+      135deg,
+      var(--ui-surface-raised) 35%,
+      var(--ui-surface-soft)
+    );
+  box-shadow:
+    inset calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit)) 0
+      var(--ui-surface-raised),
+    inset 0 calc(-2 * var(--layout-unit)) 0 var(--stationery-edge);
+  pointer-events: none;
+}
+.nook-photo-seam {
+  position: absolute;
+  inset: calc(4 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--scene-wood) 42%, transparent);
+  border-radius: calc(1 * var(--layout-unit));
+  box-shadow: 0 calc(1 * var(--layout-unit)) 0
+    color-mix(in srgb, var(--ui-surface-raised) 70%, transparent);
+  pointer-events: none;
+}
+.nook-photo:is(:hover, :focus-visible) {
+  transform: rotate(-2deg) translateY(calc(-2 * var(--layout-unit)));
   box-shadow:
     calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
       calc(3 * var(--layout-unit)) #624b3420,
@@ -340,31 +586,103 @@
 .nook-tape {
   position: absolute;
   z-index: 2;
-  height: calc(25 * var(--layout-unit));
-  width: calc(86 * var(--layout-unit));
-  top: calc(-13 * var(--layout-unit));
-  left: calc(50% - calc(43 * var(--layout-unit)));
+  height: calc(32 * var(--layout-unit));
+  width: calc(94 * var(--layout-unit));
+  top: calc(-17 * var(--layout-unit));
+  left: calc(50% - calc(47 * var(--layout-unit)));
   transform: rotate(3deg);
-  background: var(--nook-washi);
-  opacity: 0.67;
+  filter: drop-shadow(
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(1 * var(--layout-unit)) var(--stationery-shadow)
+  );
+  pointer-events: none;
+}
+.nook-tape::before,
+.nook-tape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   clip-path: polygon(
-    2% 0,
-    97% 0,
-    100% 15%,
-    98% 30%,
-    100% 50%,
-    97% 75%,
-    100% 100%,
-    0 100%,
-    3% 75%,
-    0 50%,
-    2% 25%
+    2% 2%,
+    96% 0,
+    99% 8%,
+    97% 16%,
+    100% 24%,
+    97% 33%,
+    100% 45%,
+    98% 56%,
+    100% 66%,
+    97% 76%,
+    99% 86%,
+    97% 99%,
+    1% 100%,
+    3% 88%,
+    0 79%,
+    2% 67%,
+    0 58%,
+    3% 47%,
+    0 34%,
+    3% 23%,
+    0 12%
   );
 }
+.nook-tape::before {
+  background: var(--nook-washi);
+  opacity: 0.88;
+}
+.nook-tape::after {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-paper) 48%, transparent) 0
+        calc(0.7 * var(--layout-unit)),
+      transparent calc(0.7 * var(--layout-unit)) calc(2.5 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--scene-wood-dark) 12%, transparent) 0
+        calc(0.6 * var(--layout-unit)),
+      transparent calc(0.6 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    ),
+    linear-gradient(
+      180deg,
+      #fffdf540 0%,
+      transparent 44%,
+      #624b3433 48%,
+      #fffdf55c 53%,
+      transparent 61%,
+      #624b3421 100%
+    );
+  box-shadow: inset 0 calc(1 * var(--layout-unit)) 0 #fffdf570;
+}
 .nook-photo-image {
+  position: relative;
+  isolation: isolate;
   aspect-ratio: 1.2;
   overflow: hidden;
   background: color-mix(in srgb, var(--nook-paper) 76%, #e7dac4);
+  box-shadow:
+    0 0 0 calc(1 * var(--layout-unit)) var(--stationery-edge),
+    0 calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      var(--stationery-shadow);
+}
+.nook-photo-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg-noise);
+  box-shadow: inset calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit))
+    calc(3 * var(--layout-unit))
+    color-mix(in srgb, var(--scene-wood-dark) 15%, transparent);
+  pointer-events: none;
+}
+.nook-photo-corners {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 .nook-photo-image img {
   display: block;
@@ -416,21 +734,69 @@
   min-width: 0;
   gap: calc(26 * var(--layout-unit));
 }
+.nook-keepsakes .nook-wall-wish {
+  position: relative;
+  align-self: center;
+  width: fit-content;
+  max-width: 88%;
+  margin: 0 0 calc(5 * var(--layout-unit));
+  padding: calc(14 * var(--layout-unit)) calc(15 * var(--layout-unit))
+    calc(9 * var(--layout-unit));
+  color: var(--ui-action);
+  background:
+    var(--bg-noise),
+    linear-gradient(160deg, var(--ui-surface-raised), var(--ui-accent-soft));
+  border-radius: calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(4 * var(--layout-unit)) calc(1 * var(--layout-unit));
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    0 calc(1 * var(--layout-unit)) 0 var(--stationery-edge),
+    calc(2 * var(--layout-unit)) calc(5 * var(--layout-unit))
+      calc(4 * var(--layout-unit)) calc(-2 * var(--layout-unit))
+      var(--stationery-shadow);
+  font-size: calc(21 * var(--layout-unit));
+  opacity: 1;
+}
+.nook-note-pin {
+  position: absolute;
+  top: calc(-3 * var(--layout-unit));
+  left: 48%;
+  width: calc(9 * var(--layout-unit));
+  height: calc(9 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) solid var(--scene-brass);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 25%,
+    var(--scene-paper) 0 9%,
+    var(--scene-gold) 30%,
+    var(--scene-brass) 95%
+  );
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit)) 0
+      var(--stationery-shadow),
+    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) var(--stationery-shadow);
+}
+.nook-keepsakes .nook-wall-wish svg {
+  max-width: 100%;
+}
 .nook-letter {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  padding: calc(28 * var(--layout-unit)) calc(17 * var(--layout-unit))
-    calc(19 * var(--layout-unit));
+  padding: calc(32 * var(--layout-unit)) calc(19 * var(--layout-unit))
+    calc(23 * var(--layout-unit));
   background: transparent;
   color: var(--ui-ink);
   filter: drop-shadow(
-    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
-      calc(3 * var(--layout-unit)) #35244218
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(1 * var(--layout-unit)) var(--stationery-shadow)
   );
   border-radius: calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
     calc(8 * var(--layout-unit)) calc(1 * var(--layout-unit));
   transform: rotate(1deg);
+  transform-origin: 90% 0;
   transition: transform 0.25s;
   animation: note-arrive 950ms 300ms ease both;
 }
@@ -440,14 +806,42 @@
   inset: 0;
   z-index: -1;
   background:
+    var(--bg-noise),
+    linear-gradient(
+      180deg,
+      transparent 48%,
+      color-mix(in srgb, var(--scene-wood) 12%, transparent) 49%,
+      color-mix(in srgb, var(--ui-surface-raised) 65%, transparent) 50%,
+      transparent 52%
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(10 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-rose) 23%, transparent)
+        calc(11 * var(--layout-unit)),
+      transparent calc(12 * var(--layout-unit))
+    ),
     repeating-linear-gradient(
       transparent 0 calc(27 * var(--layout-unit)),
-      #a488681c calc(27 * var(--layout-unit)) calc(28 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-wood) 19%, transparent)
+        calc(27 * var(--layout-unit)) calc(28 * var(--layout-unit))
     ),
-    linear-gradient(112deg, var(--ui-surface), var(--ui-accent-soft));
+    linear-gradient(
+      174deg,
+      var(--ui-surface-raised),
+      var(--ui-accent-soft) 76%,
+      var(--ui-surface) 94%,
+      var(--stationery-edge) 99%,
+      var(--ui-surface-raised)
+    );
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    inset calc(-1 * var(--layout-unit)) calc(-2 * var(--layout-unit)) 0
+      var(--stationery-edge);
+  pointer-events: none;
   clip-path: polygon(
-    0 1%,
-    9% 0,
+    0 calc(20 * var(--layout-unit)),
+    calc(20 * var(--layout-unit)) 0,
     16% 1%,
     29% 0,
     34% 1%,
@@ -477,6 +871,26 @@
     0 27%
   );
 }
+.nook-letter-fold {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: calc(20 * var(--layout-unit));
+  height: calc(20 * var(--layout-unit));
+  background: linear-gradient(
+    135deg,
+    var(--stationery-edge) 46%,
+    var(--ui-surface-raised) 52%,
+    var(--ui-surface-soft) 83%,
+    var(--stationery-edge)
+  );
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  border-radius: 0 0 calc(3 * var(--layout-unit)) 0;
+  box-shadow: calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(2 * var(--layout-unit)) var(--stationery-shadow);
+  pointer-events: none;
+}
 .nook-pressed-flower {
   position: absolute;
   z-index: 1;
@@ -485,43 +899,39 @@
   right: calc(8 * var(--layout-unit));
   top: calc(-59 * var(--layout-unit));
   transform: rotate(9deg);
+  filter: drop-shadow(
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(0.7 * var(--layout-unit)) var(--stationery-shadow)
+  );
   pointer-events: none;
 }
 .nook-letter::after {
   content: "";
-  width: 35%;
-  height: calc(8 * var(--layout-unit));
+  width: 84%;
+  height: calc(16 * var(--layout-unit));
   position: absolute;
-  bottom: calc(-2 * var(--layout-unit));
-  right: calc(6 * var(--layout-unit));
-  box-shadow: 0 calc(5 * var(--layout-unit)) calc(5 * var(--layout-unit))
-    #634c4720;
+  bottom: calc(1 * var(--layout-unit));
+  right: calc(8 * var(--layout-unit));
+  border-radius: 50%;
+  box-shadow: 0 calc(8 * var(--layout-unit)) calc(7 * var(--layout-unit))
+    var(--stationery-shadow);
   transform: rotate(-3deg);
-  z-index: -1;
+  z-index: -2;
+  pointer-events: none;
 }
-.nook-letter:hover {
-  transform: translateY(calc(-4 * var(--layout-unit)));
+.nook-letter:is(:hover, :focus-visible) {
+  transform: rotate(-0.5deg) translateY(calc(-2 * var(--layout-unit)));
 }
 .nook-paperclip {
   position: absolute;
   z-index: 2;
-  top: calc(-15 * var(--layout-unit));
-  right: calc(17 * var(--layout-unit));
-  height: calc(34 * var(--layout-unit));
-  width: calc(11 * var(--layout-unit));
-  border: calc(2 * var(--layout-unit)) solid var(--scene-brass);
-  border-radius: calc(8 * var(--layout-unit));
+  top: calc(-19 * var(--layout-unit));
+  right: calc(18 * var(--layout-unit));
+  height: calc(43 * var(--layout-unit));
+  width: calc(19 * var(--layout-unit));
+  overflow: visible;
   transform: rotate(10deg);
-  box-shadow: calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit))
-    calc(1 * var(--layout-unit)) #75655130;
-}
-.nook-paperclip::after {
-  content: "";
-  position: absolute;
-  inset: calc(4 * var(--layout-unit)) calc(1 * var(--layout-unit))
-    calc(-3 * var(--layout-unit)) calc(2 * var(--layout-unit));
-  border: calc(1 * var(--layout-unit)) solid var(--scene-brass);
-  border-radius: calc(6 * var(--layout-unit));
+  pointer-events: none;
 }
 .nook-letter-title {
   color: var(--ui-action);
@@ -553,12 +963,40 @@
   height: calc(16 * var(--layout-unit));
 }
 .nook-about {
+  position: relative;
+  isolation: isolate;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: calc(44 * var(--layout-unit));
+  max-width: 100%;
+  width: fit-content;
+  align-self: center;
+  padding: calc(9 * var(--layout-unit)) calc(14 * var(--layout-unit));
   gap: calc(7 * var(--layout-unit));
   color: var(--nook-text);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-leaf) 12%, transparent) 0
+        calc(0.7 * var(--layout-unit)),
+      transparent calc(0.7 * var(--layout-unit)) calc(2.5 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-surface-raised) 70%, transparent) 0
+        calc(0.8 * var(--layout-unit)),
+      transparent calc(0.8 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    var(--ui-secondary-soft);
+  border: calc(1 * var(--layout-unit)) solid
+    color-mix(in srgb, var(--scene-leaf) 30%, var(--ui-surface));
+  border-radius: calc(2 * var(--layout-unit));
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(2 * var(--layout-unit)) var(--stationery-shadow);
+  transform: rotate(-3deg);
   font: 400
     clamp(
       calc(18 * var(--layout-unit)),
@@ -566,6 +1004,28 @@
       calc(23 * var(--layout-unit))
     )/1.2
     var(--font-script);
+}
+.nook-about::before {
+  content: "";
+  position: absolute;
+  inset: calc(4 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--ui-secondary) 46%, transparent);
+  box-shadow: 0 calc(1 * var(--layout-unit)) 0
+    color-mix(in srgb, var(--ui-surface-raised) 65%, transparent);
+  pointer-events: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-photo::after,
+:root:is(.high-contrast, .dark.extra-dark) .nook-letter::before,
+:root:is(.high-contrast, .dark.extra-dark) .nook-keepsakes .nook-about {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-rule);
+  box-shadow: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-photo-seam,
+:root:is(.high-contrast, .dark.extra-dark) .nook-letter-fold,
+:root:is(.high-contrast, .dark.extra-dark) .nook-keepsakes .nook-about::before {
+  display: none;
 }
 .nook-about svg {
   width: calc(16 * var(--layout-unit));
@@ -581,9 +1041,7 @@
   text-underline-offset: calc(5 * var(--layout-unit));
 }
 .home-footer {
-  justify-self: center;
   width: 100%;
-  max-width: calc(1120 * var(--layout-unit));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -786,7 +1244,6 @@
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
     column-gap: calc(20 * var(--layout-unit));
     row-gap: calc(18 * var(--layout-unit));
-    padding-top: calc(80 * var(--layout-unit));
   }
   .nook-welcome h1 {
     font-size: clamp(
@@ -801,7 +1258,8 @@
   }
   .nook-keepsakes {
     gap: calc(18 * var(--layout-unit));
-    padding-top: calc(12 * var(--layout-unit));
+    padding: calc(30 * var(--layout-unit)) calc(18 * var(--layout-unit))
+      calc(22 * var(--layout-unit));
   }
   .nook-letter {
     padding: calc(22 * var(--layout-unit)) calc(12 * var(--layout-unit))
@@ -835,6 +1293,55 @@
     gap: calc(18 * var(--layout-unit));
   }
 }
+/* A tall display gets two generous wall areas instead of a small desktop row. */
+@media (min-width: 601px) and (max-aspect-ratio: 1/1) {
+  .nook-layout {
+    padding-top: clamp(
+      calc(100 * var(--layout-unit)),
+      8dvh,
+      calc(116 * var(--layout-unit))
+    );
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: space-between;
+    row-gap: calc(24 * var(--layout-unit));
+    padding-bottom: calc(70 * var(--layout-unit));
+  }
+  .nook-window-scene {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .nook-illustration-frame {
+    width: min(100%, 42cqw);
+  }
+  .nook-welcome {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(40 * var(--nook-type-unit)),
+      5.8cqw,
+      calc(64 * var(--nook-type-unit))
+    );
+  }
+  .nook-keepsakes {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 0;
+    --noticeboard-light-origin: 15% -20%;
+  }
+  .nook-photo {
+    width: min(100%, 26dvh);
+    justify-self: center;
+  }
+  .nook-wall-hanging {
+    display: none;
+  }
+}
 @container (max-width: 600px) {
   .nook-holiday-keepsake {
     width: calc(46 * var(--layout-unit));
@@ -843,7 +1350,7 @@
     right: calc(-12 * var(--layout-unit));
   }
   .nook-layout {
-    padding-top: calc(18 * var(--layout-unit));
+    padding-top: calc(96 * var(--layout-unit));
     padding-inline: calc(20 * var(--layout-unit));
     gap: calc(24 * var(--layout-unit));
   }
@@ -852,7 +1359,7 @@
     grid-template-rows: auto auto;
     column-gap: calc(15 * var(--layout-unit));
     row-gap: calc(32 * var(--layout-unit));
-    padding: calc(76 * var(--layout-unit)) 0 calc(16 * var(--layout-unit));
+    padding: 0 0 calc(56 * var(--layout-unit));
   }
   .nook-window-scene {
     grid-column: 1;
@@ -891,7 +1398,7 @@
     line-height: 1.12;
     max-width: calc(200 * var(--nook-type-unit));
   }
-  .nook-welcome h1 > span {
+  .nook-welcome h1 > .nook-welcome-heart {
     display: block;
     margin-top: calc(15 * var(--layout-unit));
     margin-left: 38%;
@@ -904,9 +1411,11 @@
   .nook-keepsakes {
     grid-column: 1 / -1;
     grid-row: 2;
-    gap: calc(22 * var(--layout-unit));
-    padding: calc(12 * var(--layout-unit)) calc(5 * var(--layout-unit))
-      calc(5 * var(--layout-unit));
+    --noticeboard-light-origin: 18% -30%;
+    gap: calc(18 * var(--layout-unit));
+    margin-top: 0;
+    padding: calc(30 * var(--layout-unit)) calc(20 * var(--layout-unit))
+      calc(22 * var(--layout-unit));
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   }
   .nook-photo {
@@ -950,7 +1459,13 @@
     gap: calc(12 * var(--layout-unit));
   }
   .nook-about {
-    font-size: calc(19 * var(--layout-unit));
+    font-size: calc(18 * var(--layout-unit));
+    padding-inline: calc(9 * var(--layout-unit));
+    gap: calc(4 * var(--layout-unit));
+  }
+  .nook-about svg {
+    width: calc(12 * var(--layout-unit));
+    height: calc(12 * var(--layout-unit));
   }
   .home-footer {
     font-size: calc(10 * var(--nook-type-unit));
@@ -963,6 +1478,14 @@
     gap: calc(5 * var(--layout-unit));
   }
   .home-appearance i {
+    display: none;
+  }
+}
+@container (max-width: 360px) {
+  .nook-about {
+    font-size: calc(17 * var(--layout-unit));
+  }
+  .nook-about svg {
     display: none;
   }
 }

@@ -3,18 +3,32 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Heart, Palette } from "lucide-react";
 import { useTheme, THEME_DEFINITIONS } from "@/shared/contexts/ThemeContext";
 import { NookIllustration } from "./components/NookIllustration";
+import { NookAppliqueBacking } from "./components/NookAppliqueBacking";
 import { NookMoogle } from "./components/NookMoogle";
 import { NookPressedFlower } from "./components/NookPressedFlower";
 import { NookHolidayKeepsake } from "./components/NookHolidayKeepsake";
 import { NookFairyLights } from "./components/NookFairyLights";
 import { NookRoomDecor } from "./components/NookRoomDecor";
 import { NookWallHanging } from "./components/NookWallHanging";
+import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
+import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
+import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
+import {
+  NookHalloweenBadge,
+  NookHalloweenNote,
+} from "./components/NookHalloweenKeepsakes";
+import {
+  NookPaperclip,
+  NookPhotoCorners,
+} from "./components/NookStationeryDetails";
 import "./home-screen.css";
+import "./nook-halloween.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
   const { activeEvent, isEventThemeActive, settings, isDarkMode } = useTheme();
   const event = isEventThemeActive ? activeEvent : null;
+  const isHalloween = event?.id === "all-saints-wake";
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
@@ -27,12 +41,15 @@ export function Home() {
       data-holiday={event ? "true" : undefined}
     >
       <NookRoomDecor isDark={isDarkMode} />
+      {isHalloween && <NookHalloweenRoom />}
+      <NookFairyLights eventId={event?.id ?? null} />
       <div className="nook-layout">
         <section className="home-nook" aria-label="Welcome to Kupo Life">
-          <NookFairyLights eventId={event?.id ?? null} />
+          {isHalloween && <NookHalloweenHearth />}
           <NookWallHanging />
           <div className="nook-window-scene">
             <div className="nook-illustration-frame">
+              <NookAppliqueBacking />
               <NookIllustration
                 isDark={isDarkMode}
                 eventId={event?.id ?? null}
@@ -51,7 +68,7 @@ export function Home() {
               </button>
             </div>
             <p className="nook-moogle-note" role="status" aria-live="polite">
-              {boops > 0 ? "kupo!" : ""}
+              {boops > 0 ? (isHalloween ? "Boo, kupo!" : "kupo!") : ""}
             </p>
           </div>
 
@@ -59,9 +76,13 @@ export function Home() {
             <p className="nook-eyebrow">
               Kupo Life <span>·</span> Zalera <span>·</span> Crystal
             </p>
-            <h1>
-              Welcome home, kupo.<span aria-hidden="true">♡</span>
-            </h1>
+            {isHalloween && <NookHalloweenBadge />}
+            <NookWelcomeHeading isHalloween={isHalloween} />
+            {isHalloween && (
+              <p className="nook-halloween-welcome">
+                The ghosts are friendly, kupo.
+              </p>
+            )}
           </header>
 
           <div className="nook-keepsakes">
@@ -70,6 +91,7 @@ export function Home() {
               className="nook-photo"
               aria-label="Meet the members"
             >
+              <span className="nook-photo-seam" aria-hidden="true" />
               <span className="nook-tape" aria-hidden="true" />
               <NookHolidayKeepsake eventId={event?.id ?? null} />
               <div className="nook-photo-image">
@@ -80,6 +102,7 @@ export function Home() {
                   alt="A moogle enjoying a quiet afternoon fishing, illustrated by Toshiyuki Itahana"
                   draggable={false}
                 />
+                <NookPhotoCorners />
               </div>
               <span className="nook-photo-caption">
                 Members <ArrowRight aria-hidden="true" />
@@ -90,7 +113,10 @@ export function Home() {
             </Link>
             <div className="nook-notes">
               <p className="nook-wall-wish" aria-hidden="true">
-                <span>See you in game.</span>
+                <i className="nook-note-pin" />
+                <span>
+                  {isHalloween ? "Happy haunting!" : "See you in game."}
+                </span>
                 <svg viewBox="0 0 96 12" fill="none" focusable="false">
                   <path
                     d="M2 6q18-4 35 0m22 0q17-4 35 0M48 1l1.5 3.5L53 6l-3.5 1.5L48 11l-1.5-3.5L43 6l3.5-1.5Z"
@@ -100,8 +126,9 @@ export function Home() {
                 </svg>
               </p>
               <Link to="/chronicle" className="nook-letter">
-                <NookPressedFlower />
-                <span className="nook-paperclip" aria-hidden="true" />
+                <span className="nook-letter-fold" aria-hidden="true" />
+                {isHalloween ? <NookHalloweenNote /> : <NookPressedFlower />}
+                {!isHalloween && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">Recent FC activity.</span>
                 <span className="nook-letter-bottom">

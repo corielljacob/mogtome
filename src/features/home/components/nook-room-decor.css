@@ -1,14 +1,16 @@
-/* A frame for the room: decorations stay behind the links and off the stationery. */
+/* Room accents belong to the screen edges, independently of the content layout. */
 .nook-room-decor {
   position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: clip;
   pointer-events: none;
   user-select: none;
 }
 .nook-room-lamplight {
   position: absolute;
-  inset: 0;
+  inset: -8%;
+  mask-image: radial-gradient(ellipse, #000 35%, transparent 72%);
   background:
     radial-gradient(
       ellipse at 0% 20%,
@@ -28,16 +30,16 @@
 }
 .nook-room-charms {
   position: absolute;
-  top: calc(8 * var(--layout-unit));
-  width: clamp(68px, 8cqw, calc(120 * var(--layout-unit)));
+  top: calc(2.5 * var(--layout-unit));
+  width: calc(68 * var(--layout-unit));
   height: auto;
   overflow: visible;
 }
 .nook-room-charms--left {
-  left: calc(12 * var(--layout-unit));
+  left: calc(1 * var(--layout-unit));
 }
 .nook-room-charms--right {
-  right: calc(12 * var(--layout-unit));
+  right: calc(1 * var(--layout-unit));
 }
 .nook-room-star,
 .nook-room-moon {
@@ -48,10 +50,10 @@
 .nook-room-botanical {
   position: absolute;
   left: calc(10 * var(--layout-unit));
-  bottom: calc(60 * var(--layout-unit));
-  width: clamp(95px, 12cqw, calc(180 * var(--layout-unit)));
+  bottom: calc(88 * var(--layout-unit));
+  width: calc(100 * var(--layout-unit));
   height: auto;
-  opacity: 0.85;
+  opacity: 0.96;
   filter: drop-shadow(
     2px 4px 2px color-mix(in srgb, var(--scene-shadow) 18%, transparent)
   );
@@ -59,23 +61,19 @@
 .nook-reading-corner {
   position: absolute;
   right: calc(12 * var(--layout-unit));
-  bottom: calc(60 * var(--layout-unit));
-  width: clamp(100px, 11cqw, calc(160 * var(--layout-unit)));
+  bottom: calc(90 * var(--layout-unit));
+  width: calc(110 * var(--layout-unit));
   height: auto;
   overflow: visible;
   filter: drop-shadow(
     3px 5px 3px color-mix(in srgb, var(--scene-shadow) 30%, transparent)
   );
 }
-.nook-room-stardust {
-  position: absolute;
-  inset: 0;
-}
 .nook-wall-hanging {
   position: absolute;
-  left: 30.5%;
-  top: 20%;
-  width: 9.3%;
+  left: 36%;
+  top: calc(12 * var(--layout-unit));
+  width: 8%;
   height: auto;
   max-height: 43%;
   transform: rotate(3deg);
@@ -108,15 +106,14 @@
 }
 @container (max-width: 1000px) {
   .nook-wall-hanging {
-    left: 29.5%;
-    width: 10%;
-    top: 22%;
+    left: 35%;
+    width: 8%;
   }
   .nook-room-botanical {
-    width: 110px;
+    width: calc(82 * var(--layout-unit));
   }
   .nook-reading-corner {
-    width: 100px;
+    width: calc(90 * var(--layout-unit));
   }
   .nook-wall-wish {
     font-size: calc(20 * var(--layout-unit));
@@ -126,33 +123,19 @@
   .nook-wall-hanging {
     display: none;
   }
-  .nook-reading-corner {
-    display: none;
-  }
 }
 @container (max-width: 600px) {
   .nook-room-charms {
-    width: 58px;
-    top: 0;
-    opacity: 0.8;
-  }
-  .nook-room-charms--left {
-    left: 7px;
-  }
-  .nook-room-charms--right {
-    right: 7px;
+    display: none;
   }
   .nook-room-botanical {
-    width: 72px;
-    left: 6px;
-    bottom: 64px;
-    opacity: 0.35;
+    width: calc(50 * var(--layout-unit));
+    left: calc(8 * var(--layout-unit));
+    bottom: calc(80 * var(--layout-unit));
+    opacity: 0.75;
   }
   .nook-reading-corner {
     display: none;
-  }
-  .nook-room-stardust {
-    opacity: 0.6;
   }
   .nook-wall-wish {
     display: none;
