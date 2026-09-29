@@ -1,52 +1,26 @@
 import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import { NookThread } from "./NookThread";
+import { skySewnModels } from "./nookSkyModels";
 import "./nook-halloween-sky.css";
 
 type SkyLayer = "sun" | "moon" | "clouds" | "stars";
 
-const moon =
-  "M252 103C230 114 231 145 254 152C229 157 213 137 219 117C224 102 241 97 252 103Z";
-const cloud =
-  "M62 193Q72 182 83 186Q91 168 106 178Q111 180 113 186Q126 181 137 195Q105 199 62 193Z";
-const upperCloud =
-  "M201 126Q211 116 222 119Q233 104 245 118Q260 116 271 128Q236 132 201 126Z";
-const distantCloud = "M276 240q10-8 17-4q9-12 19-3q11-1 19 8Z";
-const sunThreads = Array.from({ length: 15 }, (_, i) => {
-  const x = 106.5 + i * 2.8;
-  const radius = Math.sqrt(Math.max(0, 21 ** 2 - (x - 126) ** 2));
-  return `M${x.toFixed(1)} ${(142 - radius).toFixed(1)}Q${(x + 3).toFixed(1)} 142 ${x.toFixed(1)} ${(142 + radius).toFixed(1)}`;
-}).join(" ");
-const moonThreads = Array.from({ length: 19 }, (_, i) => {
-  const y = 100 + i * 3;
-  return `M215 ${y}q17 5 40-1`;
-}).join(" ");
-const harvestMoonThreads = Array.from({ length: 24 }, (_, i) => {
-  const y = 92 + i * 3;
-  return `M201 ${y}q36 7 74-1`;
-}).join(" ");
 const bat =
   "M-2-1-2.5-4 0-2.7 2.5-4 2-1Q6-7 12-6Q8-2 9 2Q5-1 3 3L0 5-3 3Q-5-1-9 2Q-8-2-12-6Q-6-7-2-1Z";
-const cloudThreads =
-  Array.from({ length: 32 }, (_, i) => {
-    const x = 61 + i * 2.5;
-    return `M${x} 169q-3 13 1.5 32`;
-  }).join(" ") +
-  Array.from({ length: 31 }, (_, i) => {
-    const x = 198 + i * 2.5;
-    return `M${x} 103q-3 13 1.5 31`;
-  }).join(" ") +
-  Array.from({ length: 23 }, (_, i) => `M${275 + i * 2.5} 223q-2 8 1 20`).join(
-    " ",
-  );
 
 /** A warm satin-stitched moon, with a little flight of bats in its glow. */
-function HarvestMoon({ id }: { id: string }) {
+function HarvestMoon({ id, frame }: { id: string; frame: number }) {
   return (
     <>
       <defs>
         <clipPath id={`${id}-harvest-shape`}>
-          <circle cx="238" cy="126" r="32" />
+          <ellipse
+            cx="238"
+            cy="126"
+            rx={32 + [0, 0.6, -0.4][frame]}
+            ry={32 + [0, -0.4, 0.6][frame]}
+          />
         </clipPath>
         <radialGradient id={`${id}-harvest-halo`}>
           <stop stopColor="#f6d294" stopOpacity=".36" />
@@ -63,7 +37,7 @@ function HarvestMoon({ id }: { id: string }) {
       <circle cx="238" cy="126" r="32.5" fill={`url(#${id}-harvest-fill)`} />
       <g clipPath={`url(#${id}-harvest-shape)`}>
         <NookThread
-          d={harvestMoonThreads}
+          d={skySewnModels[frame].harvestMoonThreads}
           color="#efd8aa"
           shadow="#b39568"
           highlight="#fff3d0"
@@ -120,7 +94,7 @@ function HarvestMoon({ id }: { id: string }) {
         r="31.2"
         stroke="#f9e9be"
         strokeWidth="1.55"
-        strokeDasharray="1.7 1.25"
+        strokeDasharray={skySewnModels[frame].seam}
       />
       <path
         d="M211 121a28 28 0 0 1 26-23"
@@ -164,7 +138,16 @@ export function NookWindowSky({
     >
       {isHalloween && (layer === "sun" || layer === "moon") && (
         <g transform={layer === "sun" ? "translate(-112 16)" : undefined}>
-          <HarvestMoon id={id} />
+          {skySewnModels.map((_, frame) => (
+            <g
+              key={frame}
+              data-cycle-model={frame}
+              data-sewn-model={frame}
+              opacity={frame === 0 ? 1 : 0}
+            >
+              <HarvestMoon id={`${id}-${frame}`} frame={frame} />
+            </g>
+          ))}
         </g>
       )}
       {layer === "sun" && !isHalloween && (
@@ -177,37 +160,54 @@ export function NookWindowSky({
             </radialGradient>
           </defs>
           <circle cx="126" cy="142" r="64" fill={`url(#${id}-sun-halo)`} />
-          <circle cx="126" cy="142" r="22" fill="#f9e3b2" />
-          <NookThread
-            d={sunThreads}
-            color="#efd39b"
-            shadow="#a58450"
-            highlight="#fff0c9"
-            width={2.65}
-            relief={1.8}
-          />
-          <circle
-            cx="126"
-            cy="142"
-            r="21.5"
-            stroke="#d8b87e"
-            strokeWidth="2.4"
-            strokeDasharray="1.7 1.1"
-          />
-          <path
-            d="M112 132q5-9 16-8"
-            stroke="#fff0c9"
-            strokeWidth="1.3"
-            opacity=".55"
-          />
+          {skySewnModels.map((model, frame) => (
+            <g
+              key={frame}
+              data-cycle-model={frame}
+              data-sewn-model={frame}
+              opacity={frame === 0 ? 1 : 0}
+            >
+              <defs>
+                <clipPath id={`${id}-sun-${frame}`}>
+                  <path d={model.sun} />
+                </clipPath>
+              </defs>
+              <path d={model.sun} fill="#f9e3b2" />
+              <g clipPath={`url(#${id}-sun-${frame})`}>
+                <NookThread
+                  d={model.sunThreads}
+                  color="#efd39b"
+                  shadow="#a58450"
+                  highlight="#fff0c9"
+                  width={2.65}
+                  relief={1.8}
+                />
+              </g>
+              <path
+                d={model.sun}
+                stroke="#d8b87e"
+                strokeWidth="2.4"
+                strokeDasharray={model.seam}
+              />
+              <path
+                d={
+                  [
+                    "M112 132q5-9 16-8",
+                    "M113 131q6-8 15-7",
+                    "M111 134q4-10 16-10",
+                  ][frame]
+                }
+                stroke="#fff0c9"
+                strokeWidth="1.3"
+                opacity=".55"
+              />
+            </g>
+          ))}
         </>
       )}
       {layer === "moon" && !isHalloween && (
         <>
           <defs>
-            <clipPath id={`${id}-moon-shape`}>
-              <path d={moon} />
-            </clipPath>
             <radialGradient id={`${id}-moon-halo`}>
               <stop stopColor="#f4ddbe" stopOpacity=".26" />
               <stop offset=".45" stopColor="#eadfc9" stopOpacity=".08" />
@@ -215,26 +215,40 @@ export function NookWindowSky({
             </radialGradient>
           </defs>
           <circle cx="238" cy="126" r="58" fill={`url(#${id}-moon-halo)`} />
-          <path d={moon} fill="#f3dcaf" />
-          <g clipPath={`url(#${id}-moon-shape)`}>
-            <NookThread
-              d={moonThreads}
-              color="#ebd2a0"
-              shadow="#a48960"
-              highlight="#fff0c9"
-              width={2.65}
-              relief={1.8}
-            />
-          </g>
-          <NookThread
-            d={moon}
-            color="#eed5a5"
-            shadow="#bfa377"
-            highlight="#fff0c9"
-            width={2.1}
-            relief={1.8}
-            dasharray="2 1.1"
-          />
+          {skySewnModels.map((model, frame) => (
+            <g
+              key={frame}
+              data-cycle-model={frame}
+              data-sewn-model={frame}
+              opacity={frame === 0 ? 1 : 0}
+            >
+              <defs>
+                <clipPath id={`${id}-moon-${frame}`}>
+                  <path d={model.moon} />
+                </clipPath>
+              </defs>
+              <path d={model.moon} fill="#f3dcaf" />
+              <g clipPath={`url(#${id}-moon-${frame})`}>
+                <NookThread
+                  d={model.moonThreads}
+                  color="#ebd2a0"
+                  shadow="#a48960"
+                  highlight="#fff0c9"
+                  width={2.65}
+                  relief={1.8}
+                />
+              </g>
+              <NookThread
+                d={model.moon}
+                color="#eed5a5"
+                shadow="#bfa377"
+                highlight="#fff0c9"
+                width={2.1}
+                relief={1.8}
+                dasharray={model.seam}
+              />
+            </g>
+          ))}
           <path
             d="M228 111q-8 11-5 23"
             stroke="#fff0c9"
@@ -250,35 +264,40 @@ export function NookWindowSky({
       )}
       {layer === "clouds" && (
         <g fill="#f8ead5">
-          <defs>
-            <clipPath id={`${id}-cloud-shapes`}>
-              <path d={cloud} />
-              <path d={upperCloud} />
-              <path d={distantCloud} />
-            </clipPath>
-          </defs>
-          <path d={cloud} fill="#d8cdbb" />
-          <path d={upperCloud} fill="#d8cdbb" />
-          <path d={distantCloud} fill="#d8cdbb" />
-          <g clipPath={`url(#${id}-cloud-shapes)`}>
-            <NookThread
-              d={cloudThreads}
-              color="#f1e5ce"
-              shadow="#b2a08e"
-              highlight="#fff4df"
-              width={2.2}
-              relief={1.8}
-            />
-          </g>
-          <NookThread
-            d={cloud + upperCloud + distantCloud}
-            color="#efdfc4"
-            shadow="#a99280"
-            highlight="#fff4df"
-            width={2}
-            relief={1.8}
-            dasharray="2 1.3"
-          />
+          {skySewnModels.map((model, frame) => (
+            <g
+              key={frame}
+              data-cycle-model={frame}
+              data-sewn-model={frame}
+              opacity={frame === 0 ? 1 : 0}
+            >
+              <defs>
+                <clipPath id={`${id}-cloud-${frame}`}>
+                  <path d={model.clouds} />
+                </clipPath>
+              </defs>
+              <path d={model.clouds} fill="#d8cdbb" />
+              <g clipPath={`url(#${id}-cloud-${frame})`}>
+                <NookThread
+                  d={model.cloudThreads}
+                  color="#f1e5ce"
+                  shadow="#b2a08e"
+                  highlight="#fff4df"
+                  width={2.2}
+                  relief={1.8}
+                />
+              </g>
+              <NookThread
+                d={model.clouds}
+                color="#efdfc4"
+                shadow="#a99280"
+                highlight="#fff4df"
+                width={2}
+                relief={1.8}
+                dasharray={model.seam}
+              />
+            </g>
+          ))}
           {!isHalloween && (
             <path
               d="M170 177q4-5 8 0q4-5 8 0M146 197q3-4 6 0q3-4 6 0"

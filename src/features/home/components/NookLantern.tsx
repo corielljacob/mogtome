@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { NookLanternFlame } from "./NookLanternFlame";
 import { NookThread } from "./NookThread";
 
 // Gold satin follows the pressed roof and tray; the panes use airy diagonal silk.
@@ -88,9 +89,6 @@ export function NookLantern({ isDark }: { isDark: boolean }) {
         </clipPath>
         <clipPath id={`${id}-lantern-candle`}>
           <path d="M365 412Q368 410 371 412Q376 414 383 410L383 429Q376 434 366 430Z" />
-        </clipPath>
-        <clipPath id={`${id}-lantern-flame`}>
-          <path d="M374 410C366 409 367 402 370 398Q374 394 373 390C381 397 383 407 374 410Z" />
         </clipPath>
       </defs>
 
@@ -286,31 +284,7 @@ export function NookLantern({ isDark }: { isDark: boolean }) {
           stroke="var(--scene-ink)"
           strokeWidth=".9"
         />
-        <g className="nook-candle-flame" stroke="none">
-          <path
-            d="M374 410C366 409 367 402 370 398Q374 394 373 390C381 397 383 407 374 410Z"
-            fill="var(--scene-gold)"
-          />
-          <path
-            d="M374 408Q370 407 371 402Q375 398 374 395Q380 404 374 408Z"
-            fill="var(--scene-glow)"
-          />
-          <g clipPath={`url(#${id}-lantern-flame)`}>
-            <NookThread
-              d="M373 391q1 10-5 13M375 393q1 10-5 14M376.5 396q1 9-4 13M378 399q1 7-3 11M379 402l-2 7"
-              color="var(--scene-glow)"
-              shadow="var(--scene-gold)"
-              highlight="var(--scene-paper)"
-              width={1.15}
-            />
-          </g>
-          <NookThread
-            d="M374 408q-2.5-2 0-5q2.5 3 0 5Z"
-            color="var(--scene-paper)"
-            shadow="var(--scene-gold)"
-            width={1}
-          />
-        </g>
+        <NookLanternFlame />
 
         {/* Small separated reflections keep the flame and wax readable. */}
         <path

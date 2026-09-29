@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { NookTeaSteam } from "./NookTeaSteam";
 import { NookThread } from "./NookThread";
 
 // The cup's stitches fan inward with its tapered bowl; the saucer fans outward.
@@ -58,11 +59,6 @@ export function NookCoffee() {
             stopColor="color-mix(in srgb, var(--scene-brass) 76%, var(--scene-pot))"
           />
           <stop offset="1" stopColor="var(--scene-pot)" />
-        </linearGradient>
-        <linearGradient id={`${id}-coffee-steam`} x1="0" x2="0" y1="0" y2="1">
-          <stop stopColor="var(--scene-paper)" stopOpacity="0" />
-          <stop offset=".55" stopColor="var(--scene-paper)" stopOpacity=".7" />
-          <stop offset="1" stopColor="var(--scene-paper)" stopOpacity=".1" />
         </linearGradient>
       </defs>
 
@@ -278,21 +274,7 @@ export function NookCoffee() {
         ))}
       </g>
 
-      <g
-        className="nook-tea-steam"
-        fill="none"
-        stroke={paint("steam")}
-        strokeWidth="1.35"
-      >
-        <NookThread
-          d="M265 393C258 385 272 381 266 372Q262 366 267 360M277 391C282 386 271 381 279 374"
-          color={paint("steam")}
-          shadow="var(--scene-paper)"
-          width={1.15}
-          dasharray="3.4 1.1"
-          opacity={0.64}
-        />
-      </g>
+      <NookTeaSteam />
     </g>
   );
 }

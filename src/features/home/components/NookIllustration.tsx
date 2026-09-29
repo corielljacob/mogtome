@@ -5,26 +5,41 @@ import { NookProps } from "./NookProps";
 import { NookThread } from "./NookThread";
 import { NookVines } from "./NookVines";
 import { NookWindowView } from "./NookWindowView";
+import { threadVariation } from "./nookNeedlework";
 
 interface NookIllustrationProps {
   isDark: boolean;
   eventId: SeasonalEventId | null;
 }
 
-// Laid stitches turn with the arch and cross each straight frame rail.
+const n = (value: number) => value.toFixed(2);
+
+// Laid stitches turn with the arch. Needle entries and tension drift slightly;
+// each rail has its own rhythm, as if sewn in a separate pass.
 // One path per thread layer keeps the embroidery light enough to animate.
 const frameStitches = [
   ...Array.from({ length: 80 }, (_, i) => {
-    const angle = Math.PI + (i / 79) * Math.PI;
-    const next = angle + 0.009;
-    return `M${201 + Math.cos(angle) * 155} ${191 + Math.sin(angle) * 158}Q${201 + Math.cos(next) * 148} ${191 + Math.sin(next) * 151} ${201 + Math.cos(next) * 139} ${191 + Math.sin(next) * 141}`;
+    const angle = Math.PI + (i / 79) * Math.PI + threadVariation(i, 1) * 0.004;
+    const next = angle + 0.008 + threadVariation(i, 2) * 0.004;
+    const entry = threadVariation(i, 3) * 0.65;
+    const exit = threadVariation(i, 4) * 0.8;
+    return `M${n(201 + Math.cos(angle) * (155 + entry))} ${n(191 + Math.sin(angle) * (158 + entry))}Q${n(201 + Math.cos(next) * 148)} ${n(191 + Math.sin(next) * 151)} ${n(201 + Math.cos(next) * (139 + exit))} ${n(191 + Math.sin(next) * (141 + exit))}`;
   }),
   ...Array.from({ length: 53 }, (_, i) => {
-    const y = 195 + i * 4.4;
-    return `M46 ${y}q8 1 16-2M340 ${y}q8-1 16 2`;
+    const left = 195 + i * 4.4 + threadVariation(i, 5) * 0.8;
+    const right = 195 + i * 4.4 + threadVariation(i, 6) * 0.85;
+    return `M${n(46 + threadVariation(i, 7) * 0.45)} ${n(left)}q7.6 ${n(1 + threadVariation(i, 8) * 0.8)} ${n(16 + threadVariation(i, 9) * 0.7)} ${n(-2 + threadVariation(i, 10))}M${n(340 + threadVariation(i, 11) * 0.4)} ${n(right)}q8.3 ${n(-1 + threadVariation(i, 12) * 0.8)} ${n(16 + threadVariation(i, 13) * 0.65)} ${n(2 + threadVariation(i, 14))}`;
   }),
-  ...Array.from({ length: 55 }, (_, i) => `M${76 + i * 4.6} 218.5l-1 7.5`),
-  ...Array.from({ length: 44 }, (_, i) => `M197 ${237 + i * 4.4}l8-1.4`),
+  ...Array.from(
+    { length: 55 },
+    (_, i) =>
+      `M${n(76 + i * 4.6 + threadVariation(i, 15) * 0.75)} ${n(218.5 + threadVariation(i, 16) * 0.3)}q${n(-0.3 + threadVariation(i, 17) * 0.5)} 3.4 ${n(-1 + threadVariation(i, 18) * 0.6)} ${n(7.5 + threadVariation(i, 19) * 0.6)}`,
+  ),
+  ...Array.from(
+    { length: 44 },
+    (_, i) =>
+      `M${n(197 + threadVariation(i, 20) * 0.3)} ${n(237 + i * 4.4 + threadVariation(i, 21) * 0.75)}q3.6 ${n(-0.4 + threadVariation(i, 22) * 0.6)} ${n(8 + threadVariation(i, 23) * 0.5)} ${n(-1.4 + threadVariation(i, 24) * 0.65)}`,
+  ),
 ].join(" ");
 
 // One coordinate space keeps the window, shelf, and all seasonal objects grounded.
@@ -180,7 +195,7 @@ export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
             strokeDasharray="1.2 2.8"
             opacity=".6"
           />
-          {/* Tight satin binding has a dark gap, a rounded strand, and a fine glint. */}
+          {/* Satin binding follows the frame with small variations in tension. */}
           <NookThread
             d={frameStitches}
             color="var(--scene-wood-light)"
@@ -192,7 +207,7 @@ export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
             color="var(--scene-wood-light)"
             shadow="var(--scene-wood-dark)"
             width={2.2}
-            dasharray="2.4 1.3"
+            dasharray="2.5 1.1 2.1 1.35 2.9 1.2"
           />
           {/* The tiny brass catch and hinge plates make the frame feel made. */}
           <g

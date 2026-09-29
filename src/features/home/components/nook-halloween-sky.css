@@ -1,10 +1,11 @@
 .nook-halloween-sky-bat {
-  animation: nook-halloween-bat-flight 8s ease-in-out infinite;
+  animation: nook-halloween-bat-flight 11s steps(10, end) infinite;
 }
 
 .nook-halloween-sky-bat--distant {
   animation-delay: -3s;
   animation-duration: 10s;
+  animation-timing-function: steps(12, end);
 }
 
 @keyframes nook-halloween-bat-flight {
@@ -12,8 +13,30 @@
   100% {
     transform: translate(0, 0);
   }
+  10% {
+    transform: translate(0.3px, -0.5px);
+  }
+  20% {
+    transform: translate(1px, -1.6px);
+  }
+  30% {
+    transform: translate(2px, -2.5px);
+  }
+  40%,
   50% {
     transform: translate(3px, -3px);
+  }
+  60% {
+    transform: translate(2.6px, -2.4px);
+  }
+  70% {
+    transform: translate(1.6px, -1.2px);
+  }
+  80% {
+    transform: translate(0.5px, -0.3px);
+  }
+  90% {
+    transform: translate(0, 0);
   }
 }
 

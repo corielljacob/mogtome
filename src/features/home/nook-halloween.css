@@ -66,7 +66,7 @@
 .nook-halloween-wall-bat {
   transform-box: fill-box;
   transform-origin: center;
-  animation: halloween-bat-sway 9s ease-in-out infinite;
+  animation: halloween-bat-sway 12s steps(11, end) infinite;
 }
 .nook-halloween-wall-bat--1 {
   animation-delay: -3s;
@@ -177,33 +177,67 @@
 .nook-halloween-flame {
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: halloween-candle 4.8s ease-in-out infinite;
+  animation: halloween-candle 6.4s steps(6, end) infinite;
 }
 .nook-halloween-spark {
   animation: star-glimmer 6s ease-in-out infinite;
 }
 @keyframes halloween-bat-sway {
   0%,
+  10%,
   100% {
-    transform: rotate(-3deg) translateY(0);
+    transform: rotate(-2deg) translateY(0);
   }
-  50% {
-    transform: rotate(3deg) translateY(-2px);
+  20%,
+  90% {
+    transform: rotate(-1.5deg) translateY(-0.2px);
+  }
+  30% {
+    transform: rotate(-0.2deg) translateY(-0.7px);
+  }
+  40%,
+  70% {
+    transform: rotate(1.5deg) translateY(-1.3px);
+  }
+  50%,
+  60% {
+    transform: rotate(2deg) translateY(-1.5px);
+  }
+  80% {
+    transform: rotate(0.2deg) translateY(-0.7px);
   }
 }
 @keyframes halloween-candle {
   0%,
   100% {
-    transform: scale(1, 1);
-    opacity: 0.86;
+    transform: rotate(-0.5deg) scale(1, 1);
+  }
+  10% {
+    transform: rotate(-1deg) scale(0.98, 1.02);
+  }
+  20% {
+    transform: rotate(1.5deg) scale(0.95, 1.06);
+  }
+  30% {
+    transform: rotate(0.5deg) scale(0.99, 1.01);
   }
   40% {
-    transform: scale(0.93, 1.05);
-    opacity: 1;
+    transform: rotate(-1deg) scale(1.03, 0.97);
   }
-  65% {
-    transform: scale(1.04, 0.97);
-    opacity: 0.9;
+  50% {
+    transform: rotate(-0.5deg) scale(1, 1);
+  }
+  60% {
+    transform: rotate(1deg) scale(0.97, 1.04);
+  }
+  70% {
+    transform: rotate(2deg) scale(0.95, 1.07);
+  }
+  80% {
+    transform: rotate(0.5deg) scale(0.98, 1.03);
+  }
+  90% {
+    transform: rotate(-1deg) scale(1.02, 0.98);
   }
 }
 @container (max-width: 850px) {

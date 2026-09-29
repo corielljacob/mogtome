@@ -3,7 +3,9 @@ import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import { NookMoogleHeadwear } from "./NookMoogleHeadwear";
 import { NookMoogleBodywear } from "./NookMoogleBodywear";
 import { NookMoogleStitches } from "./NookMoogleStitches";
+import type { MoogleModel } from "./NookMoogleStitches";
 import { NookThread } from "./NookThread";
+import "./nook-moogle-models.css";
 
 interface NookMoogleProps {
   className?: string;
@@ -33,19 +35,21 @@ const materials = {
     "color-mix(in srgb, var(--scene-rose, #bc8580) 80%, var(--scene-ink, #604b3d))",
 };
 
-/** A padded cord with individual wraps catching the light along its edge. */
+/** Padded cotton binding, with uneven wraps and soft catches of light. */
 function StitchedEdge({
   d,
   thread = materials.fur,
   shade = materials.furShade,
   light = materials.furLight,
   width = 2.6,
+  model = 0,
 }: {
   d: string;
   thread?: string;
   shade?: string;
   light?: string;
   width?: number;
+  model?: MoogleModel;
 }) {
   return (
     <g fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -55,54 +59,97 @@ function StitchedEdge({
         d={d}
         stroke={shade}
         strokeWidth={width}
-        strokeDasharray=".65 2.6"
+        strokeDasharray={
+          [
+            ".55 2.9 .8 2.35 .62 2.7 .73 2.4",
+            ".8 2.15 .6 3.05 .9 2.3 .55 2.7",
+            ".65 2.55 .9 2.1 .5 3.1 .8 2.2",
+          ][model]
+        }
         strokeLinecap="butt"
         opacity=".65"
       />
       <path
         d={d}
         stroke={light}
-        strokeWidth={width * 0.48}
-        strokeDasharray="1.3 1.95"
+        strokeWidth={width * 0.4}
+        strokeDasharray={
+          [
+            "1.1 2.1 1.45 1.8 .95 2.35 1.25 2.05",
+            "1.5 1.9 .85 2.6 1.2 1.65 1.4 2.3",
+            ".9 2.4 1.6 1.7 1.15 2.2 1.3 1.8",
+          ][model]
+        }
         transform="translate(-.35 -.45)"
-        opacity=".9"
+        opacity=".55"
       />
     </g>
   );
 }
 
-// Code-authored SVG; resting feet stay at y=244, independently of the breathing belly.
-export function NookMoogle({
-  className = "",
+// The same character sewn three times: padding bulges and seam routes differ
+// slightly, while the face placement and grounded feet preserve its identity.
+const modelOutlines = [
+  {
+    body: "M80 155C65 161 57 177 53 197C49 218 65 237 88 239C113 243 140 235 146 216C153 196 142 171 124 159Z",
+    head: "M99 82C71 79 46 88 37 108C32 119 32 130 34 139L28 143L33 146L29 151L36 153C43 171 69 181 99 180C129 182 155 173 164 156L171 153L167 149L172 145L166 141C169 124 164 108 153 98C140 86 119 81 99 82Z",
+    pom: "M158 29A27 27 0 1 1 104 29A27 27 0 1 1 158 29Z",
+    cheeks:
+      "m39 131 6-3m-6 9 7-3m-7 10 7-3m-5 10 7-4m-3 10 7-5m-1 10 7-5m1 9 6-5m3 8 6-6M156 122l6 3m-7 3 7 3m-7 3 7 3m-8 3 7 3m-8 3 7 3m-9 3 6 4m-9 2 5 4m-10 1 5 5",
+  },
+  {
+    body: "M80 155C64 163 56 178 52 198C50 220 67 237 89 239C112 242 141 234 147 215C152 194 141 171 124 159Z",
+    head: "M99 82C73 78 47 89 36 109C31 120 33 131 34 139L28 144L34 146L30 151L36 154C45 172 71 182 99 180C130 181 155 174 165 155L171 152L166 148L171 145L166 140C170 123 163 107 152 97C140 87 119 80 99 82Z",
+    pom: "M158 29C158.5 45 146 55 131 56C115 55.5 104.5 44 104 29C104 14 116 2 131 2C147 1.5 158 15 158 29Z",
+    cheeks:
+      "M39 130l7-2m-8 9 8-4m-7 11 6-3m-4 10 8-5m-4 11 7-4m1 10 6-6m3 9 7-5M157 122l5 4m-8 3 8 2m-7 4 7 3m-8 4 7 3m-8 4 7 3m-10 3 6 5m-11 1 6 4m-12 1 5 5",
+  },
+  {
+    body: "M80 155C66 160 57 176 54 197C48 217 64 236 87 239C114 244 139 235 145 217C154 197 143 172 124 159Z",
+    head: "M99 82C70 80 45 87 38 107C33 118 31 130 34 140L29 143L33 147L28 151L37 153C42 170 68 180 99 180C128 183 156 172 163 156L170 154L167 150L173 145L166 142C168 125 165 109 154 99C139 85 118 82 99 82Z",
+    pom: "M158 29C157.5 44 145 56 131 56C116 56.5 103.5 43 104 29C103 13 117 2.5 131 2C145 1 158.5 13 158 29Z",
+    cheeks:
+      "M40 129l5-3m-7 10 7-3m-7 9 8-2m-5 10 6-5m-3 11 7-4m-1 10 8-6m1 10 6-5m3 8 6-5M156 121l7 3m-8 4 6 4m-7 2 8 3m-9 4 8 2m-9 4 7 4m-10 3 6 3m-9 3 5 5m-11 1 6 4",
+  },
+] as const;
+
+function NookMoogleModel({
+  model,
   booped = false,
   eventId = null,
-}: NookMoogleProps) {
+}: Omit<NookMoogleProps, "className"> & { model: MoogleModel }) {
   const id = useId().replace(/:/g, "");
   const paint = (name: string) => `url(#${id}-${name})`;
   const scarfInFront = eventId === "starlight" || eventId === "the-rising";
-  const bodyOutline =
-    "M80 155C65 161 57 177 53 197C49 218 65 237 88 239C113 243 140 235 146 216C153 196 142 171 124 159Z";
-  const headOutline =
-    "M99 82C71 79 46 88 37 108C32 119 32 130 34 139L28 143L33 146L29 151L36 153C43 171 69 181 99 180C129 182 155 173 164 156L171 153L167 149L172 145L166 141C169 124 164 108 153 98C140 86 119 81 99 82Z";
-  const leftPaw = booped
-    ? "M65 202C53 195 42 176 48 167C54 159 63 165 68 177L82 195C87 205 74 211 65 202Z"
-    : "M65 180C54 180 52 192 60 204C66 214 79 217 84 209C89 201 78 190 75 188";
-  const rightPaw = booped
-    ? "M136 203C149 196 158 178 153 169C147 160 137 167 132 180L120 197C116 208 129 213 136 203Z"
-    : "M137 182C147 181 151 193 144 205C137 215 124 217 119 209C115 202 125 193 128 190";
+  const pleased = booped && model === 2;
+  const headLift = (booped ? [0, 0.8, -0.15] : [0, -0.2, -0.55])[model];
+  const headTurn = (booped ? [0, -1.3, 1.2] : [0, 1, 2.2])[model];
+  const {
+    body: bodyOutline,
+    head: headOutline,
+    pom: pomOutline,
+    cheeks,
+  } = modelOutlines[model];
+  const leftPaw =
+    "M65 180C54 180 52 192 60 204C66 214 79 217 84 209C89 201 78 190 75 188";
+  const rightPaw =
+    "M137 182C147 181 151 193 144 205C137 215 124 217 119 209C115 202 125 193 128 190";
+  const leftEye = pleased ? "M55 135Q65 130 77 135" : "M55 133Q65 142 77 135";
+  const rightEye = pleased
+    ? "M124 135Q135 130 146 133"
+    : "M124 135Q135 142 146 133";
   const feet =
     "M70 216C58 212 47 220 47 232C46 240 58 244 72 244C86 244 94 239 90 230C87 223 80 218 70 216ZM130 216C141 211 152 220 153 231C155 240 142 244 128 244C114 244 108 239 111 231C114 223 121 219 130 216Z";
   return (
-    <svg
-      className={`nook-moogle-art ${className}`.trim()}
-      viewBox="0 0 200 250"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      data-booped={booped || undefined}
-      data-holiday={eventId || undefined}
+    <g
+      className={`nook-moogle__model nook-moogle__model--${model}`}
+      data-sewn-model={model}
+      data-boop-pose={booped ? ["rest", "dip", "smile"][model] : undefined}
     >
       <defs>
+        <clipPath id={`${id}-pom-shape`}>
+          <path d={pomOutline} />
+        </clipPath>
         <clipPath id={`${id}-paws-shape`}>
           <path d={leftPaw} />
           <path d={rightPaw} />
@@ -146,7 +193,7 @@ export function NookMoogle({
         <radialGradient id={`${id}-blush`}>
           <stop
             stopColor={materials.rose}
-            stopOpacity={booped ? ".85" : ".65"}
+            stopOpacity={pleased ? ".75" : ".65"}
           />
           <stop offset=".5" stopColor={materials.rose} stopOpacity=".28" />
           <stop offset="1" stopColor={materials.rose} stopOpacity="0" />
@@ -168,6 +215,7 @@ export function NookMoogle({
           <path d="M139 171C157 169 170 161 179 153C183 164 185 178 181 190C173 181 165 183 160 190C154 183 145 186 137 190Z" />
           <g clipPath={paint("wing-shape")}>
             <NookMoogleStitches
+              model={model}
               part="wings"
               color={materials.wingLight}
               shade={materials.wing}
@@ -184,6 +232,7 @@ export function NookMoogle({
             opacity=".28"
           />
           <StitchedEdge
+            model={model}
             d="M24 150C21 161 20 177 23 188C31 181 37 182 43 189C49 182 57 185 65 190M179 153C183 164 185 178 181 190C173 181 165 183 160 190C154 183 145 186 137 190"
             thread={materials.wingLight}
             shade={materials.wing}
@@ -213,20 +262,30 @@ export function NookMoogle({
           />
           <g clipPath={paint("belly-shape")}>
             <NookMoogleStitches
+              model={model}
               part="belly"
               color={materials.fur}
               shade={materials.furShade}
               light={materials.furLight}
             />
           </g>
-          <StitchedEdge d={bodyOutline} />
+          <StitchedEdge model={model} d={bodyOutline} />
           <g
             clipPath={paint("belly-shape")}
             stroke={materials.furShade}
             strokeWidth=".8"
             opacity=".6"
           >
-            <path d="M100 185Q104 207 99 230" strokeDasharray="2.3 3.2" />
+            <path
+              d={
+                [
+                  "M100 185Q104 207 99 230",
+                  "M101 186Q102 207 98.5 230",
+                  "M99 184Q105 208 100 231",
+                ][model]
+              }
+              strokeDasharray={["2.3 3.2", "2.7 3.6", "2.1 3.1"][model]}
+            />
           </g>
         </g>
 
@@ -234,7 +293,10 @@ export function NookMoogle({
           <NookMoogleBodywear eventId={eventId} paint={paint} />
         )}
 
-        <g className="nook-moogle__head" transform="rotate(-6 100 142)">
+        <g
+          className="nook-moogle__head"
+          transform={`translate(0 ${headLift}) rotate(${-6 + headTurn} 100 142)`}
+        >
           <g className="nook-moogle__ears" fill={paint("fur")}>
             <path d="M48 108C40 96 40 76 47 64C61 66 77 80 80 95Z" />
             <path d="M124 95C130 81 144 70 154 70C162 83 158 100 148 112Z" />
@@ -254,11 +316,18 @@ export function NookMoogle({
               stroke="none"
             />
             <StitchedEdge
+              model={model}
               d="M48 108C40 96 40 76 47 64C61 66 77 80 80 95M124 95C130 81 144 70 154 70C162 83 158 100 148 112"
               width={2}
             />
             <NookThread
-              d="M47 70q2 13 10 25M51 71q3 13 11 24M55 73q3 10 11 20M151 75q-2 14-9 24M147 77q-2 12-9 20M143 80l-9 14"
+              d={
+                [
+                  "M47 70q2 13 10 25M51 71q3 13 11 24M55 73q3 10 11 20M151 75q-2 14-9 24M147 77q-2 12-9 20M143 80l-9 14",
+                  "M47.5 70q1 14 10 26M52 72q2 12 10 22M56 74q2 9 10 19M151 76q-1 12-8 24M147 77q-1 12-9 20M143 81l-8 14",
+                  "M46.5 71q3 13 11 24M50.5 72q4 12 11 23M55 73q4 11 11 20M151 75q-3 15-10 24M147 78q-3 13-10 20M143 81l-10 14",
+                ][model]
+              }
               color={materials.roseLight}
               shadow={materials.rose}
               highlight={materials.furLight}
@@ -307,13 +376,14 @@ export function NookMoogle({
           />
           <g clipPath={paint("head-shape")}>
             <NookMoogleStitches
+              model={model}
               part="face"
               color={materials.fur}
               shade={materials.furShade}
               light={materials.furLight}
             />
           </g>
-          <StitchedEdge d={headOutline} width={3} />
+          <StitchedEdge model={model} d={headOutline} width={3} />
           {/* Short laid stitches fan around the cheeks, following the padding. */}
           <g
             clipPath={paint("head-shape")}
@@ -321,7 +391,7 @@ export function NookMoogle({
             strokeWidth=".9"
             opacity=".7"
           >
-            <path d="m39 131 6-3m-6 9 7-3m-7 10 7-3m-5 10 7-4m-3 10 7-5m-1 10 7-5m1 9 6-5m3 8 6-6M156 122l6 3m-7 3 7 3m-7 3 7 3m-8 3 7 3m-8 3 7 3m-9 3 6 4m-9 2 5 4m-10 1 5 5" />
+            <path d={cheeks} />
           </g>
           <g className="nook-moogle__face">
             <ellipse
@@ -341,16 +411,8 @@ export function NookMoogle({
               stroke="none"
             />
             <g stroke={materials.ink} strokeWidth="2.5">
-              <path
-                d={booped ? "M56 137Q66 124 77 137" : "M55 133Q65 142 77 135"}
-              />
-              <path
-                d={
-                  booped
-                    ? "M124 137Q134 124 145 137"
-                    : "M124 135Q135 142 146 133"
-                }
-              />
+              <path d={leftEye} />
+              <path d={rightEye} />
             </g>
             <g
               stroke={materials.furLight}
@@ -358,16 +420,8 @@ export function NookMoogle({
               strokeDasharray=".8 2.2"
               opacity=".7"
             >
-              <path
-                d={booped ? "M56 137Q66 124 77 137" : "M55 133Q65 142 77 135"}
-              />
-              <path
-                d={
-                  booped
-                    ? "M124 137Q134 124 145 137"
-                    : "M124 135Q135 142 146 133"
-                }
-              />
+              <path d={leftEye} />
+              <path d={rightEye} />
             </g>
             <ellipse
               cx="100"
@@ -380,7 +434,13 @@ export function NookMoogle({
             />
             <g clipPath={paint("nose-shape")}>
               <NookThread
-                d="M90 139q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19"
+                d={
+                  [
+                    "M90 139q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19",
+                    "M89 139q-1 10 3 19M92 139q-1 9 3 19M95.2 139q-1 9 2.5 19M98.5 139q-2 10 2 19M102 139q-1 9 2.8 19M105 139q-1 9 2.5 19M108.3 139q-1 10 2 19",
+                    "M90 139q-3 8 1 19M93.1 139q-3 10 1 19M96 139q-3 9 .5 19M99 139q-2 8 1 19M102.2 139q-2 10 1 19M105 139q-3 9 1 19M108 139q-2 9 1 19M111 139q-2 10 1 19",
+                  ][model]
+                }
                 color={materials.rose}
                 shadow={materials.roseShade}
                 highlight={materials.roseLight}
@@ -393,26 +453,15 @@ export function NookMoogle({
               strokeWidth="1"
               opacity=".7"
             />
-            {booped ? (
-              <g>
-                <path
-                  d="M92 160Q100 164 109 159C109 174 94 175 92 160Z"
-                  fill="#896471"
-                  strokeWidth=".9"
-                />
-                <path
-                  d="M96 168Q102 164 106 167Q102 173 96 168Z"
-                  fill="#e5aeb8"
-                  stroke="none"
-                />
-              </g>
-            ) : (
-              <path
-                d="M91 160Q96 166 100 160Q104 166 110 159"
-                stroke={materials.ink}
-                strokeWidth="1.3"
-              />
-            )}
+            <path
+              d={
+                pleased
+                  ? "M92 160Q101 168 109 160"
+                  : "M91 160Q96 166 100 160Q104 166 110 159"
+              }
+              stroke={materials.ink}
+              strokeWidth="1.3"
+            />
             <g stroke={materials.rose} strokeWidth="1.1" opacity=".6">
               <path d="m48 150-1 3m6-2-1 3m95-3-1 3m6-4-1 3" />
             </g>
@@ -426,27 +475,24 @@ export function NookMoogle({
           <path d={leftPaw} />
           <path d={rightPaw} />
           <path
-            d={booped ? "M49 175l4 1m94 1 4-2" : "m72 205 3 3m51-1 4-2"}
+            d="m72 205 3 3m51-1 4-2"
             stroke={materials.furShade}
             strokeWidth=".75"
           />
           <path d={feet} />
           <g clipPath={paint("paws-shape")}>
-            <NookThread
-              d={Array.from(
-                { length: 13 },
-                (_, i) =>
-                  `M${46 + i * 3.4} 159q-9 26 8 53M${114 + i * 3.4} 159q9 26-8 53M${46 + i * 3.4} 215q-4 15 5 30M${111 + i * 3.4} 215q4 15-5 30`,
-              ).join(" ")}
+            <NookMoogleStitches
+              model={model}
+              part="paws"
               color={materials.fur}
-              shadow={materials.furShade}
-              highlight={materials.furLight}
-              width={2}
+              shade={materials.furShade}
+              light={materials.furLight}
             />
           </g>
-          <StitchedEdge d={leftPaw} width={1.5} />
-          <StitchedEdge d={rightPaw} width={1.5} />
+          <StitchedEdge model={model} d={leftPaw} width={1.5} />
+          <StitchedEdge model={model} d={rightPaw} width={1.5} />
           <StitchedEdge
+            model={model}
             d="M70 216C58 212 47 220 47 232C46 240 58 244 72 244C86 244 94 239 90 230C87 223 80 218 70 216ZM130 216C141 211 152 220 153 231C155 240 142 244 128 244C114 244 108 239 111 231C114 223 121 219 130 216Z"
             width={2}
           />
@@ -485,86 +531,126 @@ export function NookMoogle({
           />
         </g>
 
-        <g className="nook-moogle__bobble">
-          <g className="nook-moogle__antenna">
-            <path
-              d="M101 84C98 73 103 64 116 57C125 52 129 45 129 38"
-              stroke={materials.ink}
-              strokeWidth="1.8"
-            />
-          </g>
-          <g className="nook-moogle__pom">
-            <circle
-              cx="131"
-              cy="29"
-              r="27"
-              fill={paint("pom")}
-              stroke={materials.pomShade}
-              strokeWidth=".9"
-            />
-            <ellipse
-              cx="121"
-              cy="17"
-              rx="9"
-              ry="5.5"
-              transform="rotate(-32 121 17)"
-              fill={materials.pomLight}
-              stroke="none"
-              opacity=".7"
-            />
-            <path
-              d="M109 30Q108 21 113 15"
-              stroke={materials.pomLight}
-              strokeWidth="1.3"
-              opacity=".5"
-            />
-            <path
-              d="M151 32C149 44 142 50 133 52"
-              stroke={materials.pomShade}
-              strokeWidth="1"
-              opacity=".3"
-            />
-            <g transform="rotate(-30 131 29)">
-              <NookMoogleStitches
-                part="pom"
-                color={materials.pom}
-                shade={materials.pomShade}
-                light={materials.pomLight}
+        <g transform={`translate(0 ${headLift}) rotate(${headTurn} 100 142)`}>
+          <g className="nook-moogle__bobble">
+            <g className="nook-moogle__antenna">
+              <path
+                d="M101 84C98 73 103 64 116 57C125 52 129 45 129 38"
+                stroke={materials.ink}
+                strokeWidth="1.8"
               />
             </g>
-            <StitchedEdge
-              d="M158 29A27 27 0 1 1 104 29A27 27 0 1 1 158 29Z"
-              thread={materials.pom}
-              shade={materials.pomShade}
-              light={materials.pomLight}
-              width={2.6}
-            />
-            <path
-              d="M129 5C112 17 112 37 128 53M136 6C122 20 124 38 139 52"
-              stroke={materials.pomLight}
-              strokeWidth="1"
-              strokeDasharray="2.6 2"
-              opacity=".65"
-            />
+            <g className="nook-moogle__pom">
+              <path
+                d={pomOutline}
+                fill={paint("pom")}
+                stroke={materials.pomShade}
+                strokeWidth=".9"
+              />
+              <ellipse
+                cx="121"
+                cy="17"
+                rx="9"
+                ry="5.5"
+                transform="rotate(-32 121 17)"
+                fill={materials.pomLight}
+                stroke="none"
+                opacity=".7"
+              />
+              <path
+                d="M109 30Q108 21 113 15"
+                stroke={materials.pomLight}
+                strokeWidth="1.3"
+                opacity=".5"
+              />
+              <path
+                d="M151 32C149 44 142 50 133 52"
+                stroke={materials.pomShade}
+                strokeWidth="1"
+                opacity=".3"
+              />
+              <g clipPath={paint("pom-shape")}>
+                <g transform={`rotate(${[-30, -33, -27][model]} 131 29)`}>
+                  <NookMoogleStitches
+                    model={model}
+                    part="pom"
+                    color={materials.pom}
+                    shade={materials.pomShade}
+                    light={materials.pomLight}
+                  />
+                </g>
+              </g>
+              <StitchedEdge
+                model={model}
+                d={pomOutline}
+                thread={materials.pom}
+                shade={materials.pomShade}
+                light={materials.pomLight}
+                width={2.6}
+              />
+              <path
+                d={
+                  [
+                    "M129 5C112 17 112 37 128 53M136 6C122 20 124 38 139 52",
+                    "M128 5C111 18 114 39 129 53M137 6C123 19 124 39 140 51",
+                    "M130 5C114 16 112 36 127 52M135 6C121 21 125 39 138 52",
+                  ][model]
+                }
+                stroke={materials.pomLight}
+                strokeWidth="1"
+                strokeDasharray="2.6 2"
+                opacity=".65"
+              />
+            </g>
           </g>
         </g>
-        {booped && (
+        {pleased && (
           <g
             className="nook-moogle__affection"
             fill={materials.pom}
             stroke={materials.pomShade}
             strokeWidth=".7"
           >
-            <path d="M20 106C6 99 7 89 14 90Q18 90 20 95Q25 86 30 91C37 97 26 103 20 106Z" />
-            <path d="M178 91C168 83 170 77 175 78Q178 78 180 82Q185 76 188 80C192 86 182 91 178 91Z" />
+            <path d="M177 115C165 108 166 102 171 103Q175 103 177 107Q180 100 185 103C191 108 182 113 177 115Z" />
             <path
-              d="m167 63 1.5 4.5L173 69l-4.5 1.5L167 75l-1.5-4.5L161 69l4.5-1.5Z"
-              fill="var(--scene-gold)"
-              stroke="none"
+              d="M170 105Q174 107 177 112M183 104Q181 109 177 112"
+              fill="none"
+              stroke={materials.pomLight}
+              strokeWidth="1"
+              strokeDasharray="1.5 1"
             />
           </g>
         )}
       </g>
+    </g>
+  );
+}
+
+// Every model stays mounted, so its pose clocks share the same exposures.
+// Only the visible sewn piece is replaced; the outer SVG keeps one hit area.
+export function NookMoogle({
+  className = "",
+  booped = false,
+  eventId = null,
+}: NookMoogleProps) {
+  return (
+    <svg
+      className={`nook-moogle-art ${className}`.trim()}
+      viewBox="0 0 200 250"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      data-booped={booped || undefined}
+      data-holiday={eventId || undefined}
+    >
+      {([0, 1, 2] as const).map((model) => (
+        <NookMoogleModel
+          key={model}
+          model={model}
+          booped={booped}
+          eventId={eventId}
+        />
+      ))}
     </svg>
   );
 }

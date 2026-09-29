@@ -34,6 +34,11 @@
   width: 100%;
   height: 100%;
 }
+.nook-sky-embroidery {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 /* Ambient geometry stays still within cached, textured landscape surfaces. */
 .nook-cycle-landscape * {
   animation: none !important;

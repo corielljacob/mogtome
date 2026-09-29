@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Heart, Palette } from "lucide-react";
 import { useTheme, THEME_DEFINITIONS } from "@/shared/contexts/ThemeContext";
@@ -26,6 +26,12 @@ import "./nook-halloween.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
+  const [isBooping, setIsBooping] = useState(false);
+  useEffect(() => {
+    if (boops === 0) return;
+    const settle = window.setTimeout(() => setIsBooping(false), 1800);
+    return () => window.clearTimeout(settle);
+  }, [boops]);
   const { activeEvent, isEventThemeActive, settings, isDarkMode } = useTheme();
   const event = isEventThemeActive ? activeEvent : null;
   const isHalloween = event?.id === "all-saints-wake";
@@ -56,19 +62,22 @@ export function Home() {
               />
               <button
                 className="nook-moogle"
-                onClick={() => setBoops((count) => count + 1)}
+                onClick={() => {
+                  setIsBooping(true);
+                  setBoops((count) => count + 1);
+                }}
                 aria-label="Boop the moogle"
               >
                 <NookMoogle
                   key={boops}
-                  className={boops ? "is-booped" : undefined}
-                  booped={boops > 0}
+                  className={isBooping ? "is-booped" : undefined}
+                  booped={isBooping}
                   eventId={event?.id ?? null}
                 />
               </button>
             </div>
             <p className="nook-moogle-note" role="status" aria-live="polite">
-              {boops > 0 ? (isHalloween ? "Boo, kupo!" : "kupo!") : ""}
+              {isBooping ? (isHalloween ? "Boo, kupo!" : "kupo!") : ""}
             </p>
           </div>
 
@@ -99,7 +108,7 @@ export function Home() {
                   src="/images/moogle-fishing.jpg"
                   width="640"
                   height="602"
-                  alt="A moogle enjoying a quiet afternoon fishing, illustrated by Toshiyuki Itahana"
+                  alt="A moogle fishing, illustrated by Toshiyuki Itahana"
                   draggable={false}
                 />
                 <NookPhotoCorners />
@@ -130,7 +139,7 @@ export function Home() {
                 {isHalloween ? <NookHalloweenNote /> : <NookPressedFlower />}
                 {!isHalloween && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
-                <span className="nook-letter-copy">Recent FC activity.</span>
+                <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">
                   Read <ArrowRight aria-hidden="true" />
                 </span>

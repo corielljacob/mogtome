@@ -1,5 +1,6 @@
 import { useId } from "react";
 import { NookThread } from "./NookThread";
+import { threadVariation } from "./nookNeedlework";
 
 type Point = [number, number];
 
@@ -50,6 +51,37 @@ function fabricPanel(u0: number, v0: number, u1: number, v1: number) {
   );
 }
 
+/** Yarn wanders slightly within the weave while staying on the draped surface. */
+function yarnLine(
+  u0: number,
+  v0: number,
+  u1: number,
+  v1: number,
+  seed: number,
+) {
+  return smoothPath(
+    Array.from({ length: 17 }, (_, i) => {
+      const t = i / 16;
+      const slack = Math.sin(t * Math.PI);
+      return clothPoint(
+        u0 + (u1 - u0) * t + threadVariation(i, seed) * 0.0015 * slack,
+        v0 + (v1 - v0) * t + threadVariation(i, seed + 1) * 0.002 * slack,
+      );
+    }),
+  );
+}
+
+function stitchDashes(length: number, gap: number, seed: number) {
+  return Array.from({ length: 4 }, (_, i) =>
+    [
+      length * (1 + threadVariation(i, seed) * 0.13),
+      gap * (1 + threadVariation(i, seed + 1) * 0.17),
+    ]
+      .map((value) => value.toFixed(2))
+      .join(" "),
+  ).join(" ");
+}
+
 const silhouette = fabricPanel(0, 0, 1, 1);
 const columns = Array.from({ length: 8 }, (_, i) =>
   fabricPanel(i / 8, 0, i / 8 + 1 / 16, 1),
@@ -58,16 +90,21 @@ const rows = Array.from({ length: 7 }, (_, i) =>
   fabricPanel(0, i / 7, 1, i / 7 + 1 / 14),
 );
 const warpThreads = Array.from({ length: 67 }, (_, i) => {
-  const u = (i + 0.5) / 67;
-  return { d: fabricLine(u, 0, u, 1), dyed: u % 0.125 < 0.0625 };
+  const u = (i + 0.5 + threadVariation(i, 41) * 0.16) / 67;
+  return { d: yarnLine(u, 0, u, 1, i + 60), dyed: u % 0.125 < 0.0625 };
 });
 const weftThreads = Array.from({ length: 43 }, (_, i) => {
-  const v = (i + 0.5) / 43;
-  return { d: fabricLine(0, v, 1, v), dyed: v % (1 / 7) < 1 / 14 };
+  const v = (i + 0.5 + threadVariation(i, 42) * 0.16) / 43;
+  return { d: yarnLine(0, v, 1, v, i + 140), dyed: v % (1 / 7) < 1 / 14 };
 });
 const hemStitches = Array.from({ length: 32 }, (_, i) => {
-  const u = (i + 0.5) / 32;
-  return fabricLine(u - 0.006, 0.949, u + 0.003, 0.992);
+  const u = (i + 0.5 + threadVariation(i, 43) * 0.16) / 32;
+  return fabricLine(
+    u - 0.006,
+    0.949 + threadVariation(i, 44) * 0.003,
+    u + 0.003 + threadVariation(i, 45) * 0.002,
+    0.992 + threadVariation(i, 46) * 0.002,
+  );
 }).join(" ");
 
 /** A woven tea cloth tucked beneath the books and draped over the sill. */
@@ -166,9 +203,9 @@ export function NookCloth() {
               key={i}
               d={d}
               color={dyed ? "var(--scene-leaf-light)" : "var(--scene-paper)"}
-              width={0.92}
-              opacity={dyed ? 0.48 : 0.66}
-              dasharray="3.2 .8"
+              width={0.92 + threadVariation(i, 47) * 0.09}
+              opacity={(dyed ? 0.48 : 0.66) + threadVariation(i, 48) * 0.035}
+              dasharray={stitchDashes(3.2, 0.8, i + 180)}
             />
           ))}
           {weftThreads.map(({ d, dyed }, i) => (
@@ -176,9 +213,9 @@ export function NookCloth() {
               key={i}
               d={d}
               color={dyed ? "var(--scene-leaf)" : "var(--scene-paper)"}
-              width={0.85}
-              opacity={dyed ? 0.42 : 0.56}
-              dasharray="1.3 1.1"
+              width={0.85 + threadVariation(i, 49) * 0.08}
+              opacity={(dyed ? 0.42 : 0.56) + threadVariation(i, 50) * 0.035}
+              dasharray={stitchDashes(1.3, 1.1, i + 250)}
             />
           ))}
         </g>
@@ -192,30 +229,30 @@ export function NookCloth() {
           opacity=".35"
         />
         <NookThread
-          d={fabricLine(0.012, 0.95, 0.99, 0.95)}
+          d={yarnLine(0.012, 0.95, 0.99, 0.95, 301)}
           color="var(--scene-leaf-light)"
           width={1.3}
           opacity={0.8}
         />
         <NookThread
-          d={fabricLine(0.022, 0.975, 0.98, 0.975)}
+          d={yarnLine(0.022, 0.975, 0.98, 0.975, 302)}
           color="var(--scene-leaf)"
           width={1}
-          dasharray="2.1 2.1"
+          dasharray={stitchDashes(2.1, 2.1, 303)}
           opacity={0.85}
         />
         <NookThread
-          d={fabricLine(0.035, 0.08, 0.035, 0.958)}
+          d={yarnLine(0.035, 0.08, 0.035, 0.958, 304)}
           color="var(--scene-leaf)"
           width={1}
-          dasharray="2 2.2"
+          dasharray={stitchDashes(2, 2.2, 305)}
           opacity={0.8}
         />
         <NookThread
-          d={fabricLine(0.968, 0.08, 0.968, 0.958)}
+          d={yarnLine(0.968, 0.08, 0.968, 0.958, 306)}
           color="var(--scene-leaf)"
           width={1}
-          dasharray="2 2.2"
+          dasharray={stitchDashes(2, 2.2, 307)}
           opacity={0.8}
         />
         <NookThread

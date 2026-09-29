@@ -139,16 +139,33 @@
 .nook-light-ornament {
   transform-box: view-box;
   transform-origin: 50% 0;
-  animation: nook-ornament-sway 11s ease-in-out infinite;
+  /* Brief end holds and closer poses near each turn give the thread weight. */
+  animation: nook-ornament-sway 11s steps(13, end) infinite;
 }
 
 @keyframes nook-ornament-sway {
   0%,
+  10%,
   100% {
-    transform: rotate(-2deg);
+    transform: rotate(-1.7deg);
   }
-  50% {
-    transform: rotate(2deg);
+  20%,
+  90% {
+    transform: rotate(-1.3deg);
+  }
+  30% {
+    transform: rotate(-0.1deg);
+  }
+  40%,
+  70% {
+    transform: rotate(1.3deg);
+  }
+  50%,
+  60% {
+    transform: rotate(1.7deg);
+  }
+  80% {
+    transform: rotate(0.1deg);
   }
 }
 

@@ -115,7 +115,7 @@
   justify-content: center;
   align-self: center;
   min-width: 0;
-  animation: nook-arrive 900ms ease-out both;
+  animation: nook-arrive 600ms ease-out both;
 }
 .nook-illustration-frame {
   --applique-linen: color-mix(
@@ -209,7 +209,7 @@
   background: transparent;
   cursor: pointer;
   transform-origin: 50% 90%;
-  transition: transform 0.25s;
+  transition: transform 180ms ease-out;
   border-radius: 40%;
 }
 .nook-moogle-art {
@@ -224,29 +224,29 @@
 .nook-moogle__bobble {
   transform-box: view-box;
   transform-origin: 101px 84px;
-  animation: pom-sway 7s ease-in-out infinite;
+  animation: pom-sway 9.6s step-end infinite;
 }
-.nook-moogle__affection {
-  transform-box: view-box;
-  transform-origin: 100px 130px;
-  animation: moogle-affection 1.8s ease-out both;
+.nook-moogle__pom {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pom-squash 9.6s step-end infinite;
 }
 .nook-moogle__wings {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 400ms ease;
+  transition: transform 200ms ease-out;
 }
 .nook-moogle__belly {
   transform-box: view-box;
   transform-origin: 100px 239px;
-  animation: moogle-breathe 6.8s ease-in-out infinite;
+  animation: moogle-breathe 9.6s steps(14, end) infinite;
 }
 .nook-ivy-leaf {
-  animation: ivy-sway 10s ease-in-out infinite;
+  animation: ivy-sway 14s steps(12, end) infinite;
 }
 .nook-posy {
   transform-origin: 317px 391px;
-  animation: posy-sway 11s -3s ease-in-out infinite;
+  animation: posy-sway 14s -4s steps(12, end) infinite;
 }
 .nook-lantern-halo {
   animation: lantern-warmth 6.5s ease-in-out infinite;
@@ -258,7 +258,7 @@
   transform: scale(1.07, 1.03);
 }
 .nook-moogle:hover {
-  transform: translateY(calc(-4 * var(--layout-unit))) rotate(-3deg);
+  transform: rotate(-1.25deg);
 }
 .nook-moogle-note {
   margin: calc(-5 * var(--layout-unit)) 0 0;
@@ -281,7 +281,7 @@
   grid-row: 1;
   padding-left: calc(5 * var(--layout-unit));
   padding-top: calc(8 * var(--layout-unit));
-  animation: nook-arrive 900ms 100ms ease-out both;
+  animation: nook-arrive 600ms 60ms ease-out both;
 }
 .nook-eyebrow {
   color: var(--nook-muted);
@@ -479,9 +479,9 @@
   transform: rotate(-4deg);
   transform-origin: 50% 0;
   transition:
-    transform 0.25s,
-    box-shadow 0.25s;
-  animation: photo-arrive 950ms 180ms ease both;
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out;
+  animation: photo-arrive 650ms 100ms ease-out both;
 }
 .nook-holiday-keepsake {
   position: absolute;
@@ -496,22 +496,31 @@
 }
 .nook-halloween-ghost {
   transform-origin: 296px 159px;
-  animation: ghost-swing 8s ease-in-out infinite;
+  animation: ghost-swing 11s steps(12, end) infinite;
 }
 .nook-pumpkin-light {
   animation: pumpkin-glow 5.7s ease-in-out infinite;
 }
 .nook-autumn-leaf {
   transform-origin: 0 0;
-  animation: ivy-sway 9s ease-in-out infinite;
+  animation: ivy-sway 12s steps(12, end) infinite;
 }
 @keyframes ghost-swing {
   0%,
+  25%,
+  85%,
   100% {
     transform: rotate(-2deg);
   }
-  50% {
+  37.5% {
+    transform: rotate(0deg);
+  }
+  50%,
+  60% {
     transform: rotate(2deg);
+  }
+  72.5% {
+    transform: rotate(-0.5deg);
   }
 }
 @keyframes pumpkin-glow {
@@ -519,7 +528,9 @@
   100% {
     opacity: 0.76;
   }
-  31%,
+  31% {
+    opacity: 0.98;
+  }
   68% {
     opacity: 0.98;
   }
@@ -797,8 +808,8 @@
     calc(8 * var(--layout-unit)) calc(1 * var(--layout-unit));
   transform: rotate(1deg);
   transform-origin: 90% 0;
-  transition: transform 0.25s;
-  animation: note-arrive 950ms 300ms ease both;
+  transition: transform 180ms ease-out;
+  animation: note-arrive 650ms 160ms ease-out both;
 }
 .nook-letter::before {
   content: "";
@@ -1086,19 +1097,17 @@
   outline: calc(2 * var(--layout-unit)) solid var(--ui-wall-focus);
   outline-offset: calc(6 * var(--layout-unit));
 }
-.nook-tea-steam path {
-  animation: tea-steam 6s linear infinite;
+.nook-candle-flame > .nook-candle-flame-frame {
+  visibility: hidden;
+  animation: lantern-flame-frame 1.92s step-end infinite;
+  animation-delay: calc(var(--flame-frame) * 240ms - 1.92s);
 }
-.nook-tea-steam path + path {
-  animation-delay: -3s;
+.nook-candle-flame > .nook-candle-flame-frame[data-frame="0"] {
+  /* Keep one complete stitched flame when motion is disabled. */
+  visibility: visible;
 }
-.nook-candle-flame {
-  animation: candle-glow 4s ease-in-out infinite;
-  transform-origin: 374px 410px;
-}
-.is-booped {
-  animation: nook-boop 0.85s ease;
-}
+/* The interface responds smoothly. Sewn objects use deliberate rest poses,
+   anticipation and settling, with held exposures during each gesture. */
 @keyframes nook-arrive {
   from {
     opacity: 0;
@@ -1131,91 +1140,163 @@
     translate: 0 0;
   }
 }
-@keyframes nook-boop {
-  18% {
-    transform: scale(1.07, 0.93);
-  }
-  42% {
-    transform: translateY(calc(-9 * var(--layout-unit))) scale(0.97, 1.04)
-      rotate(4deg);
-  }
-  68% {
-    transform: scale(1.03, 0.97) rotate(-2deg);
-  }
-  86% {
-    transform: scale(0.99, 1.01);
-  }
-}
-@keyframes moogle-affection {
-  0% {
-    opacity: 0;
-    transform: translateY(7px) scale(0.75);
-  }
-  20%,
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-19px) scale(1.1);
-  }
-}
 @keyframes pom-sway {
-  25% {
-    transform: rotate(6deg);
-  }
-  75% {
-    transform: rotate(-5deg);
-  }
-}
-@keyframes tea-steam {
-  0% {
-    opacity: 0;
-    transform: translateY(3px);
-  }
+  0%,
   25%,
-  55% {
-    opacity: 0.8;
-  }
+  55%,
   100% {
-    opacity: 0;
-    transform: translateY(-9px);
+    transform: rotate(0deg);
+  }
+  26.25% {
+    transform: rotate(-0.8deg);
+  }
+  27.5% {
+    transform: rotate(-1.3deg);
+  }
+  28.75% {
+    transform: rotate(-0.4deg);
+  }
+  30% {
+    transform: rotate(1.6deg);
+  }
+  31.25% {
+    transform: rotate(3.9deg);
+  }
+  32.5% {
+    transform: rotate(5.6deg);
+  }
+  33.75%,
+  36.25% {
+    transform: rotate(6.2deg);
+  }
+  37.5% {
+    transform: rotate(5.2deg);
+  }
+  38.75% {
+    transform: rotate(3.2deg);
+  }
+  40% {
+    transform: rotate(0.8deg);
+  }
+  41.25% {
+    transform: rotate(-1.4deg);
+  }
+  42.5% {
+    transform: rotate(-2.9deg);
+  }
+  43.75%,
+  46.25% {
+    transform: rotate(-3.6deg);
+  }
+  47.5% {
+    transform: rotate(-2.6deg);
+  }
+  48.75% {
+    transform: rotate(-1.3deg);
+  }
+  50% {
+    transform: rotate(-0.3deg);
+  }
+  51.25% {
+    transform: rotate(0.7deg);
+  }
+  52.5% {
+    transform: rotate(0.9deg);
+  }
+  53.75% {
+    transform: rotate(0.4deg);
   }
 }
-@keyframes candle-glow {
-  22%,
-  62% {
-    opacity: 0.9;
-    transform: scale(0.92, 1.04) rotate(-2deg);
+@keyframes pom-squash {
+  0%,
+  30%,
+  38.75%,
+  50%,
+  100% {
+    transform: scale(1);
   }
-  38%,
-  79% {
-    opacity: 1;
-    transform: scale(1.03, 0.94) rotate(3deg);
+  31.25%,
+  33.75% {
+    transform: scale(0.975, 1.025);
+  }
+  35%,
+  36.25% {
+    transform: scale(1.02, 0.98);
+  }
+  43.75%,
+  46.25% {
+    transform: scale(0.985, 1.015);
+  }
+  47.5% {
+    transform: scale(1.01, 0.99);
+  }
+}
+@keyframes lantern-flame-frame {
+  0% {
+    visibility: visible;
+  }
+  12.5%,
+  100% {
+    visibility: hidden;
   }
 }
 @keyframes moogle-breathe {
-  46%,
-  54% {
+  0%,
+  18%,
+  67%,
+  100% {
+    transform: scale(1);
+  }
+  36%,
+  43% {
     transform: scale(1.018, 1.016);
+  }
+  43% {
+    animation-timing-function: steps(18, end);
   }
 }
 @keyframes ivy-sway {
   0%,
+  25%,
+  70%,
   100% {
     transform: rotate(-0.6deg);
   }
-  50% {
+  35%,
+  40% {
     transform: rotate(1.2deg);
+  }
+  40% {
+    animation-timing-function: steps(18, end);
+  }
+  55% {
+    transform: rotate(-0.4deg);
+    animation-timing-function: steps(6, end);
+  }
+  60% {
+    transform: rotate(-0.9deg);
   }
 }
 @keyframes posy-sway {
   0%,
+  30%,
+  75%,
   100% {
     transform: rotate(-0.6deg);
   }
-  50% {
+  40%,
+  45% {
     transform: rotate(0.8deg);
+  }
+  45% {
+    animation-timing-function: steps(18, end);
+  }
+  60% {
+    transform: rotate(-0.2deg);
+    animation-timing-function: steps(6, end);
+  }
+  65% {
+    transform: rotate(-0.8deg);
   }
 }
 @keyframes lantern-warmth {

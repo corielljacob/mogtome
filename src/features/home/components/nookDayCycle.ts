@@ -1,6 +1,26 @@
-export const DAY_CYCLE_DURATION = 3800;
+export const DAY_CYCLE_DURATION = 4800;
+const DAY_CYCLE_FRAME_COUNT = Math.round((DAY_CYCLE_DURATION / 1000) * 12);
+const physicalLayers = new Set(["sun", "moon", "clouds"]);
 
-// Sample gentle orbital curves once; the browser interpolates their transforms.
+// Change the sewn replacement every three physical exposures. Keyframe holds
+// share the orbit clock, so reversal retraces the same models and either resting
+// endpoint presents model zero without a separate, continuously ticking loop.
+const sewnModelFrames: Keyframe[][] = [0, 1, 2].map((model) =>
+  Array.from({ length: DAY_CYCLE_FRAME_COUNT + 1 }, (_, exposure) => {
+    const frame =
+      exposure === DAY_CYCLE_FRAME_COUNT
+        ? 0
+        : [0, 1, 2, 1][Math.floor(exposure / 3) % 4];
+    return {
+      offset: exposure / DAY_CYCLE_FRAME_COUNT,
+      opacity: frame === model ? 1 : 0,
+      easing: "steps(1, end)",
+    };
+  }),
+);
+
+// Sample the orbits once. Physical cutouts hold twelve exposures per second;
+// the light between them changes continuously, like a lit stop-motion set.
 const sunArc: Keyframe[] = Array.from({ length: 17 }, (_, index) => {
   const t = index / 16;
   return {
@@ -73,20 +93,27 @@ export function createDayCycle(
   root: HTMLElement,
   isDark: boolean,
 ): Animation[] {
-  return Array.from(root.querySelectorAll<HTMLElement>("[data-cycle]")).flatMap(
-    (layer) => {
-      const frames = dayCycleFrames[layer.dataset.cycle ?? ""];
-      if (!frames || typeof layer.animate !== "function") return [];
-      const animation = layer.animate(frames, {
-        duration: DAY_CYCLE_DURATION,
-        fill: "both",
-        easing: "linear",
-      });
-      animation.pause();
-      animation.currentTime = isDark ? DAY_CYCLE_DURATION : 0;
-      return [animation];
-    },
-  );
+  return Array.from(
+    root.querySelectorAll<HTMLElement>("[data-cycle], [data-cycle-model]"),
+  ).flatMap((layer) => {
+    const cycle = layer.dataset.cycle ?? "";
+    const model = layer.dataset.cycleModel;
+    const frames =
+      model === undefined
+        ? dayCycleFrames[cycle]
+        : sewnModelFrames[Number(model)];
+    if (!frames || typeof layer.animate !== "function") return [];
+    const animation = layer.animate(frames, {
+      duration: DAY_CYCLE_DURATION,
+      fill: "both",
+      easing: physicalLayers.has(cycle)
+        ? `steps(${DAY_CYCLE_FRAME_COUNT}, end)`
+        : "linear",
+    });
+    animation.pause();
+    animation.currentTime = isDark ? DAY_CYCLE_DURATION : 0;
+    return [animation];
+  });
 }
 
 export function setDayCycleTarget(

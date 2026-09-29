@@ -1,0 +1,39 @@
+/* Hold each sewn curl for 180ms, doubling the hold at its turning point.
+   Only the sewn shape changes; its brightness and attachment to the cup hold. */
+.nook-tea-steam > .nook-tea-steam-frame {
+  visibility: hidden;
+  animation: nook-steam-frame 1.62s step-end infinite;
+  animation-delay: calc(var(--steam-exposure) * 180ms - 1.62s);
+}
+.nook-tea-steam > .nook-tea-steam-frame[data-frame="0"] {
+  visibility: visible;
+}
+.nook-tea-steam > .nook-tea-steam-frame[data-frame="4"] {
+  animation-name: nook-steam-held-frame;
+}
+@keyframes nook-steam-frame {
+  0% {
+    visibility: visible;
+  }
+  11.111111%,
+  100% {
+    visibility: hidden;
+  }
+}
+@keyframes nook-steam-held-frame {
+  0% {
+    visibility: visible;
+  }
+  22.222222%,
+  100% {
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-tea-steam > .nook-tea-steam-frame {
+    animation: none;
+  }
+}
+.reduce-motion .nook-tea-steam > .nook-tea-steam-frame {
+  animation: none;
+}

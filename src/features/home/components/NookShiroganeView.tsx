@@ -2,6 +2,8 @@ import { useId } from "react";
 import { NookNeighbourHouse } from "./NookNeighbourHouse";
 import { NookNeighbourLandmarks } from "./NookNeighbourLandmarks";
 import { NookThread } from "./NookThread";
+import { NookLighthouseLight } from "./NookLighthouseLight";
+import { threadVariation } from "./nookNeedlework";
 
 interface NookShiroganeViewProps {
   isDark: boolean;
@@ -11,16 +13,44 @@ const seaOutline = "M205 277q26-5 50-2q20-1 42 2l19-5 23 5v79H203Z";
 const beaconOutline =
   "M237 213H252C251 233 253 246 258 261Q245 265 231 262C236 249 238 230 237 213Z";
 const beaconRoof = "M231 186q8-1 11-8h7q4 8 11 8l-2 4q-13 3-25 0Z";
-const beaconBands = [0, 1].map((side) =>
-  Array.from({ length: 17 }, (_, i) => {
-    const y = 211 + i * 3.1;
-    return side === 0 ? `M229 ${y}q7 3 16 3.2` : `M245 ${y + 3.2}q9-.2 16-3.2`;
+const beaconBalcony = "M231 207q8 1 11-2h7q4 3 10 1l-2 6q-12 3-24 0Z";
+const beaconBalconyStitches = Array.from({ length: 18 }, (_, i) => {
+  const x = 230.5 + i * 1.65 + threadVariation(i, 104) * 0.15;
+  return `M${x.toFixed(2)} 205q1.1 3.5 .4 9`;
+}).join(" ");
+// Long-and-short satin stitches interlock rather than forming masonry courses.
+// Their direction bends out with the base, and the shaded threads mingle.
+const beaconSatin = [0, 1, 2].map((tone) =>
+  Array.from({ length: 12 }, (_, col) => {
+    const x = 234.5 + col * 1.8;
+    let y = 204 + threadVariation(col, 91) * 4;
+    return Array.from({ length: 7 }, (_, row) => {
+      const index = col * 7 + row;
+      const start = y;
+      y += 8.8 + threadVariation(index, 92) * 2.5;
+      const shade = Math.max(
+        0,
+        Math.min(
+          2,
+          Math.floor((x - 237) / 7 + threadVariation(index, 93) * 0.65),
+        ),
+      );
+      if (shade !== tone) return "";
+      const bow = (at: number) =>
+        (x - 245) * Math.max(0, at - 226) ** 2 * 0.00055;
+      const sx = x + bow(start) + threadVariation(index, 94) * 0.18;
+      const ex = x + bow(y) + threadVariation(index, 95) * 0.15;
+      return `M${sx.toFixed(2)} ${start.toFixed(2)}Q${((sx + ex) / 2 + 0.18).toFixed(2)} ${((start + y) / 2).toFixed(2)} ${ex.toFixed(2)} ${(y - 0.5).toFixed(2)}`;
+    }).join(" ");
   }).join(" "),
 );
-const beaconDomeStitches = Array.from({ length: 11 }, (_, i) => {
-  const x = 231 + i * 2.8;
-  return `M${245 + (x - 245) * 0.26} 176Q${245 + (x - 245) * 0.6} 184 ${x} 191`;
-}).join(" ");
+const beaconDomeStitches = [0, 1].map((tone) =>
+  Array.from({ length: 21 }, (_, i) => {
+    if (i % 2 !== tone) return "";
+    const x = 231 + i * 1.4 + threadVariation(i, 97) * 0.22;
+    return `M${(245 + (x - 245) * 0.23).toFixed(2)} ${(177 + threadVariation(i, 99) * 0.5).toFixed(2)}Q${(245 + (x - 245) * 0.55 + threadVariation(i, 98) * 0.3).toFixed(2)} 184 ${x.toFixed(2)} ${(190.5 + threadVariation(i, 100) * 0.3).toFixed(2)}`;
+  }).join(" "),
+);
 const upperGarden = "M332 284 305 295 286 313 244 334 69 393V441H345V279Z";
 const lowerGarden = "M280 360q24-28 59-33v112H153Z";
 const laneOutline =
@@ -132,6 +162,9 @@ export function NookShiroganeView({ isDark }: NookShiroganeViewProps) {
         <clipPath id={`${id}-neighbourhood-beacon-roof-clip`}>
           <path d={beaconRoof} />
         </clipPath>
+        <clipPath id={`${id}-neighbourhood-beacon-balcony-clip`}>
+          <path d={beaconBalcony} />
+        </clipPath>
         <clipPath id={`${id}-neighbourhood-rock-clip`}>
           <path d={rockFaces} />
         </clipPath>
@@ -183,39 +216,6 @@ export function NookShiroganeView({ isDark }: NookShiroganeViewProps) {
             stopColor="color-mix(in srgb, var(--scene-plaster) 42%, var(--scene-rock))"
           />
         </linearGradient>
-        <linearGradient
-          id={`${id}-neighbourhood-beam`}
-          x1="245"
-          y1="198"
-          x2="96"
-          y2="198"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--scene-window-light)" stopOpacity=".32" />
-          <stop
-            offset=".35"
-            stopColor="var(--scene-window-light)"
-            stopOpacity=".1"
-          />
-          <stop
-            offset="1"
-            stopColor="var(--scene-window-light)"
-            stopOpacity="0"
-          />
-        </linearGradient>
-        <radialGradient id={`${id}-neighbourhood-lamp`}>
-          <stop stopColor="var(--scene-window-light)" stopOpacity=".6" />
-          <stop
-            offset=".3"
-            stopColor="var(--scene-window-light)"
-            stopOpacity=".15"
-          />
-          <stop
-            offset="1"
-            stopColor="var(--scene-window-light)"
-            stopOpacity="0"
-          />
-        </radialGradient>
         <clipPath id={`${id}-neighbourhood-lane-clip`}>
           <path d={laneOutline} />
         </clipPath>
@@ -276,52 +276,36 @@ export function NookShiroganeView({ isDark }: NookShiroganeViewProps) {
         strokeWidth=".7"
         opacity=".24"
       />
-      <g className="nook-shirogane-night" opacity={isDark ? 1 : 0}>
-        <g className="nook-lighthouse-beam">
-          <path d="M245 195 110 166 110 227 245 201Z" fill={paint("beam")} />
-        </g>
-        <ellipse cx="245" cy="198" rx="26" ry="23" fill={paint("lamp")} />
-      </g>
-      <g stroke="var(--scene-roof)" strokeWidth=".7">
-        <path
-          d={beaconOutline}
-          fill="color-mix(in srgb, var(--scene-rock) 65%, var(--scene-rock-light))"
-        />
+      <NookLighthouseLight isDark={isDark} />
+      <g stroke="none">
+        <path d={beaconOutline} fill={stone} />
         <g clipPath={paint("beacon-clip")}>
-          <NookThread
-            d={beaconBands[0]}
-            color="color-mix(in srgb, var(--scene-plaster) 88%, var(--scene-paper))"
-            shadow="var(--scene-rock)"
-            highlight="var(--scene-paper)"
-            width={2.6}
-            relief={2.5}
-          />
-          <NookThread
-            d={beaconBands[1]}
-            color={stone}
-            shadow="var(--scene-rock)"
-            highlight="color-mix(in srgb, var(--scene-plaster) 80%, var(--scene-rock-light))"
-            width={2.6}
-            relief={2.5}
-          />
+          {beaconSatin.map((d, tone) => (
+            <NookThread
+              key={tone}
+              d={d}
+              color={
+                [
+                  "color-mix(in srgb, var(--scene-plaster) 76%, var(--scene-paper))",
+                  "color-mix(in srgb, var(--scene-plaster) 93%, var(--scene-paper))",
+                  "color-mix(in srgb, var(--scene-plaster) 79%, var(--scene-rock))",
+                ][tone]
+              }
+              shadow="var(--scene-rock)"
+              highlight="var(--scene-paper)"
+              width={1.52 + tone * 0.025}
+              relief={0.65}
+            />
+          ))}
         </g>
         <NookThread
           d="M237 215q2 25-5 46M252 215q-1 25 6 46"
           color={stone}
           shadow="var(--scene-rock)"
           highlight="var(--scene-plaster)"
-          width={2.5}
-          relief={2.3}
-        />
-        <NookThread
-          d="M237 215q2 25-5 46M252 215q-1 25 6 46"
-          color="var(--scene-plaster)"
-          shadow="var(--scene-rock-light)"
-          highlight="var(--scene-paper)"
-          width={1.9}
-          relief={2}
-          dasharray="1.2 3"
-          opacity={0.8}
+          width={0.7}
+          relief={0.5}
+          dasharray="3.4 .4 4.2 .3 2.8 .5"
         />
         <path
           d="M242 249v-9q2-3 4 0v9Z"
@@ -333,16 +317,16 @@ export function NookShiroganeView({ isDark }: NookShiroganeViewProps) {
           color="var(--scene-roof)"
           shadow="var(--scene-rock)"
           highlight="var(--scene-rock-light)"
-          width={1.5}
-          relief={2}
+          width={1.15}
+          relief={0.8}
         />
         <NookThread
           d="M241.5 249v-9q2.5-4 5 0v9"
           color="var(--scene-rock-light)"
           shadow="var(--scene-rock)"
           highlight="var(--scene-plaster)"
-          width={1.65}
-          relief={2.2}
+          width={1.1}
+          relief={0.75}
         />
         <path d="M231 258q14 3 27 0l1 5q-15 4-29 0Z" fill={stone} />
         <NookThread
@@ -350,87 +334,125 @@ export function NookShiroganeView({ isDark }: NookShiroganeViewProps) {
           color="var(--scene-plaster)"
           shadow="var(--scene-rock)"
           highlight="var(--scene-paper)"
-          width={2.3}
-          relief={2.3}
+          width={1.8}
+          relief={0.85}
         />
         <NookThread
           d="M231 258q14 3 27 0M230 263q14 4 29 0"
           color={stone}
           shadow="var(--scene-rock)"
           highlight="var(--scene-plaster)"
-          width={2.1}
-          relief={2.3}
+          width={1.3}
+          relief={0.85}
         />
-        <path d="M236 188H254V207H236Z" fill="var(--scene-timber)" />
+        {/* Fine satin columns taper around a small lens inside the dark glazing. */}
+        <path d="M236 188H254V207H236Z" fill="var(--scene-roof)" />
         <path
-          d="M239 190H251V205H239Z"
-          fill="color-mix(in srgb, var(--scene-window-light) 45%, var(--scene-plaster))"
-          stroke="none"
+          d="M238.5 190H251.5V205H238.5Z"
+          fill={
+            isDark
+              ? "color-mix(in srgb, var(--scene-roof) 74%, #b6a17a)"
+              : "var(--scene-rock-light)"
+          }
         />
         <path
-          className="nook-shirogane-night"
-          d="M239 190H251V205H239Z"
-          fill="var(--scene-window-light)"
-          opacity={isDark ? 1 : 0}
+          d="M245 191.5C247.7 192.6 249.5 195.3 249.3 198.2C249.1 201.2 247.4 203.4 245 204C242.3 202.7 240.7 200.6 240.8 197.7C240.9 194.8 242.9 192.4 245 191.5Z"
+          fill={
+            isDark
+              ? "#c8a76c"
+              : "color-mix(in srgb, var(--scene-plaster) 64%, var(--scene-gold))"
+          }
           stroke="none"
         />
         <NookThread
-          d="M240 190.5q-.5 7 0 14M243 190.5q-.5 7 0 14M246 190.5q-.5 7 0 14M249 190.5q-.5 7 0 14"
-          color="var(--scene-window-light)"
-          shadow="var(--scene-timber)"
-          highlight="var(--scene-paper)"
-          width={2.3}
-          relief={2.2}
+          d="M241.4 195.9q-.6 2.2 .5 4.2M242.3 194.3q-.9 3.8 .5 7.4M248 194.8q1.1 3.3-.6 6.7M249 197q.1 1.2-.4 2.4"
+          color={
+            isDark
+              ? "#dfbe81"
+              : "color-mix(in srgb, var(--scene-plaster) 73%, var(--scene-gold))"
+          }
+          shadow={isDark ? "#ad8b54" : "var(--scene-rock)"}
+          highlight={isDark ? "#edcf98" : "var(--scene-plaster)"}
+          width={1.05}
+          relief={0.4}
         />
         <NookThread
-          d="M237 189v17M244.5 189v17M253 189v17M237 198h16"
-          color="color-mix(in srgb, var(--scene-roof) 77%, var(--scene-gold))"
+          d="M243.5 193.1q-1.1 4.8 .1 9.3M244.7 192.3q-.6 5.6.1 10.8M246 192.8q.9 4.8-.3 10.1M247.1 193.7q1 4-.5 8.2"
+          color={isDark ? "#f3e3bd" : "var(--scene-plaster)"}
+          shadow={isDark ? "#d4b780" : "var(--scene-rock-light)"}
+          highlight={isDark ? "#fff0cf" : "var(--scene-paper)"}
+          width={1.15}
+          relief={0.4}
+        />
+        <NookThread
+          d="M239.8 191.3q-.3 2.1 0 4.1M250.1 199.9q.2 1.8-.2 3.5"
+          color={isDark ? "#b4b39a" : "var(--scene-paper)"}
           shadow="var(--scene-roof)"
-          highlight="color-mix(in srgb, var(--scene-gold) 60%, var(--scene-roof))"
-          width={1.8}
-          relief={2.2}
+          highlight={isDark ? "#d2cfb4" : "var(--scene-paper)"}
+          width={0.55}
+          relief={0.3}
+          opacity={isDark ? 0.42 : 0.35}
         />
-        <path
-          d="M231 207q8 1 11-2h7q4 3 10 1l-2 6q-12 3-24 0Z"
-          fill="var(--scene-roof)"
+        <NookThread
+          d="M237 189q-.2 8 .2 17M239.1 190q.2 7-.1 15M251 190q-.1 8 .2 15M253 189q.2 7-.1 17M237 205q8 .4 16-.2"
+          color="color-mix(in srgb, var(--scene-roof) 83%, var(--scene-gold))"
+          shadow="var(--scene-roof)"
+          highlight="color-mix(in srgb, var(--scene-gold) 38%, var(--scene-roof))"
+          width={1}
+          relief={0.6}
         />
+        <path d={beaconBalcony} fill="var(--scene-roof)" />
+        <g clipPath={paint("beacon-balcony-clip")}>
+          <NookThread
+            d={beaconBalconyStitches}
+            color="color-mix(in srgb, var(--scene-roof) 82%, var(--scene-leaf-light))"
+            shadow="var(--scene-roof)"
+            highlight="color-mix(in srgb, var(--scene-roof) 55%, var(--scene-leaf-light))"
+            width={1.2}
+            relief={0.6}
+          />
+        </g>
         <path d={beaconRoof} fill="var(--scene-roof)" />
         <g clipPath={paint("beacon-roof-clip")}>
-          <NookThread
-            d={beaconDomeStitches}
-            color="color-mix(in srgb, var(--scene-roof) 66%, var(--scene-gold))"
-            shadow="var(--scene-roof)"
-            highlight="color-mix(in srgb, var(--scene-gold) 70%, var(--scene-roof))"
-            width={2.5}
-            relief={2.5}
-          />
+          {beaconDomeStitches.map((d, tone) => (
+            <NookThread
+              key={tone}
+              d={d}
+              color={`color-mix(in srgb, var(--scene-roof) ${tone ? 69 : 79}%, var(--scene-leaf-light))`}
+              shadow="var(--scene-roof)"
+              highlight="color-mix(in srgb, var(--scene-roof) 49%, var(--scene-leaf-light))"
+              width={1.18}
+              relief={0.6}
+            />
+          ))}
         </g>
         <NookThread
           d="M245 178v-10m-2 4h4"
           color="var(--scene-gold)"
           shadow="var(--scene-roof)"
           highlight="var(--scene-paper)"
-          width={1.65}
-          relief={2.2}
+          width={1.2}
+          relief={0.75}
         />
         <path d="m242 178 3-3 3 3Z" fill="var(--scene-gold)" stroke="none" />
         <NookThread
           d="M232 186q13 4 27 0M233 190q12 3 25 0M232 208q13 5 26 0M234 212q12 3 22 0"
-          color="color-mix(in srgb, var(--scene-roof) 65%, var(--scene-gold))"
+          color="color-mix(in srgb, var(--scene-roof) 77%, var(--scene-leaf-light))"
           shadow="var(--scene-roof)"
-          highlight="var(--scene-gold)"
-          width={2.65}
-          relief={2.4}
+          highlight="var(--scene-leaf-light)"
+          width={1.35}
+          relief={0.7}
+          dasharray="3.1 .3 2.4 .4 4 .3"
         />
         <NookThread
           d="M232 187q13 4 27 0M233 209q13 4 24 0"
-          color="var(--scene-gold)"
+          color="color-mix(in srgb, var(--scene-gold) 70%, var(--scene-roof))"
           shadow="var(--scene-roof)"
           highlight="color-mix(in srgb, var(--scene-gold) 70%, var(--scene-paper))"
-          width={1.7}
-          relief={2}
-          dasharray="1 2.5"
-          opacity={0.9}
+          width={0.85}
+          relief={0.55}
+          dasharray=".7 1.5 1.1 1.9"
+          opacity={0.7}
         />
       </g>
 
