@@ -2,7 +2,7 @@
   "id": "/",
   "name": "MogTome",
   "short_name": "MogTome",
-  "description": "Members and FC activity for Kupo Life on Zalera.",
+  "description": "Meet Kupo Life, our FFXIV Free Company on Zalera, and see what we've been up to.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

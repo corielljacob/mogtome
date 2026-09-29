@@ -12,6 +12,10 @@ to understand. Keep the cozy scrapbook and moogle personality; soften excess.
 - Match the moment. Loading and empty states can be lighthearted; errors,
   account security, and recovery instructions should be calm and precise.
 - Be specific to Kupo Life. Don’t invent events, habits, or promises.
+- Let sentences vary naturally. Don’t replace every slogan with the same
+  clipped fragments, or add slang just to sound casual.
+- Give each moogle line something to react to: a quest, a costume, cold wings.
+  A greeting can simply be a greeting; it doesn’t need a grand sentiment.
 - Keep Kupo Life, Members, Chronicle, and official FFXIV rank names.
 - Refer to people as members and to the group as the FC or Free Company.
 - Preserve member-written biographies and other user content.
@@ -29,12 +33,14 @@ work. Read aloud: would someone in the FC actually say this?
 
 ## Examples
 
-| Copy                                           | Guidance                            |
-| ---------------------------------------------- | ----------------------------------- |
-| Rounding everyone up, kupo...                  | Keep: explicitly liked by the user. |
-| Welcome home, kupo                             | A fitting warm welcome.             |
-| Same friends. New stories. Always home, kupo ♡ | Trim: “See you in game, kupo.”      |
-| Couldn’t save your bio. Try again.             | Keep errors clear and actionable.   |
+| Copy                                           | Guidance                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------- |
+| Rounding everyone up, kupo...                  | Keep: explicitly liked by the user.                           |
+| Welcome home, kupo                             | A fitting warm welcome.                                       |
+| Same friends. New stories. Always home, kupo ♡ | Trim: “See you in game, kupo.”                                |
+| Couldn’t save your bio. Try again.             | Keep errors clear and actionable.                             |
+| A companion experience for Kupo Life!          | Say what it does: “Catch up with Kupo Life!”                  |
+| Sizzling summer fun, kupo~!                    | Give the moogle a voice: “Too hot for this much fluff, kupo.” |
 
 ## Reading
 
@@ -44,6 +50,8 @@ work. Read aloud: would someone in the FC actually say this?
   use familiar words and concrete explanations.
 - [Grammarly: Common words and phrases in AI-generated text](https://www.grammarly.com/blog/ai/common-ai-words/):
   watch for repetitive structures, stock phrases, and generic claims.
+- [Nielsen Norman Group: Applying writing guidelines to web pages](https://www.nngroup.com/articles/applying-writing-guidelines-web-pages/):
+  keep web copy concise and easy to scan; cut promotional filler.
 
 These sources inform clarity; the voice choices are our application to
 MogTome and the user’s preference for personality.

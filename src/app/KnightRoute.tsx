@@ -62,7 +62,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
           <p className="knight-access-description">
             {isAuthenticated
               ? "You’re signed in, but this account doesn’t have Knight access. This dashboard is for Moogle Knights and members with temporary knighthood."
-              : "A space for looking after Kupo Life. Sign in with Discord to check your knighthood and open the dashboard."}
+              : "Sign in with Discord to open the Knight dashboard. You’ll need permanent or temporary knighthood."}
           </p>
 
           {isAuthenticated ? (
@@ -107,7 +107,8 @@ export function KnightRoute({ children }: KnightRouteProps) {
               </div>
               <p className="knight-access-eligibility">
                 <InkIcon name="check" size={16} />
-                Permanent and temporary knighthood both grant access.
+                Moogle Knights and members with temporary knighthood can use
+                this page.
               </p>
             </>
           )}
@@ -134,7 +135,7 @@ export function KnightRoute({ children }: KnightRouteProps) {
         <InkIcon name="album" size={19} />
         <span>Looking for everyone?</span>
         <Link to="/members">
-          Visit the Family <InkIcon name="arrow-right" size={16} />
+          Browse Members <InkIcon name="arrow-right" size={16} />
         </Link>
       </footer>
     </section>

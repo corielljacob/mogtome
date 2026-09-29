@@ -80,7 +80,7 @@ describe("ProtectedRoute", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: /login with discord/i }),
+        screen.getByRole("button", { name: /sign in with discord/i }),
       ).toBeInTheDocument();
     });
   });
