@@ -1,4 +1,19 @@
 /* Inner chapters share one sheet; Home keeps its open room composition. */
+:root {
+  --view-sticky-top: max(12px, env(safe-area-inset-top, 0px));
+  --view-scroll-gap: 16px;
+}
+
+/* One document scroller. Only compact controls stay with the reader. */
+.inner-page-shell [data-view-toolbar] {
+  position: sticky;
+  top: var(--view-sticky-top);
+  z-index: 10;
+}
+.inner-page-shell [data-sticky-disabled="true"] {
+  position: static;
+}
+
 .cozy-app-content.is-inner-page {
   --inner-page-paper: var(--ui-surface);
   --inner-page-ink: var(--ui-ink);
@@ -149,6 +164,9 @@
 }
 
 @media (max-width: 760px) {
+  :root {
+    --view-sticky-top: env(safe-area-inset-top, 0px);
+  }
   .inner-page-shell {
     width: calc(100% - 1.5rem);
     margin-top: 1.25rem;
