@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { useChronicle } from "./useChronicle";
 import { ChronicleControls } from "./ChronicleControls";
 import { ChronicleIcon } from "./ChronicleIcons";
@@ -35,10 +36,10 @@ export function ChronicleAccessNotice() {
         <span className="chronicle-note-label">
           <ChronicleIcon name="book" size={17} /> For our FC members
         </span>
-        <h2 id="chronicle-access-title">A little catch-up awaits.</h2>
+        <h2 id="chronicle-access-title">What’s new in the FC?</h2>
         <p>
-          Member welcomes, new ranks, and FC announcements, all in one place.
-          Sign in with Discord to read the Chronicle.
+          Sign in with Discord to read FC announcements and see who’s joined or
+          moved up a rank.
         </p>
         <button
           className="chronicle-paper-button chronicle-sign-in"
@@ -94,6 +95,9 @@ export function ChronicleView({
   const initialError = isError && !isFetchNextPageError && totalCount === 0;
   const canReconnect = status === "disconnected" || status === "error";
   const hasDayIndex = dayGroups.length > 1;
+  const workspaceRef = useRef<HTMLElement>(null);
+  const toolbarRef = useRef<HTMLElement>(null);
+  useStickyToolbar(workspaceRef, toolbarRef);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const emptyHeadingRef = useRef<HTMLHeadingElement>(null);
   const entriesRef = useRef<HTMLDivElement>(null);
@@ -108,6 +112,30 @@ export function ChronicleView({
     activeFilter,
     canViewNameChanges,
   ]);
+  const resultQuery = JSON.stringify([deferredSearchQuery, activeFilter]);
+  const previousResultQuery = useRef(resultQuery);
+
+  useEffect(() => {
+    if (
+      isTransitioning ||
+      initialLoading ||
+      previousResultQuery.current === resultQuery
+    )
+      return;
+    previousResultQuery.current = resultQuery;
+    const heading = headingRef.current;
+    const toolbar = toolbarRef.current;
+    // Filtering from the sticky controls should reveal the new results without
+    // taking focus away from the field. Older-page loads keep their own place.
+    if (
+      heading &&
+      toolbar &&
+      heading.getBoundingClientRect().top <
+        Math.max(0, toolbar.getBoundingClientRect().bottom)
+    ) {
+      heading.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [resultQuery, isTransitioning, initialLoading]);
 
   useEffect(() => {
     // A disabled or removed button can drop focus onto body. Track intentional
@@ -238,9 +266,13 @@ export function ChronicleView({
   };
 
   return (
-    <section className="chronicle-workspace" aria-label="Company activity">
+    <section
+      ref={workspaceRef}
+      className="chronicle-workspace"
+      aria-label="Company activity"
+    >
       <span className="chronicle-washi" aria-hidden="true" />
-      <ChronicleControls model={model} />
+      <ChronicleControls model={model} toolbarRef={toolbarRef} />
       <header className="chronicle-workspace-heading">
         <div>
           <h2 ref={headingRef} tabIndex={-1}>
@@ -248,9 +280,13 @@ export function ChronicleView({
           </h2>
           <p role="status" aria-atomic="true">
             {initialLoading
-              ? "Opening the Chronicle…"
+              ? hasActiveQuery
+                ? "Searching…"
+                : "Opening the Chronicle…"
               : initialError
-                ? "Entries unavailable"
+                ? hasActiveQuery
+                  ? "Search unavailable"
+                  : "Entries unavailable"
                 : isTransitioning
                   ? "Searching…"
                   : `${totalCount} ${totalCount === 1 ? "entry" : "entries"} loaded`}
@@ -296,7 +332,7 @@ export function ChronicleView({
           )}
         </div>
       </header>
-      {deferredSearchQuery && !initialLoading && (
+      {deferredSearchQuery && (
         <p className="chronicle-search-context">
           Results for <strong>“{deferredSearchQuery}”</strong>
         </p>
@@ -319,7 +355,10 @@ export function ChronicleView({
             {initialLoading ? (
               <div className="chronicle-loading">
                 <p>
-                  <ChronicleIcon name="book" size={24} /> Catching up on the FC…
+                  <ChronicleIcon name="book" size={24} />{" "}
+                  {hasActiveQuery
+                    ? "Finding matching entries…"
+                    : "Catching up on the FC…"}
                 </p>
                 <div className="chronicle-loading-lines" aria-hidden="true">
                   {[0, 1, 2].map((index) => (
@@ -334,8 +373,16 @@ export function ChronicleView({
             ) : initialError ? (
               <div className="chronicle-message" role="alert">
                 <ChronicleIcon name="book" className="chronicle-message-icon" />
-                <h3>Couldn't open the Chronicle</h3>
-                <p>We couldn't load the entries. Please try again.</p>
+                <h3>
+                  {hasActiveQuery
+                    ? "Couldn't load matching entries"
+                    : "Couldn't open the Chronicle"}
+                </h3>
+                <p>
+                  {hasActiveQuery
+                    ? "Try again, or clear your search and filters."
+                    : "Please try again in a moment."}
+                </p>
                 <button
                   type="button"
                   className="chronicle-paper-button"
@@ -353,17 +400,21 @@ export function ChronicleView({
                   className="chronicle-message-icon"
                 />
                 <h3 ref={emptyHeadingRef} tabIndex={-1}>
-                  {hasActiveQuery
-                    ? "No matching entries"
-                    : hasNextPage
-                      ? "No entries on this page"
+                  {hasNextPage
+                    ? hasActiveQuery
+                      ? "No matching entries on this page"
+                      : "No entries on this page"
+                    : hasActiveQuery
+                      ? "No matching entries"
                       : "The first page is waiting"}
                 </h3>
                 <p>
-                  {hasActiveQuery
-                    ? "Try another member name or event type, or clear your filters."
-                    : hasNextPage
-                      ? "Load older entries to keep exploring the Chronicle."
+                  {hasNextPage
+                    ? hasActiveQuery
+                      ? "Try loading older entries, or clear your search and filters."
+                      : "Try loading older entries."
+                    : hasActiveQuery
+                      ? "Try another member name or event type, or clear your filters."
                       : "FC activity will appear here as it happens."}
                 </p>
                 {(hasActiveQuery || searchInput || activeFilter) && (
@@ -382,8 +433,8 @@ export function ChronicleView({
                 {isError && !isFetchNextPageError && (
                   <div className="chronicle-update-error" role="alert">
                     <p>
-                      We couldn't refresh the Chronicle. Your loaded entries are
-                      still here.
+                      We couldn't refresh the Chronicle. You can still read the
+                      entries below.
                     </p>
                     <button
                       type="button"

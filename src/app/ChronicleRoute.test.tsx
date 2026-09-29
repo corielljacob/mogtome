@@ -96,7 +96,7 @@ describe("Chronicle route access", () => {
       screen.getByRole("heading", { name: "The Chronicle", level: 1 }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "A little catch-up awaits." }),
+      screen.getByRole("heading", { name: "What’s new in the FC?" }),
     ).toBeInTheDocument();
     expect(useChronicle).not.toHaveBeenCalled();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();

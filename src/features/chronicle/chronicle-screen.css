@@ -73,6 +73,10 @@
   overflow: visible;
 }
 .chronicle-workspace {
+  --chronicle-scroll-offset: calc(
+    var(--view-sticky-top) + var(--view-toolbar-height, 0px) +
+      var(--view-scroll-gap)
+  );
   position: relative;
   isolation: isolate;
   min-width: 0;
@@ -92,6 +96,9 @@
     5px 7px 0 -2px
       color-mix(in srgb, var(--nook-paper) 78%, var(--scene-wood-light)),
     0 8px 24px color-mix(in srgb, var(--scene-shadow) 15%, transparent);
+}
+.chronicle-workspace :is(h2, h3, .chronicle-entry, .chronicle-endnote) {
+  scroll-margin-top: var(--chronicle-scroll-offset);
 }
 .chronicle-workspace::before {
   content: "";
@@ -232,7 +239,6 @@
   margin: 0;
   color: var(--ui-heading);
   font: 600 1.0625rem/1.5 var(--font-navigation);
-  scroll-margin-top: 24px;
 }
 .chronicle-day-heading h3:focus-visible,
 .chronicle-workspace-heading h2:focus-visible,

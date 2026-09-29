@@ -135,6 +135,82 @@ function createEmptyModel(
 }
 
 describe("Chronicle page states", () => {
+  it("reveals settled search and filter results below the sticky controls without moving input focus", () => {
+    const model = createModel();
+    const { rerender } = render(<ChronicleView model={model} />);
+    const search = screen.getByRole("searchbox");
+    const activity = screen.getByRole("combobox", { name: "Activity type" });
+    const heading = screen.getByRole("heading", { name: "Recent activity" });
+    const toolbar = screen.getByRole("search");
+    vi.spyOn(heading, "getBoundingClientRect").mockReturnValue({
+      ...heading.getBoundingClientRect(),
+      top: -400,
+    });
+    vi.spyOn(toolbar, "getBoundingClientRect").mockReturnValue({
+      ...toolbar.getBoundingClientRect(),
+      top: 12,
+      bottom: 150,
+      height: 138,
+    });
+    search.focus();
+    vi.mocked(Element.prototype.scrollIntoView).mockClear();
+
+    rerender(
+      <ChronicleView
+        model={{ ...model, searchInput: "Ada", isTransitioning: true }}
+      />,
+    );
+    const searched = {
+      ...model,
+      searchInput: "Ada",
+      deferredSearchQuery: "Ada",
+      hasActiveQuery: true,
+    };
+    rerender(
+      <ChronicleView
+        model={{ ...searched, totalCount: 0, dayGroups: [], isLoading: true }}
+      />,
+    );
+    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+
+    rerender(<ChronicleView model={searched} />);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledOnce();
+    expect(Element.prototype.scrollIntoView).toHaveBeenLastCalledWith({
+      block: "start",
+      behavior: "instant",
+    });
+    expect(search).toHaveFocus();
+
+    // A cached filter result can appear without a loading state or page shrink.
+    activity.focus();
+    const filtered = { ...searched, activeFilter: "Announcement" as const };
+    rerender(<ChronicleView model={filtered} />);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(2);
+    expect(activity).toHaveFocus();
+
+    rerender(<ChronicleView model={withOlderEntry(filtered)} />);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(2);
+    expect(activity).toHaveFocus();
+  });
+
+  it("does not scroll search results that are already below the toolbar", () => {
+    const model = createModel();
+    const { rerender } = render(<ChronicleView model={model} />);
+    const heading = screen.getByRole("heading", { name: "Recent activity" });
+    vi.spyOn(heading, "getBoundingClientRect").mockReturnValue({
+      ...heading.getBoundingClientRect(),
+      top: 400,
+    });
+    vi.mocked(Element.prototype.scrollIntoView).mockClear();
+    rerender(
+      <ChronicleView
+        model={{ ...model, activeFilter: "Announcement", hasActiveQuery: true }}
+      />,
+    );
+
+    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+  });
+
   it.each([false, true])(
     "focuses the first new older entry after an explicit load (more pages: %s)",
     async (hasNextPage) => {
@@ -359,13 +435,78 @@ describe("Chronicle page states", () => {
     render(<ChronicleView model={model} />);
     const error = screen.getByRole("alert");
 
-    expect(error).toHaveTextContent(
-      "We couldn't load the entries. Please try again.",
-    );
+    expect(error).toHaveTextContent("Please try again in a moment.");
     await user.click(within(error).getByRole("button", { name: "Try again" }));
     expect(model.refetch).toHaveBeenCalledOnce();
     expect(
       screen.queryByRole("heading", { name: "The first page is waiting" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps the query visible and announces search while matching entries load", () => {
+    render(
+      <ChronicleView
+        model={createEmptyModel({
+          searchInput: "Ada",
+          deferredSearchQuery: "Ada",
+          hasActiveQuery: true,
+          isLoading: true,
+        })}
+      />,
+    );
+
+    expect(screen.getByText("Searching…")).toHaveAttribute("role", "status");
+    expect(screen.getByText("“Ada”")).toBeInTheDocument();
+    expect(
+      screen
+        .getByText("Finding matching entries…")
+        .closest('[aria-busy="true"]'),
+    ).not.toBeNull();
+    expect(
+      screen.queryByText("Opening the Chronicle…"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps search controls available for recovery when a search fails", async () => {
+    const user = userEvent.setup();
+    const model = createEmptyModel({
+      searchInput: "Ada",
+      deferredSearchQuery: "Ada",
+      hasActiveQuery: true,
+      isError: true,
+    });
+    render(<ChronicleView model={model} />);
+
+    const error = screen.getByRole("alert");
+    expect(error).toHaveTextContent("Couldn't load matching entries");
+    expect(screen.getByText("“Ada”")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("Ada");
+    await user.click(within(error).getByRole("button", { name: "Try again" }));
+    expect(model.refetch).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: "Clear all" }));
+    expect(model.handleClearAll).toHaveBeenCalledOnce();
+  });
+
+  it("does not declare a search exhausted when an empty visible page has older pages", () => {
+    render(
+      <ChronicleView
+        model={createEmptyModel({
+          searchInput: "Ada",
+          deferredSearchQuery: "Ada",
+          hasActiveQuery: true,
+          hasNextPage: true,
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "No matching entries on this page" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Load older entries" }),
+    ).toBeEnabled();
+    expect(
+      screen.queryByRole("heading", { name: "No matching entries" }),
     ).not.toBeInTheDocument();
   });
 
@@ -620,7 +761,7 @@ describe("Chronicle page states", () => {
 
     expect(screen.getByText(welcome.text)).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "Your loaded entries are still here.",
+      "You can still read the entries below.",
     );
     await user.click(
       within(screen.getByRole("alert")).getByRole("button", {

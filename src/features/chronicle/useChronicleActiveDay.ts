@@ -13,9 +13,30 @@ export function useChronicleActiveDay(groups: DayGroup[]): string | null {
   useEffect(() => {
     if (groups.length === 0) return;
     let frame: number | null = null;
+    const workspace = document
+      .getElementById(chronicleDayId(groups[0].key))
+      ?.closest(".chronicle-workspace");
+    const toolbar = workspace?.querySelector<HTMLElement>(
+      "[data-view-toolbar]",
+    );
 
     const measure = () => {
       frame = null;
+      const toolbarStyle = toolbar ? window.getComputedStyle(toolbar) : null;
+      const gap = workspace
+        ? Number.parseFloat(
+            window
+              .getComputedStyle(workspace)
+              .getPropertyValue("--view-scroll-gap"),
+          ) || 16
+        : 16;
+      const readingLine = toolbar
+        ? (Number.parseFloat(toolbarStyle?.top ?? "") || 0) +
+          (toolbar.dataset.stickyDisabled === "true"
+            ? 0
+            : toolbar.getBoundingClientRect().height) +
+          gap
+        : READING_LINE_PX;
       const headings = groups.flatMap((group) => {
         const element = document.getElementById(chronicleDayId(group.key));
         return element
@@ -24,7 +45,7 @@ export function useChronicleActiveDay(groups: DayGroup[]): string | null {
       });
       let nextKey = groups[0].key;
       for (const { key, rect } of headings) {
-        if (rect.top <= READING_LINE_PX) {
+        if (rect.top <= readingLine) {
           nextKey = key;
         }
       }
@@ -55,8 +76,7 @@ export function useChronicleActiveDay(groups: DayGroup[]): string | null {
           ({ element }) => element === document.activeElement,
         );
         const nearReadingLine = visibleHeadings.find(
-          ({ rect }) =>
-            rect.top <= READING_LINE_PX + BOTTOM_READING_ALLOWANCE_PX,
+          ({ rect }) => rect.top <= readingLine + BOTTOM_READING_ALLOWANCE_PX,
         );
         nextKey =
           focusedHeading?.key ??
@@ -73,12 +93,18 @@ export function useChronicleActiveDay(groups: DayGroup[]): string | null {
     window.addEventListener("scroll", scheduleMeasure, { passive: true });
     window.addEventListener("resize", scheduleMeasure);
     document.addEventListener("focusin", scheduleMeasure);
+    const observer =
+      toolbar && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(scheduleMeasure)
+        : null;
+    if (toolbar) observer?.observe(toolbar);
     scheduleMeasure();
 
     return () => {
       window.removeEventListener("scroll", scheduleMeasure);
       window.removeEventListener("resize", scheduleMeasure);
       document.removeEventListener("focusin", scheduleMeasure);
+      observer?.disconnect();
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
   }, [groups]);

@@ -78,6 +78,39 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe("useChronicleActiveDay", () => {
+  it("follows headings below the measured sticky toolbar and releases its space when disabled", () => {
+    const groups = makeGroups("today", "yesterday");
+    headingTops = {
+      [chronicleDayId("today")]: -300,
+      [chronicleDayId("yesterday")]: 208,
+    };
+    render(
+      <section className="chronicle-workspace">
+        <div data-view-toolbar style={{ top: 12 }} />
+        <Reader groups={groups} />
+      </section>,
+    );
+    const toolbar = document.querySelector<HTMLElement>("[data-view-toolbar]")!;
+    Object.defineProperty(toolbar, "getBoundingClientRect", {
+      value: vi.fn(() => ({
+        top: 12,
+        bottom: 192,
+        height: 180,
+      })),
+    });
+    flushFrame();
+    expect(screen.getByLabelText("Currently reading")).toHaveTextContent(
+      "yesterday",
+    );
+
+    toolbar.dataset.stickyDisabled = "true";
+    fireEvent.resize(window);
+    flushFrame();
+    expect(screen.getByLabelText("Currently reading")).toHaveTextContent(
+      "today",
+    );
+  });
+
   it("starts at the first day before the feed and follows the last heading above the reading line", () => {
     const groups = makeGroups("today", "yesterday", "monday");
     headingTops = {

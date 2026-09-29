@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, type RefObject } from "react";
 import type { ChronicleEventFilter } from "@/shared/types";
 import type { useChronicle } from "./useChronicle";
 import { ChronicleIcon } from "./ChronicleIcons";
@@ -34,9 +34,11 @@ const eventFilters: { value: ChronicleEventFilter; label: string }[] = [
 export function ChronicleControls({
   model,
   disabled = false,
+  toolbarRef,
 }: {
   model: ChronicleControlsModel;
   disabled?: boolean;
+  toolbarRef?: RefObject<HTMLElement | null>;
 }) {
   const {
     searchInput,
@@ -52,11 +54,13 @@ export function ChronicleControls({
   } = model;
   const searchId = useId();
   const filterId = useId();
+  const searchHintId = useId();
   const canClear =
     searchInput.length > 0 || activeFilter !== null || hasActiveQuery;
 
   return (
     <section
+      ref={toolbarRef}
       className="chronicle-toolbar"
       role="search"
       aria-label="Chronicle search and filters"
@@ -72,6 +76,7 @@ export function ChronicleControls({
             inputMode="search"
             enterKeyHint="search"
             aria-keyshortcuts="/"
+            aria-describedby={searchHintId}
             placeholder="Member name or event…"
             value={searchInput}
             disabled={disabled}
@@ -145,6 +150,9 @@ export function ChronicleControls({
           Clear all
         </button>
       )}
+      <p className="chronicle-search-hint" id={searchHintId}>
+        Results update as you type.
+      </p>
     </section>
   );
 }

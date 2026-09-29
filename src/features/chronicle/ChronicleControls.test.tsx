@@ -41,6 +41,7 @@ describe("Chronicle controls", () => {
 
     expect(search).toHaveAttribute("placeholder", "Member name or event…");
     expect(search).toHaveAttribute("aria-keyshortcuts", "/");
+    expect(search).toHaveAccessibleDescription("Results update as you type.");
     expect(
       screen.getByRole("search", { name: "Chronicle search and filters" }),
     ).toContainElement(search);
