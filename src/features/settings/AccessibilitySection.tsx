@@ -1,148 +1,146 @@
-import { Accessibility, Eye } from "lucide-react";
+import { useId } from "react";
 import {
   useAccessibility,
   COLORBLIND_MODES,
   type ColorblindMode,
-  type ToggleableSettingKey,
 } from "@/shared/contexts/AccessibilityContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
-import {
-  SettingsCard,
-  SettingRow,
-  Collapsible,
-  ToggleSwitch,
-} from "@/features/settings/SettingsControls";
-
-interface AccessibilityOption {
-  key: ToggleableSettingKey;
-  label: string;
-  description: string;
-  requiresDark?: boolean;
-}
-
-const ACCESSIBILITY_OPTIONS: AccessibilityOption[] = [
-  {
-    key: "highContrast",
-    label: "High Contrast",
-    description: "Increases color contrast for better visibility",
-  },
-  {
-    key: "extraDark",
-    label: "Extra Dark",
-    description: "Deeper blacks for OLED screens",
-    requiresDark: true,
-  },
-  {
-    key: "largeText",
-    label: "Large Text",
-    description: "Increases font size across the site",
-  },
-  {
-    key: "reducedMotion",
-    label: "Reduce Motion",
-    description: "Minimizes animations and transitions",
-  },
-  {
-    key: "enhancedFocus",
-    label: "Enhanced Focus",
-    description: "More visible focus indicators",
-  },
-  {
-    key: "dyslexiaFont",
-    label: "Dyslexia-Friendly",
-    description: "Easier-to-read font spacing",
-  },
-];
+import { SettingsCard, SettingRow, ToggleSwitch } from "./SettingsControls";
+import { SettingsIcon } from "./SettingsIcons";
+import "./settings-comfort.css";
 
 export function AccessibilitySection() {
   const { settings, toggleSetting, updateSetting } = useAccessibility();
   const { isDarkMode } = useTheme();
+  const colorId = useId();
+  const darkHelpId = useId();
+  const selectedMode = COLORBLIND_MODES.find(
+    (mode) => mode.value === settings.colorblindMode,
+  );
 
   return (
     <SettingsCard
-      icon={Accessibility}
+      icon="eye"
       title="Accessibility"
-      accent="var(--secondary)"
-      pinColor="var(--accent)"
-      tilt={-0.4}
+      description="Make MogTome comfortable to read and explore."
     >
-      <div className="divide-y divide-[color:color-mix(in_srgb,var(--text-subtle)_16%,transparent)]">
-        {ACCESSIBILITY_OPTIONS.map(
-          ({ key, label, description, requiresDark }) => {
-            const isDisabled = requiresDark && !isDarkMode;
-            return (
-              <SettingRow
-                key={key}
-                label={label}
-                description={
-                  isDisabled ? `${description} (needs dark mode)` : description
-                }
-                disabled={isDisabled}
-              >
-                <ToggleSwitch
-                  label={label}
-                  enabled={settings[key]}
-                  onChange={() => toggleSetting(key)}
-                  disabled={isDisabled}
-                />
-              </SettingRow>
-            );
-          },
-        )}
-      </div>
+      <div className="settings-comfort-groups">
+        <fieldset className="settings-fieldset settings-comfort-group">
+          <legend className="settings-subheading">
+            <SettingsIcon name="book" size={18} /> Reading
+          </legend>
+          <SettingRow
+            label="Larger text"
+            description="Increase text size across the site."
+          >
+            <ToggleSwitch
+              label="Larger text"
+              enabled={settings.largeText}
+              onChange={() => toggleSetting("largeText")}
+            />
+          </SettingRow>
+          <SettingRow
+            label="Dyslexia-friendly font"
+            description="Use a reading font with wider spacing."
+          >
+            <ToggleSwitch
+              label="Dyslexia-friendly font"
+              enabled={settings.dyslexiaFont}
+              onChange={() => toggleSetting("dyslexiaFont")}
+            />
+          </SettingRow>
+        </fieldset>
 
-      <Collapsible
-        icon={Eye}
-        label="Colorblind Mode"
-        accent="var(--secondary)"
-        value={
-          settings.colorblindMode !== "none"
-            ? COLORBLIND_MODES.find((m) => m.value === settings.colorblindMode)
-                ?.label
-            : undefined
-        }
-      >
-        <div
-          className="space-y-1"
-          role="radiogroup"
-          aria-label="Colorblind mode options"
-        >
-          {COLORBLIND_MODES.map(({ value, label, description }) => {
-            const sel = settings.colorblindMode === value;
-            return (
-              <button
-                key={value}
-                onClick={() =>
-                  updateSetting("colorblindMode", value as ColorblindMode)
+        <fieldset className="settings-fieldset settings-comfort-group">
+          <legend className="settings-subheading">
+            <SettingsIcon name="contrast" size={18} /> Display
+          </legend>
+          <SettingRow
+            label="High contrast"
+            description="Make text and controls stand out more clearly."
+          >
+            <ToggleSwitch
+              label="High contrast"
+              enabled={settings.highContrast}
+              onChange={() => toggleSetting("highContrast")}
+            />
+          </SettingRow>
+          <SettingRow
+            label="Extra dark"
+            description="Use deeper blacks in dark mode."
+            disabled={!isDarkMode}
+          >
+            <ToggleSwitch
+              label="Extra dark"
+              enabled={settings.extraDark}
+              onChange={() => toggleSetting("extraDark")}
+              disabled={!isDarkMode}
+              describedBy={!isDarkMode ? darkHelpId : undefined}
+            />
+          </SettingRow>
+          {!isDarkMode && (
+            <p
+              className="settings-help settings-comfort-dark-help"
+              id={darkHelpId}
+            >
+              <SettingsIcon name="info" size={16} /> Choose Dark in Appearance
+              to use extra dark.
+            </p>
+          )}
+          <div className="settings-comfort-color">
+            <label htmlFor={colorId}>Color vision</label>
+            <div className="settings-comfort-select">
+              <select
+                id={colorId}
+                value={settings.colorblindMode}
+                onChange={(event) =>
+                  updateSetting(
+                    "colorblindMode",
+                    event.target.value as ColorblindMode,
+                  )
                 }
-                role="radio"
-                aria-checked={sel}
-                className={`w-full flex items-center gap-2.5 py-2 px-2.5 rounded-xl text-left cursor-pointer transition-colors
-                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${sel ? "bg-[color:color-mix(in_srgb,var(--primary)_10%,var(--card))]" : "hover:bg-[var(--bg)]"}`}
+                aria-describedby={`${colorId}-help`}
               >
-                <span
-                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[color:color-mix(in_srgb,var(--text-muted)_45%,transparent)]"}`}
-                >
-                  {sel && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                  )}
-                </span>
-                <span className="min-w-0">
-                  <span
-                    className={`font-soft text-sm ${sel ? "text-[var(--primary)] font-bold" : "text-[var(--text)]"}`}
-                  >
-                    {label}
-                  </span>
-                  <span className="font-soft text-xs text-[var(--text-muted)] ml-1">
-                    - {description}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </Collapsible>
+                {COLORBLIND_MODES.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {value === "none" ? "Default colors" : label}
+                  </option>
+                ))}
+              </select>
+              <SettingsIcon name="chevron" size={17} />
+            </div>
+            <p className="settings-help" id={`${colorId}-help`}>
+              {selectedMode?.description ?? "Default colors"}
+            </p>
+          </div>
+        </fieldset>
+
+        <fieldset className="settings-fieldset settings-comfort-group">
+          <legend className="settings-subheading">
+            <SettingsIcon name="motion" size={18} /> Motion &amp; navigation
+          </legend>
+          <SettingRow
+            label="Reduce motion"
+            description="Minimize animations, transitions, and smooth scrolling."
+          >
+            <ToggleSwitch
+              label="Reduce motion"
+              enabled={settings.reducedMotion}
+              onChange={() => toggleSetting("reducedMotion")}
+            />
+          </SettingRow>
+          <SettingRow
+            label="Stronger focus outlines"
+            description="Make your place clearer when using the keyboard."
+          >
+            <ToggleSwitch
+              label="Stronger focus outlines"
+              enabled={settings.enhancedFocus}
+              onChange={() => toggleSetting("enhancedFocus")}
+            />
+          </SettingRow>
+        </fieldset>
+      </div>
     </SettingsCard>
   );
 }
