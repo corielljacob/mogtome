@@ -11,8 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { DiscordIcon } from "@/shared/ui/DiscordIcon";
-import { MogTomeMark } from "@/shared/ui/MogTomeMark";
-import { MogTomeWordmark } from "@/shared/ui/MogTomeWordmark";
+import { MogTomeHomeLink } from "./nav/MogTomeHomeLink";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { ScrapbookNav } from "./ScrapbookNav";
 
@@ -120,7 +119,7 @@ function LoginButton() {
       onClick={login}
       disabled={isLoading}
       className="cozy-login"
-      aria-label={isLoading ? "Loading account" : "Login with Discord"}
+      aria-label={isLoading ? "Loading account" : "Sign in with Discord"}
     >
       <DiscordIcon />
       <span>{isLoading ? "One moment…" : "Sign in"}</span>
@@ -141,15 +140,7 @@ export function Navbar() {
       data-holiday={event?.id}
     >
       <div className="storybook-header">
-        <Link to="/" className="storybook-brand" aria-label="MogTome home">
-          <MogTomeMark className="storybook-brand-mark" />
-          <span className="storybook-brand-type">
-            <MogTomeWordmark className="storybook-wordmark" />
-            <span className="nav-world">
-              Kupo Life <i aria-hidden="true">✦</i> Zalera
-            </span>
-          </span>
-        </Link>
+        <MogTomeHomeLink />
         <ScrapbookNav />
         <div className="topbar-controls">
           <div className="nav-utilities">

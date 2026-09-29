@@ -1,0 +1,328 @@
+/* A tiny cloth-bound keepsake: sage cover, linen bookplate, and brass charm. */
+.storybook-brand {
+  --brand-unit: var(--layout-unit);
+  --brand-linen: #f7edd8;
+  --brand-seam: #b7a17c;
+  --brand-plum: #774d61;
+  --brand-sage: #50654e;
+  --brand-caption: #6b5948;
+  --brand-cover: #6d7e60;
+  --brand-cover-edge: #455b46;
+  --brand-leaf: #99a57c;
+  --brand-rose: #ba838a;
+  --brand-gold: #a47d42;
+  --brand-star: #dfbc78;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: calc(276 * var(--brand-unit));
+  height: calc(76 * var(--brand-unit));
+  flex: none;
+  border-radius: calc(12 * var(--brand-unit));
+  color: var(--nav-ink);
+  text-decoration: none;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+.storybook-brand-cover {
+  position: absolute;
+  z-index: -1;
+  inset: calc(10 * var(--brand-unit)) calc(12 * var(--brand-unit))
+    calc(5 * var(--brand-unit)) calc(34 * var(--brand-unit));
+  border: 1px solid var(--brand-cover-edge);
+  border-radius: calc(9 * var(--brand-unit)) calc(6 * var(--brand-unit))
+    calc(7 * var(--brand-unit)) calc(9 * var(--brand-unit));
+  background:
+    repeating-linear-gradient(0deg, #fff8df0e 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, #243c2912 0 1px, transparent 1px 3px),
+    var(--brand-cover);
+  box-shadow:
+    inset 0 0 0 2px #dce1b82b,
+    0 calc(3 * var(--brand-unit)) 0 var(--brand-cover-edge),
+    0 calc(5 * var(--brand-unit)) calc(7 * var(--brand-unit)) #211a2429;
+  transform: rotate(-2deg);
+  transition:
+    transform 280ms ease,
+    box-shadow 280ms ease;
+}
+.storybook-brand-cover::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed #e2d9aa70;
+  border-radius: inherit;
+}
+.storybook-brand-reader {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: calc(86 * var(--brand-unit));
+  height: calc(76 * var(--brand-unit));
+  flex: none;
+  transform: rotate(-8deg);
+  transform-origin: 50% 80%;
+  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.25, 1.2);
+}
+.storybook-brand-patch {
+  position: absolute;
+  inset: 17% 14% 7%;
+  border: 1px solid #baa882;
+  border-radius: 48% 48% 44% 44%;
+  background:
+    repeating-linear-gradient(45deg, #aa947c13 0 1px, transparent 1px 3px),
+    #e9ddc2;
+  box-shadow:
+    0 2px 2px #30251f35,
+    inset 0 0 0 3px #fff5dd;
+}
+.storybook-brand-patch::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed #ad9870;
+  border-radius: inherit;
+}
+.storybook-brand-mark {
+  position: relative;
+  width: calc(73 * var(--brand-unit));
+  height: calc(76 * var(--brand-unit));
+  overflow: visible;
+  filter: drop-shadow(0 2px 1px #51382a33);
+}
+.storybook-brand-sprigs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.storybook-brand-type {
+  position: relative;
+  display: grid;
+  align-items: center;
+  width: calc(192 * var(--brand-unit));
+  height: calc(57 * var(--brand-unit));
+  margin-left: calc(-12 * var(--brand-unit));
+  transform: rotate(-2deg);
+  transform-origin: 15% 70%;
+  transition: transform 280ms ease;
+}
+.storybook-brand-bookplate {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: calc(1 * var(--brand-unit));
+  height: 100%;
+  padding: calc(3 * var(--brand-unit)) calc(13 * var(--brand-unit))
+    calc(6 * var(--brand-unit));
+  border: 1px solid var(--brand-seam);
+  border-radius: calc(7 * var(--brand-unit)) calc(10 * var(--brand-unit))
+    calc(10 * var(--brand-unit)) calc(6 * var(--brand-unit));
+  background:
+    repeating-linear-gradient(0deg, #907a5c0b 0 0.6px, transparent 0.6px 2px),
+    repeating-linear-gradient(90deg, #fffdf34d 0 0.6px, transparent 0.6px 2px),
+    linear-gradient(165deg, #fffdf480, transparent 55%, #a1845217),
+    var(--brand-linen);
+  box-shadow:
+    inset 0 0 0 2px #fff9e9b3,
+    0 calc(2 * var(--brand-unit)) 0 #d6c8a7,
+    0 calc(3 * var(--brand-unit)) 0 #9d8b66,
+    0 calc(4 * var(--brand-unit)) calc(3 * var(--brand-unit)) #30251f30;
+}
+.storybook-brand-bookplate::before {
+  content: "";
+  position: absolute;
+  inset: calc(4 * var(--brand-unit));
+  border: 1px dashed var(--brand-seam);
+  border-radius: calc(4 * var(--brand-unit)) calc(7 * var(--brand-unit))
+    calc(7 * var(--brand-unit)) calc(3 * var(--brand-unit));
+  pointer-events: none;
+}
+.storybook-wordmark {
+  display: block;
+  width: calc(163 * var(--brand-unit));
+  height: auto;
+  overflow: visible;
+}
+.nav-world {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--brand-unit));
+  color: var(--brand-caption);
+  font: 500 max(0.4375rem, calc(8 * var(--brand-unit))) / 1.2
+    var(--font-navigation);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-world i {
+  color: var(--brand-plum);
+  font-size: 0.8em;
+  font-style: normal;
+}
+.storybook-brand-bookmark {
+  position: absolute;
+  z-index: 0;
+  top: calc(7 * var(--brand-unit));
+  right: calc(-11 * var(--brand-unit));
+  display: grid;
+  place-items: center;
+  width: calc(21 * var(--brand-unit));
+  height: calc(36 * var(--brand-unit));
+  padding-left: calc(6 * var(--brand-unit));
+  color: #fff1da;
+  background:
+    linear-gradient(90deg, #72495144, transparent 65%),
+    repeating-linear-gradient(0deg, #fff8e521 0 1px, transparent 1px 3px),
+    var(--brand-rose);
+  clip-path: polygon(0 0, 100% 0, 83% 50%, 100% 100%, 0 100%);
+}
+.storybook-brand-bookmark svg {
+  width: calc(13 * var(--brand-unit));
+  height: calc(13 * var(--brand-unit));
+}
+.storybook-brand-charm {
+  position: absolute;
+  z-index: 3;
+  top: calc(21 * var(--brand-unit));
+  right: calc(-3 * var(--brand-unit));
+  width: calc(19 * var(--brand-unit));
+  height: calc(42 * var(--brand-unit));
+  overflow: visible;
+  transform: rotate(-9deg);
+  transform-origin: 46% 4%;
+  filter: drop-shadow(0 1px 1px #37271933);
+}
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-cover {
+  transform: translateY(calc(-1 * var(--brand-unit))) rotate(-1deg);
+  box-shadow:
+    inset 0 0 0 2px #dce1b82b,
+    0 calc(3 * var(--brand-unit)) 0 var(--brand-cover-edge),
+    0 calc(6 * var(--brand-unit)) calc(10 * var(--brand-unit)) #211a2433;
+}
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-reader {
+  transform: translateY(calc(-2 * var(--brand-unit))) rotate(-3deg);
+}
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-type {
+  transform: translateY(calc(-1 * var(--brand-unit))) rotate(-1deg);
+}
+.storybook-brand:is(:hover, :focus-visible) .storybook-brand-charm {
+  animation: brand-charm-swing 900ms ease-in-out;
+}
+.storybook-brand:active .storybook-brand-type {
+  transform: translateY(calc(1 * var(--brand-unit))) rotate(-2deg);
+}
+@keyframes brand-charm-swing {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  25% {
+    transform: rotate(17deg);
+  }
+  55% {
+    transform: rotate(-17deg);
+  }
+  80% {
+    transform: rotate(-4deg);
+  }
+}
+/* Warm paper stays legible at night without becoming a bright white plaque. */
+.cozy-topbar[data-mode="dark"] .storybook-brand {
+  --brand-linen: #e8dcc2;
+  --brand-cover: #617458;
+  --brand-cover-edge: #3b4f3f;
+  --brand-leaf: #a3ac88;
+  --brand-gold: #b99a61;
+}
+:root.high-contrast .cozy-topbar .storybook-brand {
+  --brand-linen: var(--bg);
+  --brand-seam: var(--text);
+  --brand-plum: var(--text);
+  --brand-sage: var(--text);
+  --brand-caption: var(--text);
+}
+.high-contrast .storybook-brand-bookplate {
+  background: var(--bg);
+  box-shadow: none;
+  border: 2px solid var(--text);
+}
+.high-contrast .storybook-brand-cover,
+.high-contrast .storybook-brand-patch,
+.high-contrast .storybook-brand-sprigs,
+.high-contrast .storybook-brand-bookmark,
+.high-contrast .storybook-brand-charm,
+.high-contrast .brand-letter-shadow,
+.high-contrast .brand-letter-texture,
+.high-contrast .brand-letter-stitches {
+  display: none;
+}
+@media (max-width: 900px) {
+  .storybook-brand {
+    --brand-unit: 0.78px;
+    height: 52px;
+  }
+}
+@media (max-width: 600px) {
+  .storybook-brand {
+    --brand-unit: 0.7px;
+  }
+}
+@media (max-width: 400px) {
+  .storybook-brand {
+    --brand-unit: 0.63px;
+    height: 48px;
+  }
+  .nav-world {
+    gap: 3px;
+    letter-spacing: 0.06em;
+  }
+}
+@media (max-width: 360px) {
+  .storybook-brand {
+    --brand-unit: 0.56px;
+  }
+}
+@media (max-width: 340px) {
+  .storybook-brand {
+    --brand-unit: 0.5px;
+  }
+  .nav-world {
+    gap: 2px;
+    letter-spacing: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storybook-brand *,
+  .storybook-brand *::before,
+  .storybook-brand *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .storybook-brand:is(:hover, :focus-visible, :active) .storybook-brand-cover,
+  .storybook-brand:is(:hover, :focus-visible, :active) .storybook-brand-type {
+    transform: rotate(-2deg);
+  }
+  .storybook-brand:is(:hover, :focus-visible) .storybook-brand-reader {
+    transform: rotate(-8deg);
+  }
+}
+.reduce-motion
+  .storybook-brand:is(:hover, :focus-visible, :active)
+  .storybook-brand-cover,
+.reduce-motion
+  .storybook-brand:is(:hover, :focus-visible, :active)
+  .storybook-brand-type {
+  transform: rotate(-2deg) !important;
+}
+.reduce-motion
+  .storybook-brand:is(:hover, :focus-visible)
+  .storybook-brand-reader {
+  transform: rotate(-8deg) !important;
+}
+.reduce-motion .storybook-brand-charm {
+  transform: rotate(-9deg) !important;
+}

@@ -146,7 +146,7 @@ describe("Navbar account and appearance controls", () => {
     renderNavbar();
 
     await user.click(
-      screen.getByRole("button", { name: "Login with Discord" }),
+      screen.getByRole("button", { name: "Sign in with Discord" }),
     );
 
     expect(login).toHaveBeenCalledTimes(1);
@@ -193,7 +193,7 @@ describe("Navbar account and appearance controls", () => {
     const user = userEvent.setup();
     renderNavbar();
     expect(
-      screen.queryByRole("button", { name: "Login with Discord" }),
+      screen.queryByRole("button", { name: "Sign in with Discord" }),
     ).not.toBeInTheDocument();
 
     await user.click(
