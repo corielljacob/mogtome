@@ -1,0 +1,70 @@
+/* Ishgard's silver stone and blue wool, warmed by candlelight. The landscape
+   keeps separate day/night pigments while these colors dress the room. */
+.nook-theme[data-scene="heavensward"][data-mode] {
+  --hw-cloth: #354b72;
+  --hw-cloth-light: #6c80a0;
+  --hw-silver: #c5cfda;
+  --hw-wine: #814b5d;
+}
+.nook-theme[data-scene="heavensward"][data-mode="light"] {
+  --scene-ink: #525564;
+  --scene-paper: #f0eee8;
+  --scene-wood: #92939a;
+  --scene-wood-light: #c8c8ca;
+  --scene-wood-dark: #606877;
+  --scene-leaf: #6c7d7d;
+  --scene-leaf-light: #a6b3ac;
+  --scene-rose: #956579;
+  --scene-gold: #bb9b67;
+  --scene-brass: #727681;
+  --scene-shadow: #424c64;
+  --scene-pot: #8d9bac;
+  --scene-book-rose: #814b5d;
+  --scene-book-blue: #354b72;
+  --scene-cushion: #52658a;
+  --scene-cushion-light: #9baac3;
+  --scene-dried-flower: #a092a7;
+  --scene-sky: #a6b6ca;
+  --scene-sky-mid: #c0cad7;
+  --scene-horizon: #e1e3e8;
+  --nook-paper: #eeece7;
+  --nook-ink: #4c5266;
+  --nook-wall: #dfe3ec;
+  --nook-wall-light: #f2f0ec;
+  --nook-wall-shade: #7b87a4;
+  --nook-wall-print: #7d89a5;
+  --nook-wall-panel: #cbd1df;
+  --nook-light-strength: 63%;
+  --nook-shade-strength: 13%;
+}
+.nook-theme[data-scene="heavensward"][data-mode="dark"] {
+  --scene-ink: #30384d;
+  --scene-paper: #d9d8da;
+  --scene-wood: #666e81;
+  --scene-wood-light: #989eaf;
+  --scene-wood-dark: #3b455c;
+  --scene-leaf: #4f626a;
+  --scene-leaf-light: #8b9d9b;
+  --scene-rose: #a6768c;
+  --scene-gold: #c4a573;
+  --scene-brass: #8b8d9d;
+  --scene-shadow: #10162b;
+  --scene-pot: #697b98;
+  --scene-book-rose: #74485d;
+  --scene-book-blue: #33466b;
+  --scene-cushion: #354568;
+  --scene-cushion-light: #7787a8;
+  --scene-dried-flower: #a99bb3;
+  --scene-sky: #172641;
+  --scene-sky-mid: #304463;
+  --scene-horizon: #65758e;
+  --nook-paper: #dcdde0;
+  --nook-ink: #424b63;
+  --nook-wall: #1a253b;
+  --nook-wall-light: #485675;
+  --nook-wall-shade: #0e172b;
+  --nook-wall-print: #a3b1ce;
+  --nook-wall-panel: #1b263e;
+  --nook-light-strength: 36%;
+  --nook-shade-strength: 24%;
+}

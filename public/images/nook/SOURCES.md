@@ -43,6 +43,18 @@ artwork, and no image-generation model output is rendered in the Home scene.
   glimpse of the sea. People, player names, and game UI are omitted. The view is
   recomposed to fit the arched window; no screenshot pixels are embedded.
   The lighthouse and water share the landscape's reversible day/night fade.
+- `src/features/home/components/NookHeavenswardView.tsx` and `NookIshgardCitadel.tsx` — an original SVG
+  embroidery interpretation of Ishgard's fortified skyline, informed by Square
+  Enix's [official exterior concept art](https://lds-img.finalfantasyxiv.com/promo/h/P/CLACUT806q49bYb6kSo1m4YVjk.png),
+  [Heavensward exhibition screenshots](https://www.finalfantasyxiv.com/promotion/genso-zekkei/zekkei/02/),
+  and [official city tour](https://eu.finalfantasyxiv.com/blog/001043.html).
+  The architecture is recomposed as editable stitched geometry for the window;
+  no external raster asset was copied into the app for this scene. Reference
+  artwork and screenshots: **© SQUARE ENIX**.
+- `src/features/home/components/NookHeavenswardDragon.tsx` — an original stitched
+  dragon with four wing drawings, informed by the broad wing membranes and horned
+  profile in [Square Enix's Heavensward dragon artwork](https://lds-img.finalfantasyxiv.com/promo/h/R/JaN_fFXP8R_Qs28m59S8x4k9Ug.png).
+  No raster pixels are embedded. The falling snow is also original SVG threadwork.
 - `src/features/home/components/NookNeighbourHouse.tsx` — the reference's pale
   stone house, gabled slate roof, chimneys, arched windows, balustrade, flowerbox,
   and trailing wisteria, drawn with the room's shared SVG materials.

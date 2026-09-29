@@ -1,0 +1,22 @@
+/* A heraldic seal and woven ribbon, placed on the existing keepsakes. */
+.home-screen[data-scene="heavensward"] .nook-hw-seal {
+  position: absolute;
+  bottom: calc(100% - 20 * var(--layout-unit));
+  right: 3%;
+  width: min(24%, calc(56 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(1px 3px 1.5px #25314930);
+  transform: rotate(9deg);
+}
+.home-screen[data-scene="heavensward"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    90deg,
+    #354b72aa 0 calc(8 * var(--layout-unit)),
+    #d2d8e2cc calc(8 * var(--layout-unit)) calc(10 * var(--layout-unit)),
+    #814b5d99 calc(10 * var(--layout-unit)) calc(15 * var(--layout-unit)),
+    #d2d8e2cc calc(15 * var(--layout-unit)) calc(17 * var(--layout-unit))
+  );
+}

@@ -45,7 +45,7 @@ export const THEME_META: {
   {
     id: "heavensward",
     name: "Heavensward",
-    description: "The icy blues of Ishgard",
+    description: "Ishgard's snowy spires, silver, and midnight blue",
     displayFont: '"Cinzel", "Zen Maru Gothic", serif',
   },
   {
@@ -104,17 +104,18 @@ export const THEME_PALETTES: Record<string, ModePalette> = {
   },
   heavensward: {
     light: {
-      primary: "#3a6ea2",
-      secondary: "#6e93c1",
-      accent: "#2596b0",
-      bg: "#e8eef6",
+      primary: "#354b72",
+      secondary: "#8297b4",
+      accent: "#814b5d",
+      bg: "#e1e5ee",
+      card: "#f2f1ed",
     },
     dark: {
-      primary: "#4f93d6",
-      secondary: "#89b2dd",
-      accent: "#57c7dd",
-      bg: "#070c15",
-      card: "#161f2e",
+      primary: "#a5bce2",
+      secondary: "#859abf",
+      accent: "#c492aa",
+      bg: "#111b2e",
+      card: "#202d45",
     },
   },
   stormblood: {

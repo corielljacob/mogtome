@@ -2,7 +2,7 @@ import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 
-/** A small, repeating botanical print, using the room's own leaf and rose inks. */
+/** Small repeating motifs printed in the room's own inks. */
 export function NookWallpaper({
   eventId,
   colorTheme,
@@ -50,6 +50,18 @@ export function NookWallpaper({
                 stroke="var(--scene-gold)"
                 strokeWidth=".75"
               />
+            </>
+          ) : !eventId && colorTheme === "heavensward" ? (
+            <>
+              <path
+                d="M-7 11V-2Q-6-9 0-15Q6-9 7-2V11ZM-3 9V-2Q-2-6 0-9Q2-6 3-2V9"
+                strokeWidth=".7"
+              />
+              <path
+                d="M0-9V14M-10 7Q-16 0-14-5L-9-1-10-8-5-2M10 7Q16 0 14-5L9-1 10-8 5-2"
+                strokeWidth=".65"
+              />
+              <path d="M-10 15H10M0-18v-4m-2 2h4" strokeWidth=".7" />
             </>
           ) : !eventId ||
             !["all-saints-wake", "starlight", "valentiones"].includes(

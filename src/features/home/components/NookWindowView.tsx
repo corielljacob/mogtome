@@ -4,9 +4,15 @@ import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
 import { NookShiroganeView } from "./NookShiroganeView";
 import { NookArrView } from "./NookArrView";
+import { NookHeavenswardView } from "./NookHeavenswardView";
+import {
+  NookHeavenswardSky,
+  NookHeavenswardWeather,
+} from "./NookHeavenswardWeather";
 import { NookWindowSky } from "./NookWindowSky";
 import { createDayCycle, setDayCycleTarget } from "./nookDayCycle";
 import { NookSkyEmbroidery } from "./NookSkyEmbroidery";
+import { NookHeavenswardSkyEmbroidery } from "./NookHeavenswardSkyEmbroidery";
 import "./nook-window-cycle.css";
 
 interface NookWindowViewProps {
@@ -47,6 +53,8 @@ function NookDayCycleWindow({
   const reducedMotion = useReducedMotion();
   const isHalloween = eventId === "all-saints-wake";
   const scene = eventId ?? colorTheme;
+  const SkyEmbroidery =
+    scene === "heavensward" ? NookHeavenswardSkyEmbroidery : NookSkyEmbroidery;
 
   useLayoutEffect(() => {
     if (!root.current) return;
@@ -85,6 +93,7 @@ function NookDayCycleWindow({
       ref={root}
       className="nook-window-exterior"
       data-mode={isDark ? "dark" : "light"}
+      data-scene={scene}
       aria-hidden="true"
     >
       <div
@@ -92,7 +101,7 @@ function NookDayCycleWindow({
         data-mode="light"
         data-scene={scene}
       >
-        <NookSkyEmbroidery />
+        <SkyEmbroidery />
       </div>
       <div
         className="nook-cycle-surface nook-cycle-sky nook-cycle-sky--night nook-theme"
@@ -100,15 +109,16 @@ function NookDayCycleWindow({
         data-mode="dark"
         data-scene={scene}
       >
-        <NookSkyEmbroidery />
+        <SkyEmbroidery />
       </div>
       <div className="nook-cycle-surface nook-cycle-dusk" data-cycle="dusk">
-        <NookSkyEmbroidery dusk />
+        <SkyEmbroidery dusk />
       </div>
       <NookWindowSky layer="clouds" eventId={eventId} />
       <NookWindowSky layer="sun" eventId={eventId} />
       <NookWindowSky layer="moon" eventId={eventId} />
       <NookWindowSky layer="stars" eventId={eventId} />
+      {scene === "heavensward" && <NookHeavenswardSky />}
       {([false, true] as const).map((night) => (
         <div
           key={String(night)}
@@ -123,7 +133,11 @@ function NookDayCycleWindow({
             fill="none"
             focusable="false"
           >
-            <NookShiroganeView isDark={night} />
+            {scene === "heavensward" ? (
+              <NookHeavenswardView isDark={night} />
+            ) : (
+              <NookShiroganeView isDark={night} />
+            )}
           </svg>
         </div>
       ))}
@@ -131,6 +145,7 @@ function NookDayCycleWindow({
         className="nook-cycle-surface nook-cycle-golden-hour"
         data-cycle="golden-hour"
       />
+      {scene === "heavensward" && <NookHeavenswardWeather />}
     </div>
   );
 }

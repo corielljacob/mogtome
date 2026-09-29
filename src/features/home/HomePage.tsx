@@ -14,6 +14,10 @@ import {
   NookArrCrystalCharm,
   NookArrWayfinder,
 } from "./components/NookArrKeepsakes";
+import {
+  NookHeavenswardBanner,
+  NookHeavenswardSeal,
+} from "./components/NookHeavenswardKeepsakes";
 import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
 import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
 import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
@@ -28,6 +32,7 @@ import {
 import "./home-screen.css";
 import "./nook-halloween.css";
 import "./nook-arr.css";
+import "./nook-heavensward.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
@@ -41,6 +46,7 @@ export function Home() {
   const event = isEventThemeActive ? activeEvent : null;
   const isHalloween = event?.id === "all-saints-wake";
   const isArr = !event && settings.colorTheme === "arr";
+  const isHeavensward = !event && settings.colorTheme === "heavensward";
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
@@ -58,7 +64,13 @@ export function Home() {
       <div className="nook-layout">
         <section className="home-nook" aria-label="Welcome to Kupo Life">
           {isHalloween && <NookHalloweenHearth />}
-          {isArr ? <NookArrWayfinder /> : <NookWallHanging />}
+          {isArr ? (
+            <NookArrWayfinder />
+          ) : isHeavensward ? (
+            <NookHeavenswardBanner />
+          ) : (
+            <NookWallHanging />
+          )}
           <div className="nook-window-scene">
             <div className="nook-illustration-frame">
               <NookAppliqueBacking />
@@ -147,10 +159,12 @@ export function Home() {
                   <NookHalloweenNote />
                 ) : isArr ? (
                   <NookArrCrystalCharm />
+                ) : isHeavensward ? (
+                  <NookHeavenswardSeal />
                 ) : (
                   <NookPressedFlower />
                 )}
-                {!isHalloween && !isArr && <NookPaperclip />}
+                {!isHalloween && !isArr && !isHeavensward && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">

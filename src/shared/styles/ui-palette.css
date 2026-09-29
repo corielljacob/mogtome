@@ -68,6 +68,26 @@
   --ui-wall-focus: var(--primary);
 }
 
+/* Blue-black ink and burgundy seals on Heavensward's pale stationery. */
+.nook-theme[data-scene="heavensward"][data-mode] {
+  --ui-ink: #303a50;
+  --ui-muted: #535e72;
+  --ui-heading: #35476a;
+  --ui-action: #354b72;
+  --ui-secondary: #455e70;
+  --ui-accent: #78465c;
+  --ui-accent-soft: color-mix(in srgb, #a7778d 16%, var(--ui-surface));
+  --ui-wall-ink: #344460;
+  --ui-wall-muted: #52617b;
+  --ui-wall-heading: #354b72;
+}
+.nook-theme[data-scene="heavensward"][data-mode="dark"] {
+  --ui-wall-ink: #e3e8f1;
+  --ui-wall-muted: #bec8dc;
+  --ui-wall-heading: #d0daf0;
+  --ui-wall-focus: var(--primary);
+}
+
 /* Accessible palettes own the controls as well as the decorative theme. */
 :root[class*="colorblind-"] .nook-theme {
   --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);

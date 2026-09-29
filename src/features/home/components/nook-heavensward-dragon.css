@@ -1,0 +1,164 @@
+.nook-hw-wyvern {
+  --hw-dragon-body: #597480;
+  --hw-dragon-wing: #8c9ea5;
+  --hw-dragon-far: #526776;
+  --hw-dragon-rib: #b1b6b3;
+  --hw-dragon-edge: #82949b;
+  --hw-dragon-shadow: #3d515f;
+  --hw-dragon-shine: #d4d5c9;
+  --hw-dragon-eye: #e4c88c;
+  transform: translate(281px, 163px) rotate(-3deg) scale(0.64);
+  opacity: 1;
+  animation: nook-hw-wyvern-flight 26s steps(42, end) infinite;
+  animation-delay: -12.5s;
+}
+.nook-window-exterior[data-mode="dark"] .nook-hw-wyvern {
+  --hw-dragon-body: #6b8594;
+  --hw-dragon-wing: #91a5b0;
+  --hw-dragon-far: #4e657c;
+  --hw-dragon-rib: #afc0c5;
+  --hw-dragon-edge: #879eab;
+  --hw-dragon-shadow: #3b5268;
+  --hw-dragon-shine: #d2deda;
+}
+.nook-hw-wyvern__pose {
+  opacity: 0;
+  animation: nook-hw-wyvern-pose 1.6s step-end infinite;
+}
+.nook-hw-wyvern__pose--0 {
+  animation-delay: 0s;
+}
+.nook-hw-wyvern__pose--1 {
+  animation-delay: -1.2s;
+}
+.nook-hw-wyvern__pose--2 {
+  animation-delay: -0.8s;
+}
+.nook-hw-wyvern__pose--3 {
+  opacity: 1;
+  animation-delay: -0.4s;
+}
+.nook-hw-wyvern__flapping {
+  animation: nook-hw-wyvern-flapping 26s step-end infinite;
+  animation-delay: -12.5s;
+}
+.nook-hw-wyvern__gliding {
+  opacity: 0;
+  animation: nook-hw-wyvern-gliding 26s step-end infinite;
+  animation-delay: -12.5s;
+}
+.nook-hw-wyvern__body-bob {
+  animation: nook-hw-wyvern-bob 1.6s step-end infinite;
+}
+.nook-hw-wyvern__tail {
+  transform-origin: -8px 5px;
+  animation: nook-hw-wyvern-tail 1.6s step-end infinite;
+}
+
+/* The visible arc lasts about seventeen seconds. Holds sample its long segments
+   at eight frames/second, and the bird-sized silhouette then rests off-canvas. */
+@keyframes nook-hw-wyvern-flight {
+  0% {
+    transform: translate(34px, 163px) rotate(-6deg) scale(0.6);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(125px, 140px) rotate(-10deg) scale(0.64);
+  }
+  40% {
+    transform: translate(214px, 133px) rotate(1deg) scale(0.68);
+  }
+  60% {
+    transform: translate(300px, 157px) rotate(6deg) scale(0.64);
+    animation-timing-function: steps(25, end);
+  }
+  72% {
+    transform: translate(389px, 172px) rotate(4deg) scale(0.6);
+    opacity: 1;
+  }
+  73%,
+  100% {
+    transform: translate(389px, 172px) rotate(4deg) scale(0.6);
+    opacity: 0;
+  }
+}
+@keyframes nook-hw-wyvern-pose {
+  0%,
+  24.999% {
+    opacity: 1;
+  }
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes nook-hw-wyvern-flapping {
+  0%,
+  39.999% {
+    opacity: 1;
+  }
+  40%,
+  59.999% {
+    opacity: 0;
+  }
+  60%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes nook-hw-wyvern-gliding {
+  0%,
+  39.999% {
+    opacity: 0;
+  }
+  40%,
+  59.999% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes nook-hw-wyvern-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(0.4px);
+  }
+  50% {
+    transform: translateY(-0.55px);
+  }
+  75% {
+    transform: translateY(-0.2px);
+  }
+}
+@keyframes nook-hw-wyvern-tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  50% {
+    transform: rotate(-2deg);
+  }
+  75% {
+    transform: rotate(-4deg);
+  }
+}
+
+/* Resting styles show just the broad fourth pose and a readable right-side dragon. */
+.reduce-motion .nook-hw-wyvern,
+.reduce-motion .nook-hw-wyvern * {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-hw-wyvern,
+  .nook-hw-wyvern * {
+    animation: none !important;
+  }
+}
