@@ -1,5 +1,34 @@
 import { useId } from "react";
 import { NookLantern } from "./NookLantern";
+import { NookThread } from "./NookThread";
+
+const blueBook =
+  "M22 198 192 192 206 198V218L193 224 22 223Q14 221 14 211Q14 201 22 198Z";
+const greenPages = "m42 188 166-4v12l-166 5q-7-5 0-13Z";
+const greenCover = "m34 184 154-8 23 8-168 6q-7 0-9-6Z";
+const roseBook = "m47 167 132-5 18 8v13l-137 6q-15-1-15-12Z";
+const roseCover = "m48 167 130-5 18 7-138 7q-7-1-10-9Z";
+const bottle = "M65 140v6q-8 3-8 8v9q13 7 27-1v-9q0-5-9-8v-5Z";
+const leaf = "M0 0C-10-3-12-13-8-18C-2-15 3-8 0 0Z";
+const gatheredStems =
+  "M182 218C217 192 198 165 205 139S205 84 194 65M205 132Q187 117 184 98M208 159Q217 142 215 119";
+const blueThreads = Array.from(
+  { length: 61 },
+  (_, i) => `M${13 + i * 3.2} 191q-2.5 16 .5 35`,
+).join(" ");
+const roseThreads = Array.from(
+  { length: 49 },
+  (_, i) => `M${43 + i * 3.2} 161q-2 12 1.5 30`,
+).join(" ");
+const coverThreads = Array.from(
+  { length: 55 },
+  (_, i) => `M${28 + i * 3.4} 159l9 33`,
+).join(" ");
+const pageThreads = Array.from(
+  { length: 7 },
+  (_, i) =>
+    `M37 ${184.3 + i * 2.6}Q121 ${183.1 + i * 2.6} 210 ${180 + i * 2.6}`,
+).join(" ");
 
 /** A small pool of lamplight, well-loved books, and a stem gathered on a walk. */
 export function NookReadingCorner({ isDark }: { isDark: boolean }) {
@@ -19,6 +48,19 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
       focusable="false"
     >
       <defs>
+        {[
+          ["blue", blueBook],
+          ["green-pages", greenPages],
+          ["green-cover", greenCover],
+          ["rose", roseBook],
+          ["rose-cover", roseCover],
+          ["bottle", bottle],
+          ["leaf", leaf],
+        ].map(([name, d]) => (
+          <clipPath key={name} id={`${id}-reading-${name}-clip`}>
+            <path d={d} />
+          </clipPath>
+        ))}
         <linearGradient id={`${id}-reading-pages`} x2=".1" y2="1">
           <stop stopColor="var(--scene-wood-light)" />
           <stop offset=".24" stopColor="var(--scene-paper)" />
@@ -76,7 +118,19 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
 
       {/* The tall stem disappears behind the books and curls around their edge. */}
       <g stroke="var(--scene-leaf)" strokeWidth="1.2">
-        <path d="M182 218C217 192 198 165 205 139S205 84 194 65M205 132Q187 117 184 98M208 159Q217 142 215 119" />
+        <NookThread
+          d={gatheredStems}
+          color="var(--scene-leaf)"
+          highlight="var(--scene-leaf-light)"
+          width={2.6}
+          relief={1.8}
+        />
+        <NookThread
+          d={gatheredStems}
+          color="var(--scene-leaf-light)"
+          width={1.8}
+          dasharray=".9 3.5"
+        />
         {[
           [199, 80, -39],
           [205, 98, 27],
@@ -89,7 +143,7 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         ].map(([x, y, angle], index) => (
           <g key={index} transform={`translate(${x} ${y}) rotate(${angle})`}>
             <path
-              d="M0 0C-10-3-12-13-8-18C-2-15 3-8 0 0Z"
+              d={leaf}
               fill={
                 index % 3 === 0
                   ? "var(--scene-leaf-light)"
@@ -98,11 +152,20 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
               stroke="var(--scene-wood-dark)"
               strokeWidth=".55"
             />
-            <path
-              d="M-1-2-7-14M-4-8-8-9"
-              stroke="var(--scene-leaf-light)"
-              strokeWidth=".55"
-              opacity=".7"
+            <g clipPath={paint("leaf-clip")}>
+              <NookThread
+                d="M-8-16-3-13M-9-13-2-9M-8-9-1-5M-6-5 0-2M-5-15-7-11M-2-11-5-7M0-7-3-3"
+                color="var(--scene-leaf-light)"
+                shadow="var(--scene-leaf)"
+                width={2.35}
+                relief={1.8}
+              />
+            </g>
+            <NookThread
+              d={leaf}
+              color="var(--scene-leaf)"
+              highlight="var(--scene-leaf-light)"
+              width={1.65}
             />
           </g>
         ))}
@@ -111,6 +174,13 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
           fill="var(--scene-leaf-light)"
           strokeWidth=".6"
         />
+        <NookThread
+          d="M188 54 192 57M188 58 193 61M190 61 194 64M191 54 190 58M193 58 192 62"
+          color="var(--scene-leaf-light)"
+          shadow="var(--scene-leaf)"
+          width={2.2}
+          relief={1.8}
+        />
         <g
           fill="var(--scene-dried-flower)"
           stroke="var(--scene-wood-dark)"
@@ -118,44 +188,70 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         >
           <path d="M184 100q-7-2-6-7q4-1 6 2q-1-8 3-8q5 4 1 9q6-4 8 0q-2 6-9 6Z" />
           <path d="M194 64q-5-1-5-5q4-2 6 1q0-6 3-5q4 3 1 7q5-2 6 1q-2 4-8 3Z" />
+          <NookThread
+            d="M184 98Q176 95 180 93Q185 94 184 98M186 98Q183 87 187 89Q191 94 186 98M188 99Q194 92 195 97Q194 101 188 99M194 63Q188 58 191 59Q194 59 194 63M197 63Q194 54 198 56Q201 59 197 63M199 64Q203 60 204 63Q202 66 199 64"
+            color="var(--scene-dried-flower)"
+            width={2.25}
+            relief={1.8}
+          />
           <circle cx="186" cy="98" r="1.3" fill="var(--scene-gold)" />
           <circle cx="197" cy="63" r="1.1" fill="var(--scene-gold)" />
+          <NookThread
+            d="M185 98q-1-2 1-2q2.5 1 .5 3M196 63q-1-2 1-2q2 1 .5 2.5"
+            color="var(--scene-gold)"
+            width={1.9}
+          />
         </g>
       </g>
 
-      {/* A rounded leather spine, inset gilt panel, and worn raised bands. */}
-      <path
-        d="M22 198 192 192 206 198V218L193 224 22 223Q14 221 14 211Q14 201 22 198Z"
-        fill={paint("blue")}
+      {/* Dense satin crosses the padded blue spine; gold cords couch its decoration. */}
+      <path d={blueBook} fill={paint("blue")} />
+      <g clipPath={paint("blue-clip")}>
+        <NookThread
+          d={blueThreads}
+          color="var(--scene-book-blue)"
+          highlight="color-mix(in srgb, var(--scene-book-blue) 52%, var(--scene-paper))"
+          width={2.5}
+          relief={1.8}
+        />
+      </g>
+      <NookThread
+        d={blueBook}
+        color="var(--scene-book-blue)"
+        width={2.8}
+        relief={1.8}
       />
       <path d="m192 197 11 3v15l-11 5Z" fill={paint("pages")} />
-      <path
-        d="m195 201 6 1m-6 3 6 1m-6 3 6 1m-6 3 6 1"
-        stroke="var(--scene-wood)"
-        strokeWidth=".5"
-        opacity=".7"
+      <NookThread
+        d="m194 199 8 2m-8 1 8 2m-8 1 8 2m-8 1 8 2m-8 1 8 2m-8 1 8-1"
+        color="var(--scene-paper)"
+        shadow="var(--scene-wood)"
+        width={1.9}
+        relief={1.8}
       />
-      <path
+      <NookThread
         d="M24 199 192 194l12 4M24 222 192 223l12-5"
-        stroke="var(--scene-book-blue)"
-        strokeWidth="2.5"
+        color="var(--scene-book-blue)"
+        width={3}
+        relief={1.8}
       />
-      <path
+      <NookThread
         d="M29 203 184 200v18l-155-1Z"
-        stroke="var(--scene-gold)"
-        opacity=".65"
+        color="var(--scene-gold)"
+        width={1.5}
+        dasharray="2.4 2.1"
       />
-      <path
+      <NookThread
         d="M38 201v18m5-18v18m123-21v22m5-22v22"
-        stroke="var(--scene-gold)"
-        strokeWidth="1.2"
-        opacity=".7"
+        color="var(--scene-gold)"
+        width={2.15}
+        relief={1.8}
       />
-      <path
+      <NookThread
         d="M48 207q8-6 14 0m-14 5q8 6 14 0m84-6q-8-6-14 0m14 6q-8 6-14 0M72 210h18m22-1h12"
-        stroke="var(--scene-gold)"
-        strokeWidth=".65"
-        opacity=".8"
+        color="var(--scene-gold)"
+        width={1.7}
+        relief={1.6}
       />
       <path
         d="M102 204q-7 2-5 8q2 4 6 2q-10 1-8-6q1-5 7-4Z"
@@ -167,6 +263,12 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         fill="var(--scene-gold)"
         stroke="none"
       />
+      <NookThread
+        d="M102 204q-7 2-5 8q2 4 6 2M110 204v5m-2-2h4"
+        color="var(--scene-gold)"
+        width={1.9}
+        relief={1.7}
+      />
       <path
         d="M18 205q-2 8 1 12M49 201l15-.5m98 19h16"
         stroke="var(--scene-paper)"
@@ -174,32 +276,50 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         strokeWidth=".65"
       />
 
-      {/* The exposed pages have irregular edges, small shadows, and a ribbon. */}
+      {/* Page yarn runs horizontally, underneath a separately sewn green cover. */}
       <path
         d="m33 185 156-7 22 7v14l-168 4q-12-1-12-10Z"
         fill="var(--scene-leaf)"
       />
-      <path d="m42 188 166-4v12l-166 5q-7-5 0-13Z" fill={paint("pages")} />
-      <path
-        d="m48 191 153-4M46 194l160-4M49 197l151-4"
-        stroke="var(--scene-wood)"
-        strokeWidth=".55"
-        opacity=".55"
-      />
-      <path
-        d="m34 184 154-8 23 8-168 6q-7 0-9-6Z"
-        fill="var(--scene-leaf-light)"
-      />
-      <path
+      <path d={greenPages} fill={paint("pages")} />
+      <g clipPath={paint("green-pages-clip")}>
+        <NookThread
+          d={pageThreads}
+          color="var(--scene-paper)"
+          shadow="var(--scene-wood)"
+          width={2}
+          relief={1.8}
+          dasharray="12 .9 20 .9"
+        />
+      </g>
+      <path d={greenCover} fill="var(--scene-leaf)" />
+      <g clipPath={paint("green-cover-clip")}>
+        <NookThread
+          d={coverThreads}
+          color="var(--scene-leaf-light)"
+          shadow="var(--scene-leaf)"
+          width={2.5}
+          relief={1.8}
+        />
+      </g>
+      <NookThread
         d="m34 186q-6 11 7 16l170-5"
-        stroke="var(--scene-leaf)"
-        strokeWidth="3"
+        color="var(--scene-leaf)"
+        highlight="var(--scene-leaf-light)"
+        width={3.5}
+        relief={1.8}
       />
-      <path
+      <NookThread
         d="m42 184 145-6 14 4-154 5Z"
-        stroke="var(--scene-gold)"
-        strokeWidth=".55"
-        opacity=".65"
+        color="var(--scene-gold)"
+        width={1.45}
+        dasharray="2 2.6"
+      />
+      <NookThread
+        d="m35 187q-6 11 7 15l167-5"
+        color="var(--scene-leaf-light)"
+        width={2.5}
+        dasharray="1 3.1"
       />
       <path
         d="m88 196 1 15 4-3 4 3-2-15Z"
@@ -207,45 +327,67 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         stroke="var(--scene-book-rose)"
         strokeWidth=".55"
       />
-      <path
-        d="m91 198 1 9"
-        stroke="var(--scene-paper)"
-        strokeWidth=".55"
-        opacity=".4"
+      <NookThread
+        d="m90 197 1 12m2-12 1 11"
+        color="var(--scene-rose)"
+        width={2.1}
+        relief={1.7}
+      />
+      <NookThread
+        d="m90 198 1 10"
+        color="var(--scene-paper)"
+        width={0.95}
+        dasharray="1.1 2"
       />
 
       {/* The upper volume catches the warm light from the lantern above it. */}
-      <path
-        d="m47 167 132-5 18 8v13l-137 6q-15-1-15-12Z"
-        fill={paint("rose")}
+      <path d={roseBook} fill={paint("rose")} />
+      <g clipPath={paint("rose-clip")}>
+        <NookThread
+          d={roseThreads}
+          color="var(--scene-book-rose)"
+          highlight="color-mix(in srgb, var(--scene-book-rose) 52%, var(--scene-paper))"
+          width={2.45}
+          relief={1.8}
+        />
+      </g>
+      <path d={roseCover} fill="var(--scene-book-rose)" />
+      <g clipPath={paint("rose-cover-clip")}>
+        <NookThread
+          d={coverThreads}
+          color="var(--scene-book-rose)"
+          width={2.4}
+          relief={1.8}
+        />
+      </g>
+      <NookThread
+        d="M47 167Q42 180 51 185L60 189L195 183M49 168 178 163 195 169 59 175"
+        color="var(--scene-book-rose)"
+        width={2.8}
+        relief={1.8}
       />
-      <path
-        d="m48 167 130-5 18 7-138 7q-7-1-10-9Z"
-        fill="var(--scene-book-rose)"
-      />
-      <path
+      <NookThread
         d="m54 167 122-4 11 5-125 6Z"
-        stroke="var(--scene-gold)"
-        strokeWidth=".55"
-        opacity=".7"
+        color="var(--scene-gold)"
+        width={1.5}
+        dasharray="2 2.4"
       />
-      <path
+      <NookThread
         d="m52 178 132-5v10l-129 4q-6-3-3-9Z"
-        stroke="var(--scene-gold)"
-        strokeWidth=".6"
-        opacity=".65"
+        color="var(--scene-gold)"
+        width={1.35}
+        dasharray="1.7 2"
       />
-      <path
+      <NookThread
         d="m66 175 .4 12m5-12 .5 12m97-18 .5 15m5-15 .5 14"
-        stroke="var(--scene-gold)"
-        strokeWidth="1.1"
-        opacity=".72"
+        color="var(--scene-gold)"
+        width={2.1}
+        relief={1.8}
       />
-      <path
+      <NookThread
         d="m87 179 22-1m18-1 24-1m-51 6 39-2"
-        stroke="var(--scene-gold)"
-        strokeWidth=".65"
-        opacity=".6"
+        color="var(--scene-gold)"
+        width={1.35}
       />
       <path
         d="m116 175 2 3 3 1-3 2-1 3-2-3-3-1 3-2Z"
@@ -266,7 +408,7 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         opacity=".3"
       />
 
-      {/* A stoppered ink bottle makes the books feel used and kept close. */}
+      {/* Curved satin wraps the ink bottle; its linen label has a running seam. */}
       <ellipse
         cx="71"
         cy="165"
@@ -276,9 +418,23 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         opacity=".25"
         stroke="none"
       />
-      <path
-        d="M65 140v6q-8 3-8 8v9q13 7 27-1v-9q0-5-9-8v-5Z"
-        fill={paint("bottle")}
+      <path d={bottle} fill={paint("bottle")} />
+      <g clipPath={paint("bottle-clip")}>
+        <NookThread
+          d="M56 142q13 4 30 0M56 145q13 4 30 0M56 148q13 4 30 0M56 151q13 4 30 0M56 154q13 4 30 0M56 157q13 4 30 0M56 160q13 4 30 0M56 163q13 4 30 0"
+          color="var(--scene-book-blue)"
+          shadow="var(--scene-ink)"
+          highlight="var(--scene-pot)"
+          width={2.3}
+          relief={1.8}
+        />
+      </g>
+      <NookThread
+        d={bottle}
+        color="var(--scene-book-blue)"
+        highlight="var(--scene-pot)"
+        width={2}
+        relief={1.8}
       />
       <path d="M65 139q5-2 10 0v6q-5 2-10 0Z" fill="var(--scene-wood)" />
       <ellipse
@@ -288,11 +444,12 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         ry="1.5"
         fill="var(--scene-wood-light)"
       />
-      <path
-        d="M67 141v3m5-3v3M60 152q-1 4 0 8"
-        stroke="var(--scene-paper)"
-        strokeWidth=".7"
-        opacity=".5"
+      <NookThread
+        d="M66 139v5M69 138v7M72 138v7M74 139v5"
+        color="var(--scene-wood-light)"
+        shadow="var(--scene-wood-dark)"
+        width={1.9}
+        relief={1.8}
       />
       <path
         d="M63 152q7 2 14 0v9q-7 3-14 0Z"
@@ -300,10 +457,22 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         stroke="var(--scene-wood-light)"
         strokeWidth=".5"
       />
-      <path
+      <NookThread
+        d="M64 154q6 2 12 0M64 157q6 2 12 0M64 160q6 2 12 0"
+        color="var(--scene-paper)"
+        shadow="var(--scene-wood-light)"
+        width={1.9}
+      />
+      <NookThread
+        d="M63 152q7 2 14 0v9q-7 3-14 0Z"
+        color="var(--scene-gold)"
+        width={1.05}
+        dasharray="1.3 1.5"
+      />
+      <NookThread
         d="m67 155 6-.2m-5 2h4m-5 2h6"
-        stroke="var(--scene-wood)"
-        strokeWidth=".55"
+        color="var(--scene-wood)"
+        width={1.05}
       />
 
       <g transform="translate(-327 -384) scale(1.25)">
@@ -317,11 +486,18 @@ export function NookReadingCorner({ isDark }: { isDark: boolean }) {
         fill="var(--scene-leaf)"
         strokeWidth=".7"
       />
-      <path
-        d="m167 221 14 4m10-6 8-5"
-        stroke="var(--scene-leaf-light)"
-        strokeWidth=".55"
-        opacity=".7"
+      <NookThread
+        d="M192 219q-7 9-23 8m13-2q-10-11-19-6q6 9 19 6m5-4q6-12 16-10q-1 10-16 10"
+        color="var(--scene-leaf)"
+        highlight="var(--scene-leaf-light)"
+        width={1.7}
+      />
+      <NookThread
+        d="m166 219 1 4m3-5 1 6m3-4 1 4m3-2 1 3m-12-3 4-2m-1 4 5-2m14-4 1-4m2 3 2-4m1 3 2-4m-8 6 4 1m-1-4 5 1"
+        color="var(--scene-leaf-light)"
+        shadow="var(--scene-leaf)"
+        width={2}
+        relief={1.8}
       />
     </svg>
   );

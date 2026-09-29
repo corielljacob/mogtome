@@ -1,6 +1,34 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
-/** A few garden cuttings in a little hand-glazed ivory vase. */
+const stems =
+  "M316 392C312 371 312 349 307 321M318 392C327 373 334 357 329 341M316 391C310 373 302 354 293 343M317 391C321 367 321 335 328 314M319 391Q328 373 336 363M310 377Q306 371 304 366M313 357Q321 350 320 342";
+
+function PollenKnots({ flattened = false }: { flattened?: boolean }) {
+  return (
+    <g transform={flattened ? "translate(0 .4) scale(1 .65)" : undefined}>
+      {[
+        [-2, 0],
+        [0, -1],
+        [2, 0.5],
+        [-1, 2.2],
+        [1.4, 2.5],
+      ].map(([x, y]) => (
+        <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
+          <NookThread
+            d="M-.7 .3C-1.1-.9 .7-1.3 .9-.2C1.1.8-.3 1-.4.2"
+            color="var(--scene-gold)"
+            highlight="var(--scene-paper)"
+            shadow="var(--scene-wood)"
+            width={1.2}
+          />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/** Garden cuttings worked in fishbone stitch, with a padded ivory vase. */
 export function NookPlant() {
   const id = useId().replace(/:/g, "");
   const paint = (name: string) => `url(#${id}-plant-${name})`;
@@ -82,13 +110,19 @@ export function NookPlant() {
         stroke="none"
       />
       <g className="nook-posy">
-        <g fill="none" stroke="var(--scene-leaf)" strokeWidth="1.25">
-          <path d="M316 392C312 371 312 349 307 321" />
-          <path d="M318 392C327 373 334 357 329 341" />
-          <path d="M316 391C310 373 302 354 293 343" />
-          <path d="M317 391C321 367 321 335 328 314" />
-          <path d="M319 391Q328 373 336 363M310 377Q306 371 304 366M313 357Q321 350 320 342" />
-        </g>
+        <NookThread
+          d={stems}
+          color="var(--scene-leaf)"
+          highlight="var(--scene-leaf-light)"
+          width={1.65}
+        />
+        <path
+          d={stems}
+          fill="none"
+          stroke="var(--scene-leaf-light)"
+          strokeWidth=".9"
+          strokeDasharray=".7 3"
+        />
         <path
           d="M317 386Q319 366 321 350M311 365 307 340"
           fill="none"
@@ -111,6 +145,13 @@ export function NookPlant() {
           fill="var(--scene-leaf)"
           stroke="none"
           opacity=".48"
+        />
+        <NookThread
+          d="M298 359 298 363M301 360 300 365M304 362 303 368M307 365 306 370M310 368 309 371M296 362 301 362M298 366 304 365M301 369 307 368M305 372 310 371M335 354 334 359M332 355 331 363M329 358 328 366M326 361 325 369M337 358 332 359M334 362 329 362M331 366 326 366M327 369 324 368M305 340 308 342M305 344 309 346M306 348 310 350M309 341 307 345M311 345 308 348M310 351 308 352M327 331 324 335M328 335 323 339M327 339 322 343M324 333 325 336M322 337 325 340M321 341 323 344M289 360 293 362M292 359 295 363M296 360 299 364M300 362 302 365M291 364 293 361M295 366 297 363M299 366 301 364M330 378 332 380M333 376 335 379M337 376 338 378M333 381 334 378M337 380 338 377"
+          color="var(--scene-leaf-light)"
+          highlight="color-mix(in srgb, var(--scene-leaf-light) 80%, var(--scene-paper))"
+          shadow="var(--scene-leaf)"
+          width={1.05}
         />
         <g
           fill="none"
@@ -149,14 +190,13 @@ export function NookPlant() {
             <path d="M-3 1C-11 5-15 0-11-3C-8-5-4-3-1-1Z" />
             <path d="M-2 0C-10-2-12-8-8-9C-4-11-2-6 0-2Z" />
           </g>
-          <g
-            fill="none"
-            stroke="var(--scene-pot)"
-            strokeWidth=".45"
-            opacity=".55"
-          >
-            <path d="M-1-5v-5M5-4l2-3M6 1h4M4 5l3 3M-1 6v4M-6 5l-2 1M-6-1-9-2M-4-4-6-7" />
-          </g>
+          <NookThread
+            d="M-2-4Q-4-8-2-11M0-4Q1-8 0-11M3-3 6-9M5-2 8-8M5 0 11-1M5 2 10 2M3 4 8 7M2 6 6 9M0 5 1 11M-2 5-2 10M-4 3-9 6M-4 5-8 8M-5 0-11 0M-5-2-10-2M-3-3-8-7M-2-5-6-8"
+            color="var(--scene-paper)"
+            shadow="var(--scene-pot)"
+            highlight="var(--scene-paper)"
+            width={1.45}
+          />
           <ellipse
             cy="1"
             rx="4.2"
@@ -164,12 +204,7 @@ export function NookPlant() {
             fill={paint("pollen")}
             stroke="var(--scene-gold)"
           />
-          <path
-            d="M-2 0h.2M1-1h.2M2 2h.2M-1 3h.2"
-            stroke="var(--scene-wood)"
-            strokeWidth=".8"
-            opacity=".6"
-          />
+          <PollenKnots />
         </g>
 
         {/* A turned flower exposes its green calyx and foreshortened back petals. */}
@@ -191,6 +226,13 @@ export function NookPlant() {
             <path d="M0 2C-5 5-6 10-2 10Q3 10 3 3Z" />
             <path d="M2 2C8 2 10 7 6 8Q2 8 0 4Z" />
           </g>
+          <NookThread
+            d="M-2-2-4-7M-1-3-2-7M1-3 4-8M3-2 6-7M4 0 9-2M5 2 9 0M-4 1-9 0M-4 3-8 3M-1 4-3 8M1 4 0 9M3 4 6 6M2 5 5 7"
+            color="var(--scene-paper)"
+            shadow="var(--scene-pot)"
+            highlight="var(--scene-paper)"
+            width={1.35}
+          />
           <ellipse
             cy="1"
             rx="4.1"
@@ -198,12 +240,7 @@ export function NookPlant() {
             fill={paint("pollen")}
             stroke="var(--scene-gold)"
           />
-          <path
-            d="M-2 0 1 0"
-            stroke="var(--scene-paper)"
-            strokeWidth=".8"
-            opacity=".7"
-          />
+          <PollenKnots flattened />
         </g>
 
         {/* One nodding bloom and two closed buds give the bouquet a loose outline. */}
@@ -227,11 +264,11 @@ export function NookPlant() {
             stroke="var(--scene-gold)"
             strokeWidth="1.8"
           />
-          <path
-            d="M0 3v4M-6 3l-1 2"
-            strokeWidth=".45"
-            fill="none"
-            opacity=".6"
+          <NookThread
+            d="M-5 1Q-8 3-7 6M-3 1-5 7M-1 2Q-2 6 0 8M1 2 2 7M4 0 6 5M6 0 8 3"
+            color="var(--scene-paper)"
+            shadow="var(--scene-pot)"
+            width={1.4}
           />
         </g>
         <g transform="translate(328 313) rotate(18)">
@@ -247,7 +284,12 @@ export function NookPlant() {
             stroke="var(--scene-leaf)"
             strokeWidth=".6"
           />
-          <path d="M-1-5 0-1" stroke="var(--scene-paper)" strokeWidth="1" />
+          <NookThread
+            d="M-3-4-1 0M-1-6 1-1M1-6 3-1M3-4 4-1"
+            color="var(--scene-paper)"
+            shadow="var(--scene-pot)"
+            width={1.3}
+          />
         </g>
         <g transform="translate(338 360) rotate(38)">
           <path
@@ -262,6 +304,12 @@ export function NookPlant() {
             stroke="var(--scene-leaf)"
             strokeWidth=".6"
           />
+          <NookThread
+            d="M-3-3-1 0M-1-5 1-1M1-4 3-1"
+            color="var(--scene-rose)"
+            shadow="var(--scene-pot)"
+            width={1.2}
+          />
         </g>
       </g>
 
@@ -271,6 +319,20 @@ export function NookPlant() {
         fill={paint("glaze")}
         stroke="var(--scene-pot)"
         strokeWidth="1.1"
+      />
+      <NookThread
+        d="M309.5 393Q317 396 324.8 392.5M310 395.8Q317 398.8 324.2 395.3M310 398.6Q317 401.4 323.6 398.1M309.7 401.4Q317 404 324 400.9M308.5 404.1Q317 407 325.5 403.8M306.8 406.8Q317 410 328 406.7M304.9 409.5Q317 413 330.5 409.5M303.3 412.2Q317 416.2 332.6 412.2M302.2 415Q317 419.2 334 415M301.8 417.8Q317 422.4 334.7 417.8M301.8 420.6Q317 425.4 335 420.6M302.3 423.4Q317 428 334.6 423.4M303.5 426.2Q317 430.7 333.5 426.2M306 429Q317 433 331 429M309 431.3Q317 434 327.5 431.4"
+        color="color-mix(in srgb, var(--scene-paper) 87%, var(--scene-pot))"
+        shadow="var(--scene-pot)"
+        highlight="var(--scene-paper)"
+        width={1.7}
+      />
+      <NookThread
+        d="M308 389Q317 393 326 389L324 399C324 404 334 409 336 418Q339 430 325 433Q317 436 308 432C298 428 299 417 304 410Q311 401 308 389Z"
+        color="var(--scene-pot)"
+        highlight="var(--scene-paper)"
+        width={1.35}
+        dasharray="1.1 2"
       />
       <path
         d="M308 389Q317 394 326 389"
@@ -311,7 +373,7 @@ export function NookPlant() {
         opacity=".75"
       />
 
-      {/* A restrained, slightly uneven painted sprig sits beneath the glaze. */}
+      {/* A second color of floss embroiders a tiny sprig into the vase patch. */}
       <g stroke="var(--scene-leaf)" strokeWidth=".65" opacity=".7">
         <path d="M316 426Q319 418 316 412" fill="none" />
         <path
@@ -323,6 +385,12 @@ export function NookPlant() {
           fill="var(--scene-leaf-light)"
         />
       </g>
+      <NookThread
+        d="M316 426Q319 418 316 412M313 418 316 421M321 416 319 418M313 410 315 413"
+        color="var(--scene-leaf)"
+        highlight="var(--scene-leaf-light)"
+        width={1.2}
+      />
       <path
         d="M315 409q-1-2 1-3q3 0 2 3Z"
         fill="var(--scene-rose)"

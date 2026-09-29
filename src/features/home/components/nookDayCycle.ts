@@ -41,8 +41,8 @@ export const dayCycleFrames: Record<string, Keyframe[]> = {
     ...moonArc,
   ],
   clouds: [
-    { opacity: 0.55, transform: "translateX(0%)", offset: 0 },
-    { opacity: 0.4, transform: "translateX(2%)", offset: 0.4 },
+    { opacity: 0.88, transform: "translateX(0%)", offset: 0 },
+    { opacity: 0.64, transform: "translateX(2%)", offset: 0.4 },
     { opacity: 0.12, transform: "translateX(4%)", offset: 0.75 },
     { opacity: 0.06, transform: "translateX(5%)", offset: 1 },
   ],

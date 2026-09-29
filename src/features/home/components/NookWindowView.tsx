@@ -1,11 +1,15 @@
 import { useId, useLayoutEffect, useRef } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
-import { NookEmbroidery } from "./NookEmbroidery";
 import { NookShiroganeView } from "./NookShiroganeView";
 import { NookWindowSky } from "./NookWindowSky";
 import { createDayCycle, setDayCycleTarget } from "./nookDayCycle";
 import "./nook-window-cycle.css";
+
+// Uneven needle-entry heights keep the long-and-short sky fill from forming
+// rows of tiles. Wrapped strands continue through the pattern boundary.
+const skyFloss =
+  "M1.5-12q-.7 9 .2 19M1.5 12q-.7 9 .2 19M4.5-6q.7 9-.2 18M4.5 18q.7 9-.2 18M7.5-18q-.6 10 .2 20M7.5 6q-.6 10 .2 20M10.5-9q.6 10-.2 20M10.5 15q.6 10-.2 20M13.5-22q-.5 11 .2 21M13.5 2q-.5 11 .2 21M16.5-15q.6 9-.2 19M16.5 9q.6 9-.2 19";
 
 /** Fixed paint surfaces; only their outer opacity/transform participates in time. */
 export function NookWindowView({
@@ -54,10 +58,53 @@ export function NookWindowView({
         data-scene={eventId ?? undefined}
       />
       <div className="nook-cycle-surface nook-cycle-dusk" data-cycle="dusk" />
-      <NookWindowSky layer="clouds" />
-      <NookWindowSky layer="sun" />
-      <NookWindowSky layer="moon" />
-      <NookWindowSky layer="stars" />
+      <svg
+        className="nook-cycle-surface nook-cycle-thread"
+        viewBox="70 58 262 373"
+        focusable="false"
+      >
+        <defs>
+          <pattern
+            id={`${id}-sky-thread`}
+            width="18"
+            height="24"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(-18)"
+            fill="none"
+          >
+            {/* The sky is filled with staggered floss, with rounded needle
+                entries and a lit ridge on each strand rather than a fine grid. */}
+            <path
+              d={skyFloss}
+              stroke="#101827"
+              strokeWidth="2.65"
+              strokeLinecap="round"
+              transform="translate(.3 .6)"
+              opacity=".24"
+            />
+            <path
+              d={skyFloss}
+              stroke="#e7ecdf"
+              strokeWidth="1.85"
+              strokeLinecap="round"
+              opacity=".14"
+            />
+            <path
+              d={skyFloss}
+              stroke="#fff6db"
+              strokeWidth=".65"
+              strokeLinecap="round"
+              transform="translate(-.55 -.25)"
+              opacity=".3"
+            />
+          </pattern>
+        </defs>
+        <path d="M70 58H332V431H70Z" fill={`url(#${id}-sky-thread)`} />
+      </svg>
+      <NookWindowSky layer="clouds" eventId={eventId} />
+      <NookWindowSky layer="sun" eventId={eventId} />
+      <NookWindowSky layer="moon" eventId={eventId} />
+      <NookWindowSky layer="stars" eventId={eventId} />
       {([false, true] as const).map((night) => (
         <div
           key={String(night)}
@@ -72,16 +119,7 @@ export function NookWindowView({
             fill="none"
             focusable="false"
           >
-            <defs>
-              <NookEmbroidery
-                id={`${id}-exterior-${night}`}
-                width={440}
-                height={550}
-              />
-            </defs>
-            <g filter={`url(#${id}-exterior-${night})`}>
-              <NookShiroganeView isDark={night} />
-            </g>
+            <NookShiroganeView isDark={night} />
           </svg>
         </div>
       ))}
@@ -89,34 +127,6 @@ export function NookWindowView({
         className="nook-cycle-surface nook-cycle-golden-hour"
         data-cycle="golden-hour"
       />
-      <svg
-        className="nook-cycle-surface nook-cycle-thread"
-        viewBox="70 58 262 373"
-        focusable="false"
-      >
-        <defs>
-          <pattern
-            id={`${id}-sky-thread`}
-            width="3"
-            height="5"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M.7-.5v5m1.5-2v5"
-              stroke="#fff3db"
-              strokeWidth=".5"
-              opacity=".13"
-            />
-            <path
-              d="M1.3-.5v5m1.5-2v5"
-              stroke="#493846"
-              strokeWidth=".35"
-              opacity=".1"
-            />
-          </pattern>
-        </defs>
-        <path d="M70 58H332V431H70Z" fill={`url(#${id}-sky-thread)`} />
-      </svg>
     </div>
   );
 }

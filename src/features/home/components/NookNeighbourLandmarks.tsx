@@ -1,4 +1,18 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
+
+const stoneThreads = Array.from(
+  { length: 27 },
+  (_, i) => `M302 ${254 + i * 2.85}q4-.3 ${i % 2 ? 10 : 7} 0m1 0q7-.3 15 0`,
+).join(" ");
+const boardThreads = Array.from(
+  { length: 8 },
+  (_, i) => `M${259 + i * 2.8} 292q-.65 25 .25 55`,
+).join(" ");
+const roofThreads = Array.from(
+  { length: 12 },
+  (_, i) => `M${254 + i * 2.6} 277q${(i - 6) * 0.4} 7 ${(i - 6) * 0.65} 14`,
+).join(" ");
 
 interface NookNeighbourLandmarksProps {
   isDark: boolean;
@@ -56,11 +70,8 @@ export function NookNeighbourLandmarks({
           x2="1"
           y2=".12"
         >
-          <stop stopColor="var(--scene-rock-light)" />
-          <stop
-            offset=".48"
-            stopColor="color-mix(in srgb, var(--scene-rock-light) 77%, var(--scene-plaster))"
-          />
+          <stop stopColor="color-mix(in srgb, var(--scene-rock) 60%, var(--scene-rock-light))" />
+          <stop offset=".48" stopColor="var(--scene-rock-light)" />
           <stop offset="1" stopColor="var(--scene-rock)" />
         </linearGradient>
         <radialGradient id={`${id}-neighbour-lamp`}>
@@ -76,6 +87,18 @@ export function NookNeighbourLandmarks({
             stopOpacity="0"
           />
         </radialGradient>
+        <clipPath id={`${id}-neighbour-lamp-stone`}>
+          <path d="M306 316H321L325 324 322 328H303L303 324ZM308 295H318L320 316Q314 318 306 316ZM304 290H322L321 295Q313 297 305 295ZM306 275 320 274 321 291H305Z" />
+        </clipPath>
+        <clipPath id={`${id}-neighbour-lamp-cap`}>
+          <path d="M302 271Q307 269 310 263H318Q321 269 326 271L324 274Q314 277 304 274ZM309 263Q309 260 312 259L312 256Q314 255 316 256V259Q319 260 319 263Z" />
+        </clipPath>
+        <clipPath id={`${id}-neighbour-board-face`}>
+          <path d="M260 294 278 293V341L260 345Z" />
+        </clipPath>
+        <clipPath id={`${id}-neighbour-board-roof`}>
+          <path d="M251 286Q257 284 260 278Q265 279 270 275Q275 280 280 278Q282 284 286 285L285 290Q269 294 252 290Z" />
+        </clipPath>
       </defs>
 
       {/* The square light box rests on a solid stone column and stepped foot. */}
@@ -96,7 +119,7 @@ export function NookNeighbourLandmarks({
         <path
           d="M304 324H324M313 321v6m-6-3v3m13-3v3"
           fill="none"
-          opacity=".55"
+          opacity=".18"
         />
         <path d="M308 295H318L320 316Q314 318 306 316Z" fill={paint("stone")} />
         <path
@@ -109,10 +132,28 @@ export function NookNeighbourLandmarks({
           d="M308 303h10m-10 8 11 1m-7-9v5"
           fill="none"
           strokeWidth=".5"
-          opacity=".55"
+          opacity=".18"
         />
         <path d="M304 290H322L321 295Q313 297 305 295Z" fill={paint("stone")} />
         <path d="M306 275 320 274 321 291H305Z" fill={paint("stone")} />
+        <g clipPath={paint("lamp-stone")}>
+          <NookThread
+            relief={1.8}
+            d={stoneThreads}
+            color="var(--scene-rock-light)"
+            shadow="var(--scene-rock)"
+            highlight="var(--scene-plaster)"
+            width={2.15}
+          />
+        </g>
+        <NookThread
+          relief={1.8}
+          d="M307 296l-1 20M318 297l2 19M305 319l-2 7h20M305 289v-12h16v12"
+          color="var(--scene-rock-light)"
+          shadow="var(--scene-rock)"
+          highlight="var(--scene-plaster)"
+          width={2}
+        />
         <path d="M310 278H318V288H310Z" fill="var(--scene-roof)" />
         <path
           d="M306 278 308 277V288L306 289Z"
@@ -141,11 +182,12 @@ export function NookNeighbourLandmarks({
             opacity=".36"
           />
         </g>
-        <path
-          d="M312.6 278v10m2.7-10v10m-5.3-7h8m-8 3.5h8"
-          fill="none"
-          stroke="var(--scene-roof)"
-          strokeWidth=".65"
+        <NookThread
+          relief={1.8}
+          d="M314 278v10M310 283h8"
+          color="var(--scene-roof)"
+          highlight="var(--scene-rock-light)"
+          width={1.3}
         />
         <path d="M305 274H321V277H305Z" fill="var(--scene-rock)" />
         <path
@@ -153,23 +195,44 @@ export function NookNeighbourLandmarks({
           fill={paint("stone")}
         />
         <path
-          d="M303 271Q314 274 325 271M309 270l3-6m9 6-4-6"
+          d="M303 271Q314 274 325 271"
           fill="none"
           stroke="var(--scene-rock-light)"
           strokeWidth=".75"
-          opacity=".85"
+          opacity=".3"
         />
         <path
           d="M309 263Q309 260 312 259L312 256Q314 255 316 256V259Q319 260 319 263Z"
           fill={paint("stone")}
         />
+        <g clipPath={paint("lamp-cap")}>
+          <NookThread
+            relief={1.8}
+            d="M309 263l-6 11M311.5 263l-4 12M314 263l-1 13M316.5 263l2 13M319 263l4 11M312 256v7M315 255v8M318 258v5"
+            color="var(--scene-rock-light)"
+            shadow="var(--scene-rock)"
+            highlight="var(--scene-plaster)"
+            width={2.1}
+          />
+        </g>
         <path d="M314 256v-3" fill="none" strokeWidth="1.05" />
-        <path
-          d="M307 291q7 1 13-1M308 296h9"
-          fill="none"
-          stroke="var(--scene-plaster)"
-          strokeWidth=".7"
-          opacity=".45"
+        <NookThread
+          relief={1.8}
+          d="M303 272q11 5 22 0M307 291q7 1 13-1M308 296h9M304 324h20"
+          color="var(--scene-rock-light)"
+          shadow="var(--scene-rock)"
+          highlight="var(--scene-plaster)"
+          width={2.4}
+        />
+        <NookThread
+          relief={1.8}
+          d="M303 272q11 5 22 0M304 324h20"
+          color="var(--scene-plaster)"
+          shadow="var(--scene-rock-light)"
+          highlight="var(--scene-plaster)"
+          width={1.8}
+          dasharray="1 2.7"
+          opacity={0.75}
         />
       </g>
 
@@ -194,6 +257,13 @@ export function NookNeighbourLandmarks({
         d="M260 340 265 339 265 354 259 355ZM275 339H279L278 353 273 354Z"
         fill="color-mix(in srgb, var(--scene-roof) 75%, var(--scene-shadow))"
       />
+      <NookThread
+        relief={1.8}
+        d="M261 343v11M264 342v11M276 342l-1 11M279 342l-1 10M256 357l24-2"
+        color="var(--scene-roof)"
+        highlight="var(--scene-rock-light)"
+        width={2.1}
+      />
       <path
         d="M253 289 258 292V346L253 343Z"
         fill="color-mix(in srgb, var(--scene-timber) 42%, var(--scene-shadow))"
@@ -209,6 +279,33 @@ export function NookNeighbourLandmarks({
         fill={paint("board")}
         stroke="color-mix(in srgb, var(--scene-timber) 62%, var(--scene-shadow))"
         strokeWidth=".85"
+      />
+      <g clipPath={paint("board-face")}>
+        <NookThread
+          relief={1.8}
+          d={boardThreads}
+          color="color-mix(in srgb, var(--scene-timber) 86%, var(--scene-rose))"
+          highlight="color-mix(in srgb, var(--scene-timber) 60%, var(--scene-rose))"
+          width={2.2}
+        />
+      </g>
+      <NookThread
+        relief={1.8}
+        d="M258 292v56l22-4V291ZM259 294l19-1M260 345l18-4"
+        color="var(--scene-gold)"
+        shadow="var(--scene-brass)"
+        highlight="color-mix(in srgb, var(--scene-gold) 75%, var(--scene-paper))"
+        width={2.4}
+      />
+      <NookThread
+        relief={1.8}
+        d="M258 293v54l22-3V292"
+        color="var(--scene-brass)"
+        shadow="var(--scene-gold)"
+        highlight="var(--scene-gold)"
+        width={1.7}
+        dasharray="1.1 3"
+        opacity={0.85}
       />
       <path
         d="M261 295 277 294M261 343l16-3"
@@ -233,12 +330,20 @@ export function NookNeighbourLandmarks({
         <path d="m268.5 320 4.4-.8.6 12-4.2.9Z" opacity=".79" />
         <path d="m274 330 2.8-.6-.1 6.1-2.6.8Z" opacity=".58" />
       </g>
+      <NookThread
+        relief={1.8}
+        d="m264 301 .2 9m1.3-9.2 .2 8.7m1.3-9 .2 8.7m4.1-2.1-.1 6m1.5-6.1-.1 5.8m1.3-6 .1 5.8m-11.6 3.8.4 7m1.1-7.2.4 7m1.1-7.3.4 7m4-3.7.6 11m.8-11.2.6 11m.8-11.2.6 11m2.2-2 .1 5.5m1.2-5.8-.1 5.4"
+        color="var(--scene-paper)"
+        shadow="var(--scene-timber)"
+        width={1.15}
+        opacity={0.9}
+      />
       <path
         d="m264.3 303 2-.2m-1.9 2.2 1.7-.2m5.5 4.1 1.9-.2m-3.8 13.4 2-.3m-1.9 2.4 1.8-.3m-8.7-5.4 1.4-.2"
         fill="none"
         stroke="var(--scene-timber)"
-        strokeWidth=".45"
-        opacity=".65"
+        strokeWidth=".6"
+        opacity=".45"
       />
 
       {/* Raised corner fittings and a single carved curl along the lower rail. */}
@@ -250,12 +355,13 @@ export function NookNeighbourLandmarks({
         <path d="M263 348q1-7 5-5q2-7 5-4q1 3 4 3l2 2-7 3-2-2-3 4Z" />
         <path d="M265 346q1-3 3-1m1-2q0-4 2-2l1 3" fill="none" />
       </g>
-      <path
+      <NookThread
+        relief={1.8}
         d="M253.5 298v41"
-        fill="none"
-        stroke="var(--scene-gold)"
-        strokeWidth=".65"
-        opacity=".48"
+        color="var(--scene-brass)"
+        shadow="var(--scene-timber)"
+        highlight="var(--scene-gold)"
+        width={1.9}
       />
       <path
         d="M255 307q-2-2-1-5m0 22q2 3 0 6"
@@ -277,18 +383,20 @@ export function NookNeighbourLandmarks({
         stroke="color-mix(in srgb, var(--scene-rose) 65%, var(--scene-shadow))"
         strokeWidth=".5"
       />
-      <path
+      <NookThread
+        relief={1.8}
         d="m256.6 353-.2 4m1.1-4 .6 4m20.6-10.8-.3 3.8m1.4-3.8.4 3.6"
-        fill="none"
-        stroke="var(--scene-rose)"
-        strokeWidth=".45"
-        opacity=".8"
+        color="var(--scene-rose)"
+        shadow="var(--scene-distant)"
+        highlight="var(--scene-rose)"
+        width={1.4}
       />
-      <path
+      <NookThread
+        relief={1.8}
         d="m255.5 352 3-.5m19-6.5 3-.3"
-        fill="none"
-        stroke="var(--scene-gold)"
-        strokeWidth="1.1"
+        color="var(--scene-gold)"
+        shadow="var(--scene-brass)"
+        width={1.8}
       />
 
       {/* Curved roof courses remain legible beneath the brass roundel. */}
@@ -302,18 +410,29 @@ export function NookNeighbourLandmarks({
         d="M251 286Q258 284 261 279Q267 280 270 277Q275 281 280 279Q282 284 286 285L283 287Q269 291 254 289Z"
         fill="var(--scene-roof)"
       />
+      <g clipPath={paint("board-roof")}>
+        <NookThread
+          relief={1.8}
+          d={roofThreads}
+          color="color-mix(in srgb, var(--scene-roof) 77%, var(--scene-rock-light))"
+          highlight="var(--scene-rock-light)"
+          width={2.1}
+        />
+      </g>
       <path
         d="m258 283-4 5m7-7-3 7m6-8-2 8m10-8 2 8m2-7 3 6m2-4 3 3"
         fill="none"
         stroke="color-mix(in srgb, var(--scene-roof) 70%, var(--scene-rock-light))"
-        strokeWidth=".85"
+        strokeWidth=".5"
+        opacity=".25"
       />
-      <path
+      <NookThread
+        relief={1.8}
         d="M252 289q17 4 33-2"
-        fill="none"
-        stroke="var(--scene-gold)"
-        strokeWidth=".7"
-        opacity=".8"
+        color="var(--scene-gold)"
+        shadow="var(--scene-brass)"
+        highlight="color-mix(in srgb, var(--scene-gold) 80%, var(--scene-paper))"
+        width={2.1}
       />
       <path
         d="M256 279v-4l3-2 2 6m17 0 1-5 3 2v4"
@@ -340,11 +459,21 @@ export function NookNeighbourLandmarks({
         strokeWidth=".35"
         opacity=".65"
       />
-      <path
+      <NookThread
+        relief={1.8}
+        d="M270 269C263.5 269 263.5 281.6 270 281.6C276.5 281.6 276.5 269 270 269Z"
+        color="var(--scene-gold)"
+        shadow="var(--scene-brass)"
+        highlight="color-mix(in srgb, var(--scene-gold) 75%, var(--scene-paper))"
+        width={1.65}
+        dasharray="1.4 .6"
+      />
+      <NookThread
+        relief={1.8}
         d="m270 271-1.4 2.3 1.4 2.1 1.4-2.1Zm-2.7 5.4 1.2 2 1.1-2m.8 0 1.1 2 1.2-2"
-        fill="none"
-        stroke="var(--scene-gold)"
-        strokeWidth=".6"
+        color="var(--scene-gold)"
+        shadow="var(--scene-brass)"
+        width={1.1}
       />
     </g>
   );

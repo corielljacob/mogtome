@@ -1,7 +1,42 @@
 import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
+import { NookThread } from "./NookThread";
 
-/** A seasonal wax seal and ribbon clipped to the corner of the family album. */
+const motifStitches: Record<SeasonalEventId, string> = {
+  "all-saints-wake":
+    "M-8-5Q-8-10-4-11M-4-6Q-4-10 0-11M1-7Q3-11 5-9M5-6Q8-8 8-4M-8 1V8M-5 2V6M9 1 10 8M-1 8 1 10",
+  starlight:
+    "M0-11-4-6M1-8 4-5M-3-1-7 3M0 0-3 3M3 1 6 3M-6 7-10 11M-3 8-6 11M0 7-2 11M3 9 4 11M7 10 9 11M0 14v2",
+  heavensturn:
+    "M-8-8Q-13-1-9 7M-2-9Q-5 0-2 9M2-9Q5 0 2 9M8-8Q13-1 9 7M-5-12H5M-5 12H5",
+  valentiones:
+    "M-11-10Q-8-14-3-8M-13-7-3 0M-12-2-1 7M-9 3 0 11M11-10Q8-14 3-8M13-7 3 0M12-2 1 7M9 3 2 9",
+  "little-ladies":
+    "M-6-12-2-3M-2-9 0-3M3-10 2-3M10-9 4-2M11-5 5 0M15-1 5 2M12 6 5 4M8 9 3 5M6 13 1 5M-1 13-1 5M-5 10-3 5M-10 10-5 4M-13 3-5 2M-10-1-5 0M-11-6-4-2",
+  "hatching-tide":
+    "M-1-13-5-5M2-12 0-4M5-9 4-4M8-5 7-3M-10 4-9 7M-6 3-5 6M-2 5-1 6M3 5 4 6M8 4 9 7M-5 12-3 15M0 11 1 15M5 12 4 14",
+  "make-it-rain":
+    "M-3-9-6-6M-7-4-9-1M-9 2-6 5M-5 7-2 9M2 9 5 7M6 5 9 2M9-1 7-4M6-6 3-9",
+  "moonfire-faire":
+    "M-13-8-6 6M-9-10-4 4M-3-12-2 5M2-12 2 5M7-9 4 4M12-9 6 4M-2 12 0 13 2 12",
+  "the-rising":
+    "M0-12V-3M-2-7-1-2M2-7 1-2M-11-3-2 0M11-3 2 0M-5 6-7 11M-2 4-4 10M5 6 7 11M2 4 4 10",
+};
+
+const rosetteStitches = Array.from({ length: 40 }, (_, index) => {
+  const angle = (index * Math.PI) / 20;
+  const inner = 24.8;
+  const outer = 29.5 + (index % 2) * 0.5;
+  return `M${38 + Math.cos(angle) * inner} ${37 + Math.sin(angle) * inner}L${38 + Math.cos(angle) * outer} ${37 + Math.sin(angle) * outer}`;
+}).join(" ");
+
+const sealStitches = Array.from({ length: 11 }, (_, index) => {
+  const y = -18 + index * 3.6;
+  const halfWidth = Math.sqrt(20 ** 2 - y ** 2);
+  return `M${38 - halfWidth} ${37 + y}Q38 ${35.8 + y} ${38 + halfWidth} ${37 + y}`;
+}).join(" ");
+
+/** A stitched seasonal rosette and ribbon clipped to the family album. */
 export function NookHolidayKeepsake({
   eventId,
 }: {
@@ -40,21 +75,44 @@ export function NookHolidayKeepsake({
           d="M20 48 43 54 34 98 24 88 12 92ZM39 52 57 49 68 89 54 84 47 96Z"
           fill={`url(#${id}-ribbon)`}
         />
-        <path
-          d="M24 59 19 85M50 59 58 83"
-          stroke="var(--scene-paper)"
-          opacity=".5"
+        <NookThread
+          d="M22 58 16 86M26 59 21 86M30 61 25 84M34 62 29 89M38 62 33 92M43 62 49 89M47 62 53 83M51 61 58 80M55 59 63 84"
+          color="var(--season-ribbon)"
+          width={2}
+          relief={1.35}
+        />
+        <NookThread
+          d="M21 55 14 90 24 86 33 94 40 57M42 56 48 92 53 82 65 87 56 54"
+          color="var(--season-seal-light)"
+          width={1.05}
+          dasharray="1.8 2.2"
+          relief={1.2}
         />
         <path
           d="M31 9Q42 4 49 11Q61 8 64 20Q74 24 68 36Q74 48 64 53Q62 64 49 62Q39 70 29 62Q16 66 12 55Q1 51 8 38Q1 29 10 22Q11 9 23 12Z"
           fill={`url(#${id}-wax)`}
         />
-        <circle
-          cx="38"
-          cy="37"
-          r="24"
-          stroke="var(--scene-paper)"
-          strokeOpacity=".3"
+        <NookThread
+          d={rosetteStitches}
+          color="var(--season-seal)"
+          shadow="var(--season-seal-shadow)"
+          width={1.55}
+          relief={1.35}
+        />
+        <NookThread
+          d="M38 13a24 24 0 1 1 0 48a24 24 0 1 1 0-48Z"
+          color="var(--season-seal-light)"
+          width={1.15}
+          dasharray="1.5 2.2"
+          relief={1.2}
+        />
+        <NookThread
+          d={sealStitches}
+          color="var(--season-seal)"
+          shadow="var(--season-seal-shadow)"
+          width={1.8}
+          opacity={0.7}
+          relief={1.2}
         />
         <circle cx="38" cy="37" r="20.5" strokeOpacity=".6" />
         <path
@@ -178,6 +236,14 @@ export function NookHolidayKeepsake({
               <path d="M-8-14H8M-8 14H8M0 14V20m-3-1 3-4 3 4" fill="none" />
             </>
           )}
+          <NookThread
+            d={motifStitches[eventId]}
+            color="var(--scene-paper)"
+            shadow="var(--season-seal-shadow)"
+            highlight="#fffaf0"
+            width={1.6}
+            relief={1.35}
+          />
         </g>
       </g>
     </svg>

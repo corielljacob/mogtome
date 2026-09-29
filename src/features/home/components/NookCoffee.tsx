@@ -1,6 +1,22 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
-/** A small hand-glazed cup: a substantial rim, open handle, and warm coffee. */
+// The cup's stitches fan inward with its tapered bowl; the saucer fans outward.
+const bowlThreads = Array.from({ length: 24 }, (_, i) => {
+  const x = 249 + i * 1.8;
+  const foot = 259 + i * 1.02;
+  return `M${x} 401Q${x - 1.5} 420 ${foot} 433`;
+}).join(" ");
+const saucerThreads = Array.from({ length: 52 }, (_, i) => {
+  const angle = (i / 52) * Math.PI * 2;
+  return `M${271.5 + Math.cos(angle) * 22} ${432.5 + Math.sin(angle) * 3.4}L${271.5 + Math.cos(angle + 0.018) * 30} ${432.5 + Math.sin(angle + 0.018) * 5.6}`;
+}).join(" ");
+const handleThreads = Array.from({ length: 15 }, (_, i) => {
+  const angle = -1.7 + i * 0.24;
+  return `M${291.5 + Math.cos(angle) * 9} ${410 + Math.sin(angle) * 8}L${291.5 + Math.cos(angle + 0.02) * 15} ${410 + Math.sin(angle + 0.02) * 13}`;
+}).join(" ");
+
+/** Ivory satin stitches shape the cup; wrapped cords finish each ceramic edge. */
 export function NookCoffee() {
   const id = useId().replace(/:/g, "");
   const paint = (name: string) => `url(#${id}-coffee-${name})`;
@@ -13,6 +29,12 @@ export function NookCoffee() {
       strokeLinejoin="round"
     >
       <defs>
+        <clipPath id={`${id}-coffee-bowl`}>
+          <path d="M249 400C247 410 251 425 257 430Q268 438 281 430C288 424 291 408 289 400Z" />
+        </clipPath>
+        <clipPath id={`${id}-coffee-handle`}>
+          <path d="M282 405C291 399 303 398 306 404C311 414 298 425 282 430L278 425C290 422 302 414 301 407C300 403 292 405 284 410Z" />
+        </clipPath>
         <linearGradient
           id={`${id}-coffee-glaze`}
           x1=".05"
@@ -59,6 +81,13 @@ export function NookCoffee() {
         fill="var(--scene-pot)"
       />
       <ellipse cx="271.5" cy="432.5" rx="31" ry="6" fill={paint("glaze")} />
+      <NookThread
+        d={saucerThreads}
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={1.2}
+        opacity={0.85}
+      />
       <ellipse
         cx="271"
         cy="432"
@@ -70,12 +99,11 @@ export function NookCoffee() {
         strokeWidth=".65"
         strokeOpacity=".6"
       />
-      <path
-        d="M244 434q23 8 53 1"
-        fill="none"
-        stroke="var(--scene-paper)"
-        strokeWidth="1.3"
-        opacity=".75"
+      <NookThread
+        d="M242 433Q248 438 271.5 438Q294 438 301 433"
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={1.65}
       />
       <ellipse
         cx="270"
@@ -92,12 +120,19 @@ export function NookCoffee() {
         d="M282 405C291 399 303 398 306 404C311 414 298 425 282 430L278 425C290 422 302 414 301 407C300 403 292 405 284 410Z"
         fill={paint("glaze")}
       />
-      <path
-        d="M291 403Q303 397 304 406Q305 413 297 419"
-        fill="none"
-        stroke="var(--scene-paper)"
-        strokeWidth="1.6"
-        opacity=".72"
+      <g clipPath={`url(#${id}-coffee-handle)`}>
+        <NookThread
+          d={handleThreads}
+          color="var(--scene-paper)"
+          shadow="var(--scene-pot)"
+          width={1.45}
+        />
+      </g>
+      <NookThread
+        d="M285 405C296 399 304 400 305 406Q307 418 282 428"
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={1.45}
       />
       <path
         d="M292 409q5-4 8-2"
@@ -123,27 +158,22 @@ export function NookCoffee() {
         opacity=".14"
         stroke="none"
       />
-      <path
-        d="M254 408Q253 418 259 424"
-        stroke="var(--scene-paper)"
-        strokeWidth="2.1"
-        opacity=".75"
-        fill="none"
+      <g clipPath={`url(#${id}-coffee-bowl)`}>
+        <NookThread
+          d={bowlThreads}
+          color="var(--scene-paper)"
+          shadow="var(--scene-pot)"
+          width={1.2}
+          opacity={0.82}
+        />
+      </g>
+      <NookThread
+        d="M249.5 405Q249 422 258 430Q270 438 281 430Q288 423 289 405"
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={1.7}
       />
-      <path
-        d="M285 410q-1 10-5 15"
-        stroke="var(--scene-pot)"
-        strokeWidth=".65"
-        opacity=".6"
-        fill="none"
-      />
-      <path
-        d="M260 431q10 5 19-1"
-        stroke="var(--scene-paper)"
-        strokeWidth=".85"
-        opacity=".6"
-        fill="none"
-      />
+      <NookThread d="M260 433q10 4 19 0" color="var(--scene-pot)" width={1.4} />
 
       {/* The back rim, inner wall and coffee sit above the bowl in that order. */}
       <ellipse cx="269" cy="400" rx="20.3" ry="6.1" fill="var(--scene-paper)" />
@@ -164,12 +194,12 @@ export function NookCoffee() {
         fill={paint("brew")}
         stroke="none"
       />
-      <path
-        d="M253 401q15 5.5 32-1"
-        fill="none"
-        stroke="var(--scene-gold)"
-        strokeWidth=".7"
-        opacity=".7"
+      <NookThread
+        d="M252.4 401C252.4 397.1 285.6 397.1 285.6 401C285.6 404.9 252.4 404.9 252.4 401ZM256 401C256 398.7 282 398.7 282 401C282 403.3 256 403.3 256 401ZM261 401q8-2.3 16 0q-8 2.3-16 0"
+        color="var(--scene-brass)"
+        highlight="var(--scene-gold)"
+        width={0.95}
+        opacity={0.8}
       />
       <path
         d="M270 403C266 402 261 399 265 398C267 397 269 399 270 399.6C271 397.4 275 397.6 276 399C277 400.4 273 402.3 270 403Z"
@@ -184,21 +214,21 @@ export function NookCoffee() {
         opacity=".65"
         fill="none"
       />
-      <path
-        d="M251 402q17 8 36-.1"
-        stroke="var(--scene-paper)"
-        strokeWidth="1.25"
-        fill="none"
+      <NookThread
+        d="M249 400C249 392 289 392 289 400C289 408 249 408 249 400Z"
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={1.8}
       />
-      <path
-        d="M255 396.6q12-3 23-.4"
-        stroke="var(--scene-paper)"
-        strokeWidth="1.1"
-        opacity=".8"
-        fill="none"
+      <NookThread
+        d="M250 400C250 392.8 288 392.8 288 400C288 407.2 250 407.2 250 400Z"
+        color="var(--scene-paper)"
+        shadow="var(--scene-pot)"
+        width={0.8}
+        dasharray=".9 1.8"
       />
 
-      {/* Two tiny painted chamomile flowers and irregular glaze flecks. */}
+      {/* Stem stitches, lazy-daisy petals, and small French-knot flower centres. */}
       <g fill="none" stroke="var(--scene-leaf)" strokeWidth=".65">
         <path d="M269 427q-4-6-5-11m5 11q1-6 5-8" />
         <path
@@ -218,14 +248,21 @@ export function NookCoffee() {
           strokeWidth=".4"
         >
           {[0, 60, 120, 180, 240, 300].map((angle) => (
-            <path
-              key={angle}
-              transform={`rotate(${angle})`}
-              d="M-.8-1C-3-3 .8-5.4 1.2-3Q2-1.4 .2-.5Z"
-              fill="var(--scene-paper)"
-            />
+            <g key={angle} transform={`rotate(${angle})`}>
+              <NookThread
+                d="M0-.7Q-2.5-4.4 0-4Q2-3.5 0-.7"
+                color="var(--scene-paper)"
+                shadow="var(--scene-rose)"
+                width={0.85}
+              />
+            </g>
           ))}
-          <circle r="1.3" fill="var(--scene-gold)" stroke="none" />
+          <circle
+            r="1.3"
+            fill="var(--scene-gold)"
+            stroke="var(--scene-brass)"
+          />
+          <path d="m-.55-.3.8.6" stroke="var(--scene-paper)" strokeWidth=".7" />
         </g>
       ))}
       <g fill="var(--scene-pot)" opacity=".48" stroke="none">
@@ -247,8 +284,14 @@ export function NookCoffee() {
         stroke={paint("steam")}
         strokeWidth="1.35"
       >
-        <path d="M265 393C258 385 272 381 266 372Q262 366 267 360" />
-        <path d="M277 391C282 386 271 381 279 374" />
+        <NookThread
+          d="M265 393C258 385 272 381 266 372Q262 366 267 360M277 391C282 386 271 381 279 374"
+          color={paint("steam")}
+          shadow="var(--scene-paper)"
+          width={1.15}
+          dasharray="3.4 1.1"
+          opacity={0.64}
+        />
       </g>
     </g>
   );

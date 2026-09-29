@@ -1,6 +1,7 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
-/** A thick oak sill with a rounded front edge and fitted wooden corbels. */
+/** Oak-colored thread courses follow the sill's rounded faces and fitted corbels. */
 export function NookLedge() {
   const id = useId().replace(/:/g, "");
   const paint = (name: string) => `url(#${id}-ledge-${name})`;
@@ -101,6 +102,28 @@ export function NookLedge() {
             strokeWidth=".7"
             opacity=".65"
           />
+          <NookThread
+            d="M3 2H27M2 4H28M3 8V27M5.2 8V27M3 30Q8 32 13 30M3 32Q8 34 13 32"
+            color="var(--scene-wood-light)"
+            width={1.15}
+          />
+          <NookThread
+            d="m20 9 5 1m-7 1 5 1m-6 1 4.8 1.2m-6.1 1.2 4.5 1.2m-5.6 1.4 4.1 1m-4.8 1.4 4 .9m-4.7 1.5 4 .7m-4.6 1.6 3.8 .7m-4.2 1.6 3.4 .7"
+            color="var(--scene-wood)"
+            width={1.35}
+          />
+          <NookThread
+            d="M1.4 6V28M27 6Q19 9 16 20L14 28M7.4 8H21Q13 15 12 24V27H8"
+            color="var(--scene-wood-light)"
+            width={1.35}
+          />
+          <NookThread
+            d="M7.2 8V28M26 6Q18 10 15 20L13 28"
+            color="var(--scene-wood-dark)"
+            width={0.85}
+            dasharray="1.4 1.6"
+            opacity={0.85}
+          />
         </g>
       </defs>
 
@@ -148,6 +171,16 @@ export function NookLedge() {
         strokeWidth=".65"
         opacity=".36"
       />
+      {Array.from({ length: 4 }, (_, i) => (
+        <NookThread
+          key={`top-${i}`}
+          d={`M${20 - i * 2} ${433 + i * 2.1}Q209 ${430 + i * 2.5} ${415 + i * 1.5} ${434 + i * 1.8}`}
+          color="var(--scene-wood-light)"
+          width={1.1}
+          opacity={0.84}
+          dasharray={i % 2 ? "12 .9 8 1.1" : "7 1 14 .8"}
+        />
+      ))}
 
       {/* A single rounded lip sits over a recessed apron and a small lower bead. */}
       <path
@@ -190,6 +223,50 @@ export function NookLedge() {
         stroke="var(--scene-wood-light)"
         strokeWidth=".7"
         opacity=".74"
+      />
+
+      {/* Long laid stitches describe each face; small cross stitches couch the binding. */}
+      {Array.from({ length: 7 }, (_, i) => (
+        <NookThread
+          key={`lip-${i}`}
+          d={`M13 ${440.6 + i * 1.62}Q209 ${447.2 + i * 1.68} 420 ${440.6 + i * 1.62}`}
+          color={i < 3 ? "var(--scene-wood-light)" : "var(--scene-wood)"}
+          width={1.08}
+          opacity={0.94}
+          dasharray={i % 2 ? "14 .9 9 1.1" : "9 1 13 .9"}
+        />
+      ))}
+      {Array.from({ length: 6 }, (_, i) => (
+        <NookThread
+          key={`apron-${i}`}
+          d={`M21 ${454.3 + i * 1.6}Q209 ${461.3 + i * 1.6} 415 ${454.3 + i * 1.6}`}
+          color={i % 3 ? "var(--scene-wood)" : "var(--scene-wood-light)"}
+          width={1}
+          opacity={0.78}
+          dasharray={i % 2 ? "11 1 15 .8" : "16 .8 10 1"}
+        />
+      ))}
+      <NookThread
+        d="M12 440Q209 446 422 440M17 452Q210 459 417 452M22 467Q209 474 414 467"
+        color="var(--scene-wood-light)"
+        width={1.8}
+      />
+      <NookThread
+        d={Array.from({ length: 53 }, (_, i) => {
+          const x = 17 + i * 7.6;
+          const u = (x - 17) / 400;
+          const y = 452 + 14 * u * (1 - u);
+          return `M${x - 0.5} ${y - 1.5}l1 2.8`;
+        }).join(" ")}
+        color="var(--scene-wood-dark)"
+        width={0.9}
+        opacity={0.8}
+      />
+      <NookThread
+        d="M23 465Q209 472 413 465"
+        color="var(--scene-wood)"
+        width={1}
+        dasharray="2.1 2.4"
       />
 
       {/* Quiet grain follows each long face; the ends show the board's thickness. */}

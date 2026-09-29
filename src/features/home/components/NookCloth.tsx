@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
 type Point = [number, number];
 
@@ -56,6 +57,18 @@ const columns = Array.from({ length: 8 }, (_, i) =>
 const rows = Array.from({ length: 7 }, (_, i) =>
   fabricPanel(0, i / 7, 1, i / 7 + 1 / 14),
 );
+const warpThreads = Array.from({ length: 67 }, (_, i) => {
+  const u = (i + 0.5) / 67;
+  return { d: fabricLine(u, 0, u, 1), dyed: u % 0.125 < 0.0625 };
+});
+const weftThreads = Array.from({ length: 43 }, (_, i) => {
+  const v = (i + 0.5) / 43;
+  return { d: fabricLine(0, v, 1, v), dyed: v % (1 / 7) < 1 / 14 };
+});
+const hemStitches = Array.from({ length: 32 }, (_, i) => {
+  const u = (i + 0.5) / 32;
+  return fabricLine(u - 0.006, 0.949, u + 0.003, 0.992);
+}).join(" ");
 
 /** A woven tea cloth tucked beneath the books and draped over the sill. */
 export function NookCloth() {
@@ -146,22 +159,26 @@ export function NookCloth() {
             <path key={i} d={d} />
           ))}
         </g>
-        <g
-          stroke="var(--scene-paper)"
-          strokeWidth=".45"
-          opacity=".42"
-          fill="none"
-        >
-          {Array.from({ length: 15 }, (_, i) => (
-            <path
+        {/* Each strand bends with the drape; the small gaps expose the crosswise yarn. */}
+        <g>
+          {warpThreads.map(({ d, dyed }, i) => (
+            <NookThread
               key={i}
-              d={fabricLine((i + 0.5) / 16, 0, (i + 0.5) / 16, 1)}
+              d={d}
+              color={dyed ? "var(--scene-leaf-light)" : "var(--scene-paper)"}
+              width={0.92}
+              opacity={dyed ? 0.48 : 0.66}
+              dasharray="3.2 .8"
             />
           ))}
-          {Array.from({ length: 13 }, (_, i) => (
-            <path
+          {weftThreads.map(({ d, dyed }, i) => (
+            <NookThread
               key={i}
-              d={fabricLine(0, (i + 0.5) / 14, 1, (i + 0.5) / 14)}
+              d={d}
+              color={dyed ? "var(--scene-leaf)" : "var(--scene-paper)"}
+              width={0.85}
+              opacity={dyed ? 0.42 : 0.56}
+              dasharray="1.3 1.1"
             />
           ))}
         </g>
@@ -174,36 +191,38 @@ export function NookCloth() {
           fill="var(--scene-paper)"
           opacity=".35"
         />
-        <path
+        <NookThread
           d={fabricLine(0.012, 0.95, 0.99, 0.95)}
-          stroke="var(--scene-wood)"
-          strokeWidth=".7"
-          opacity=".34"
-          fill="none"
+          color="var(--scene-leaf-light)"
+          width={1.3}
+          opacity={0.8}
         />
-        <path
+        <NookThread
           d={fabricLine(0.022, 0.975, 0.98, 0.975)}
-          stroke="var(--scene-wood-dark)"
-          strokeWidth=".55"
-          strokeDasharray="1.3 2.3"
-          opacity=".48"
-          fill="none"
+          color="var(--scene-leaf)"
+          width={1}
+          dasharray="2.1 2.1"
+          opacity={0.85}
         />
-        <path
+        <NookThread
           d={fabricLine(0.035, 0.08, 0.035, 0.958)}
-          stroke="var(--scene-wood)"
-          strokeWidth=".55"
-          strokeDasharray="1.2 2.4"
-          opacity=".35"
-          fill="none"
+          color="var(--scene-leaf)"
+          width={1}
+          dasharray="2 2.2"
+          opacity={0.8}
         />
-        <path
+        <NookThread
           d={fabricLine(0.968, 0.08, 0.968, 0.958)}
-          stroke="var(--scene-wood)"
-          strokeWidth=".55"
-          strokeDasharray="1.2 2.4"
-          opacity=".35"
-          fill="none"
+          color="var(--scene-leaf)"
+          width={1}
+          dasharray="2 2.2"
+          opacity={0.8}
+        />
+        <NookThread
+          d={hemStitches}
+          color="var(--scene-leaf)"
+          width={1.05}
+          opacity={0.86}
         />
       </g>
       <path
@@ -212,6 +231,16 @@ export function NookCloth() {
         strokeOpacity=".42"
         strokeWidth=".8"
         fill="none"
+      />
+      <NookThread
+        d={
+          fabricLine(0, 0.03, 0, 1) +
+          fabricLine(0, 1, 1, 1) +
+          fabricLine(1, 1, 1, 0.03)
+        }
+        color="var(--scene-paper)"
+        width={1.5}
+        opacity={0.84}
       />
       <path
         d={fabricLine(0.045, 0.24, 0.97, 0.24)}

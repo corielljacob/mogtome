@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
 /** A hand-stitched linen reminder, hung from a twig and a loop of twine. */
 export function NookWallHanging() {
@@ -34,23 +35,38 @@ export function NookWallHanging() {
         </linearGradient>
         <pattern
           id={`${id}-hanging-weave`}
-          width="3"
-          height="3"
+          width="4"
+          height="4"
           patternUnits="userSpaceOnUse"
         >
           <path
-            d="M.4 0V3M0 1.2H3"
+            d="M.5 0V4M0 1.3H4"
             stroke="var(--scene-wood-dark)"
-            strokeWidth=".3"
-            opacity=".17"
+            strokeWidth=".5"
+            opacity=".14"
           />
           <path
-            d="M1 0V3M0 1.8H3"
+            d="M1.1 0V4M0 2H4"
             stroke="var(--scene-paper)"
-            strokeWidth=".4"
-            opacity=".6"
+            strokeWidth=".75"
+            opacity=".75"
           />
         </pattern>
+        <g
+          id={`${id}-hanging-words`}
+          fontFamily="var(--font-script)"
+          textAnchor="middle"
+        >
+          <text x="58" y="101" fontSize="24">
+            Kupo
+          </text>
+          <text x="57" y="127" fontSize="24">
+            Life
+          </text>
+          <text x="58" y="165" fontSize="16">
+            Zalera
+          </text>
+        </g>
         <clipPath id={`${id}-hanging-cloth`}>
           <path d={cloth} />
         </clipPath>
@@ -81,16 +97,17 @@ export function NookWallHanging() {
         opacity=".35"
         transform="translate(1 1)"
       />
-      <path
+      <NookThread
         d="M16 49Q41 35 57 14Q61 9 64 17Q77 37 103 51"
-        stroke="var(--scene-wood)"
-        strokeWidth="1.7"
+        color="var(--scene-wood)"
+        highlight="var(--scene-wood-light)"
+        width={2.35}
       />
       <path
         d="M18 47Q41 33 57 14M65 20Q80 38 101 49"
         stroke="var(--scene-wood-light)"
-        strokeDasharray="1 3"
-        strokeWidth=".7"
+        strokeDasharray="1.2 2.5"
+        strokeWidth="1.3"
       />
       <ellipse
         cx="60"
@@ -120,6 +137,12 @@ export function NookWallHanging() {
         stroke="var(--scene-wood-light)"
         strokeWidth=".6"
       />
+      <NookThread
+        d="M13 49Q54 48 104 51M14 51Q57 50.3 104 52.5"
+        color="var(--scene-wood)"
+        highlight="var(--scene-wood-light)"
+        width={1.3}
+      />
 
       <path d={cloth} fill={paint("linen")} />
       <path d={cloth} fill="var(--scene-paper)" opacity=".54" />
@@ -130,19 +153,46 @@ export function NookWallHanging() {
           fill="var(--scene-wood)"
           opacity=".14"
         />
-        <path
+        <NookThread
           d="M26 60Q23 122 27 182L58 199 89 181Q93 126 89 62"
-          stroke="var(--scene-wood)"
-          strokeWidth=".8"
-          opacity=".5"
+          color="var(--scene-wood-light)"
+          highlight="var(--scene-paper)"
+          width={1.5}
         />
-        <path
+        <NookThread
           d="M29 62Q27 122 30 180L58 196 86 179Q89 125 86 64"
-          stroke="var(--scene-wood-dark)"
-          strokeWidth=".65"
-          strokeDasharray="1.2 2.5"
-          opacity=".55"
+          color="var(--scene-rose)"
+          highlight="var(--scene-paper)"
+          width={1.5}
+          dasharray="2.4 3.2"
+          opacity={0.75}
         />
+        {/* Each hem stitch catches the edge of this little linen pennant. */}
+        {Array.from({ length: 20 }, (_, i) => {
+          const y = 65 + i * 6;
+          return (
+            <NookThread
+              key={y}
+              d={`M21.5 ${y}q2.3 1.8 5.2 .7M89.3 ${y}q3 1.2 5.2-.7`}
+              color="var(--scene-wood-light)"
+              highlight="var(--scene-paper)"
+              width={1.55}
+            />
+          );
+        })}
+        {Array.from({ length: 6 }, (_, i) => {
+          const x = 27 + i * 5.1;
+          const y = 188 + i * 2.9;
+          return (
+            <NookThread
+              key={x}
+              d={`M${x} ${y}l1.3-4.1M${116 - x} ${y}l-1.3-4.1`}
+              color="var(--scene-wood-light)"
+              highlight="var(--scene-paper)"
+              width={1.6}
+            />
+          );
+        })}
         <path
           d="M35 59Q29 94 33 117M76 60Q80 82 77 101M89 125Q86 157 88 174"
           stroke="var(--scene-paper)"
@@ -174,44 +224,57 @@ export function NookWallHanging() {
         </g>
       ))}
 
-      <g
-        fill="var(--scene-ink)"
-        fontFamily="var(--font-script)"
-        textAnchor="middle"
-        fontSize="18"
-        opacity=".87"
-        transform="rotate(-2 58 126)"
-      >
-        <text x="58" y="101" fontSize="24">
-          Kupo
-        </text>
-        <text x="57" y="127" fontSize="24">
-          Life
-        </text>
-        <text x="58" y="165" fontSize="16">
-          Zalera
-        </text>
+      <g transform="rotate(-2 58 126)">
+        <use
+          href={`#${id}-hanging-words`}
+          fill="var(--scene-shadow)"
+          stroke="var(--scene-shadow)"
+          strokeWidth=".8"
+          opacity=".22"
+          transform="translate(.55 .9)"
+        />
+        <use
+          href={`#${id}-hanging-words`}
+          fill="var(--scene-ink)"
+          stroke="var(--scene-ink)"
+          strokeWidth=".5"
+          opacity=".88"
+        />
+        <use
+          href={`#${id}-hanging-words`}
+          stroke="var(--scene-paper)"
+          strokeWidth=".55"
+          strokeDasharray="1 2"
+          opacity=".5"
+          transform="translate(-.2 -.2)"
+        />
       </g>
 
       <path
         d="M23 186l1 4m5-.7.2 3.2m4 .2.3 2.9m5-.3.5 3m5 .1v3m5-.4.6 3.2m5 .1.4 3m5-1.5.3 3m5-6.2.2 3.2m5-6.3.3 3m5-6.4.2 3m5-6.5.2 3m5-6.1.2 3"
         stroke="var(--scene-wood-light)"
-        strokeWidth=".7"
+        strokeWidth="1.2"
         opacity=".85"
       />
 
       {/* A small bundle of dried stems, tucked into the right fabric loop. */}
       <g stroke="var(--scene-leaf)" strokeWidth="1">
-        <path d="M95 79Q90 58 97 29M97 75Q99 47 110 29M94 65Q86 42 86 23" />
+        <NookThread
+          d="M95 79Q90 58 97 29M97 75Q99 47 110 29M94 65Q86 42 86 23"
+          color="var(--scene-leaf)"
+          highlight="var(--scene-leaf-light)"
+          width={1.6}
+        />
         <path
           d="M96 51Q84 49 85 40Q95 42 96 51ZM97 43Q98 32 105 34Q105 41 97 43ZM94 61Q84 62 83 54Q91 53 94 61ZM102 46Q103 36 110 36Q111 43 102 46ZM88 39Q79 39 80 31Q87 31 88 39Z"
           fill="var(--scene-leaf)"
           strokeWidth=".55"
         />
-        <path
-          d="M87 43 94 49M100 40l3-3M86 57l6 3M105 41l3-3"
-          stroke="var(--scene-leaf-light)"
-          strokeWidth=".55"
+        <NookThread
+          d="M87 43 88 46M90 44 91 48M93 46 94 49M86 46 90 45M89 49 93 47M99 39 101 40M100 36 103 37M99 42 100 39M102 40 102 36M86 56 87 59M89 56 90 60M86 60 90 58M105 39 106 41M108 37 108 40M104 43 106 39M81 33 83 36M84 34 86 37M82 37 85 35"
+          color="var(--scene-leaf-light)"
+          highlight="var(--scene-paper)"
+          width={1.2}
         />
         {[
           [86, 22, -25],
@@ -225,19 +288,26 @@ export function NookWallHanging() {
               stroke="var(--scene-wood)"
               strokeWidth=".5"
             />
-            <path
-              d="M0 3 2-2M0 3-3-1M1 3 6 1"
-              stroke="var(--scene-paper)"
-              opacity=".45"
-              strokeWidth=".6"
+            <NookThread
+              d="M0 3 2-4M2 3 4-4M0 2-4-1M-1 4-4 1M2 4 6 0M3 4 7 2"
+              color="var(--scene-dried-flower)"
+              highlight="var(--scene-paper)"
+              width={1.6}
+            />
+            <NookThread
+              d="M0 3q-1.5-2 .5-2.5q2.5 0 1.5 2q-.6 1.2-1.3 0"
+              color="var(--scene-gold)"
+              highlight="var(--scene-paper)"
+              width={1.5}
             />
           </g>
         ))}
       </g>
-      <path
+      <NookThread
         d="M90 61 100 59M90 63l10-2M95 62Q82 52 82 61Q84 67 95 62Q109 53 106 62Q103 67 95 62L101 82M95 62Q90 75 91 81"
-        stroke="var(--scene-rose)"
-        strokeWidth="1.5"
+        color="var(--scene-rose)"
+        highlight="var(--scene-paper)"
+        width={2}
       />
       <path
         d="M91 60 98 58M95 65l4 12"

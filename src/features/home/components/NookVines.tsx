@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { NookThread } from "./NookThread";
 
 type Point = [number, number];
 type Curve = [Point, Point, Point, Point];
@@ -90,7 +91,7 @@ const rearVines: Vine[] = [
   },
 ];
 
-function pointOnVine(vine: Vine, t: number): Point {
+function pointOnVine(vine: Pick<Vine, "curves">, t: number): Point {
   const position = Math.min(t, 0.99999) * vine.curves.length;
   const curve = vine.curves[Math.floor(position)];
   const u = position % 1;
@@ -104,7 +105,7 @@ function pointOnVine(vine: Vine, t: number): Point {
   ) as Point;
 }
 
-function vinePath(vine: Vine) {
+function vinePath(vine: Pick<Vine, "curves">) {
   return (
     `M${vine.curves[0][0].join(" ")}` +
     vine.curves
@@ -116,6 +117,69 @@ function vinePath(vine: Vine) {
   );
 }
 
+/** A strand winds across the cord at a constant distance, including on bends. */
+function cordWraps(points: Point[], radius: number, pitch: number) {
+  let length = 0;
+  let nextWrap = pitch * 0.5;
+  const stitches: string[] = [];
+  for (let i = 1; i < points.length; i++) {
+    const [x, y] = points[i - 1];
+    const dx = points[i][0] - x;
+    const dy = points[i][1] - y;
+    const step = Math.hypot(dx, dy);
+    if (step === 0) continue;
+    const tx = dx / step;
+    const ty = dy / step;
+    while (nextWrap <= length + step) {
+      const distance = nextWrap - length;
+      const cx = x + tx * distance;
+      const cy = y + ty * distance;
+      const start: Point = [
+        cx + ty * radius - tx * 0.7,
+        cy - tx * radius - ty * 0.7,
+      ];
+      const end: Point = [
+        cx - ty * radius + tx * 0.7,
+        cy + tx * radius + ty * 0.7,
+      ];
+      stitches.push(
+        `M${start[0].toFixed(2)} ${start[1].toFixed(2)}Q${(cx - tx * 0.5).toFixed(2)} ${(cy - ty * 0.5).toFixed(2)} ${end[0].toFixed(2)} ${end[1].toFixed(2)}`,
+      );
+      nextWrap += pitch;
+    }
+    length += step;
+  }
+  return stitches.join(" ");
+}
+
+const tendril: Pick<Vine, "curves"> = {
+  curves: [
+    [
+      [0, 0],
+      [-9, -3],
+      [-18, 2],
+      [-19, -7],
+    ],
+    [
+      [-19, -7],
+      [-20, -13],
+      [-12, -17],
+      [-9, -11],
+    ],
+    [
+      [-9, -11],
+      [-7, -7],
+      [-11, -4],
+      [-13, -7],
+    ],
+  ],
+};
+const tendrilWraps = cordWraps(
+  Array.from({ length: 100 }, (_, i) => pointOnVine(tendril, i / 99)),
+  0.8,
+  3.4,
+);
+
 const blades = [
   // Rounded lobes and an off-centre tip keep the mature leaves from looking stamped.
   "M0 0C-4-5-12-3-16-9Q-13-12-13-16Q-19-19-21-27Q-13-26-8-29Q-5-34 1-41Q5-32 10-28Q16-29 21-27Q19-20 13-16Q14-10 17-8Q7-4 0 0Z",
@@ -123,6 +187,25 @@ const blades = [
   // New growth has smaller, simpler blades.
   "M0 0C-10-4-14-14-10-22Q-4-27 1-35Q6-28 11-21C16-12 9-3 0 0Z",
 ];
+
+// Scale the leaf geometry, never the floss. Even new growth retains raised strands.
+function scaledBlade(d: string, scale: number) {
+  return d.replace(/[-+]?(?:\d*\.?\d+)(?:[eE][-+]?\d+)?/g, (number) =>
+    (Number(number) * scale).toFixed(2),
+  );
+}
+
+function fishboneFill(scale: number, side: -1 | 1) {
+  const stitches: string[] = [];
+  const pitch = 2.45;
+  for (let y = -48 * scale; y < 2; y += pitch) {
+    const stagger = side === 1 ? pitch * 0.5 : 0;
+    stitches.push(
+      `M${side * 25 * scale} ${(y + stagger).toFixed(2)}Q${side * 11 * scale} ${(y + stagger + 4 * scale).toFixed(2)} ${-side * 0.9} ${(y + stagger + 10 * scale).toFixed(2)}`,
+    );
+  }
+  return stitches.join(" ");
+}
 
 interface NookVinesProps {
   layer: "back" | "front";
@@ -183,19 +266,25 @@ export function NookVines({ layer, hasGarland }: NookVinesProps) {
             opacity=".12"
             transform="translate(1 1.8)"
           />
-          <path
+          <NookThread
             d={vinePath(vine)}
-            fill="none"
-            stroke="color-mix(in srgb, var(--scene-leaf) 65%, var(--scene-wood-dark))"
-            strokeWidth={layer === "back" ? 1.35 : 1.8}
+            color="color-mix(in srgb, var(--scene-leaf) 65%, var(--scene-wood-dark))"
+            highlight="var(--scene-leaf-light)"
+            shadow="var(--scene-wood-dark)"
+            width={layer === "back" ? 2.6 : 3.4}
+            relief={2.3}
           />
-          <path
-            d={vinePath(vine)}
-            fill="none"
-            stroke="var(--scene-leaf-light)"
-            strokeWidth=".55"
-            opacity=".55"
-            transform="translate(-.45 -.2)"
+          <NookThread
+            d={cordWraps(
+              Array.from({ length: 220 }, (_, i) => pointOnVine(vine, i / 219)),
+              layer === "back" ? 1.1 : 1.45,
+              4.1,
+            )}
+            color="var(--scene-leaf-light)"
+            shadow="var(--scene-wood-dark)"
+            highlight="color-mix(in srgb, var(--scene-leaf-light) 82%, var(--scene-paper))"
+            width={1.3}
+            relief={1.8}
           />
 
           {Array.from({ length: vine.count }, (_, i) => {
@@ -225,18 +314,41 @@ export function NookVines({ layer, hasGarland }: NookVinesProps) {
               (t > 0.78 ? 0.8 : 1);
             const variant = i > vine.count - 4 ? 2 : (i + vine.seed) % 3;
             const tone = (i + vine.seed) % 3;
+            const blade = scaledBlade(blades[variant], size);
+            const clip = `${id}-ivy-leaf-${vineIndex}-${i}`;
+            const control: Point = [
+              anchor[0] + Math.cos(direction + 0.35) * reach * 0.55,
+              anchor[1] + Math.sin(direction + 0.35) * reach * 0.55,
+            ];
+            const petiole = `M${anchor.join(" ")}Q${control.join(" ")} ${base.join(" ")}`;
+            const petiolePoints = Array.from({ length: 12 }, (_, n): Point => {
+              const u = n / 11;
+              const v = 1 - u;
+              return [
+                v * v * anchor[0] + 2 * v * u * control[0] + u * u * base[0],
+                v * v * anchor[1] + 2 * v * u * control[1] + u * u * base[1],
+              ];
+            });
             return (
               <g key={i}>
                 {/* The petiole remains anchored while just the blade gently turns. */}
-                <path
-                  d={`M${anchor.join(" ")}Q${anchor[0] + Math.cos(direction + 0.35) * reach * 0.55} ${anchor[1] + Math.sin(direction + 0.35) * reach * 0.55} ${base.join(" ")}`}
-                  fill="none"
-                  stroke="var(--scene-leaf)"
-                  strokeWidth=".95"
+                <NookThread
+                  d={petiole}
+                  color="var(--scene-leaf)"
+                  shadow="var(--scene-wood-dark)"
+                  highlight="var(--scene-leaf-light)"
+                  width={1.95}
+                  relief={2.2}
                 />
-                <g
-                  transform={`translate(${base.join(" ")}) rotate(${angle}) scale(${size})`}
-                >
+                <NookThread
+                  d={cordWraps(petiolePoints, 0.85, 3.1)}
+                  color="var(--scene-leaf-light)"
+                  shadow="var(--scene-leaf)"
+                  highlight="color-mix(in srgb, var(--scene-leaf-light) 80%, var(--scene-paper))"
+                  width={1.05}
+                  relief={1.8}
+                />
+                <g transform={`translate(${base.join(" ")}) rotate(${angle})`}>
                   <g
                     className="nook-ivy-leaf"
                     style={{
@@ -245,50 +357,74 @@ export function NookVines({ layer, hasGarland }: NookVinesProps) {
                       animationDuration: `${9 + (i % 5)}s`,
                     }}
                   >
+                    <defs>
+                      <clipPath id={clip}>
+                        <path d={blade} />
+                      </clipPath>
+                    </defs>
                     <path
-                      d={blades[variant]}
+                      d={blade}
                       fill="var(--scene-shadow)"
                       stroke="none"
-                      opacity=".14"
-                      transform="translate(.9 1.4)"
+                      opacity=".24"
+                      transform="translate(.7 1.1)"
                     />
                     <path
-                      d={blades[variant]}
+                      d={blade}
                       fill={paint(`tone-${tone}`)}
                       stroke="var(--scene-wood-dark)"
-                      strokeOpacity=".36"
-                      strokeWidth=".8"
+                      strokeOpacity=".5"
+                      strokeWidth="1.6"
                     />
-                    <path
-                      d={
-                        variant === 2
-                          ? "M0-1Q0-16 1-33Q6-28 11-21C16-12 9-3 0-1Z"
-                          : "M0-1Q-1-16 1-39Q5-30 10-27L14-22Q10-16 12-9Q5-5 0-1Z"
-                      }
-                      fill="var(--scene-wood-dark)"
-                      opacity=".12"
-                      stroke="none"
-                    />
-                    <path
-                      d={
-                        variant === 2
-                          ? "M0-1Q-1-16 1-32M0-9-7-16M0-17 7-23"
-                          : "M0-1Q-2-19 1-36M-1-11Q-7-15-12-20M-1-18Q-6-23-9-26M-1-11Q7-15 12-20M0-22 7-28"
-                      }
-                      fill="none"
-                      stroke="var(--scene-leaf-light)"
-                      strokeWidth=".85"
-                      opacity=".8"
-                    />
-                    {variant !== 2 && (
-                      <path
-                        d="M-12-23q3-1 6-4M-11-11l-3-1M5-7q4-1 6-4"
-                        fill="none"
-                        stroke="var(--scene-paper)"
-                        strokeWidth=".65"
-                        opacity=".3"
+                    <g clipPath={`url(#${clip})`}>
+                      <NookThread
+                        d={fishboneFill(size, -1)}
+                        color={
+                          tone === 2
+                            ? "color-mix(in srgb, var(--scene-leaf-light) 65%, var(--scene-leaf))"
+                            : "var(--scene-leaf-light)"
+                        }
+                        highlight="color-mix(in srgb, var(--scene-leaf-light) 76%, var(--scene-paper))"
+                        shadow="color-mix(in srgb, var(--scene-leaf) 65%, var(--scene-wood-dark))"
+                        width={2.05}
+                        relief={2.4}
                       />
-                    )}
+                      <NookThread
+                        d={fishboneFill(size, 1)}
+                        color="color-mix(in srgb, var(--scene-leaf-light) 55%, var(--scene-leaf))"
+                        highlight="var(--scene-leaf-light)"
+                        shadow="color-mix(in srgb, var(--scene-leaf) 65%, var(--scene-wood-dark))"
+                        width={2.05}
+                        relief={2.4}
+                      />
+                    </g>
+                    <NookThread
+                      d={scaledBlade(
+                        variant === 2 ? "M0-1Q-1-16 1-32" : "M0-1Q-2-19 1-36",
+                        size,
+                      )}
+                      color="color-mix(in srgb, var(--scene-leaf) 70%, var(--scene-wood-dark))"
+                      highlight="var(--scene-leaf-light)"
+                      width={1.3}
+                      relief={1.9}
+                    />
+                    <NookThread
+                      d={blade}
+                      color="var(--scene-leaf)"
+                      highlight="var(--scene-leaf-light)"
+                      shadow="var(--scene-wood-dark)"
+                      width={1.65}
+                      relief={2.3}
+                    />
+                    <NookThread
+                      d={blade}
+                      color="var(--scene-leaf-light)"
+                      highlight="color-mix(in srgb, var(--scene-leaf-light) 83%, var(--scene-paper))"
+                      shadow="var(--scene-leaf)"
+                      width={0.9}
+                      relief={1.8}
+                      dasharray=".55 2.3"
+                    />
                   </g>
                 </g>
               </g>
@@ -298,12 +434,7 @@ export function NookVines({ layer, hasGarland }: NookVinesProps) {
       ))}
 
       {layer === "front" && (
-        <g
-          fill="none"
-          stroke="var(--scene-leaf)"
-          strokeWidth=".85"
-          opacity=".8"
-        >
+        <g fill="none">
           {/* Fine searching tips curl back toward the timber. */}
           {[
             [0, 0.48, 1, 0],
@@ -311,11 +442,27 @@ export function NookVines({ layer, hasGarland }: NookVinesProps) {
             [1, 0.55, -1, 15],
             [1, 0.965, 1, -80],
           ].map(([vineIndex, t, mirror, angle], i) => (
-            <path
+            <g
               key={i}
-              d="M0 0C-9-3-18 2-19-7C-20-13-12-17-9-11C-7-7-11-4-13-7"
               transform={`translate(${pointOnVine(frontVines[vineIndex], t).join(" ")}) scale(${mirror} 1) rotate(${angle})`}
-            />
+            >
+              <NookThread
+                d={vinePath(tendril)}
+                color="var(--scene-leaf)"
+                shadow="var(--scene-wood-dark)"
+                highlight="var(--scene-leaf-light)"
+                width={2.2}
+                relief={2.3}
+              />
+              <NookThread
+                d={tendrilWraps}
+                color="var(--scene-leaf-light)"
+                shadow="var(--scene-leaf)"
+                highlight="color-mix(in srgb, var(--scene-leaf-light) 83%, var(--scene-paper))"
+                width={1.15}
+                relief={1.8}
+              />
+            </g>
           ))}
         </g>
       )}

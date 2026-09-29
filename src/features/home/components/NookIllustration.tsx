@@ -2,7 +2,7 @@ import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import { NookSeasonalDecor } from "./NookSeasonalDecor";
 import { NookProps } from "./NookProps";
-import { NookEmbroidery } from "./NookEmbroidery";
+import { NookThread } from "./NookThread";
 import { NookVines } from "./NookVines";
 import { NookWindowView } from "./NookWindowView";
 
@@ -10,6 +10,22 @@ interface NookIllustrationProps {
   isDark: boolean;
   eventId: SeasonalEventId | null;
 }
+
+// Laid stitches turn with the arch and cross each straight frame rail.
+// One path per thread layer keeps the embroidery light enough to animate.
+const frameStitches = [
+  ...Array.from({ length: 80 }, (_, i) => {
+    const angle = Math.PI + (i / 79) * Math.PI;
+    const next = angle + 0.009;
+    return `M${201 + Math.cos(angle) * 155} ${191 + Math.sin(angle) * 158}Q${201 + Math.cos(next) * 148} ${191 + Math.sin(next) * 151} ${201 + Math.cos(next) * 139} ${191 + Math.sin(next) * 141}`;
+  }),
+  ...Array.from({ length: 53 }, (_, i) => {
+    const y = 195 + i * 4.4;
+    return `M46 ${y}q8 1 16-2M340 ${y}q8-1 16 2`;
+  }),
+  ...Array.from({ length: 55 }, (_, i) => `M${76 + i * 4.6} 218.5l-1 7.5`),
+  ...Array.from({ length: 44 }, (_, i) => `M197 ${237 + i * 4.4}l8-1.4`),
+].join(" ");
 
 // One coordinate space keeps the window, shelf, and all seasonal objects grounded.
 // The room and its companion moogle are both editable SVG geometry.
@@ -30,7 +46,6 @@ export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
         focusable="false"
       >
         <defs>
-          <NookEmbroidery id={`${id}-embroidery`} width={440} height={550} />
           <linearGradient
             id={`${id}-wood`}
             x1="66"
@@ -68,7 +83,6 @@ export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
         </defs>
 
         <g
-          filter={ref("embroidery")}
           stroke="var(--scene-ink)"
           strokeWidth="1.5"
           strokeLinecap="round"
@@ -165,6 +179,20 @@ export function NookIllustration({ isDark, eventId }: NookIllustrationProps) {
             strokeWidth="1.2"
             strokeDasharray="1.2 2.8"
             opacity=".6"
+          />
+          {/* Tight satin binding has a dark gap, a rounded strand, and a fine glint. */}
+          <NookThread
+            d={frameStitches}
+            color="var(--scene-wood-light)"
+            shadow="var(--scene-wood-dark)"
+            width={2.2}
+          />
+          <NookThread
+            d="M44 428V191C44 101 112 30 201 30S358 103 358 191V428M68 429V194C68 116 124 55 201 55S335 116 335 194V429"
+            color="var(--scene-wood-light)"
+            shadow="var(--scene-wood-dark)"
+            width={2.2}
+            dasharray="2.4 1.3"
           />
           {/* The tiny brass catch and hinge plates make the frame feel made. */}
           <g
