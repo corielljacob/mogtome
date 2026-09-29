@@ -53,7 +53,7 @@ describe("Staff biography note", () => {
       "\nSee you in game!";
     renderBio({ bio, editable: false });
     const region = screen.getByRole("region", {
-      name: "Ada Bloom's biography",
+      name: "Ada Bloom's bio",
     });
     const expand = screen.getByRole("button", { name: "Read full bio" });
     const content = document.getElementById(
@@ -79,7 +79,7 @@ describe("Staff biography note", () => {
 
     expect(screen.getByText(defaultProps.bio!)).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /my bio/ }),
+      screen.queryByRole("button", { name: /(?:Add|Edit) bio/ }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(
@@ -92,9 +92,9 @@ describe("Staff biography note", () => {
     const user = userEvent.setup();
     renderBio({ bio: undefined });
 
-    await user.click(screen.getByRole("button", { name: "Add my bio" }));
+    await user.click(screen.getByRole("button", { name: "Add bio" }));
 
-    const editor = screen.getByRole("textbox", { name: "Your biography" });
+    const editor = screen.getByRole("textbox", { name: "Your bio" });
     expect(editor).toHaveFocus();
     expect(editor).toHaveValue("");
     expect(editor).toHaveAttribute("maxlength", "500");
@@ -104,9 +104,9 @@ describe("Staff biography note", () => {
   it("keeps the character counter in sync and limits new input to 500 characters", async () => {
     const user = userEvent.setup();
     renderBio({ bio: "x".repeat(499) });
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
     const editor = screen.getByRole("textbox", {
-      name: "Your biography",
+      name: "Your bio",
     }) as HTMLTextAreaElement;
     editor.setSelectionRange(499, 499);
 
@@ -114,7 +114,7 @@ describe("Staff biography note", () => {
 
     expect(editor).toHaveValue("x".repeat(499) + "y");
     expect(editor).toHaveAccessibleDescription("500 / 500 characters");
-    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Save bio" })).toBeEnabled();
   });
 
   it("saves through the existing API, prevents repeat submits, refreshes staff, and returns focus", async () => {
@@ -127,15 +127,15 @@ describe("Staff biography note", () => {
         }),
     );
     const { invalidate } = renderBio();
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
-    const editor = screen.getByRole("textbox", { name: "Your biography" });
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
+    const editor = screen.getByRole("textbox", { name: "Your bio" });
     fireEvent.change(editor, {
       target: {
         value: "  Gathering, crafting, and helping.\nAsk me about fishing!  ",
       },
     });
 
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "Save bio" }));
 
     expect(biographyApi.setBiography).toHaveBeenCalledExactlyOnceWith(
       "Gathering, crafting, and helping.\nAsk me about fishing!",
@@ -149,10 +149,10 @@ describe("Staff biography note", () => {
     await act(async () => resolveSave());
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Edit my bio" })).toHaveFocus(),
+      expect(screen.getByRole("button", { name: "Edit bio" })).toHaveFocus(),
     );
     expect(
-      screen.getByRole("region", { name: "Ada Bloom's biography" }).textContent,
+      screen.getByRole("region", { name: "Ada Bloom's bio" }).textContent,
     ).toBe("Gathering, crafting, and helping.\nAsk me about fishing!");
     expect(screen.getByRole("status")).toHaveTextContent("Bio saved.");
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ["staff"] });
@@ -164,20 +164,20 @@ describe("Staff biography note", () => {
       new Error("Unavailable"),
     );
     renderBio();
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "A new note." },
     });
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "Save bio" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Couldn't save your bio. Your changes are still here. Try again.",
     );
     expect(screen.getByRole("textbox")).toHaveValue("A new note.");
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "Save bio" }));
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Edit my bio" })).toHaveFocus(),
+      expect(screen.getByRole("button", { name: "Edit bio" })).toHaveFocus(),
     );
     expect(biographyApi.setBiography).toHaveBeenCalledTimes(2);
     expect(biographyApi.setBiography).toHaveBeenLastCalledWith("A new note.");
@@ -191,19 +191,19 @@ describe("Staff biography note", () => {
       new Error("Unavailable"),
     );
     renderBio();
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "Unsaved changes." },
     });
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "Save bio" }));
     await screen.findByRole("alert");
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    expect(screen.getByRole("button", { name: "Edit my bio" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Edit bio" })).toHaveFocus();
     expect(screen.getByText(defaultProps.bio!)).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
     expect(screen.getByRole("textbox")).toHaveValue(defaultProps.bio);
     expect(screen.getByRole("textbox")).toHaveFocus();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -216,7 +216,7 @@ describe("Staff biography note", () => {
     rerender(
       <StickyBioNote {...defaultProps} bio="Updated on another page." />,
     );
-    await user.click(screen.getByRole("button", { name: "Edit my bio" }));
+    await user.click(screen.getByRole("button", { name: "Edit bio" }));
     expect(screen.getByRole("textbox")).toHaveValue("Updated on another page.");
 
     rerender(
@@ -229,7 +229,7 @@ describe("Staff biography note", () => {
 
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /my bio/ }),
+      screen.queryByRole("button", { name: /(?:Add|Edit) bio/ }),
     ).not.toBeInTheDocument();
     expect(biographyApi.setBiography).not.toHaveBeenCalled();
   });

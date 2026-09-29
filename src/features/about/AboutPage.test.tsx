@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import type { ComponentProps } from "react";
@@ -120,6 +127,45 @@ function staffRegion() {
 }
 
 describe("About Kupo Life", () => {
+  it("normalizes search spacing and clears with Escape while preserving the rank and input focus", async () => {
+    const user = userEvent.setup();
+    vi.mocked(membersApi.getStaff).mockResolvedValue({
+      totalCount: staff.length,
+      staff,
+    });
+    renderAbout();
+    const input = await screen.findByRole("searchbox", {
+      name: "Search the crew",
+    });
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Rank" }),
+      "Moogle Knight",
+    );
+    await user.type(input, "  ADA   BLOOM  ");
+    expect(within(staffRegion()).getAllByRole("article")).toHaveLength(1);
+    expect(input).toHaveAccessibleDescription("1 of 5 crew members shown");
+    fireEvent.keyDown(input, { key: "Escape", isComposing: true });
+    expect(input).toHaveValue("  ADA   BLOOM  ");
+    await user.keyboard("{Escape}");
+    expect(input).toHaveValue("");
+    expect(input).toHaveFocus();
+    expect(screen.getByRole("combobox", { name: "Rank" })).toHaveValue(
+      "Moogle Knight",
+    );
+    expect(within(staffRegion()).getAllByRole("article")).toHaveLength(2);
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Rank" }),
+      "",
+    );
+    await user.type(input, "   ");
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Clear crew search" }));
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue("");
+  });
+
   it("loads public staff without signing in and sorts by rank, then member name", async () => {
     const response: StaffResponse = {
       totalCount: staff.length,

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { membersApi } from "@/shared/api/members";
@@ -6,6 +6,7 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { FC_RANKS, type StaffMember } from "@/shared/types";
 import { scrollAppToTop } from "@/shared/lib/scroll";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
 import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { NookPressedFlower } from "@/features/home/components/NookPressedFlower";
@@ -24,6 +25,10 @@ export function About() {
   const [search, setSearch] = useState("");
   const [rank, setRank] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+  const rosterRef = useRef<HTMLElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  useStickyToolbar(rosterRef, toolbarRef);
   const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ["staff"],
     queryFn: () => membersApi.getStaff(),
@@ -49,13 +54,14 @@ export function About() {
     (member) => member.freeCompanyRank === "Moogle Guardian",
   )?.name;
   const ranks = [...new Set(staff.map((member) => member.freeCompanyRank))];
-  const query = search.trim().toLocaleLowerCase();
-  const hasFilters = Boolean(search || rank);
+  const query = search.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+  const hasFilters = Boolean(query || rank);
   const filteredStaff = staff.filter(
     (member) =>
       (!rank || member.freeCompanyRank === rank) &&
       (!query ||
         `${member.name} ${member.biography ?? ""}`
+          .replace(/\s+/g, " ")
           .toLocaleLowerCase()
           .includes(query)),
   );
@@ -71,6 +77,26 @@ export function About() {
     setRank("");
     searchRef.current?.focus({ preventScroll: true });
   };
+  const clearSearch = () => {
+    setSearch("");
+    searchRef.current?.focus({ preventScroll: true });
+  };
+  const filterKey = JSON.stringify([query, rank]);
+  const previousFilters = useRef(filterKey);
+  useEffect(() => {
+    if (previousFilters.current === filterKey) return;
+    previousFilters.current = filterKey;
+    const results = resultsRef.current;
+    const toolbar = toolbarRef.current;
+    if (
+      results &&
+      toolbar &&
+      results.getBoundingClientRect().top <
+        Math.max(0, toolbar.getBoundingClientRect().bottom)
+    ) {
+      results.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [filterKey]);
 
   return (
     <div className="about-screen" data-mode={isDarkMode ? "dark" : "light"}>
@@ -83,7 +109,7 @@ export function About() {
           <h1>
             About Kupo Life <AboutIcon name="heart" />
           </h1>
-          <p>Our Free Company, and the people behind it.</p>
+          <p>A bit about our Free Company and the people in it.</p>
         </header>
 
         <section
@@ -102,7 +128,7 @@ export function About() {
               or just hang out in chat.
             </p>
             <p className="about-story">
-              There’s no quota to hit and no pressure to raid. Make yourself at
+              There’s no activity quota or pressure to raid. Make yourself at
               home, kupo.
             </p>
             <a className="about-button" href="#about-crew-title">
@@ -146,8 +172,8 @@ export function About() {
               <div>
                 <h3>A little adventure</h3>
                 <p>
-                  Raids and treasure hunts, with room to take things at your own
-                  pace.
+                  Come along for raids and treasure hunts whenever you feel like
+                  it.
                 </p>
               </div>
             </article>
@@ -170,15 +196,19 @@ export function About() {
               <div>
                 <h3>Good company</h3>
                 <p>
-                  Hang out in chat. Discord keeps us in touch when we’re not in
-                  game.
+                  We hang out in chat and keep in touch on Discord when we’re
+                  not in game.
                 </p>
               </div>
             </article>
           </div>
         </section>
 
-        <section className="about-roster" aria-labelledby="about-crew-title">
+        <section
+          className="about-roster"
+          ref={rosterRef}
+          aria-labelledby="about-crew-title"
+        >
           <header className="about-section-heading about-roster-heading">
             <div>
               <h2 id="about-crew-title" tabIndex={-1}>
@@ -194,7 +224,7 @@ export function About() {
             )}
           </header>
           {staff.length > 0 && (
-            <div className="about-roster-tools">
+            <div className="about-roster-tools" ref={toolbarRef}>
               <div className="about-roster-search">
                 <label htmlFor="about-crew-search">Search the crew</label>
                 <div>
@@ -203,19 +233,27 @@ export function About() {
                     ref={searchRef}
                     id="about-crew-search"
                     type="search"
+                    inputMode="search"
+                    enterKeyHint="search"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Name or biography…"
+                    onKeyDown={(event) => {
+                      if (event.nativeEvent.isComposing) return;
+                      if (event.key === "Escape" && search) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        clearSearch();
+                      }
+                    }}
+                    aria-describedby="about-crew-results"
+                    placeholder="Name or bio…"
                     autoComplete="off"
                   />
                   {search && (
                     <button
                       type="button"
                       aria-label="Clear crew search"
-                      onClick={() => {
-                        setSearch("");
-                        searchRef.current?.focus();
-                      }}
+                      onClick={clearSearch}
                     >
                       <AboutIcon name="close" size={16} />
                     </button>
@@ -241,7 +279,7 @@ export function About() {
                 </div>
               </div>
               <div className="about-roster-results">
-                <p role="status" aria-atomic="true">
+                <p id="about-crew-results" role="status" aria-atomic="true">
                   {filteredStaff.length} of {staff.length} crew members shown
                 </p>
                 {hasFilters && (
@@ -252,105 +290,107 @@ export function About() {
               </div>
             </div>
           )}
-          {isLoading && staff.length === 0 ? (
-            <div className="about-roster-state" role="status">
-              <AboutIcon name="people" size={32} />
-              <p>Rounding everyone up, kupo...</p>
-              <div className="about-roster-skeleton" aria-hidden="true">
-                <span />
-                <span />
-                <span />
+          <div className="about-roster-content" ref={resultsRef}>
+            {isLoading && staff.length === 0 ? (
+              <div className="about-roster-state" role="status">
+                <AboutIcon name="people" size={32} />
+                <p>Rounding everyone up, kupo...</p>
+                <div className="about-roster-skeleton" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </div>
               </div>
-            </div>
-          ) : isError && staff.length === 0 ? (
-            <div className="about-roster-state" role="alert">
-              <AboutIcon name="people" size={32} />
-              <h3>Couldn’t load the crew.</h3>
-              <p>Please try again in a moment.</p>
-              <button
-                className="about-button"
-                type="button"
-                disabled={isFetching}
-                onClick={() => void refetch()}
-              >
-                <AboutIcon name="refresh" size={18} />
-                {isFetching ? "Trying again…" : "Try again"}
-              </button>
-            </div>
-          ) : staff.length === 0 ? (
-            <div className="about-roster-state">
-              <AboutIcon name="people" size={32} />
-              <h3>No crew profiles yet</h3>
-              <p>Profiles will appear here when they’re added.</p>
-            </div>
-          ) : (
-            <>
-              {isError && (
-                <div className="about-roster-refresh-error" role="alert">
-                  <p>
-                    Couldn’t refresh the crew. The profiles already loaded are
-                    still here.
-                  </p>
-                  <button
-                    type="button"
-                    disabled={isFetching}
-                    onClick={() => void refetch()}
-                  >
-                    {isFetching ? "Trying again…" : "Try again"}
-                  </button>
-                </div>
-              )}
-              {filteredStaff.length === 0 ? (
-                <div className="about-roster-state">
-                  <AboutIcon name="search" size={32} />
-                  <h3>No matching crew members</h3>
-                  <p>
-                    Try another name, something from a biography, or a different
-                    rank.
-                  </p>
-                  <button
-                    className="about-button"
-                    type="button"
-                    onClick={clearFilters}
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              ) : (
-                <div className="about-staff-groups">
-                  {groups.map((group) => (
-                    <section
-                      className="about-staff-group"
-                      key={group.rank}
-                      aria-label={group.rank}
-                      data-leader={
-                        group.rank === "Moogle Guardian" ? "true" : undefined
-                      }
+            ) : isError && staff.length === 0 ? (
+              <div className="about-roster-state" role="alert">
+                <AboutIcon name="people" size={32} />
+                <h3>Couldn’t load the crew.</h3>
+                <p>Please try again in a moment.</p>
+                <button
+                  className="about-button"
+                  type="button"
+                  disabled={isFetching}
+                  onClick={() => void refetch()}
+                >
+                  <AboutIcon name="refresh" size={18} />
+                  {isFetching ? "Trying again…" : "Try again"}
+                </button>
+              </div>
+            ) : staff.length === 0 ? (
+              <div className="about-roster-state">
+                <AboutIcon name="people" size={32} />
+                <h3>No crew profiles yet</h3>
+                <p>Profiles will appear here when they’re added.</p>
+              </div>
+            ) : (
+              <>
+                {isError && (
+                  <div className="about-roster-refresh-error" role="alert">
+                    <p>
+                      Couldn’t refresh the crew. You can still read the profiles
+                      below.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={isFetching}
+                      onClick={() => void refetch()}
                     >
-                      <header>
-                        <h3>{group.rank}</h3>
-                        <span>{group.members.length}</span>
-                        <i aria-hidden="true" />
-                      </header>
-                      <div className="about-staff-grid">
-                        {group.members.map((member) => (
-                          <StaffCard
-                            key={member.characterId}
-                            member={member}
-                            isLeader={member.name === leaderName}
-                            isCurrentUser={currentUserName === member.name}
-                            isOwnEditable={
-                              currentUserName === member.name && canEditOwn
-                            }
-                          />
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+                      {isFetching ? "Trying again…" : "Try again"}
+                    </button>
+                  </div>
+                )}
+                {filteredStaff.length === 0 ? (
+                  <div className="about-roster-state">
+                    <AboutIcon name="search" size={32} />
+                    <h3>No matching crew members</h3>
+                    <p>
+                      Try another name or a word from their bio, or change the
+                      rank filter.
+                    </p>
+                    <button
+                      className="about-button"
+                      type="button"
+                      onClick={clearFilters}
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="about-staff-groups">
+                    {groups.map((group) => (
+                      <section
+                        className="about-staff-group"
+                        key={group.rank}
+                        aria-label={group.rank}
+                        data-leader={
+                          group.rank === "Moogle Guardian" ? "true" : undefined
+                        }
+                      >
+                        <header>
+                          <h3>{group.rank}</h3>
+                          <span>{group.members.length}</span>
+                          <i aria-hidden="true" />
+                        </header>
+                        <div className="about-staff-grid">
+                          {group.members.map((member) => (
+                            <StaffCard
+                              key={member.characterId}
+                              member={member}
+                              isLeader={member.name === leaderName}
+                              isCurrentUser={currentUserName === member.name}
+                              isOwnEditable={
+                                currentUserName === member.name && canEditOwn
+                              }
+                            />
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </section>
 
         <section className="about-next" aria-label="More from Kupo Life">

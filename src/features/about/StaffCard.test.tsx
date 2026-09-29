@@ -22,7 +22,7 @@ describe("StaffCard", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Moogle Guardian")).toBeInTheDocument();
     const biography = screen.getByRole("region", {
-      name: "Althia Fern's biography",
+      name: "Althia Fern's bio",
     });
     expect(biography.querySelector("p")?.textContent).toBe(member.biography);
     expect(biography.querySelector("kupo")).not.toBeInTheDocument();
@@ -90,7 +90,7 @@ describe("StaffCard", () => {
     "forwards the supplied biography permission without inferring it from identity flags: %j",
     (flags) => {
       render(<StaffCard member={member} {...flags} />);
-      const editButton = screen.queryByRole("button", { name: "Edit my bio" });
+      const editButton = screen.queryByRole("button", { name: "Edit bio" });
       if (flags.isOwnEditable) expect(editButton).toBeInTheDocument();
       else expect(editButton).not.toBeInTheDocument();
     },
@@ -108,7 +108,7 @@ describe("StaffCard", () => {
     expect(screen.getByText("Recently promoted")).toBeInTheDocument();
     expect(screen.getByText("That’s you")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Edit my bio" }),
+      screen.queryByRole("button", { name: "Edit bio" }),
     ).not.toBeInTheDocument();
   });
 });

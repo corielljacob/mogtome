@@ -317,6 +317,13 @@
   border-radius: 5px;
   background: var(--ui-surface-soft);
   color: var(--nook-ink);
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--scene-shadow) 8%, transparent);
+}
+.about-roster-content {
+  scroll-margin-top: calc(
+    var(--view-sticky-top) + var(--view-toolbar-height, 9rem) +
+      var(--view-scroll-gap)
+  );
 }
 .about-roster-tools label {
   display: block;

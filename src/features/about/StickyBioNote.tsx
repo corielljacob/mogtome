@@ -78,14 +78,14 @@ export function StickyBioNote({
       {isEditing ? (
         <form
           className="about-bio-editor"
-          aria-label="Edit your biography"
+          aria-label="Edit your bio"
           onSubmit={(event) => {
             event.preventDefault();
             if (!editable || mutation.isPending || overLimit) return;
             mutation.mutate(draft.trim());
           }}
         >
-          <label htmlFor={editorId}>Your biography</label>
+          <label htmlFor={editorId}>Your bio</label>
           <textarea
             ref={textareaRef}
             id={editorId}
@@ -93,7 +93,7 @@ export function StickyBioNote({
             onChange={(event) => setDraft(event.target.value)}
             rows={6}
             maxLength={MAX_BIO_LENGTH}
-            placeholder="A few words about yourself"
+            placeholder="What do you get up to in FFXIV?"
             disabled={mutation.isPending}
             aria-describedby={`${countId}${mutation.isError ? ` ${errorId}` : ""}`}
             aria-invalid={overLimit || undefined}
@@ -108,7 +108,7 @@ export function StickyBioNote({
               disabled={mutation.isPending || overLimit}
             >
               <AboutIcon name="check" size={17} />
-              {mutation.isPending ? "Saving…" : "Save"}
+              {mutation.isPending ? "Saving…" : "Save bio"}
             </button>
             <button
               type="button"
@@ -133,9 +133,7 @@ export function StickyBioNote({
         <>
           <div
             role="region"
-            aria-label={
-              memberName ? `${memberName}'s biography` : "Member biography"
-            }
+            aria-label={memberName ? `${memberName}'s bio` : "Member bio"}
           >
             <p
               id={bioId}
@@ -145,7 +143,7 @@ export function StickyBioNote({
                 ? displayedBio
                 : editable
                   ? "Add a few words about yourself."
-                  : "No biography yet."}
+                  : "No bio yet."}
             </p>
             {canExpand && (
               <button
@@ -169,7 +167,7 @@ export function StickyBioNote({
                 onClick={beginEditing}
               >
                 <AboutIcon name="edit" size={16} />
-                {hasBio ? "Edit my bio" : "Add my bio"}
+                {hasBio ? "Edit bio" : "Add bio"}
               </button>
               {mutation.isSuccess && (
                 <p className="about-bio-status" role="status">
