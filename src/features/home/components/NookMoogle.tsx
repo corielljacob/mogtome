@@ -4,6 +4,11 @@ import { NookMoogleHeadwear } from "./NookMoogleHeadwear";
 import { NookMoogleBodywear } from "./NookMoogleBodywear";
 import { NookMoogleStitches } from "./NookMoogleStitches";
 import type { MoogleModel } from "./NookMoogleStitches";
+import {
+  NookMoogleMouthStitches,
+  NookMoogleNoseStitches,
+} from "./NookMoogleFaceStitches";
+import { NookMooglePawPads } from "./NookMooglePawPads";
 import { NookThread } from "./NookThread";
 import "./nook-moogle-models.css";
 
@@ -430,34 +435,20 @@ function NookMoogleModel({
               strokeWidth=".7"
             />
             <g clipPath={paint("nose-shape")}>
-              <NookThread
-                d={
-                  [
-                    "M90 139q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19m1-19q-2 9 2 19",
-                    "M89 139q-1 10 3 19M92 139q-1 9 3 19M95.2 139q-1 9 2.5 19M98.5 139q-2 10 2 19M102 139q-1 9 2.8 19M105 139q-1 9 2.5 19M108.3 139q-1 10 2 19",
-                    "M90 139q-3 8 1 19M93.1 139q-3 10 1 19M96 139q-3 9 .5 19M99 139q-2 8 1 19M102.2 139q-2 10 1 19M105 139q-3 9 1 19M108 139q-2 9 1 19M111 139q-2 10 1 19",
-                  ][model]
-                }
+              <NookMoogleNoseStitches
+                model={model}
                 color={materials.rose}
-                shadow={materials.roseShade}
-                highlight={materials.roseLight}
-                width={1.8}
+                shade={materials.roseShade}
+                light={materials.roseLight}
+                padding={paint("nose")}
               />
             </g>
-            <path
-              d="M95 145Q98 143 101 144"
-              stroke={materials.furLight}
-              strokeWidth="1"
-              opacity=".7"
-            />
-            <path
-              d={
-                pleased
-                  ? "M92 160Q101 168 109 160"
-                  : "M91 160Q96 166 100 160Q104 166 110 159"
-              }
-              stroke={materials.ink}
-              strokeWidth="1.3"
+            <NookMoogleMouthStitches
+              model={model}
+              pleased={pleased}
+              color={materials.ink}
+              shade={materials.ink}
+              light={materials.furShade}
             />
             <g stroke={materials.rose} strokeWidth="1.1" opacity=".6">
               <path d="m48 150-1 3m6-2-1 3m95-3-1 3m6-4-1 3" />
@@ -493,28 +484,12 @@ function NookMoogleModel({
             d="M70 216C58 212 47 220 47 232C46 240 58 244 72 244C86 244 94 239 90 230C87 223 80 218 70 216ZM130 216C141 211 152 220 153 231C155 240 142 244 128 244C114 244 108 239 111 231C114 223 121 219 130 216Z"
             width={2}
           />
-          <g fill={materials.roseLight} stroke="none" opacity=".65">
-            <ellipse
-              cx="69"
-              cy="235"
-              rx="7.5"
-              ry="4.8"
-              transform="rotate(12 69 235)"
-            />
-            <ellipse
-              cx="131"
-              cy="235"
-              rx="7.5"
-              ry="4.8"
-              transform="rotate(-12 131 235)"
-            />
-            <circle cx="60" cy="228" r="2.4" />
-            <circle cx="67" cy="225" r="2.5" />
-            <circle cx="74" cy="226" r="2.1" />
-            <circle cx="140" cy="228" r="2.4" />
-            <circle cx="133" cy="225" r="2.5" />
-            <circle cx="126" cy="226" r="2.1" />
-          </g>
+          <NookMooglePawPads
+            model={model}
+            color={materials.roseLight}
+            shade={materials.roseShade}
+            light={materials.furLight}
+          />
           <path
             d="M52 229Q52 221 59 220M143 221Q148 224 148 231"
             stroke={materials.furLight}

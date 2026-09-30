@@ -1,5 +1,7 @@
+import { useId } from "react";
 import { NookThread } from "./NookThread";
 import { NookAlaMhigoCitadel, StormbloodPatch } from "./NookAlaMhigoCitadel";
+import { threadVariation } from "./nookNeedlework";
 import { stormbloodPigments } from "./nookStormbloodPigments";
 
 const distantCrags =
@@ -23,9 +25,20 @@ const leftSalt =
   "M64 337Q102 328 129 341L145 351Q128 362 107 364L89 379 64 382Z";
 const rightSalt =
   "M343 329Q315 328 298 343L280 349 275 356 298 364 311 378 343 380Z";
+// Looped knots sit on top of the salt-bank stitches, like little tufts of cotton.
+const saltKnots = [64, 275].map((left) =>
+  Array.from({ length: 140 }, (_, index) => {
+    const x = left + (index % 14) * 6 + threadVariation(index, 651) * 1.6;
+    const y =
+      332 + Math.floor(index / 14) * 5 + threadVariation(index, 652) * 1.2;
+    const r = 0.6 + threadVariation(index, 653) * 0.15;
+    return `M${x.toFixed(2)} ${y.toFixed(2)}c${-r} ${-r * 1.5} ${r * 1.9} ${-r * 1.6} ${r * 1.5} 0s${-r * 2.2} ${r * 1.3} ${-r * 1.5} 0`;
+  }).join(" "),
+);
 
 /** Gyr Abania in layered sandstone cloth, with Ala Mhigo above Loch Seld. */
 export function NookStormbloodView({ isDark }: { isDark: boolean }) {
+  const id = `${useId().replace(/:/g, "")}-salt-knots`;
   const p = stormbloodPigments(isDark);
   const thread = (d: string, color: string, width = 1.5, opacity = 1) => (
     <NookThread
@@ -44,6 +57,13 @@ export function NookStormbloodView({ isDark }: { isDark: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <defs>
+        {[leftSalt, rightSalt].map((d, index) => (
+          <clipPath key={index} id={`${id}-${index}`}>
+            <path d={d} />
+          </clipPath>
+        ))}
+      </defs>
       {/* Rock strata form broad, hand-cut ledges; the cliff faces stay sewn to the base. */}
       <StormbloodPatch
         d={distantCrags}
@@ -52,6 +72,7 @@ export function NookStormbloodView({ isDark }: { isDark: boolean }) {
         grain="stone"
         p={p}
         edge={1}
+        raised={false}
       />
       {thread(
         "M80 221 86 196l6 7m23 10 13 24M315 215l4-7 9 8",
@@ -131,6 +152,16 @@ export function NookStormbloodView({ isDark }: { isDark: boolean }) {
         0.9,
       )}
       {thread(strataSeams, p.cliff, 2.1, 0.82)}
+      {/* Small cross stitches couch the thicker contour yarn onto the cliff cloth. */}
+      <NookThread
+        d="M77 296l1 4m8-6 1 4m35-6 2 4m9-6 1 4m29-1-1 4m10-1-1 4m47-3-1 4M75 309l1 4m10-6 1 4m37-7 1 4m10-5 1 4m34 0-1 4m11-2-1 4m43 2-1 4m42-6 1 4m11-3 1 4m30 1-1 4M79 324v4m10-4v4m45-4-1 4m12-2-1 4m26-1v4m59 6-1 4m42-8-1 4m39 4-1 4"
+        color={p.light}
+        shadow={p.shadow}
+        highlight={p.paper}
+        width={1.05}
+        relief={1.7}
+        opacity={0.88}
+      />
       {thread(
         "M103 267q-4 10-2 19m35-33 6 18m18 29 5 9m26-10-3 15m16 12 3 10m49-41 6 14m33 6-2 14M84 316l-4 9m42 2 2 9m189 4 3 9",
         p.shadow,
@@ -152,6 +183,7 @@ export function NookStormbloodView({ isDark }: { isDark: boolean }) {
         grain="water"
         p={p}
         edge={0}
+        raised={false}
       />
       <StormbloodPatch
         d={leftSalt}
@@ -169,6 +201,19 @@ export function NookStormbloodView({ isDark }: { isDark: boolean }) {
         p={p}
         edge={1.3}
       />
+      {saltKnots.map((d, index) => (
+        <g key={index} clipPath={`url(#${id}-${index})`}>
+          <NookThread
+            d={d}
+            color={p.paper}
+            shadow={p.shadow}
+            highlight={p.paper}
+            width={0.85}
+            relief={1.6}
+            opacity={0.85}
+          />
+        </g>
+      ))}
       {thread(
         "M91 377q16-15 33-16m9-3 12-8M280 357l16 7 13 13M77 391q30-5 53-2m17 8q22-3 43-1m48-17q26-5 42-1m-61 35q24-4 46-2m-179 5q21-5 42-3",
         p.foam,

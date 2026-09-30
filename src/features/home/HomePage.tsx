@@ -26,6 +26,18 @@ import {
   NookShadowbringersBanner,
   NookShadowbringersCharm,
 } from "./components/NookShadowbringersKeepsakes";
+import {
+  NookEndwalkerBanner,
+  NookEndwalkerCharm,
+} from "./components/NookEndwalkerKeepsakes";
+import {
+  NookDawntrailNoticePin,
+  NookDawntrailCharm,
+} from "./components/NookDawntrailKeepsakes";
+import {
+  NookEvercoldBanner,
+  NookEvercoldCharm,
+} from "./components/NookEvercoldKeepsakes";
 import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
 import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
 import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
@@ -43,6 +55,9 @@ import "./nook-arr.css";
 import "./nook-heavensward.css";
 import "./nook-stormblood.css";
 import "./nook-shadowbringers.css";
+import "./nook-endwalker.css";
+import "./nook-dawntrail.css";
+import "./nook-evercold.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
@@ -59,6 +74,9 @@ export function Home() {
   const isHeavensward = !event && settings.colorTheme === "heavensward";
   const isStormblood = !event && settings.colorTheme === "stormblood";
   const isShadowbringers = !event && settings.colorTheme === "shadowbringers";
+  const isEndwalker = !event && settings.colorTheme === "endwalker";
+  const isDawntrail = !event && settings.colorTheme === "dawntrail";
+  const isEvercold = !event && settings.colorTheme === "evercold";
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
@@ -84,6 +102,12 @@ export function Home() {
             <NookStormbloodBanner />
           ) : isShadowbringers ? (
             <NookShadowbringersBanner />
+          ) : isEndwalker ? (
+            <NookEndwalkerBanner />
+          ) : isDawntrail ? (
+            <NookDawntrailNoticePin />
+          ) : isEvercold ? (
+            <NookEvercoldBanner />
           ) : (
             <NookWallHanging />
           )}
@@ -181,6 +205,12 @@ export function Home() {
                   <NookStormbloodCharm />
                 ) : isShadowbringers ? (
                   <NookShadowbringersCharm />
+                ) : isEndwalker ? (
+                  <NookEndwalkerCharm />
+                ) : isDawntrail ? (
+                  <NookDawntrailCharm />
+                ) : isEvercold ? (
+                  <NookEvercoldCharm />
                 ) : (
                   <NookPressedFlower />
                 )}
@@ -188,7 +218,10 @@ export function Home() {
                   !isArr &&
                   !isHeavensward &&
                   !isStormblood &&
-                  !isShadowbringers && <NookPaperclip />}
+                  !isShadowbringers &&
+                  !isEndwalker &&
+                  !isDawntrail &&
+                  !isEvercold && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">

@@ -53,6 +53,12 @@ vi.mock("./NookShadowbringersAtmosphere", () => ({
   NookShadowbringersSky: () => <svg data-testid="crystarium-sky" />,
   NookShadowbringersLeaves: () => <svg data-testid="crystarium-weather" />,
 }));
+vi.mock("./NookEndwalkerSkyEmbroidery", () => ({
+  NookEndwalkerSkyEmbroidery: () => null,
+}));
+vi.mock("./NookEndwalkerView", () => ({
+  NookEndwalkerView: () => <g data-testid="lunar-surface" />,
+}));
 
 class Playback {
   currentTime = 0;
@@ -90,6 +96,46 @@ beforeEach(() => {
     },
   });
 });
+
+it.each(["starlight", "all-saints-wake"] as const)(
+  "keeps lunar space stable in both room modes and yields to %s",
+  (eventId) => {
+    const { container, getByTestId, queryByTestId, rerender } = render(
+      <NookWindowView isDark={false} eventId={null} colorTheme="endwalker" />,
+    );
+    const surface = getByTestId("lunar-surface");
+    const planet = container.querySelector(".nook-ew-etheirys");
+    expect(planet).not.toBeNull();
+    expect(tracks).toHaveLength(0);
+    expect(container.querySelector("[data-cycle]")).toBeNull();
+    expect(
+      planet!.compareDocumentPosition(surface) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    const fixedPlanet = planet!.outerHTML;
+    rerender(<NookWindowView isDark eventId={null} colorTheme="endwalker" />);
+    expect(getByTestId("lunar-surface")).toBe(surface);
+    expect(container.querySelector(".nook-ew-etheirys")).toBe(planet);
+    expect(planet!.outerHTML).toBe(fixedPlanet);
+    expect(tracks).toHaveLength(0);
+
+    rerender(
+      <NookWindowView isDark eventId={eventId} colorTheme="endwalker" />,
+    );
+    expect(queryByTestId("lunar-surface")).toBeNull();
+    expect(container.querySelector(".nook-ew-space")).toBeNull();
+    expect(tracks.length).toBeGreaterThan(0);
+    tracks.forEach(({ playback }) => expect(playback.currentTime).toBe(4800));
+    const holidayTracks = tracks.splice(0);
+    rerender(<NookWindowView isDark eventId={null} colorTheme="endwalker" />);
+    expect(getByTestId("lunar-surface")).toBeInTheDocument();
+    expect(container.querySelector(".nook-ew-etheirys")).not.toBeNull();
+    holidayTracks.forEach(({ playback }) =>
+      expect(playback.cancel).toHaveBeenCalledOnce(),
+    );
+    expect(tracks).toHaveLength(0);
+  },
+);
 
 afterEach(() => {
   if (originalAnimate) {

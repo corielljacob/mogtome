@@ -1,0 +1,34 @@
+.nook-ew-exterior {
+  background: #18223c;
+}
+/* Small French knots catch the light in held exposures; the sewn globe rests. */
+.nook-ew-star {
+  opacity: 0.9;
+  animation: nook-ew-starlight 8s steps(5, end) infinite;
+}
+.nook-ew-star--1 {
+  animation-delay: -2.7s;
+}
+.nook-ew-star--2 {
+  animation-delay: -5.3s;
+}
+@keyframes nook-ew-starlight {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  45% {
+    opacity: 0.48;
+  }
+  70% {
+    opacity: 1;
+  }
+}
+.reduce-motion .nook-ew-star {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-ew-star {
+    animation: none !important;
+  }
+}

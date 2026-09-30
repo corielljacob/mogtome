@@ -5,48 +5,79 @@ import { stormbloodPigments } from "./nookStormbloodPigments";
 
 type Pigments = ReturnType<typeof stormbloodPigments>;
 type Bounds = [number, number, number, number];
-type Grain = "stone" | "roof" | "strata" | "water";
+type Grain = "stone" | "satin" | "roof" | "strata" | "water";
 const n = (value: number) => value.toFixed(2);
 const mix = (a: string, b: string, amount: number) =>
   `color-mix(in srgb, ${a} ${amount}%, ${b})`;
 
-function panelStitches([x, y, w, h]: Bounds, grain: Grain) {
-  const bundles: string[][] = [[], []];
-  if (grain === "strata" || grain === "water") {
-    const pitch = grain === "strata" ? 1.7 : 2.35;
-    for (let row = 0; row < Math.ceil(h / pitch) + 3; row++) {
-      const sy = y - 2 + row * pitch;
-      const bend = grain === "water" ? 0.6 : 2.2 + Math.sin(row * 0.29) * 1.5;
-      bundles[row % 2].push(
-        `M${x - 2} ${n(sy)}C${n(x + w * 0.25)} ${n(sy - bend)} ${n(x + w * 0.48)} ${n(sy + bend * 0.5)} ${n(x + w * 0.69)} ${n(sy - bend * 0.4)}S${n(x + w * 0.9)} ${n(sy - bend)} ${n(x + w + 2)} ${n(sy - 1)}`,
-      );
+function panelStitches([x, y, w, h]: Bounds, grain: Grain, slant: number) {
+  const bundles: string[][] = [[], [], []];
+  const entries: string[] = [];
+  if (grain === "strata" || grain === "water" || grain === "satin") {
+    const pitch = grain === "water" ? 2.6 : 1.85;
+    const courseY = (sx: number, sy: number) =>
+      sy +
+      Math.sin((sx - x) / 32 + (sy - y) / 27) *
+        (grain === "strata" ? 1.6 : grain === "water" ? 0.65 : 0.3);
+    for (let row = 0; row < Math.ceil(h / pitch) + 5; row++) {
+      const sy = y - 4 + row * pitch;
+      let sx = x - 14 + threadVariation(row, 610) * 10;
+      for (let col = 0; sx < x + w + 2; col++) {
+        const index = row * 101 + col;
+        const length =
+          grain === "satin"
+            ? w + 4
+            : (grain === "water" ? 24 : 15) + threadVariation(index, 611) * 5;
+        if (grain === "satin") sx = x - 2;
+        const start = courseY(sx, sy) + threadVariation(index, 612) * 0.22;
+        const end = courseY(sx + length, sy) + slant;
+        const tone = Math.min(
+          2,
+          Math.floor((threadVariation(index, 613) + 1) * 1.5),
+        );
+        bundles[tone].push(
+          `M${n(sx)} ${n(start)}Q${n(sx + length * 0.48)} ${n((start + end) / 2 - 0.65)} ${n(sx + length)} ${n(end)}`,
+        );
+        if (grain !== "satin" && threadVariation(index, 614) > 0.35) {
+          entries.push(`M${n(sx - 0.15)} ${n(start + 0.4)}l.2 .15`);
+        }
+        sx += length + 0.95 + threadVariation(index, 615) * 0.35;
+      }
     }
   } else {
-    const columns = Math.ceil(w / 1.45) + 2;
+    const columns = Math.ceil(w / 1.65) + 2;
     for (let col = 0; col < columns; col++) {
       const u = col / (columns - 1);
-      const sx = x - 0.5 + u * (w + 1);
+      const sx = x - 0.5 + u * (w + 1) + threadVariation(col, 616) * 0.17;
       if (grain === "roof") {
         const offset = (u - 0.5) * w;
-        bundles[col % 2].push(
+        bundles[col % 3].push(
           `M${n(x + w * 0.5 + offset * 0.04)} ${y - 1}C${n(x + w * 0.5 + offset * 0.18)} ${n(y + h * 0.35)} ${n(x + w * 0.5 + offset * 0.7)} ${n(y + h * 0.82)} ${n(sx)} ${y + h + 1}`,
         );
       } else {
-        for (let row = 0; row < Math.ceil(h / 12) + 2; row++) {
+        for (let row = 0; row < Math.ceil(h / 9) + 2; row++) {
           const index = col * 100 + row;
-          const sy = y - 9 + row * 12 + (col % 2) * 5.8;
-          const length = 10.5 + threadVariation(index, 617) * 0.8;
+          const sy =
+            y -
+            9 +
+            row * 9 +
+            (col % 3) * 2.9 +
+            threadVariation(index, 619) * 0.3;
+          const length = 7.9 + threadVariation(index, 617) * 0.65;
           const bow =
             (0.5 - u) * Math.min(w * 0.13, 3.6) +
             threadVariation(index, 618) * 0.3;
-          bundles[col % 2].push(
-            `M${n(sx)} ${n(sy)}q${n(bow)} ${n(length * 0.5)} .15 ${n(length)}`,
+          bundles[col % 3].push(
+            `M${n(sx + ((sy - y) / h) * slant)} ${n(sy)}q${n(bow + slant * 0.15)} ${n(length * 0.5)} ${n(0.15 + (slant * length) / h)} ${n(length)}`,
           );
         }
       }
     }
   }
-  return bundles.map((bundle) => bundle.join(" "));
+  return {
+    bundles: bundles.map((bundle) => bundle.join(" ")),
+    entries: entries.join(" "),
+  };
 }
 
 /** Sandstone, cliff, and roof pieces share the room's dense padded needlework. */
@@ -56,8 +87,10 @@ export function StormbloodPatch({
   bounds,
   p,
   grain = "stone",
-  edge = 1.4,
-  binding = 0.68,
+  edge = 1.65,
+  binding = 0.76,
+  raised = true,
+  slant = 0,
 }: {
   d: string;
   color: string;
@@ -66,15 +99,18 @@ export function StormbloodPatch({
   grain?: Grain;
   edge?: number;
   binding?: number;
+  raised?: boolean;
+  slant?: number;
 }) {
   const id = `${useId().replace(/:/g, "")}-gyr-abania-patch`;
   const [x, y, w, h] = bounds;
   const stitches = useMemo(
-    () => panelStitches([x, y, w, h], grain),
-    [x, y, w, h, grain],
+    () => panelStitches([x, y, w, h], grain, slant),
+    [x, y, w, h, grain, slant],
   );
-  const shade = mix(color, p.ink, 72);
-  const light = mix(color, p.paper, 64);
+  const shade = mix(color, p.ink, raised ? 54 : 77);
+  const light = mix(color, p.paper, raised ? 52 : 74);
+  const dyed = mix(color, p.ink, raised ? 86 : 94);
   const paint = `url(#${id}-padding)`;
   return (
     <g>
@@ -91,33 +127,46 @@ export function StormbloodPatch({
           y2={y + h * 0.4}
         >
           <stop stopColor={shade} />
-          <stop offset=".23" stopColor={color} />
-          <stop offset=".4" stopColor={light} />
-          <stop offset=".65" stopColor={color} />
+          <stop offset=".18" stopColor={color} />
+          <stop offset=".34" stopColor={light} />
+          <stop offset=".68" stopColor={color} />
           <stop offset="1" stopColor={shade} />
         </linearGradient>
       </defs>
-      <path d={d} fill={shade} transform="translate(.4 .7)" opacity=".4" />
+      <path
+        d={d}
+        fill={p.ink}
+        transform={raised ? "translate(.7 1.15)" : "translate(.3 .5)"}
+        opacity={raised ? ".55" : ".3"}
+      />
       <path d={d} fill={paint} />
       <g clipPath={`url(#${id})`}>
-        {stitches.map((path, tone) => (
+        {stitches.bundles.map((path, tone) => (
           <NookThread
             key={tone}
             d={path}
-            color={paint}
+            color={tone === 1 ? color : tone === 2 ? dyed : paint}
             shadow={shade}
             highlight={light}
-            width={grain === "strata" ? 1.4 : grain === "water" ? 1.45 : 1.2}
-            relief={1.6}
+            width={grain === "water" ? 1.65 : tone === 1 ? 1.35 : 1.5}
+            relief={raised ? 1.95 : 1.25}
             dasharray={
-              grain === "stone"
-                ? undefined
-                : tone
+              grain === "roof"
+                ? tone
                   ? "11 .65 7 .5"
                   : "7 .5 14 .7"
+                : undefined
             }
           />
         ))}
+        <path
+          d={stitches.entries}
+          fill="none"
+          stroke={shade}
+          strokeWidth=".65"
+          strokeLinecap="round"
+          opacity=".48"
+        />
       </g>
       {edge > 0 && (
         <>
@@ -126,16 +175,16 @@ export function StormbloodPatch({
             color={paint}
             shadow={shade}
             highlight={light}
-            width={edge}
-            relief={1.4}
+            width={edge * (raised ? 1.2 : 1)}
+            relief={raised ? 1.8 : 1.3}
           />
           <NookThread
             d={d}
             color={light}
-            shadow={color}
+            shadow={shade}
             highlight={light}
-            width={edge * 0.67}
-            dasharray=".75 2.7"
+            width={edge * 0.8}
+            dasharray=".85 2.3 .65 2.7"
             relief={1.1}
             opacity={binding}
           />
@@ -164,7 +213,7 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
     color: string,
     bounds: Bounds,
     grain: Grain = "stone",
-    edge = 1,
+    edge = 1.5,
   ) => (
     <StormbloodPatch
       d={d}
@@ -173,7 +222,7 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
       grain={grain}
       p={p}
       edge={edge}
-      binding={0.35}
+      binding={0.76}
     />
   );
   const arch = (x: number, y: number, w: number, h: number) =>
@@ -206,12 +255,13 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
         `M${x - w * 0.5} ${shoulder}H${x + w * 0.5}V${base}H${x - w * 0.5}Z`,
         p.tower,
         [x - w * 0.5, shoulder, w, base - shoulder],
+        "satin",
       )}
       {patch(
         `M${x + w * 0.12} ${shoulder}h${w * 0.38}V${base}h${-w * 0.38}Z`,
         p.towerSide,
         [x + w * 0.12, shoulder, w * 0.38, base - shoulder],
-        "stone",
+        "satin",
         0,
       )}
       {thread(`M${x - w * 0.37} ${shoulder + 6}V${base - 2}`, p.tower, 0.8)}
@@ -221,11 +271,13 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
         [x - w * 0.62, tip, w * 1.24, shoulder - tip],
         "roof",
       )}
-      <path
-        d={`M${x} ${tip}Q${x + w * 0.23} ${shoulder - 10} ${x + w * 0.62} ${shoulder}H${x + 0.4}Z`}
-        fill={p.roofShade}
-        opacity=".54"
-      />
+      {patch(
+        `M${x} ${tip}Q${x + w * 0.23} ${shoulder - 10} ${x + w * 0.62} ${shoulder}H${x + 0.4}Z`,
+        p.roofShade,
+        [x, tip, w * 0.62, shoulder - tip],
+        "roof",
+        0,
+      )}
       <path
         d={`M${x - w * 0.5} ${shoulder + 2}h${w}v3h${-w}Z`}
         fill={p.recess}
@@ -313,13 +365,19 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
         "stone",
         0,
       )}
-      {patch(
-        "M113 161H215V224H113Z",
-        p.facade,
-        [113, 161, 102, 63],
-        "stone",
-        0,
-      )}
+      {/* Each padded bay has its own grain and a little seam between panels. */}
+      {[113, 130, 147, 164, 181, 198].map((x, index) => (
+        <StormbloodPatch
+          key={x}
+          d={`M${x} 164q7-1 14 0v58h-14Z`}
+          color={index % 2 ? p.facade : mix(p.facade, p.terrace, 86)}
+          bounds={[x, 163, 14, 60]}
+          p={p}
+          slant={index % 2 ? -1.8 : 1.8}
+          edge={0.65}
+          binding={0.48}
+        />
+      ))}
       <path
         d="M111 161H215V167H111ZM109 222H216V229H109ZM94 238H217V243H94ZM266 171H299V177H266Z"
         fill={p.recess}
@@ -369,26 +427,52 @@ export function NookAlaMhigoCitadel({ isDark }: { isDark: boolean }) {
         0,
       )}
       <path d="M221 166H269V171H221Z" fill={p.wallShade} opacity=".55" />
-      <path d={arch(233, 172, 23, 58)} fill={p.recess} />
-      <path
-        d="M233 230V186Q233 176 244.5 172L247 178Q240 181 239 188V230Z"
-        fill={p.gateSide}
-      />
-      <path d={arch(240, 179, 13, 48)} fill={p.recess} />
+      {patch(arch(233, 172, 23, 58), p.recess, [233, 172, 23, 58], "stone", 0)}
+      {patch(
+        "M233 230V186Q233 176 244.5 172L247 178Q240 181 239 188V230Z",
+        p.gateSide,
+        [233, 172, 14, 58],
+        "satin",
+        0,
+      )}
+      {patch(arch(240, 179, 13, 48), p.recess, [240, 179, 13, 48], "stone", 0)}
       {thread(arch(233, 172, 23, 58), p.gate, 2.4)}
       {thread(
         "M231 230V185Q231 173 244.5 168Q258 173 258 185V230",
         p.tower,
         1.2,
       )}
+      <NookThread
+        d="M231 229V185Q231 173 244.5 168Q258 173 258 185V229"
+        color={p.paper}
+        shadow={p.gateSide}
+        highlight={p.paper}
+        width={1.25}
+        dasharray=".8 2.4"
+        opacity={0.8}
+      />
       {thread("M244.5 192v33m-4-9h9", p.wallShade, 0.75, 0.7)}
       {[221, 267].map((x) => (
         <g key={x}>
           {patch(`M${x - 3} 164h6v67l-3 9-3-9Z`, p.gate, [x - 3, 164, 6, 76])}
           <path d={`M${x + 1} 169h2v62l-2 5Z`} fill={p.gateSide} opacity=".8" />
           {thread(`M${x - 4} 188h8m-8 4h8`, p.terrace, 1.25)}
-          <path d={`M${x - 3} 194h6v18l-3-3-3 3Z`} fill={p.flag} />
-          {thread(`M${x - 2} 195v14m2-14v12m2-12v14`, p.flag, 1.25)}
+          {patch(
+            `M${x - 3.5} 194q3.5 1 7 0v19l-3.5-3-3.5 3Z`,
+            p.flag,
+            [x - 3.5, 194, 7, 19],
+            "satin",
+            0.7,
+          )}
+          <NookThread
+            d={`M${x - 2.7} 196v15l2.7-2 2.7 2v-15`}
+            color={p.copper}
+            shadow={p.deep}
+            highlight={p.paper}
+            width={0.65}
+            dasharray="1.2 1"
+          />
+          {thread(`M${x} 199v7m-1.5-5h3`, p.paper, 0.7)}
         </g>
       ))}
       {griffin(221, 161)}

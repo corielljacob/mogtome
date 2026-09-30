@@ -1,0 +1,75 @@
+/* Replacement embroidery keeps moving while the reversible exposure clock
+   rests. These inner pieces never share an opacity track with data-cycle. */
+.nook-window-exterior [data-ambient-model] {
+  animation-duration: var(--nook-sewn-duration, 1.2s);
+  animation-delay: var(--nook-sewn-delay, 0s);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+}
+.nook-window-exterior [data-ambient-model="0"] {
+  animation-name: nook-ambient-model-zero;
+}
+.nook-window-exterior [data-ambient-model="1"] {
+  animation-name: nook-ambient-model-one;
+}
+.nook-window-exterior [data-ambient-model="2"] {
+  animation-name: nook-ambient-model-two;
+}
+
+/* Four held exposures: resting, rising, raised, rising. The silhouettes and
+   needlework are authored separately, so no path or thread is interpolated. */
+@keyframes nook-ambient-model-zero {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+@keyframes nook-ambient-model-one {
+  0%,
+  50%,
+  100% {
+    opacity: 0;
+  }
+  25%,
+  75% {
+    opacity: 1;
+  }
+}
+@keyframes nook-ambient-model-two {
+  0%,
+  25%,
+  75%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Turning motion off restores a complete sewn still, even mid-flight. */
+.nook-window-exterior[data-reduced-motion="true"] * {
+  animation: none !important;
+}
+.reduce-motion .nook-window-exterior [data-ambient-model],
+.nook-window-exterior[data-reduced-motion="true"] [data-ambient-model] {
+  animation: none;
+  opacity: 0;
+}
+.reduce-motion .nook-window-exterior [data-ambient-model="0"],
+.nook-window-exterior[data-reduced-motion="true"] [data-ambient-model="0"] {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-window-exterior [data-ambient-model] {
+    animation: none;
+    opacity: 0;
+  }
+  .nook-window-exterior [data-ambient-model="0"] {
+    opacity: 1;
+  }
+}

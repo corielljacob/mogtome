@@ -1,6 +1,6 @@
 export const DAY_CYCLE_DURATION = 4800;
 const DAY_CYCLE_FRAME_COUNT = Math.round((DAY_CYCLE_DURATION / 1000) * 12);
-const physicalLayers = new Set(["sun", "moon", "clouds"]);
+const physicalLayers = new Set(["sun", "moon", "clouds", "evercold-clouds"]);
 
 // Change the sewn replacement every three physical exposures. Keyframe holds
 // share the orbit clock, so reversal retraces the same models and either resting
@@ -117,6 +117,14 @@ export const dayCycleFrames: Record<string, Keyframe[]> = {
     { opacity: 0.12, transform: "translateX(4%)", offset: 0.75 },
     { opacity: 0.06, transform: "translateX(5%)", offset: 1 },
   ],
+  // Behind Evercold's glazing, exposure belongs to the fixed sky surfaces.
+  // Only the sewn cloud placement shares the same reversible transition.
+  "evercold-clouds": [
+    { transform: "translateX(0px)", offset: 0 },
+    { transform: "translateX(2px)", offset: 0.4 },
+    { transform: "translateX(5px)", offset: 0.75 },
+    { transform: "translateX(7px)", offset: 1 },
+  ],
   stars: [
     { opacity: 0, offset: 0 },
     { opacity: 0, offset: 0.62 },
@@ -140,6 +148,13 @@ export const dayCycleFrames: Record<string, Keyframe[]> = {
   ],
 };
 
+// Moonlit cotton remains readable over Tural's dark sea. The outer exposure
+// and the replacement embroidery share the reversible transition clock.
+const dawntrailCloudFrames = dayCycleFrames.clouds.map((frame, index) => ({
+  ...frame,
+  opacity: [0.88, 0.64, 0.3, 0.22][index],
+}));
+
 export function createDayCycle(
   root: HTMLElement,
   isDark: boolean,
@@ -151,9 +166,13 @@ export function createDayCycle(
     const cycle = layer.dataset.cycle ?? "";
     const model = layer.dataset.cycleModel;
     const opening = isShadowbringers ? shadowbringersFrames[cycle] : undefined;
+    const clouds =
+      root.dataset.scene === "dawntrail" && cycle === "clouds"
+        ? dawntrailCloudFrames
+        : undefined;
     const frames =
       model === undefined
-        ? (opening ?? dayCycleFrames[cycle])
+        ? (opening ?? clouds ?? dayCycleFrames[cycle])
         : sewnModelFrames[Number(model)];
     if (!frames || typeof layer.animate !== "function") return [];
     const animation = layer.animate(frames, {

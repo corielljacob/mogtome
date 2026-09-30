@@ -1,0 +1,23 @@
+/* A little woven café keepsake, tucked into the Chronicle's stationery. */
+.home-screen[data-scene="dawntrail"] .nook-dawntrail-charm {
+  position: absolute;
+  bottom: calc(100% - 19 * var(--layout-unit));
+  right: 1%;
+  width: min(29%, calc(70 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(8deg);
+  filter: drop-shadow(1px 3px 1.5px #3d58422b);
+}
+
+.home-screen[data-scene="dawntrail"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    110deg,
+    #477f70b0 0 calc(7 * var(--layout-unit)),
+    #efd2a4d4 calc(7 * var(--layout-unit)) calc(9 * var(--layout-unit)),
+    #c47d64ad calc(9 * var(--layout-unit)) calc(16 * var(--layout-unit)),
+    #efd2a4d4 calc(16 * var(--layout-unit)) calc(18 * var(--layout-unit))
+  );
+}

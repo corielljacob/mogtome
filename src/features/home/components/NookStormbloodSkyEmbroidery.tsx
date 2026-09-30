@@ -2,25 +2,43 @@ import { useId } from "react";
 import { NookThread } from "./NookThread";
 import { threadVariation } from "./nookNeedlework";
 
-// Long, slightly tilted sewing passes follow the warm wind above Gyr Abania.
-// Staggered ends keep the cloth from becoming a repeated screen-door pattern.
-const courses = (() => {
+const n = (value: number) => value.toFixed(2);
+
+// The warm wind turns the floss gently across the cloth. Each stitch follows
+// that shared flow, with a little uneven tension where the needle enters.
+function courseHeight(x: number, y: number) {
+  return y + Math.sin(x / 96 + y / 127) * 4 - (x - 190) * 0.07;
+}
+
+const skyNeedlework = (() => {
   const tones: string[][] = [[], [], []];
+  const entries: string[] = [];
   for (let row = 0; row < 126; row++) {
-    const y = 43 + row * 3.2;
-    let x = 45 + threadVariation(row, 601) * 20;
+    const y = 43 + row * 3.2 + threadVariation(row, 600) * 0.2;
+    let x = 39 + threadVariation(row, 601) * 23;
     for (let column = 0; x < 351; column++) {
       const i = row * 24 + column;
-      const length = 19 + threadVariation(i, 602) * 6;
-      const height = y + Math.sin(x / 96 + y / 127) * 4 - (x - 190) * 0.07;
-      const bend = -0.65 + threadVariation(i, 603) * 0.35;
-      tones[(row + column) % 3].push(
-        `M${x.toFixed(2)} ${height.toFixed(2)}q${(length / 2).toFixed(2)} ${bend.toFixed(2)} ${length.toFixed(2)} ${(-length * 0.055).toFixed(2)}`,
+      const length = 19 + threadVariation(i, 602) * 6.5;
+      const start = courseHeight(x, y) + threadVariation(i, 603) * 0.4;
+      const end = courseHeight(x + length, y) + threadVariation(i, 604) * 0.4;
+      const middle =
+        courseHeight(x + length * 0.48, y) -
+        0.7 +
+        threadVariation(i, 605) * 0.4;
+      const tone = Math.min(2, Math.floor((threadVariation(i, 606) + 1) * 1.5));
+      tones[tone].push(
+        `M${n(x)} ${n(start)}Q${n(x + length * 0.48)} ${n(middle)} ${n(x + length)} ${n(end)}`,
       );
-      x += length + 1.1 + threadVariation(i, 604) * 0.45;
+      if (threadVariation(i, 607) > 0.25) {
+        entries.push(`M${n(x - 0.12)} ${n(start + 0.48)}l.23 .16`);
+      }
+      x += length + 1.45 + threadVariation(i, 608) * 0.65;
     }
   }
-  return tones.map((paths) => paths.join(" "));
+  return {
+    courses: tones.map((paths) => paths.join(" ")),
+    entries: entries.join(" "),
+  };
 })();
 const sky = [
   [0, "var(--scene-sky)"],
@@ -35,11 +53,11 @@ const sunset = [
   [1, "#e8c595"],
 ] as const;
 const threads = [
-  ["clay", "#b98b77", 92],
-  ["linen", "#e2c6a1", 94],
-  ["sunlit", "#fae3b7", 89],
-  ["shadow", "#473e50", 80],
-  ["fiber", "#f4dfbd", 76],
+  ["clay", "#b98b77", 90],
+  ["linen", "#e2c6a1", 93],
+  ["sunlit", "#fae3b7", 88],
+  ["shadow", "#473e50", 74],
+  ["fiber", "#f4dfbd", 69],
 ] as const;
 
 export function NookStormbloodSkyEmbroidery({
@@ -79,18 +97,25 @@ export function NookStormbloodSkyEmbroidery({
         ))}
       </defs>
       <path d="M70 58H332V431H70Z" fill={paint("linen")} />
-      {courses.map((d, tone) => (
+      {skyNeedlework.courses.map((d, tone) => (
         <NookThread
           key={tone}
           d={d}
           color={paint(threads[tone][0])}
           shadow={paint("shadow")}
           highlight={paint("fiber")}
-          width={1.9}
-          relief={1.1}
-          opacity={0.83}
+          width={1.94 + tone * 0.08}
+          relief={1.38}
+          opacity={0.9}
         />
       ))}
+      <path
+        d={skyNeedlework.entries}
+        stroke={paint("shadow")}
+        strokeWidth=".58"
+        strokeLinecap="round"
+        opacity=".32"
+      />
     </svg>
   );
 }

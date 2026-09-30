@@ -132,6 +132,70 @@
   --ui-wall-focus: var(--primary);
 }
 
+/* Celestial blue ink sits on warm paper in the lunar reading room.
+   Silver lights the navy wall, with small pale-gold accents in the stationery. */
+.nook-theme[data-scene="endwalker"][data-mode] {
+  --ui-ink: #343e55;
+  --ui-muted: #59647a;
+  --ui-heading: #3f5576;
+  --ui-action: #3f5679;
+  --ui-secondary: #465a73;
+  --ui-secondary-soft: color-mix(in srgb, #a4b2ca 17%, var(--ui-surface));
+  --ui-accent: #756342;
+  --ui-accent-soft: color-mix(in srgb, #b6a982 18%, var(--ui-surface));
+  --ui-wall-ink: #3e4d66;
+  --ui-wall-muted: #516079;
+  --ui-wall-heading: #405b7c;
+}
+.nook-theme[data-scene="endwalker"][data-mode="dark"] {
+  --ui-wall-ink: #e9ecf2;
+  --ui-wall-muted: #c6d0e3;
+  --ui-wall-heading: #d4dff1;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Jade ink and warm woven paper in the Turali reading room. */
+.nook-theme[data-scene="dawntrail"][data-mode] {
+  --ui-ink: #3d4337;
+  --ui-muted: #62684f;
+  --ui-heading: #305e54;
+  --ui-action: #305e54;
+  --ui-secondary: #9a5042;
+  --ui-secondary-soft: color-mix(in srgb, #c78a72 17%, var(--ui-surface));
+  --ui-accent: #795724;
+  --ui-accent-soft: color-mix(in srgb, #c9a262 18%, var(--ui-surface));
+  --ui-wall-ink: #3d4337;
+  --ui-wall-muted: #5b6149;
+  --ui-wall-heading: #305e54;
+}
+.nook-theme[data-scene="dawntrail"][data-mode="dark"] {
+  --ui-wall-ink: #f0e5cd;
+  --ui-wall-muted: #d1c3a5;
+  --ui-wall-heading: #e9d5b3;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Pearl paper and slate ink echo the glass-lit garden city in the reveal art. */
+.nook-theme[data-scene="evercold"][data-mode] {
+  --ui-ink: #354652;
+  --ui-muted: #596575;
+  --ui-heading: #3e6170;
+  --ui-action: #3e6170;
+  --ui-secondary: #685575;
+  --ui-secondary-soft: color-mix(in srgb, #a58cac 17%, var(--ui-surface));
+  --ui-accent: #745a37;
+  --ui-accent-soft: color-mix(in srgb, #c4a473 18%, var(--ui-surface));
+  --ui-wall-ink: #354652;
+  --ui-wall-muted: #526170;
+  --ui-wall-heading: #3e6170;
+}
+.nook-theme[data-scene="evercold"][data-mode="dark"] {
+  --ui-wall-ink: #e0e9eb;
+  --ui-wall-muted: #b5c8d2;
+  --ui-wall-heading: #d0dfea;
+  --ui-wall-focus: var(--primary);
+}
+
 /* Accessible palettes own the controls as well as the decorative theme. */
 :root[class*="colorblind-"] .nook-theme {
   --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);

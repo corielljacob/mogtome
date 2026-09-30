@@ -108,6 +108,76 @@ export function NookWallpaper({
                 strokeWidth=".6"
               />
             </>
+          ) : !eventId && colorTheme === "endwalker" ? (
+            <>
+              <path
+                d="M1-13C-11-11-14 4-4 11C-17 9-20-10-7-15Q-3-16 1-13Z"
+                fill="currentColor"
+                fillOpacity=".12"
+                strokeWidth=".7"
+              />
+              <circle cx="10" cy="7" r="5" strokeWidth=".65" />
+              <path
+                d="M7 3 9 5 8 8 11 9 13 11M5 7Q10 5 15 7"
+                strokeWidth=".45"
+              />
+              <path
+                d="M7-12 15-7 19-14"
+                strokeWidth=".45"
+                strokeDasharray="1 2.2"
+              />
+              <path d="M7-14v4m-2-2h4M19-16v4m-2-2h4" strokeWidth=".65" />
+              <circle
+                cx="15"
+                cy="-7"
+                r=".9"
+                fill="var(--scene-gold)"
+                stroke="none"
+              />
+            </>
+          ) : !eventId && colorTheme === "dawntrail" ? (
+            <>
+              <circle
+                cy="-7"
+                r="4.7"
+                fill="var(--scene-gold)"
+                fillOpacity=".2"
+                stroke="var(--scene-gold)"
+                strokeWidth=".7"
+              />
+              <path
+                d="M0-15v-3M-7-12-9-14M7-12 9-14M-9-6h-3M9-6h3"
+                stroke="var(--scene-gold)"
+                strokeWidth=".65"
+              />
+              <path
+                d="M0 14Q-12 9-11-4M0 14Q12 9 11-4M-10 4Q-16 2-16-4Q-10-2-10 4ZM-7 9Q-14 10-16 4Q-10 4-7 9ZM-10 4Q-5 0-6-5Q-11-2-10 4ZM10 4Q16 2 16-4Q10-2 10 4ZM7 9Q14 10 16 4Q10 4 7 9ZM10 4Q5 0 6-5Q11-2 10 4Z"
+                fill="currentColor"
+                fillOpacity=".11"
+                strokeWidth=".55"
+              />
+              <path d="M-5 17Q0 19 5 17" strokeWidth=".6" />
+            </>
+          ) : !eventId && colorTheme === "evercold" ? (
+            <>
+              <path
+                d="M-8 14V3Q-8-5 0-10Q8-5 8 3V14ZM0-10V14M-8 4H8M-8 4 0-3 8 4 0 11Z"
+                strokeWidth=".6"
+              />
+              <path
+                d="M0-7Q-12-9-16-19Q-7-20 0-7ZM0-7Q-9-16-6-25Q1-24 0-7ZM0-7Q9-16 6-25Q-1-24 0-7ZM0-7Q12-9 16-19Q7-20 0-7Z"
+                fill="var(--scene-rose)"
+                fillOpacity=".18"
+                stroke="var(--scene-rose)"
+                strokeWidth=".6"
+              />
+              <path d="M-11 17H11M-7 20Q0 18 7 20" strokeWidth=".55" />
+              <path
+                d="M-1 4h2v4h-2Z"
+                stroke="var(--scene-gold)"
+                strokeWidth=".8"
+              />
+            </>
           ) : !eventId ||
             !["all-saints-wake", "starlight", "valentiones"].includes(
               eventId,

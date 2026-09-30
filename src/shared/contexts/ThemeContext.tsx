@@ -24,7 +24,7 @@ export type ColorTheme =
   | "shadowbringers" // amethyst violet, cyan & gold Light
   | "endwalker" // cosmic blue & celestial gold
   | "dawntrail" // Tural dawn - coral, gold & teal
-  | "evercold"; // Norse frost - icy blue & aurora
+  | "evercold"; // revealed garden city - pearl glass, violet & amber
 
 export type ColorMode = "light" | "dark" | "system";
 

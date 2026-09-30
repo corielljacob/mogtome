@@ -91,6 +91,23 @@ artwork, and no image-generation model output is rendered in the Home scene.
   ([product photograph](https://apac.store.square-enix.com/cdn/shop/files/MWFF140631-1_01.jpg?v=1776226625&width=600)).
   The ornaments are recomposed as embroidered cloth, with original editable
   paths rather than embedded photographs.
+- `src/features/home/components/NookEndwalkerView.tsx` and `NookLunarShelter.tsx` —
+  an original embroidered lunar landscape with padded silver ridges, recessed
+  craters, small rocks and a warmly lit shelter. The scene is a cozy interpretation
+  of Mare Lamentorum, informed by the [official Endwalker location introduction](https://na.finalfantasyxiv.com/endwalker/patch_6_0)
+  and its [moon environment image](https://lds-img.finalfantasyxiv.com/promo/h/C/MuuBYsR9f2hMNJ9wtddY-j3aQU.jpg),
+  which was visually inspected. `NookEndwalkerSky.tsx` and
+  `NookEndwalkerSkyEmbroidery.tsx` add the blue Etheirys globe with laid ocean
+  threads and white cloud silk, and a permanently dark field of knotted stars.
+  Both room modes share this lunar night. References: **© SQUARE ENIX**;
+  no screenshot pixels are embedded in the editable SVG scene.
+- `src/features/home/components/NookEndwalkerKeepsakes.tsx` — an original ivory
+  celestial banner with a padded silver crescent, blue planet, couched gold
+  orbit and knotted stars. The blue-white Elpis flower charm's cupped petals,
+  narrow leaves and bright stamens draw on Square Enix's
+  [official Elpis illustration](https://na.finalfantasy.com/topics/524)
+  ([reference image](https://cache-na.finalfantasy.com/uploads/content/file/2024/05/14/18613/240516_ddoff_2.png)).
+  Both ornaments are original thread geometry, with no raster pixels embedded.
 - `src/features/home/components/NookNeighbourHouse.tsx` â€” the reference's pale
   stone house, gabled slate roof, chimneys, arched windows, balustrade, flowerbox,
   and trailing wisteria, drawn with the room's shared SVG materials.
@@ -255,3 +272,40 @@ Retained Glitch decorations: **Tiny Speck, CC0**. Retained ivy: **Otto Wilhelm
 ThomÃ©, 1885 / Wikimedia Commons, public domain**. Their individual source records
 distinguish those licenses from the copyrighted Square Enix artwork. Retaining
 these records does not mean those assets are still displayed in the Home scene.
+
+## Dawntrail visual research
+
+The local mood board, `docs/dawntrail-moodboard.html`, gathers publisher-hosted
+references from Square Enix's [official Dawntrail World page](https://na.finalfantasyxiv.com/dawntrail/world/).
+The following full-size screenshots were visually inspected on September 29,
+2026:
+
+- [Tuliyollal's terraces and market awnings](https://lds-img.finalfantasyxiv.com/promo/h/I/rY_hcjJh9ZFe3z0IOd-IVnkEJA.jpg)
+  - coral upturned roofs, dark stone terraces, woven canopies, flowering vines
+  and turquoise water.
+- [Tuliyollal harbor at sunset](https://lds-img.finalfantasyxiv.com/promo/h/V/VWueuDBxD-NuJSeGxk4N-i5TPI.jpg)
+  - the broad summit palace and golden crest, docks, waterfront steps and warm
+  reflected light.
+- [Tuliyollal beach at night](https://lds-img.finalfantasyxiv.com/promo/h/r/C0jG7tGS9-yZUQRUpLwEgvP9MU.jpg)
+  - moonlit palms, blue-green foliage, lavender roof highlights and amber lamps.
+- [Kozama'uka's forest and waterfalls](https://lds-img.finalfantasyxiv.com/promo/h/u/hVt40Jmn7u4nurlTkZMmdtq6YU.jpg)
+  - layered tropical foliage, bright flowers and soft atmospheric depth.
+
+Reference screenshots: **Copyright SQUARE ENIX**. The mood board links to the
+original publisher files and displays them remotely for visual research. The
+Dawntrail nook artwork is an original code-authored SVG interpretation with
+layered cloth, raised seams and thread geometry; no screenshot pixels are
+embedded in the runtime window scene. Palette swatches and composition notes on
+the board are MogTome design interpretations, not official game color
+specifications.
+
+## Evercold â€” revealed garden city
+
+- Visual direction uses Square Enix's official pre-release city artwork and environment screenshots: https://na.finalfantasyxiv.com/evercold/media/
+- Primary city artwork, matching the user-provided image: https://lds-img.finalfantasyxiv.com/promo/h/w/mB_5sCG7mayz47MZMNQELIhL-I.jpg
+- Wide city artwork: https://lds-img.finalfantasyxiv.com/promo/h/k/wvW3Du7XH1cwoqWWclQszg5uMg.jpg
+- Supporting released environment screenshots: https://lds-img.finalfantasyxiv.com/promo/h/k/x8975Z5UK4r5t_rUnod2-YNKqM.jpg and https://lds-img.finalfantasyxiv.com/promo/h/L/sTq4Ivy067YgfjIwfa4qvMyOTk.jpg
+- Official teaser: https://www.youtube.com/watch?v=Dk3rfUC80DE ; extended teaser: https://www.youtube.com/watch?v=99uyS9WCV38
+- Images and game imagery copyright SQUARE ENIX. These are research references; the runtime nook uses original SVG needlework, not the source screenshots.
+- The source gallery does not individually name the primary city artwork. The nook stays labeled Evercold and makes no claim that it depicts Fargarth. The glass vaults, slate spire, violet petal-like canopies, canal reflections and amber lamps are visual interpretations of revealed imagery, not additional lore.
+- Light and dark variants are an original room-lighting treatment. Source content is pre-release and may change.

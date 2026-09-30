@@ -58,6 +58,42 @@ function cottonRows(
   }).join(" ");
 }
 
+// Each paw is a separate padded piece. Long satin turns down the cupped hands,
+// while shorter, upright runs fan over the toes.
+function pawSatin(model: MoogleModel) {
+  const bundles = ["", "", ""];
+  const variation = (index: number, salt: number) =>
+    modelVariation(index, salt, model);
+
+  for (let side = 0; side < 2; side++) {
+    const mirror = (x: number) => (side ? 203 - x : x);
+    for (let column = 0; column < 23; column++) {
+      const index = side * 40 + column;
+      const x = 48 + column * 1.7 + variation(index, 35) * 0.16;
+      const pull = variation(index, 36) * 0.45;
+      // The strand first turns around the shoulder, then bows into the palm.
+      // End before the foot clip: the hands and feet never share a stitch.
+      bundles[column % 3] +=
+        `M${n(mirror(x))} 177.8C${n(mirror(x - 8 + pull))} 186 ${n(mirror(x + 1 + pull))} 204 ${n(mirror(x + 14))} ${n(213.5 + variation(index, 37) * 0.12)} `;
+    }
+
+    // The feet are wider than the hands, so the grain fans away from the ankle.
+    const cx = side ? 131 : 69;
+    for (let column = 0; column < 26; column++) {
+      const index = side * 40 + column;
+      const x = cx - 21.5 + column * 1.75 + variation(index, 38) * 0.18;
+      const u = (x - cx) / 23;
+      const reach = Math.sqrt(Math.max(0, 1 - u * u));
+      const top = 231 - reach * 15;
+      const bottom = 232 + reach * 14;
+      const bow = u * 2.4 + variation(index, 39) * 0.25;
+      bundles[column % 3] +=
+        `M${n(x - u * 2.2)} ${n(top)}Q${n(x + bow)} ${n(230 + variation(index, 40) * 0.4)} ${n(x)} ${n(bottom)} `;
+    }
+  }
+  return bundles;
+}
+
 function makeModel(model: MoogleModel) {
   const { slant, offset } = sewing[model];
   const variation = (index: number, salt: number) =>
@@ -76,11 +112,7 @@ function makeModel(model: MoogleModel) {
     const right = (i + variation(i, 22) * 0.4) / 12;
     return `M${n(23 + left * 4)} ${n(155 + left * 27)}Q${n(33 + left * 10 + slant + variation(i, 23) * 1.1)} ${n(167 + left * 13)} ${n(60 - left * 15)} ${n(172 + left * 14 + variation(i, 24) * 1.1)}M${n(179 - right * 3)} ${n(157 + right * 28)}Q${n(170 - right * 10 - slant + variation(i, 25) * 1.1)} ${n(169 + right * 13)} ${n(142 + right * 18)} ${n(173 + right * 14 + variation(i, 26) * 1.1)}`;
   }).join(" ");
-  const paws = Array.from({ length: 15 }, (_, i) => {
-    const x = i * 3.35 + offset + variation(i, 35) * 0.45;
-    const pull = variation(i, 36) * 1.2 + slant;
-    return `M${n(44 + x)} 159q${n(-9 + pull)} 26 8 53M${n(112 + x)} 159q${n(9 + pull)} 26-8 53M${n(44 + x)} 215q${n(-4 + pull)} 15 5 30M${n(109 + x)} 215q${n(4 + pull)} 15-5 30`;
-  }).join(" ");
+  const paws = pawSatin(model);
 
   return { face, belly, pom, wings, paws };
 }
@@ -99,6 +131,25 @@ export function NookMoogleStitches({
   light: string;
   model?: MoogleModel;
 }) {
+  if (part === "paws") {
+    return (
+      <g>
+        {paths[model].paws.map((d, tone) => (
+          <NookThread
+            key={tone}
+            d={d}
+            color={
+              tone === 1 ? `color-mix(in srgb, ${color} 90%, ${light})` : color
+            }
+            shadow={shade}
+            highlight={light}
+            width={tone === 1 ? 1.35 : 1.5}
+            relief={1.3}
+          />
+        ))}
+      </g>
+    );
+  }
   return (
     <NookThread
       d={paths[model][part]}
