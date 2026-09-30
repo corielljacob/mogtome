@@ -1,22 +1,18 @@
-import {
-  confidenceConfig,
-  type MatchConfidence,
-} from "@/features/characterMapping/types";
-import { Tag } from "@/shared/ui/Tag";
-
-interface ConfidenceBadgeProps {
-  confidence: MatchConfidence;
-}
-
-// Per-confidence tag colors (green → orange as confidence drops).
-const CONFIDENCE_COLOR: Record<MatchConfidence, string> = {
-  exact: "#22c55e",
-  high: "#10b981",
-  medium: "#f59e0b",
-  low: "#f97316",
+import type { MatchConfidence } from "../types";
+const labels: Record<MatchConfidence, string> = {
+  exact: "Exact name match",
+  high: "Strong suggestion",
+  medium: "Possible match",
+  low: "Check carefully",
 };
-
-export function ConfidenceBadge({ confidence }: ConfidenceBadgeProps) {
-  const cfg = confidenceConfig[confidence];
-  return <Tag color={CONFIDENCE_COLOR[confidence]}>{cfg.label}</Tag>;
+export function ConfidenceBadge({
+  confidence,
+}: {
+  confidence: MatchConfidence;
+}) {
+  return (
+    <span className="dash-mapping-confidence" data-confidence={confidence}>
+      {labels[confidence]}
+    </span>
+  );
 }

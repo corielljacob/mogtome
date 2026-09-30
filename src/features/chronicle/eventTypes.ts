@@ -1,15 +1,16 @@
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
 import {
-  PartyPopper,
-  HeartHandshake,
-  Wand2,
-  Crown,
-  Scroll,
-  Sparkles,
-} from "lucide-react";
+  MemberJoinedStamp,
+  MemberRejoinedStamp,
+  NameChangedStamp,
+  RankPromotedStamp,
+  AnnouncementStamp,
+  ChronicleEventStamp,
+  type ChronicleSvgProps,
+} from "./ChronicleIcons";
 
 export interface EventTypeConfig {
-  Icon: LucideIcon;
+  Icon: ComponentType<ChronicleSvgProps>;
   color: string;
   bgColor: string;
   /** CSS color (hex or token) for hairline tags / cozy tinting */
@@ -20,48 +21,48 @@ export interface EventTypeConfig {
 // keys match the backend's PascalCase type values
 export const EVENT_TYPE_CONFIG: Record<string, EventTypeConfig> = {
   MemberJoined: {
-    Icon: PartyPopper,
+    Icon: MemberJoinedStamp,
     color: "text-green-500",
     bgColor: "bg-green-500/10",
-    hex: "#4CA05A",
+    hex: "color-mix(in srgb, var(--scene-leaf) 75%, var(--nook-ink))",
     label: "Member Joined",
   },
   MemberRejoined: {
-    Icon: HeartHandshake,
+    Icon: MemberRejoinedStamp,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
-    hex: "#3FA88C",
+    hex: "color-mix(in srgb, var(--scene-roof) 65%, var(--nook-ink))",
     label: "Welcome Back",
   },
   NameChanged: {
-    Icon: Wand2,
+    Icon: NameChangedStamp,
     color: "text-violet-500",
     bgColor: "bg-violet-500/10",
-    hex: "#8E72C2",
+    hex: "color-mix(in srgb, var(--scene-book-blue) 70%, var(--nook-ink))",
     label: "Name Changed",
   },
   RankPromoted: {
-    Icon: Crown,
+    Icon: RankPromotedStamp,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
-    hex: "#D2A24A",
+    hex: "color-mix(in srgb, var(--scene-gold) 55%, var(--nook-ink))",
     label: "Rank Up!",
   },
   Announcement: {
-    Icon: Scroll,
+    Icon: AnnouncementStamp,
     color: "text-[var(--primary)]",
     bgColor: "bg-[var(--primary)]/10",
-    hex: "var(--primary)",
+    hex: "color-mix(in srgb, var(--scene-rose) 55%, var(--nook-ink))",
     label: "Announcement",
   },
 };
 
 /** fallback for unknown event types */
 export const DEFAULT_EVENT_TYPE_CONFIG: EventTypeConfig = {
-  Icon: Sparkles,
+  Icon: ChronicleEventStamp,
   color: "text-[var(--text-muted)]",
   bgColor: "bg-[var(--bg)]",
-  hex: "var(--text-muted)",
+  hex: "var(--nook-ink)",
   label: "Event",
 };
 

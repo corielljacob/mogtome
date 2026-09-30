@@ -20,7 +20,7 @@ export interface Tab {
 
 const MAIN_TABS: Tab[] = [
   { path: "/", label: "Home", icon: Home, color: "var(--primary)" },
-  { path: "/members", label: "Family", icon: Users, color: "var(--secondary)" },
+  { path: "/members", label: "Members", icon: Users, color: "var(--secondary)" },
   {
     path: "/chronicle",
     label: "Chronicle",

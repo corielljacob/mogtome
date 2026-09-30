@@ -22,11 +22,11 @@ import welcomingMoogle from "@/assets/moogles/mooglef fly transparent.webp";
 // little flavour line under each destination card
 const CARD_SUB: Record<string, string> = {
   "/members": "Meet the crew",
-  "/chronicle": "Our story so far",
+  "/chronicle": "Catch up with the FC",
   "/about": "Who we are",
   "/profile": "Your page",
   "/dashboard": "Knightly duties",
-  "/settings": "Make it yours",
+  "/settings": "Get comfortable",
 };
 
 const cardBase =
@@ -124,7 +124,7 @@ export function MobileHome() {
         >
           <img
             src={welcomingMoogle}
-            alt="A friendly mogtome moogle"
+            alt="MogTome moogle"
             className="w-[4.5rem] h-[4.5rem] object-contain drop-shadow-[0_8px_10px_rgba(0,0,0,0.18)] select-none"
             style={{ animation: "home-moogle-idle 5s ease-in-out infinite" }}
             loading="eager"

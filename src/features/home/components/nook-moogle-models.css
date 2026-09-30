@@ -1,0 +1,108 @@
+/* One small gesture: rest, lift, hold, settle, rest. Replacements follow the
+   character's pose instead of cycling the fabric over an unmoving face. */
+.nook-moogle__model {
+  opacity: 0;
+  animation-duration: 9.6s, 1800ms;
+  animation-timing-function: step-end;
+  animation-iteration-count: infinite, 1;
+  animation-fill-mode: none;
+}
+.nook-moogle__model--0 {
+  opacity: 1;
+  animation-name: moogle-model-0, none;
+}
+.nook-moogle__model--1 {
+  animation-name: moogle-model-1, none;
+}
+.nook-moogle__model--2 {
+  animation-name: moogle-model-2, none;
+}
+/* A grounded reaction: dip for 400ms, smile for 800ms, settle for 300ms,
+   then hold the resting puppet until the reaction state clears. */
+.is-booped .nook-moogle__model {
+  animation-play-state: paused, running;
+}
+.is-booped .nook-moogle__belly,
+.is-booped .nook-moogle__bobble,
+.is-booped .nook-moogle__pom {
+  animation-play-state: paused;
+}
+.is-booped .nook-moogle__model--0 {
+  animation-name: moogle-model-0, moogle-model-boop-0;
+}
+.is-booped .nook-moogle__model--1 {
+  animation-name: moogle-model-1, moogle-model-boop-1;
+}
+.is-booped .nook-moogle__model--2 {
+  animation-name: moogle-model-2, moogle-model-boop-2;
+}
+@keyframes moogle-model-0 {
+  26.25% {
+    opacity: 0;
+  }
+  0%,
+  53.75%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes moogle-model-boop-0 {
+  0% {
+    opacity: 0;
+  }
+  83.333333%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes moogle-model-1 {
+  0%,
+  31.25%,
+  53.75%,
+  100% {
+    opacity: 0;
+  }
+  26.25%,
+  43.75% {
+    opacity: 1;
+  }
+}
+@keyframes moogle-model-boop-1 {
+  22.222222%,
+  83.333333%,
+  100% {
+    opacity: 0;
+  }
+  0%,
+  66.666667% {
+    opacity: 1;
+  }
+}
+@keyframes moogle-model-2 {
+  0%,
+  43.75%,
+  100% {
+    opacity: 0;
+  }
+  31.25% {
+    opacity: 1;
+  }
+}
+@keyframes moogle-model-boop-2 {
+  0%,
+  66.666667%,
+  100% {
+    opacity: 0;
+  }
+  22.222222% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-moogle__model {
+    animation: none !important;
+  }
+}
+.reduce-motion .nook-moogle__model {
+  animation: none !important;
+}

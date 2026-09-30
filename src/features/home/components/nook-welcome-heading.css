@@ -1,0 +1,65 @@
+.nook-welcome-text {
+  --greeting-floss: var(--nook-heading);
+  --greeting-ridge: color-mix(
+    in srgb,
+    var(--greeting-floss) 68%,
+    var(--scene-paper)
+  );
+  --greeting-groove: color-mix(
+    in srgb,
+    var(--greeting-floss) 60%,
+    var(--scene-wood-dark)
+  );
+  font-weight: 600;
+  color: var(--greeting-floss);
+}
+
+/* Opaque transverse strands cross each letter; the offset edge is its padding. */
+@supports (background-clip: text) {
+  .nook-welcome-text {
+    background-image: repeating-linear-gradient(
+      118deg,
+      var(--greeting-groove) 0 0.6px,
+      var(--greeting-floss) 0.9px 1.35px,
+      var(--greeting-ridge) 1.65px 2.2px,
+      var(--greeting-floss) 2.6px 3.2px
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 0.2px var(--greeting-groove);
+    paint-order: stroke fill;
+    text-shadow:
+      0.5px 1.1px 0 color-mix(in srgb, var(--scene-wood-dark) 65%, transparent),
+      0.7px 1.8px 0.7px color-mix(in srgb, var(--scene-shadow) 32%, transparent);
+  }
+}
+
+.nook-welcome h1 > .nook-welcome-heart {
+  width: 0.88em;
+  height: 0.95em;
+  overflow: visible;
+}
+
+.nook-welcome .nook-embroidered-heading::after {
+  border-top-style: dashed;
+  border-top-width: 1.7px;
+  opacity: 0.85;
+  filter: drop-shadow(0.4px 0.6px 0 var(--scene-wood-dark));
+}
+
+:is(.high-contrast, .dyslexia-font) .nook-welcome-text {
+  background: none;
+  color: var(--nook-heading);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+@media (forced-colors: active) {
+  .nook-welcome-text {
+    background: none;
+    color: CanvasText;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+}

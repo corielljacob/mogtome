@@ -168,6 +168,155 @@ describe("AuthProvider", () => {
     });
   });
 
+  it("grants W'ren Solei Knight permissions while retaining the actual lower rank", async () => {
+    setAuthToken(
+      createMockJwt({
+        ...mockUserPayload,
+        memberName: "W'ren Solei",
+        memberRank: "Paissa Trainer",
+        hasKnighthood: false,
+      }),
+    );
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+
+    expect(result.current.user).toMatchObject({
+      memberName: "W'ren Solei",
+      memberRank: "Paissa Trainer",
+      hasKnighthood: true,
+      hasTemporaryKnighthood: false,
+    });
+  });
+
+  it.each([
+    "Another Member",
+    "w'ren Solei",
+    "W'ren solei",
+    "W'ren Solei ",
+    " W'ren Solei",
+    "Wren Solei",
+    "W'ren Soleil",
+  ])("does not grant the exact-name exception to %j", async (memberName) => {
+    setAuthToken(
+      createMockJwt({
+        ...mockUserPayload,
+        memberName,
+        memberRank: "Paissa Trainer",
+        hasKnighthood: false,
+      }),
+    );
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+
+    expect(result.current.user).toMatchObject({
+      memberName,
+      memberRank: "Paissa Trainer",
+      hasKnighthood: false,
+    });
+  });
+
+  it.each(["Moogle Knight", "Moogle Guardian"])(
+    "retains normal Knight permissions for the %s rank without the special name",
+    async (memberRank) => {
+      setAuthToken(
+        createMockJwt({
+          ...mockUserPayload,
+          memberName: "Another Member",
+          memberRank,
+          hasKnighthood: false,
+        }),
+      );
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+
+      expect(result.current.user?.hasKnighthood).toBe(true);
+      expect(result.current.user?.memberRank).toBe(memberRank);
+    },
+  );
+
+  it.each(["refreshUser", "token refresh event"])(
+    "recalculates the named permission when %s changes the signed-in member",
+    async (refreshMethod) => {
+      const lowerRankPayload = {
+        ...mockUserPayload,
+        memberName: "Another Member",
+        memberRank: "Paissa Trainer",
+        hasKnighthood: false,
+      };
+      setAuthToken(createMockJwt(lowerRankPayload));
+      const { result } = renderHook(() => useAuth(), { wrapper });
+      await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+      expect(result.current.user?.hasKnighthood).toBe(false);
+
+      for (const memberName of ["W'ren Solei", "Another Member"]) {
+        setAuthToken(createMockJwt({ ...lowerRankPayload, memberName }));
+        await act(async () => {
+          if (refreshMethod === "refreshUser") {
+            await result.current.refreshUser();
+          } else {
+            window.dispatchEvent(new CustomEvent("auth-token-refreshed"));
+          }
+        });
+
+        await waitFor(() => {
+          expect(result.current.user?.memberName).toBe(memberName);
+        });
+        expect(result.current.user?.hasKnighthood).toBe(
+          memberName === "W'ren Solei",
+        );
+        expect(result.current.user?.memberRank).toBe("Paissa Trainer");
+        expect(result.current.isAuthenticated).toBe(true);
+      }
+    },
+  );
+
+  it("does not authenticate an expired W'ren Solei token", async () => {
+    setAuthToken(
+      createExpiredJwt({
+        ...mockUserPayload,
+        memberName: "W'ren Solei",
+        memberRank: "Paissa Trainer",
+        hasKnighthood: false,
+      }),
+    );
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.user).toBeNull();
+    expect(getAuthToken()).toBeNull();
+  });
+
+  it.each(["logout", "expiry event"])(
+    "removes W'ren Solei's granted permissions after %s",
+    async (endSession) => {
+      setAuthToken(
+        createMockJwt({
+          ...mockUserPayload,
+          memberName: "W'ren Solei",
+          memberRank: "Paissa Trainer",
+          hasKnighthood: false,
+        }),
+      );
+      const { result } = renderHook(() => useAuth(), { wrapper });
+      await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+      expect(result.current.user?.hasKnighthood).toBe(true);
+
+      act(() => {
+        if (endSession === "logout") result.current.logout();
+        else window.dispatchEvent(new CustomEvent("auth-token-expired"));
+      });
+
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
+      expect(getAuthToken()).toBeNull();
+    },
+  );
+
   it("clears expired token and returns unauthenticated", async () => {
     const token = createExpiredJwt(mockUserPayload);
     localStorage.setItem("mogtome_auth_token", token);

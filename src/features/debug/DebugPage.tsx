@@ -136,7 +136,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
             <p
               className="text-[var(--text-muted)] font-soft text-sm mb-2 animate-[fadeIn_0.5s_ease-out_0.2s_both]"
             >
-              Welcome to the family, {firstName}
+              Welcome, {firstName}
             </p>
             <p
               className="font-accent text-2xl text-[var(--primary)] animate-[scaleIn_0.5s_cubic-bezier(0.23,1,0.32,1)_0.3s_both]"
@@ -183,7 +183,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
           <div className="min-h-[5.5rem] flex flex-col items-center justify-center gap-4">
             {phase >= 3 && (
               <p className="font-accent text-base text-[var(--secondary)] animate-[fadeSlideIn_0.5s_cubic-bezier(0.23,1,0.32,1)]">
-                ✨ You're officially one of us, kupo! ✨
+                Looking good, kupo!
               </p>
             )}
 
@@ -201,7 +201,7 @@ function CardRevealPreview({ onClose }: { onClose: () => void }) {
                   animate-[fadeSlideIn_0.4s_cubic-bezier(0.23,1,0.32,1)]
                 "
               >
-                Let's go, kupo! →
+                Close preview →
               </button>
             )}
           </div>
@@ -228,7 +228,7 @@ export function Debug() {
 
         <ContentCard>
           <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">
-            First-Time Login Experience
+            First sign-in
           </h2>
 
           <div className="space-y-4">

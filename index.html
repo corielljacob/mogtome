@@ -2,18 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/mogtome-mark.svg" />
+    <link
+      rel="preload"
+      href="/fonts/lora-latin-400-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <meta
       name="description"
-      content="MogTome - Your cozy FFXIV Free Company hub"
+      content="Meet Kupo Life, our FFXIV Free Company on Zalera, and see what we've been up to."
     />
     <!-- Theme color for browser chrome - a single meta kept in sync with the
          active theme's --bg (set from first paint below, then by ThemeContext). -->
-    <meta name="theme-color" content="#FFF6F4" />
+    <meta name="theme-color" content="#FFFAF7" />
     <!-- PWA / native: standalone-capable + transparent status bar -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -96,7 +103,7 @@
         // first paint, so there's no flash AND no JS-baked inline colour that goes
         // stale on theme toggle. We still compute the flat colour to seed the
         // browser-chrome theme-color below.
-        var bgColor = isDark ? "#16131F" : "#FFF6F4";
+        var bgColor = isDark ? "#16131F" : "#FFFAF7";
 
         // Match the browser chrome (address/status bar) from the very first paint
         var tcMeta = document.querySelector('meta[name="theme-color"]');

@@ -1,0 +1,257 @@
+/* Room colors shared by the app shell, authored SVG art, and Home stationery. */
+.nook-theme {
+  --scene-ink: #604b3d;
+  --scene-paper: #f8ead5;
+  --scene-wood: #a17b53;
+  --scene-wood-light: #cfb189;
+  --scene-wood-dark: #71543c;
+  --scene-leaf: #6c774c;
+  --scene-leaf-light: #a1ab73;
+  --scene-rose: #bc8580;
+  --scene-gold: #c7954b;
+  --scene-shadow: #574135;
+  --scene-brass: #684b32;
+  --scene-glass: #d5ac6e;
+  --scene-glow: #ffd997;
+  --scene-pot: #c3a184;
+  --scene-book-rose: #865b4c;
+  --scene-book-blue: #657782;
+  --scene-sky: #adc5d3;
+  --scene-sky-mid: color-mix(
+    in srgb,
+    var(--scene-sky) 68%,
+    var(--scene-horizon)
+  );
+  --scene-horizon: #f1ccac;
+  --scene-distant: #a5a2bb;
+  --scene-castle: #8c8caa;
+  --scene-window-light: #ffe0a5;
+  --scene-near: #939c77;
+  --scene-roof: #637e7b;
+  --scene-plaster: #e4cfb5;
+  --scene-timber: #a56657;
+  --scene-sea: #81a7ad;
+  --scene-sand: #e7d4af;
+  --scene-sand-wet: #bfc4ae;
+  --scene-surf: #f1ecd3;
+  --scene-rock: #858c7d;
+  --scene-rock-light: #adae92;
+  --scene-pine: #697c67;
+  --scene-cushion: #b9968d;
+  --scene-cushion-light: #dfbeb0;
+  --scene-dried-flower: #bf9965;
+  --season-ribbon: #805569;
+  --season-seal: #b3807a;
+  --season-seal-light: #d8aaa0;
+  --season-seal-shadow: #77534f;
+  --moogle-fur-light: #fffdf5;
+  --moogle-fur: #f7f3e8;
+  --moogle-fur-shadow: #ddd6ca;
+  --moogle-pom-light: #ffe68b;
+  --moogle-pom: #edc34e;
+  --moogle-pom-shadow: #c99736;
+  --moogle-wing-light: #746477;
+  --moogle-wing: #514656;
+  --nook-paper: #f8ecdd;
+  --nook-ink: #705448;
+  --nook-wall: color-mix(in srgb, var(--bg) 20%, #eee1d2);
+  --nook-wall-light: #fff5e8;
+  --nook-wall-shade: #a18165;
+  --nook-wall-print: #8d9473;
+  --nook-light-strength: 65%;
+  --nook-shade-strength: 12%;
+  --nook-wall-panel: color-mix(
+    in srgb,
+    var(--scene-leaf-light) 13%,
+    var(--nook-wall)
+  );
+  /* Wall text follows the active app palette; paper keeps its separate --nook-ink. */
+  --nook-text: var(--text);
+  --nook-muted: var(--text-muted);
+  --nook-heading: var(--nook-text);
+  --nook-washi:
+    repeating-linear-gradient(
+      90deg,
+      #ffffff00 0 calc(6 * var(--layout-unit)),
+      #fff9e577 calc(6 * var(--layout-unit)) calc(12 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--scene-rose) 0 calc(6 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-rose) 50%, var(--scene-paper))
+        calc(6 * var(--layout-unit)) calc(12 * var(--layout-unit))
+    );
+}
+.nook-theme[data-mode="dark"],
+:root.dark .nook-theme {
+  --scene-ink: #302732;
+  --scene-paper: #e1cdb3;
+  --scene-wood: #6b5045;
+  --scene-wood-light: #a08266;
+  --scene-wood-dark: #44323a;
+  --scene-leaf: #58604c;
+  --scene-leaf-light: #8c9470;
+  --scene-rose: #bd8c95;
+  --scene-gold: #bc9458;
+  --scene-shadow: #171320;
+  --scene-brass: #654c37;
+  --scene-glass: #b28a54;
+  --scene-glow: #ffd18b;
+  --scene-pot: #9a807c;
+  --scene-book-rose: #76534e;
+  --scene-book-blue: #4e506c;
+  --scene-sky: #252b4e;
+  --scene-horizon: #896e8d;
+  --scene-distant: #5b5679;
+  --scene-castle: #34334f;
+  --scene-window-light: #ffcf90;
+  --scene-near: #4c5164;
+  --scene-roof: #394d58;
+  --scene-plaster: #a99a9d;
+  --scene-timber: #78565d;
+  --scene-sea: #4f6480;
+  --scene-sand: #9b8b9b;
+  --scene-sand-wet: #777e92;
+  --scene-surf: #adb6ca;
+  --scene-rock: #535a70;
+  --scene-rock-light: #797b8c;
+  --scene-pine: #435266;
+  --scene-cushion: #514359;
+  --scene-cushion-light: #8d6f8f;
+  --scene-dried-flower: #ad94ac;
+  --moogle-fur-light: #f7efe3;
+  --moogle-fur: #e8e1d6;
+  --moogle-fur-shadow: #c4b9b1;
+  --moogle-pom-light: #f5d777;
+  --moogle-pom: #dcb64d;
+  --moogle-pom-shadow: #aa803e;
+  --moogle-wing-light: #766779;
+  --moogle-wing: #4b4157;
+  --nook-paper: #e1ceba;
+  --nook-ink: #5a4140;
+  --nook-wall: color-mix(in srgb, var(--bg) 24%, #302a38);
+  --nook-wall-light: #494050;
+  --nook-wall-shade: #181620;
+  --nook-wall-print: #b2a0a0;
+  --nook-light-strength: 42%;
+  --nook-shade-strength: 28%;
+  --nook-wall-panel: color-mix(
+    in srgb,
+    var(--scene-wood-dark) 15%,
+    var(--nook-wall)
+  );
+  --nook-heading: #e4bfb6;
+}
+.nook-theme[data-holiday="true"] {
+  --scene-rose: color-mix(in srgb, var(--primary) 57%, #b98786);
+  --scene-gold: color-mix(in srgb, var(--accent) 45%, #d7ac64);
+}
+.nook-theme[data-scene="all-saints-wake"] {
+  --scene-leaf: #887047;
+  --scene-leaf-light: #bb9b62;
+  --scene-rose: #96738e;
+  --scene-gold: #ce9a52;
+  --scene-pumpkin: #d38b47;
+  --scene-pumpkin-light: #f0bd78;
+  --scene-autumn: #97543a;
+  --scene-autumn-light: #c68b4d;
+  --scene-glow: #ffcd87;
+  --scene-cushion: #745c76;
+  --scene-cushion-light: #b091a6;
+  --scene-dried-flower: #bb854d;
+  --season-ribbon: #5d446a;
+  --season-seal: #93748e;
+  --season-seal-light: #bda2b7;
+  --season-seal-shadow: #58415f;
+  --nook-wall: color-mix(in srgb, var(--bg) 20%, #eadbcc);
+  --nook-wall-print: #9e8067;
+  --nook-heading: color-mix(in srgb, var(--text) 85%, #c98963);
+}
+.nook-theme[data-scene="all-saints-wake"][data-mode="dark"] {
+  --scene-wood: #654738;
+  --scene-wood-light: #997858;
+  --scene-wood-dark: #3d2c32;
+  --scene-sky: #24213d;
+  --scene-horizon: #a27475;
+  --scene-castle: #383047;
+  --scene-window-light: #ffcf8a;
+  --scene-cushion: #49384f;
+  --scene-cushion-light: #927083;
+  --scene-dried-flower: #c59a70;
+  --nook-wall: #2a2333;
+  --nook-wall-light: #624546;
+  --nook-wall-print: #c29a75;
+  --nook-light-strength: 30%;
+  --nook-paper: #dcc5aa;
+  --nook-heading: #e9ba96;
+}
+.nook-theme[data-scene="starlight"] {
+  --scene-leaf: #536a53;
+  --scene-leaf-light: #94ac82;
+  --scene-rose: #b26c6b;
+  --scene-cushion: #856063;
+  --scene-cushion-light: #bf9290;
+  --season-ribbon: #60745b;
+  --season-seal: #a36063;
+  --season-seal-light: #d99990;
+  --season-seal-shadow: #673e43;
+}
+.nook-theme[data-scene="starlight"][data-mode="dark"] {
+  --nook-wall: #252e30;
+  --nook-wall-light: #465152;
+  --nook-wall-print: #ccb995;
+  --scene-sky: #293e51;
+  --scene-horizon: #a48d9c;
+  --scene-window-light: #f9d1a0;
+}
+.nook-theme[data-scene="valentiones"] {
+  --season-ribbon: #96566c;
+  --season-seal: #be7f8f;
+  --season-seal-light: #e5b4bd;
+  --season-seal-shadow: #8c5168;
+  --scene-cushion: #b58392;
+  --scene-cushion-light: #dfb9c0;
+}
+.nook-theme[data-scene="little-ladies"] {
+  --season-ribbon: #8a839e;
+  --season-seal: #c993a6;
+  --season-seal-light: #edbfcb;
+  --season-seal-shadow: #9c708a;
+  --scene-leaf-light: #b9c392;
+}
+.nook-theme[data-scene="hatching-tide"] {
+  --season-ribbon: #869d78;
+  --season-seal: #a394bf;
+  --season-seal-light: #cec0e0;
+  --season-seal-shadow: #796b92;
+}
+.nook-theme[data-scene="make-it-rain"] {
+  --season-ribbon: #81688c;
+  --season-seal: #c29755;
+  --season-seal-light: #e7c787;
+  --season-seal-shadow: #8d653c;
+}
+.nook-theme[data-scene="moonfire-faire"] {
+  --season-ribbon: #6e9a9f;
+  --season-seal: #b68874;
+  --season-seal-light: #e3b799;
+  --season-seal-shadow: #8f6a56;
+  --scene-sky: #a4c9d7;
+  --scene-horizon: #efcfa8;
+}
+.nook-theme[data-scene="moonfire-faire"][data-mode="dark"] {
+  --scene-sky: #304c65;
+  --scene-horizon: #b77e83;
+}
+.nook-theme[data-scene="the-rising"] {
+  --season-ribbon: #8b697c;
+  --season-seal: #a38666;
+  --season-seal-light: #d8bb8c;
+  --season-seal-shadow: #746047;
+}
+.nook-theme[data-scene="heavensturn"] {
+  --season-ribbon: #aa7c48;
+  --season-seal: #b16b61;
+  --season-seal-light: #db9d83;
+  --season-seal-shadow: #845146;
+}

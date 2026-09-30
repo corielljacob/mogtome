@@ -1,47 +1,48 @@
 import { memo } from "react";
 import type { ConnectionStatus } from "@/shared/realtime/useEventsHub";
+import { ChronicleIcon } from "./ChronicleIcons";
+import "./chronicle-entry.css";
+
+const connectionLabels: Record<ConnectionStatus, string> = {
+  connected: "Live updates connected",
+  connecting: "Connecting…",
+  reconnecting: "Reconnecting…",
+  disconnected: "Live updates offline",
+  error: "Live updates offline",
+};
 
 export const LiveStatus = memo(function LiveStatus({
   status,
+  compact = false,
 }: {
   status: ConnectionStatus;
+  compact?: boolean;
 }) {
-  const config: Record<
-    ConnectionStatus,
-    { tone: string; label: string; pulse: boolean }
-  > = {
-    connected: { tone: "var(--primary)", label: "live", pulse: true },
-    connecting: { tone: "var(--accent)", label: "connecting", pulse: true },
-    reconnecting: { tone: "var(--accent)", label: "reconnecting", pulse: true },
-    disconnected: {
-      tone: "var(--text-subtle)",
-      label: "offline",
-      pulse: false,
-    },
-    error: { tone: "var(--text-subtle)", label: "offline", pulse: false },
-  };
-  const { tone, label, pulse } = config[status];
+  const label = connectionLabels[status];
+  const isConnecting = status === "connecting" || status === "reconnecting";
 
   return (
     <span
-      className="inline-flex items-center gap-2 text-xs font-soft text-[var(--text-muted)]"
+      className="chronicle-live-status"
+      data-connection={status}
       role="status"
       aria-live="polite"
-      aria-label={`Live updates: ${label}`}
+      aria-atomic="true"
+      aria-label={isConnecting ? `Live updates: ${label}` : label}
+      title={label}
     >
-      <span className="relative flex w-2 h-2" aria-hidden="true">
-        {pulse && (
-          <span
-            className="absolute inline-flex w-full h-full rounded-full opacity-60 animate-ping"
-            style={{ background: tone }}
-          />
-        )}
-        <span
-          className="relative inline-flex w-2 h-2 rounded-full"
-          style={{ background: tone }}
-        />
+      <span className="chronicle-live-icon" aria-hidden="true">
+        <ChronicleIcon name={isConnecting ? "refresh" : "wifi"} size={16} />
       </span>
-      {label}
+      <span>
+        {compact && status === "connected" ? (
+          <>
+            Live<span className="sr-only"> updates connected</span>
+          </>
+        ) : (
+          label
+        )}
+      </span>
     </span>
   );
 });

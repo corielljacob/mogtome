@@ -1,0 +1,259 @@
+/* A few ruled lines on the same warm paper as Home's handwritten notes. */
+.family-toolbar.family-toolbar-refined {
+  grid-template-columns: minmax(0, 1fr) minmax(176px, 0.3fr);
+  gap: 24px;
+}
+.family-toolbar-refined label {
+  margin-bottom: 4px;
+  color: var(--nook-ink);
+  font: 400 calc(20 * var(--family-type-unit))/1.2 var(--font-script);
+  letter-spacing: 0;
+}
+.family-toolbar-refined .family-search,
+.family-toolbar-refined .family-sort {
+  border: 0;
+  border-bottom: 1px solid var(--ui-rule);
+  border-radius: 0;
+  background: var(--ui-surface-raised);
+  box-shadow: none;
+}
+.family-toolbar-refined .family-search:focus-within,
+.family-toolbar-refined .family-sort:focus-within {
+  border-bottom-color: var(--ui-focus);
+  box-shadow: 0 2px 0 var(--ui-focus);
+}
+.family-toolbar-refined .family-search > svg,
+.family-toolbar-refined .family-sort > svg:first-child {
+  left: 3px;
+}
+.family-toolbar-refined .family-search input,
+.family-toolbar-refined .family-sort select {
+  padding-left: 33px;
+}
+.family-toolbar-refined .family-search button {
+  right: 2px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+}
+.family-toolbar-refined .family-search input {
+  padding-right: 48px;
+}
+.family-toolbar-refined .family-search kbd {
+  border-color: color-mix(in srgb, var(--nook-ink) 17%, transparent);
+  border-radius: 3px 5px 3px 4px;
+  background: color-mix(in srgb, var(--nook-ink) 4%, transparent);
+}
+.family-rank-disclosure {
+  margin-top: 13px;
+  color: var(--nook-ink);
+}
+.family-rank-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 2px;
+  border: 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--nook-ink) 35%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--nook-ink);
+  font: 500 calc(12 * var(--family-type-unit))/1.4 var(--font-navigation);
+  cursor: pointer;
+  scroll-margin-top: var(--family-toolbar-clearance, 6.5rem);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+.family-rank-trigger > svg:first-child {
+  color: var(--ui-secondary);
+}
+.family-rank-trigger:hover:not(:disabled),
+.family-rank-trigger[aria-expanded="true"] {
+  border-color: var(--ui-secondary);
+  background: var(--ui-secondary-soft);
+}
+.family-rank-selection-count {
+  margin-left: 4px;
+  padding-left: 9px;
+  border-left: 1px solid color-mix(in srgb, var(--nook-ink) 15%, transparent);
+  color: var(--ui-muted);
+  font-size: 0.92em;
+  font-weight: 400;
+}
+.family-rank-disclosure-arrow {
+  margin-left: 2px;
+  transition: transform 150ms ease;
+}
+.family-rank-trigger[aria-expanded="true"] .family-rank-disclosure-arrow {
+  transform: rotate(180deg);
+}
+.family-rank-panel {
+  margin-top: 12px;
+  padding: 11px 0 0;
+  border: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--nook-ink) 18%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+.family-rank-panel[hidden] {
+  display: none;
+}
+.family-rank-panel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px 16px;
+  margin-bottom: 10px;
+}
+.family-rank-panel-heading p {
+  margin: 0;
+  color: var(--nook-ink);
+  font: 400 calc(12 * var(--family-type-unit))/1.5 var(--font-navigation);
+}
+.family-all-ranks,
+.family-rank-show-results {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--ui-secondary);
+  border-radius: 3px 6px 3px 5px;
+  background: var(--ui-secondary-soft);
+  color: var(--ui-secondary);
+  font: 500 calc(12 * var(--family-type-unit))/1.4 var(--font-navigation);
+  cursor: pointer;
+}
+.family-all-ranks[aria-pressed="true"],
+.family-all-ranks:hover:not(:disabled),
+.family-rank-show-results:hover {
+  border-color: transparent;
+  border-bottom-color: var(--ui-secondary);
+  background: var(--ui-secondary-soft);
+}
+.family-rank-panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding-top: 8px;
+}
+.family-rank-show-results {
+  gap: 10px;
+  font: 400 calc(20 * var(--family-type-unit))/1.25 var(--font-script);
+}
+.family-rank-panel .family-rank-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 8px 16px;
+}
+.family-rank-panel .family-rank-chip {
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 8px;
+  border: 1px solid transparent;
+  border-bottom-color: color-mix(in srgb, var(--nook-ink) 14%, transparent);
+  border-radius: 0;
+  background: var(--ui-surface-raised);
+  box-shadow: none;
+  font-size: calc(12 * var(--family-type-unit));
+}
+.family-rank-panel .family-rank-chip:hover:not(:disabled) {
+  border-color: transparent;
+  border-bottom-color: var(--ui-secondary);
+  background: var(--ui-secondary-soft);
+}
+.family-rank-panel .family-rank-chip[aria-pressed="true"] {
+  border-color: transparent;
+  border-bottom-color: var(--ui-secondary);
+  border-radius: 3px 5px 3px 4px;
+  background: var(--ui-secondary-soft);
+  box-shadow: none;
+}
+.family-rank-panel .family-rank-check {
+  top: -4px;
+  right: -2px;
+}
+.family-rank-panel .family-rank-chip > svg:first-child {
+  width: 19px;
+  height: 19px;
+}
+.family-rank-panel .family-rank-chip > span:not(.family-rank-count, .sr-only) {
+  flex: 1;
+  text-align: left;
+}
+.family-rank-disclosure :disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.family-rank-disclosure button:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .family-toolbar.family-toolbar-refined {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .family-toolbar-refined .family-sort-field {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .family-toolbar-refined .family-sort-field label {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .family-toolbar-refined .family-sort {
+    flex: 1;
+    max-width: none;
+  }
+  .family-rank-trigger {
+    width: 100%;
+    padding-inline: 2px;
+  }
+  .family-rank-selection-count {
+    margin-left: auto;
+  }
+  .family-rank-panel {
+    padding: 10px 0 0;
+  }
+  .family-rank-panel-heading {
+    gap: 4px 10px;
+    margin-bottom: 10px;
+  }
+  .family-rank-panel-heading p {
+    flex-basis: 100%;
+  }
+  .family-rank-panel .family-rank-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+  .family-toolbar-refined .family-search kbd {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .family-toolbar-refined .family-search,
+  .family-toolbar-refined .family-sort,
+  .family-rank-trigger,
+  .family-rank-panel .family-rank-chip,
+  .family-all-ranks,
+  .family-rank-show-results {
+    border-bottom-color: CanvasText;
+  }
+  .family-rank-panel .family-rank-chip[aria-pressed="true"],
+  .family-all-ranks[aria-pressed="true"] {
+    border: 1px solid Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-rank-trigger,
+  .family-rank-disclosure-arrow {
+    transition: none;
+  }
+}

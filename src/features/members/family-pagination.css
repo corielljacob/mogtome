@@ -1,0 +1,238 @@
+/* Quiet wall labels and stamped page numbers between the pinned portraits. */
+.family-album-pages {
+  --family-navigation-ink: var(--family-control-ink, var(--nook-text));
+  --family-navigation-surface: var(--family-control-surface, var(--ui-surface));
+  --family-control-muted: var(--nook-muted);
+  scroll-margin-top: var(--family-toolbar-clearance, 6.5rem);
+}
+.family-album-pages .family-rank-header,
+.family-album-pages .family-rank-header h3 {
+  color: var(--family-navigation-ink);
+}
+.family-album-pages .family-rank-seal {
+  border-color: var(--ui-secondary);
+  background: var(--ui-secondary-soft);
+  color: var(--ui-secondary);
+  box-shadow: none;
+}
+.family-album-pages .family-rank-rule {
+  background: color-mix(in srgb, var(--family-navigation-ink) 19%, transparent);
+}
+.family-album-pages .family-page-turn {
+  padding-inline: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--ui-rule);
+  border-radius: 2px 5px 2px 4px;
+  background: var(--ui-surface-raised);
+  color: var(--ui-action);
+  font: 400 calc(20 * var(--family-type-unit))/1.25 var(--font-script);
+  box-shadow: none;
+}
+.family-album-pages .family-page-turn:hover:not(:disabled) {
+  border-bottom-color: var(--ui-action);
+  background: var(--ui-action-soft);
+}
+.family-album-pages .family-page-turn:focus-visible {
+  outline-color: var(--ui-focus);
+}
+.family-pagination-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 0 0 23px;
+  color: var(--family-navigation-ink);
+}
+.family-page-summary,
+.family-page-single-count {
+  margin: 0;
+  color: var(--family-control-muted);
+  font: 400 calc(12 * var(--family-type-unit))/1.5 var(--font-navigation);
+  font-variant-numeric: tabular-nums;
+}
+.family-page-single-count {
+  margin-bottom: 22px;
+}
+.family-page-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.family-page-jump {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 400 calc(12 * var(--family-type-unit))/1.5 var(--font-navigation);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.family-page-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.family-page-select select {
+  appearance: none;
+  min-width: 54px;
+  min-height: 44px;
+  padding: 7px 24px 7px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--ui-rule);
+  border-radius: 2px;
+  color: var(--family-navigation-ink);
+  background: var(--ui-surface-raised);
+  font: inherit;
+  cursor: pointer;
+}
+.family-page-select option {
+  color: var(--nook-ink);
+  background: var(--nook-paper);
+}
+.family-page-select svg {
+  position: absolute;
+  right: 7px;
+  pointer-events: none;
+}
+.family-page-turn-top {
+  min-width: 44px;
+  padding: 8px;
+  justify-content: center;
+}
+.family-page-turn-top span {
+  display: none;
+}
+.family-pagination-bottom {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px dashed
+    color-mix(in srgb, var(--family-navigation-ink) 23%, transparent);
+  color: var(--family-navigation-ink);
+}
+.family-page-bottom-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+  margin-bottom: 13px;
+  color: var(--family-control-muted);
+  font: 400 calc(12 * var(--family-type-unit))/1.5 var(--font-navigation);
+  font-variant-numeric: tabular-nums;
+}
+.family-page-navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+.family-page-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.family-page-numbers li {
+  display: flex;
+  align-items: center;
+}
+.family-page-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 47% 52% 48% 50%;
+  background: transparent;
+  color: var(--family-navigation-ink);
+  font: 500 calc(13 * var(--family-type-unit))/1.4 var(--font-navigation);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.family-page-number:hover:not(:disabled, [aria-current="page"]) {
+  border-color: transparent;
+  background: var(--ui-action-soft);
+}
+.family-page-number[aria-current="page"] {
+  font-weight: 700;
+  color: var(--ui-on-action);
+  background: var(--ui-action);
+  border: 1px solid var(--ui-action);
+  outline: 1px solid color-mix(in srgb, var(--ui-on-action) 40%, transparent);
+  outline-offset: -4px;
+  box-shadow: none;
+}
+.family-page-ellipsis {
+  display: inline-block;
+  min-width: 12px;
+  text-align: center;
+  font: 400 1rem/1 var(--font-navigation);
+}
+.family-page-number:disabled,
+.family-page-select select:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.family-page-number:focus-visible,
+.family-page-select select:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+@container (max-width: 650px) {
+  .family-page-navigation {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .family-page-numbers {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .family-page-navigation .family-page-turn span {
+    display: inline;
+  }
+  .family-page-navigation .family-page-next {
+    grid-column: 2;
+  }
+  .family-page-tools {
+    gap: 7px;
+  }
+}
+@container (max-width: 360px) {
+  .family-pagination-top {
+    justify-content: center;
+    gap: 8px;
+  }
+  .family-pagination-top .family-page-summary {
+    width: 100%;
+    text-align: center;
+  }
+  .family-page-numbers {
+    gap: 1px;
+  }
+  .family-page-ellipsis {
+    min-width: 8px;
+  }
+  .family-page-bottom-summary {
+    flex-direction: column;
+    align-items: center;
+  }
+  .family-album-pages .family-page-navigation .family-page-turn {
+    padding: 8px 10px;
+    font-size: 1.1rem;
+  }
+}
+@media (forced-colors: active) {
+  .family-album-pages .family-page-turn,
+  .family-page-select select {
+    border-bottom-color: CanvasText;
+  }
+  .family-page-number[aria-current="page"] {
+    border: 2px solid Highlight;
+    text-decoration: underline;
+  }
+}

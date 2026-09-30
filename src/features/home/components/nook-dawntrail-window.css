@@ -1,0 +1,97 @@
+.nook-window-exterior[data-scene="dawntrail"][data-mode="dark"]
+  .nook-cycle-clouds {
+  opacity: 0.22;
+}
+.nook-dt-star {
+  animation: nook-dt-starlight 9s steps(5, end) infinite;
+}
+.nook-dt-star--1 {
+  animation-delay: -3s;
+}
+.nook-dt-star--2 {
+  animation-delay: -6s;
+}
+.nook-dt-birds {
+  opacity: 0.9;
+  pointer-events: none;
+}
+.nook-window-exterior[data-mode="dark"] .nook-dt-birds {
+  opacity: 0.65;
+}
+.nook-dt-flight {
+  --nook-sewn-duration: 1.6s;
+  animation: nook-dt-gull-flight 32s steps(96, end) infinite;
+  animation-delay: -17.4s;
+}
+.nook-dt-flight--1 {
+  --nook-sewn-duration: 1.9s;
+  --nook-sewn-delay: -0.6s;
+  animation-duration: 37s;
+  animation-delay: -22.7s;
+  animation-timing-function: steps(111, end);
+}
+.nook-dt-flight--2 {
+  --nook-sewn-duration: 1.4s;
+  --nook-sewn-delay: -0.9s;
+  animation-duration: 41s;
+  animation-delay: -28.3s;
+  animation-timing-function: steps(123, end);
+}
+.nook-dt-glint {
+  opacity: 0.45;
+  animation: nook-dt-tide 13s steps(20, end) infinite;
+}
+.nook-dt-glint--1 {
+  animation-delay: -4s;
+}
+.nook-dt-glint--2 {
+  animation-delay: -8s;
+}
+@keyframes nook-dt-starlight {
+  0%,
+  100% {
+    opacity: 0.88;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+/* Equal time segments at twelve held positions per second; endpoints are
+   outside the window, so a new pass enters without a visible reset. */
+@keyframes nook-dt-gull-flight {
+  0% {
+    transform: translate(36px, 149px) rotate(-5deg);
+  }
+  25% {
+    transform: translate(112px, 127px) rotate(3deg);
+  }
+  50% {
+    transform: translate(206px, 140px) rotate(-4deg);
+  }
+  75% {
+    transform: translate(286px, 119px) rotate(4deg);
+  }
+  100% {
+    transform: translate(362px, 141px) rotate(-2deg);
+  }
+}
+@keyframes nook-dt-tide {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(-1px);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(1px);
+  }
+}
+:is(.reduce-motion, [data-reduced-motion="true"])
+  :is(.nook-dt-star, .nook-dt-flight, .nook-dt-glint) {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.nook-dt-star, .nook-dt-flight, .nook-dt-glint) {
+    animation: none !important;
+  }
+}

@@ -89,7 +89,11 @@ const DAWNTRAIL_SKY =
 const DEFAULT_SKY =
   "radial-gradient(ellipse at top left, color-mix(in srgb, var(--primary) 5%, transparent), transparent 70%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--secondary) 8%, transparent), transparent 70%)";
 
-export function BackgroundAtmospherics() {
+export function BackgroundAtmospherics({
+  framed = false,
+}: {
+  framed?: boolean;
+}) {
   const { settings, isDarkMode, activeEvent, isEventThemeActive } = useTheme();
   // theme atmosphere only shows when its theme is actually on screen (an active
   // seasonal event overrides the chosen theme's colours, so suppress it then).
@@ -184,7 +188,7 @@ export function BackgroundAtmospherics() {
           aria-hidden="true"
         />
       )}
-      {!IS_MOBILE && <CozyAtmosphere eventId={eventId} />}
+      {!IS_MOBILE && !framed && <CozyAtmosphere eventId={eventId} />}
       {(heavensward || evercoldNight) && <ThemeSnow />}
       {evercoldNight && <NorthernLights />}
       {arrNight && <ThemeCrystal />}
@@ -202,8 +206,10 @@ export function BackgroundAtmospherics() {
       {isEventThemeActive && activeEvent?.id === "starlight" && (
         <StarlightOverlay />
       )}
-      <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
-      {isEventThemeActive && activeEvent && (
+      {!framed && (
+        <FloatingMoogles moogles={floatingMoogles} opacityRange={[0.15, 0.3]} />
+      )}
+      {!framed && isEventThemeActive && activeEvent && (
         <EventBunting event={activeEvent} />
       )}
     </>

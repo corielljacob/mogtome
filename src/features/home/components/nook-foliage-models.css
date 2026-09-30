@@ -1,0 +1,156 @@
+/* Each exposure swaps a whole piece of needlework. The quiet parts of the
+   parent sway keep the same piece on the set instead of boiling continuously. */
+.nook-foliage-model {
+  visibility: hidden;
+  animation-duration: var(--foliage-duration, 14s);
+  animation-delay: var(--foliage-delay, -4s);
+  animation-timing-function: step-end;
+  animation-iteration-count: infinite;
+}
+.nook-foliage-model--0 {
+  visibility: visible;
+  animation-name: ivy-model-0;
+}
+.nook-foliage-model--1 {
+  animation-name: ivy-model-1;
+}
+.nook-foliage-model--2 {
+  animation-name: ivy-model-2;
+}
+.nook-posy > .nook-foliage-model--0 {
+  animation-name: posy-model-0;
+}
+.nook-posy > .nook-foliage-model--1 {
+  animation-name: posy-model-1;
+}
+.nook-posy > .nook-foliage-model--2 {
+  animation-name: posy-model-2;
+}
+@keyframes ivy-model-0 {
+  0%,
+  32.5%,
+  43%,
+  52%,
+  62.5%,
+  70%,
+  100% {
+    visibility: visible;
+  }
+  25%,
+  35%,
+  46%,
+  55%,
+  65% {
+    visibility: hidden;
+  }
+}
+@keyframes ivy-model-1 {
+  0%,
+  27.5%,
+  32.5%,
+  35%,
+  43%,
+  52%,
+  57.5%,
+  62.5%,
+  70%,
+  100% {
+    visibility: hidden;
+  }
+  25%,
+  30%,
+  40%,
+  49%,
+  55%,
+  60%,
+  67.5% {
+    visibility: visible;
+  }
+}
+@keyframes ivy-model-2 {
+  0%,
+  30%,
+  40%,
+  49%,
+  55%,
+  60%,
+  67.5%,
+  100% {
+    visibility: hidden;
+  }
+  27.5%,
+  35%,
+  46%,
+  57.5%,
+  65% {
+    visibility: visible;
+  }
+}
+@keyframes posy-model-0 {
+  0%,
+  37.5%,
+  48%,
+  57%,
+  67.5%,
+  75%,
+  100% {
+    visibility: visible;
+  }
+  30%,
+  40%,
+  51%,
+  60%,
+  70% {
+    visibility: hidden;
+  }
+}
+@keyframes posy-model-1 {
+  0%,
+  32.5%,
+  37.5%,
+  40%,
+  48%,
+  57%,
+  62.5%,
+  67.5%,
+  75%,
+  100% {
+    visibility: hidden;
+  }
+  30%,
+  35%,
+  45%,
+  54%,
+  60%,
+  65%,
+  72.5% {
+    visibility: visible;
+  }
+}
+@keyframes posy-model-2 {
+  0%,
+  35%,
+  45%,
+  54%,
+  60%,
+  65%,
+  72.5%,
+  100% {
+    visibility: hidden;
+  }
+  32.5%,
+  40%,
+  51%,
+  62.5%,
+  70% {
+    visibility: visible;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-foliage-model {
+    animation: none !important;
+  }
+}
+.reduce-motion .nook-foliage-model {
+  animation: none !important;
+}

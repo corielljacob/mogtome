@@ -51,6 +51,7 @@ src/
 
 A few habits the code follows (nothing strict, just keeps things tidy):
 
+- Follow [COPY_STYLE.md](COPY_STYLE.md) for user-facing wording.
 - `@/` is an alias for `src/`, so imports read `@/shared/ui/Button` instead of
   `../../../`.
 - No barrel/index files; import straight from the file you want.
@@ -58,6 +59,26 @@ A few habits the code follows (nothing strict, just keeps things tidy):
   of them do, it goes in `shared/`.
 - There's a lint rule so `shared/` doesn't accidentally reach into a feature.
   If `npm run lint` complains about that, that's why.
+
+## Search and scrolling conventions
+
+- The document is the main scroller. Titles, introductions, decorative cards,
+  and results scroll together; compact browsing controls stay visible within
+  their section. Toolbars taller than 40% of the viewport scroll normally.
+- Members and Chronicle use live search with a short debounce; Enter applies
+  immediately. Smaller local lists filter immediately. Clear and Escape keep
+  focus in the search field and preserve other filters.
+- New filters reveal the start of obscured results. Pagination reveals the
+  requested page or new entries. Neither action moves keyboard focus out of
+  search. Reapplying an equivalent member search keeps the current page.
+- Settings and dashboard tabs reveal a newly selected panel when its start is
+  offscreen, while keeping focus on the tab. Back to top respects reduced motion
+  and returns keyboard focus to the main content.
+- Use `useStickyToolbar` for measured scroll clearance; avoid fixed offsets
+  that break with wrapped controls or larger text. Chronicle's desktop day index
+  sits below search; its mobile day chooser scrolls with the page. Character
+  linking uses separate comparison lists on desktop and one outer scroller on
+  phones.
 
 ## Backend
 

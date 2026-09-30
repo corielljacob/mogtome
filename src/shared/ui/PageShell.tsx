@@ -17,10 +17,8 @@ interface PageLayoutProps {
   className?: string;
   /**
    * Phones only: when the page's content is a full `.corkboard`, pass `bleed`.
-   * The page keeps its TOP clearance (so the whole board sits just below the
-   * status bar) but drops its BOTTOM clearance, letting the board bleed behind the
-   * floating nav at the bottom (see components.css). Non-corkboard pages leave this
-   * off so their content clears the chrome top and bottom.
+   * The page keeps its top spacing below the shared header but lets the board
+   * extend to the bottom edge. The board supplies its own safe-area padding.
    */
   bleed?: boolean;
 }
@@ -37,7 +35,7 @@ export function PageLayout({
   bleed = false,
 }: PageLayoutProps) {
   return (
-    <div className="min-h-[100lvh] relative pt-0 pb-0">
+    <div className="min-h-[calc(100dvh-var(--app-header-height,100px))] relative pt-0 pb-0">
       {moogles && (
         <SimpleFloatingMoogles
           primarySrc={moogles.primary}
@@ -48,7 +46,7 @@ export function PageLayout({
       <FloatingBubbles />
 
       <div
-        className={`relative pt-[calc(1rem+env(safe-area-inset-top))] ${bleed ? "" : "pb-[calc(5rem+env(safe-area-inset-bottom))]"} md:py-12 px-3 sm:px-4 z-10 ${className}`}
+        className={`relative pt-4 ${bleed ? "" : "pb-[calc(2rem+env(safe-area-inset-bottom))]"} md:py-12 px-3 sm:px-4 z-10 ${className}`}
       >
         <div className={`${maxWidth} mx-auto`}>{children}</div>
       </div>

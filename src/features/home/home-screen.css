@@ -1,0 +1,1604 @@
+/* The room fills the window, but grows with its contents on smaller screens. */
+.cozy-app-content.is-home {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  padding: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.is-home > main {
+  min-width: 0;
+  display: grid;
+}
+.is-home .storybook-header {
+  max-width: none;
+}
+.home-screen {
+  --nook-ceiling-clearance: clamp(
+    calc(112 * var(--layout-unit)),
+    13dvh,
+    calc(156 * var(--layout-unit))
+  );
+  --nook-room-gutter: clamp(
+    calc(24 * var(--layout-unit)),
+    3cqw,
+    calc(72 * var(--layout-unit))
+  );
+  --nook-text: var(--ui-wall-ink);
+  --nook-muted: var(--ui-wall-muted);
+  --nook-heading: var(--ui-wall-heading);
+  --nook-type-unit: calc(0.0625rem + var(--layout-unit) - 1px);
+  --nook-contact-shadow: color-mix(
+    in srgb,
+    var(--scene-shadow) 32%,
+    transparent
+  );
+  --nook-lantern-spill: 16%;
+  --nook-lantern-reflection: 13%;
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  display: grid;
+}
+.home-screen[data-mode="dark"] {
+  --nook-lantern-spill: 30%;
+  --nook-lantern-reflection: 22%;
+}
+/* Keep rem-based copy responsive to browser font size and Large Text as the room grows. */
+@media (min-width: 768px) {
+  .large-text .home-screen {
+    --nook-type-unit: calc(0.0625rem + 1.2 * (var(--layout-unit) - 1px));
+  }
+}
+.home-screen::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: clamp(
+    calc(42 * var(--layout-unit)),
+    12%,
+    calc(90 * var(--layout-unit))
+  );
+  z-index: -2;
+  pointer-events: none;
+  border-top: calc(3 * var(--layout-unit)) double
+    color-mix(in srgb, var(--scene-wood) 24%, transparent);
+  box-shadow:
+    0 calc(-1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-paper) 35%, transparent),
+    0 calc(3 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(-5 * var(--layout-unit)) var(--scene-shadow) inset;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(119 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-wood) 7%, transparent)
+        calc(119 * var(--layout-unit)) calc(120 * var(--layout-unit))
+    ),
+    linear-gradient(
+      180deg,
+      var(--nook-wall-panel),
+      color-mix(in srgb, var(--nook-wall-panel) 94%, var(--scene-wood))
+    );
+}
+.nook-layout {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: calc(24 * var(--layout-unit));
+  padding: var(--nook-ceiling-clearance) var(--nook-room-gutter)
+    max(calc(12 * var(--layout-unit)), env(safe-area-inset-bottom, 0px));
+}
+.home-nook {
+  width: 100%;
+  position: relative;
+  isolation: isolate;
+  /* The furniture occupies the available wall; room trim has its own full-width layer. */
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(
+    calc(26 * var(--layout-unit)),
+    3cqw,
+    calc(72 * var(--layout-unit))
+  );
+  row-gap: calc(20 * var(--layout-unit));
+  padding: 0 0 calc(80 * var(--layout-unit));
+}
+.nook-window-scene {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-width: 0;
+  animation: nook-arrive 600ms ease-out both;
+}
+.nook-illustration-frame {
+  --applique-linen: color-mix(
+    in srgb,
+    var(--scene-paper) 87%,
+    var(--scene-wood-light)
+  );
+  --applique-thread: color-mix(
+    in srgb,
+    var(--scene-wood) 70%,
+    var(--scene-paper)
+  );
+  width: min(
+    100%,
+    max(
+      calc(300 * var(--layout-unit)),
+      calc(
+        (
+            100dvh - var(--app-header-height) - var(--nook-ceiling-clearance) -
+              188 * var(--layout-unit)
+          ) *
+          0.8
+      )
+    )
+  );
+  aspect-ratio: 440 / 550;
+  position: relative;
+  isolation: isolate;
+  flex-shrink: 0;
+}
+.nook-applique-backing {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(
+      calc(0.8 * var(--layout-unit)) calc(1.8 * var(--layout-unit))
+        calc(0.8 * var(--layout-unit)) var(--nook-contact-shadow)
+    )
+    drop-shadow(
+      calc(2 * var(--layout-unit)) calc(5 * var(--layout-unit))
+        calc(4 * var(--layout-unit))
+        color-mix(in srgb, var(--scene-shadow) 16%, transparent)
+    );
+  pointer-events: none;
+  user-select: none;
+}
+/* The light is centered on the actual lantern at (375, 400) in the artwork.
+   Its soft edge extends beyond the fabric onto the wall beside the board. */
+.nook-illustration-frame::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 25.2%;
+  top: 36.7%;
+  width: 120%;
+  height: 72%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse closest-side,
+    color-mix(
+      in srgb,
+      var(--scene-glow) var(--nook-lantern-spill),
+      transparent
+    ),
+    color-mix(in srgb, var(--scene-glow) 7%, transparent) 43%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+.nook-illustration {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.nook-moogle {
+  appearance: none;
+  position: absolute;
+  z-index: 2;
+  left: 24%;
+  bottom: 20.3%;
+  width: 38.5%;
+  height: 38.5%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform-origin: 50% 90%;
+  transition: transform 180ms ease-out;
+  border-radius: 40%;
+}
+.nook-moogle-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 97.6%;
+  /* A close contact shadow lifts the padded embroidery off the scene. */
+  filter: drop-shadow(0.5px 1.5px 0.7px var(--nook-contact-shadow));
+}
+.nook-moogle__bobble {
+  transform-box: view-box;
+  transform-origin: 101px 84px;
+  animation: pom-sway 9.6s step-end infinite;
+}
+.nook-moogle__pom {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pom-squash 9.6s step-end infinite;
+}
+.nook-moogle__wings {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 200ms ease-out;
+}
+.nook-moogle__belly {
+  transform-box: view-box;
+  transform-origin: 100px 239px;
+  animation: moogle-breathe 9.6s steps(14, end) infinite;
+}
+.nook-ivy-leaf {
+  animation: ivy-sway 14s steps(12, end) infinite;
+}
+.nook-posy {
+  transform-origin: 317px 391px;
+  animation: posy-sway 14s -4s steps(12, end) infinite;
+}
+.nook-lantern-halo {
+  animation: lantern-warmth 6.5s ease-in-out infinite;
+}
+.nook-window-star {
+  animation: star-glimmer 8s ease-in-out infinite;
+}
+.nook-moogle:is(:hover, :focus-visible) .nook-moogle__wings {
+  transform: scale(1.07, 1.03);
+}
+.nook-moogle:hover {
+  transform: rotate(-1.25deg);
+}
+.nook-moogle-note {
+  margin: calc(-5 * var(--layout-unit)) 0 0;
+  width: 100%;
+  min-height: 1.25em;
+  padding-inline: calc(5 * var(--layout-unit));
+  font: 400
+    clamp(
+      calc(18 * var(--layout-unit)),
+      2cqw,
+      calc(25 * var(--layout-unit))
+    )/1.25
+    var(--font-script);
+  color: var(--nook-muted);
+  text-align: center;
+  transform: rotate(-3deg);
+}
+.nook-welcome {
+  grid-column: 2;
+  grid-row: 1;
+  padding-left: calc(5 * var(--layout-unit));
+  padding-top: calc(8 * var(--layout-unit));
+  animation: nook-arrive 600ms 60ms ease-out both;
+}
+.nook-eyebrow {
+  color: var(--nook-muted);
+  font: 400 calc(11 * var(--nook-type-unit))/1.5 var(--font-navigation);
+  letter-spacing: 0.035em;
+  margin: 0 0 calc(14 * var(--layout-unit));
+}
+.nook-eyebrow span {
+  padding-inline: calc(5 * var(--layout-unit));
+  color: var(--scene-rose);
+}
+@media (min-width: 1200px) {
+  .nook-eyebrow {
+    display: none;
+  }
+}
+.nook-welcome h1 {
+  position: relative;
+  font: 400
+    clamp(
+      calc(33 * var(--nook-type-unit)),
+      4.4cqw,
+      calc(49 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+  letter-spacing: -0.035em;
+  color: var(--nook-heading);
+  margin: 0;
+  width: fit-content;
+}
+.nook-welcome h1::after {
+  content: "";
+  position: absolute;
+  height: calc(8 * var(--layout-unit));
+  left: 1%;
+  right: 8%;
+  bottom: calc(-8 * var(--layout-unit));
+  border-top: calc(1 * var(--layout-unit)) solid var(--scene-rose);
+  border-radius: 50%;
+  opacity: 0.65;
+  transform: rotate(-1deg);
+}
+.nook-welcome h1 > .nook-welcome-heart {
+  display: inline-block;
+  font-size: 0.65em;
+  color: var(--primary);
+  transform: rotate(10deg) translateY(-0.3em);
+  margin-left: 0.2em;
+}
+.nook-keepsakes {
+  --stationery-shadow: var(--nook-contact-shadow);
+  --noticeboard-light-origin: -8% 65%;
+  --stationery-edge: color-mix(
+    in srgb,
+    var(--scene-wood) 38%,
+    var(--ui-surface)
+  );
+  --noticeboard-linen: color-mix(
+    in srgb,
+    var(--ui-surface) 84%,
+    var(--scene-wood-light)
+  );
+  position: relative;
+  isolation: isolate;
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(
+    calc(20 * var(--layout-unit)),
+    2.8cqw,
+    calc(35 * var(--layout-unit))
+  );
+  margin-top: calc(12 * var(--layout-unit));
+  padding: calc(34 * var(--layout-unit)) calc(27 * var(--layout-unit))
+    calc(27 * var(--layout-unit));
+}
+/* The frame and running stitch gather the keepsakes onto one linen board. */
+.nook-keepsakes::before,
+.nook-keepsakes::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.nook-keepsakes::before {
+  inset: 0;
+  z-index: -2;
+  border: calc(7 * var(--layout-unit)) solid var(--scene-wood);
+  border-left-color: color-mix(
+    in srgb,
+    var(--scene-wood) 88%,
+    var(--scene-glow)
+  );
+  border-top-color: var(--scene-wood-light);
+  border-right-color: color-mix(
+    in srgb,
+    var(--scene-wood) 78%,
+    var(--scene-wood-dark)
+  );
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--scene-wood) 64%,
+    var(--scene-wood-dark)
+  );
+  border-radius: calc(5 * var(--layout-unit));
+  background:
+    radial-gradient(
+      ellipse at var(--noticeboard-light-origin),
+      color-mix(
+        in srgb,
+        var(--scene-glow) var(--nook-lantern-reflection),
+        transparent
+      ),
+      transparent 55%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-wood) 9%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--scene-paper) 38%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    linear-gradient(
+      120deg,
+      var(--noticeboard-linen),
+      color-mix(in srgb, var(--noticeboard-linen) 92%, var(--scene-wood))
+    );
+  background-clip: padding-box;
+  box-shadow:
+    0 0 0 calc(1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-wood-dark) 35%, transparent),
+    inset 0 0 0 calc(1 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-wood-dark) 24%, transparent),
+    inset calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(6 * var(--layout-unit))
+      color-mix(in srgb, var(--scene-shadow) 15%, transparent),
+    calc(2 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(10 * var(--layout-unit)) calc(-4 * var(--layout-unit))
+      var(--nook-contact-shadow);
+}
+.nook-keepsakes::after {
+  inset: calc(15 * var(--layout-unit));
+  z-index: -1;
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--scene-wood) 44%, transparent);
+  border-radius: calc(2 * var(--layout-unit));
+}
+.nook-keepsakes .nook-about {
+  color: var(--ui-ink);
+}
+.home-screen .nook-keepsakes a:focus-visible {
+  outline-color: var(--ui-focus);
+}
+:is(.high-contrast, .extra-dark) .nook-keepsakes::before {
+  background: var(--ui-surface);
+  border-color: var(--ui-rule);
+  box-shadow: none;
+}
+:is(.high-contrast, .extra-dark) .nook-keepsakes::after {
+  display: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-illustration-frame::before {
+  display: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-applique-backing {
+  opacity: 0.45;
+  filter: none;
+}
+.nook-photo {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: calc(10 * var(--layout-unit)) calc(10 * var(--layout-unit))
+    calc(12 * var(--layout-unit));
+  color: var(--ui-secondary);
+  background: transparent;
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit)) 0
+      var(--stationery-edge),
+    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) var(--stationery-shadow),
+    calc(4 * var(--layout-unit)) calc(14 * var(--layout-unit))
+      calc(12 * var(--layout-unit)) calc(-6 * var(--layout-unit))
+      var(--stationery-shadow);
+  transform: rotate(-4deg);
+  transform-origin: 50% 0;
+  transition:
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out;
+  animation: photo-arrive 650ms 100ms ease-out both;
+}
+.nook-holiday-keepsake {
+  position: absolute;
+  z-index: 4;
+  top: calc(-16 * var(--layout-unit));
+  right: calc(-17 * var(--layout-unit));
+  width: calc(62 * var(--layout-unit));
+  height: calc(85 * var(--layout-unit));
+  transform: rotate(11deg);
+  filter: drop-shadow(2px 3px 1px #38223530);
+  pointer-events: none;
+}
+.nook-halloween-ghost {
+  transform-origin: 296px 159px;
+  animation: ghost-swing 11s steps(12, end) infinite;
+}
+.nook-pumpkin-light {
+  animation: pumpkin-glow 5.7s ease-in-out infinite;
+}
+.nook-autumn-leaf {
+  transform-origin: 0 0;
+  animation: ivy-sway 12s steps(12, end) infinite;
+}
+@keyframes ghost-swing {
+  0%,
+  25%,
+  85%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  37.5% {
+    transform: rotate(0deg);
+  }
+  50%,
+  60% {
+    transform: rotate(2deg);
+  }
+  72.5% {
+    transform: rotate(-0.5deg);
+  }
+}
+@keyframes pumpkin-glow {
+  0%,
+  100% {
+    opacity: 0.76;
+  }
+  31% {
+    opacity: 0.98;
+  }
+  68% {
+    opacity: 0.98;
+  }
+  45% {
+    opacity: 0.87;
+  }
+}
+.nook-photo::before {
+  content: "";
+  position: absolute;
+  inset: calc(5 * var(--layout-unit)) calc(-3 * var(--layout-unit))
+    calc(-3 * var(--layout-unit)) calc(4 * var(--layout-unit));
+  z-index: -2;
+  border: calc(1 * var(--layout-unit)) solid var(--stationery-edge);
+  background: var(--bg-noise), var(--ui-surface-soft);
+  box-shadow: calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(2 * var(--layout-unit)) var(--stationery-shadow);
+  transform: rotate(2deg);
+  pointer-events: none;
+}
+.nook-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: calc(2 * var(--layout-unit));
+  background:
+    var(--bg-noise),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-wood) 6%, transparent) 0
+        calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    linear-gradient(
+      135deg,
+      var(--ui-surface-raised) 35%,
+      var(--ui-surface-soft)
+    );
+  box-shadow:
+    inset calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit)) 0
+      var(--ui-surface-raised),
+    inset 0 calc(-2 * var(--layout-unit)) 0 var(--stationery-edge);
+  pointer-events: none;
+}
+.nook-photo-seam {
+  position: absolute;
+  inset: calc(4 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--scene-wood) 42%, transparent);
+  border-radius: calc(1 * var(--layout-unit));
+  box-shadow: 0 calc(1 * var(--layout-unit)) 0
+    color-mix(in srgb, var(--ui-surface-raised) 70%, transparent);
+  pointer-events: none;
+}
+.nook-photo:is(:hover, :focus-visible) {
+  transform: rotate(-2deg) translateY(calc(-2 * var(--layout-unit)));
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) #624b3420,
+    calc(2 * var(--layout-unit)) calc(14 * var(--layout-unit))
+      calc(17 * var(--layout-unit)) calc(-8 * var(--layout-unit)) #382c4747;
+}
+.nook-tape {
+  position: absolute;
+  z-index: 2;
+  height: calc(32 * var(--layout-unit));
+  width: calc(94 * var(--layout-unit));
+  top: calc(-17 * var(--layout-unit));
+  left: calc(50% - calc(47 * var(--layout-unit)));
+  transform: rotate(3deg);
+  filter: drop-shadow(
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(1 * var(--layout-unit)) var(--stationery-shadow)
+  );
+  pointer-events: none;
+}
+.nook-tape::before,
+.nook-tape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    2% 2%,
+    96% 0,
+    99% 8%,
+    97% 16%,
+    100% 24%,
+    97% 33%,
+    100% 45%,
+    98% 56%,
+    100% 66%,
+    97% 76%,
+    99% 86%,
+    97% 99%,
+    1% 100%,
+    3% 88%,
+    0 79%,
+    2% 67%,
+    0 58%,
+    3% 47%,
+    0 34%,
+    3% 23%,
+    0 12%
+  );
+}
+.nook-tape::before {
+  background: var(--nook-washi);
+  opacity: 0.88;
+}
+.nook-tape::after {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-paper) 48%, transparent) 0
+        calc(0.7 * var(--layout-unit)),
+      transparent calc(0.7 * var(--layout-unit)) calc(2.5 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--scene-wood-dark) 12%, transparent) 0
+        calc(0.6 * var(--layout-unit)),
+      transparent calc(0.6 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    ),
+    linear-gradient(
+      180deg,
+      #fffdf540 0%,
+      transparent 44%,
+      #624b3433 48%,
+      #fffdf55c 53%,
+      transparent 61%,
+      #624b3421 100%
+    );
+  box-shadow: inset 0 calc(1 * var(--layout-unit)) 0 #fffdf570;
+}
+.nook-photo-image {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1.2;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--nook-paper) 76%, #e7dac4);
+  box-shadow:
+    0 0 0 calc(1 * var(--layout-unit)) var(--stationery-edge),
+    0 calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      var(--stationery-shadow);
+}
+.nook-photo-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg-noise);
+  box-shadow: inset calc(1 * var(--layout-unit)) calc(1 * var(--layout-unit))
+    calc(3 * var(--layout-unit))
+    color-mix(in srgb, var(--scene-wood-dark) 15%, transparent);
+  pointer-events: none;
+}
+.nook-photo-corners {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.nook-photo-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.home-screen[data-mode="dark"] .nook-photo-image {
+  background: #d3bfa8;
+}
+.nook-photo-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(4 * var(--nook-type-unit));
+  padding: calc(8 * var(--nook-type-unit)) calc(1 * var(--nook-type-unit)) 0;
+  font: 400
+    clamp(
+      calc(18 * var(--nook-type-unit)),
+      2cqw,
+      calc(24 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+}
+.nook-photo-caption svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+  flex-shrink: 0;
+}
+.nook-photo-label {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--layout-unit));
+  margin-top: calc(5 * var(--layout-unit));
+  font: 400 calc(9 * var(--nook-type-unit))/1.5 var(--font-navigation);
+  letter-spacing: 0.03em;
+  color: var(--ui-muted);
+}
+.nook-photo-label svg {
+  color: var(--scene-rose);
+  width: calc(11 * var(--layout-unit));
+  height: calc(11 * var(--layout-unit));
+}
+.nook-notes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: calc(26 * var(--layout-unit));
+}
+.nook-keepsakes .nook-wall-wish {
+  position: relative;
+  align-self: center;
+  width: fit-content;
+  max-width: 88%;
+  margin: 0 0 calc(5 * var(--layout-unit));
+  padding: calc(14 * var(--layout-unit)) calc(15 * var(--layout-unit))
+    calc(9 * var(--layout-unit));
+  color: var(--ui-action);
+  background:
+    var(--bg-noise),
+    linear-gradient(160deg, var(--ui-surface-raised), var(--ui-accent-soft));
+  border-radius: calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(4 * var(--layout-unit)) calc(1 * var(--layout-unit));
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    0 calc(1 * var(--layout-unit)) 0 var(--stationery-edge),
+    calc(2 * var(--layout-unit)) calc(5 * var(--layout-unit))
+      calc(4 * var(--layout-unit)) calc(-2 * var(--layout-unit))
+      var(--stationery-shadow);
+  font-size: calc(21 * var(--layout-unit));
+  opacity: 1;
+}
+.nook-note-pin {
+  position: absolute;
+  top: calc(-3 * var(--layout-unit));
+  left: 48%;
+  width: calc(9 * var(--layout-unit));
+  height: calc(9 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) solid var(--scene-brass);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 25%,
+    var(--scene-paper) 0 9%,
+    var(--scene-gold) 30%,
+    var(--scene-brass) 95%
+  );
+  box-shadow:
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit)) 0
+      var(--stationery-shadow),
+    calc(2 * var(--layout-unit)) calc(4 * var(--layout-unit))
+      calc(3 * var(--layout-unit)) var(--stationery-shadow);
+}
+.nook-keepsakes .nook-wall-wish svg {
+  max-width: 100%;
+}
+.nook-letter {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  padding: calc(32 * var(--layout-unit)) calc(19 * var(--layout-unit))
+    calc(23 * var(--layout-unit));
+  background: transparent;
+  color: var(--ui-ink);
+  filter: drop-shadow(
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(1 * var(--layout-unit)) var(--stationery-shadow)
+  );
+  border-radius: calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(8 * var(--layout-unit)) calc(1 * var(--layout-unit));
+  transform: rotate(1deg);
+  transform-origin: 90% 0;
+  transition: transform 180ms ease-out;
+  animation: note-arrive 650ms 160ms ease-out both;
+}
+.nook-letter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    var(--bg-noise),
+    linear-gradient(
+      180deg,
+      transparent 48%,
+      color-mix(in srgb, var(--scene-wood) 12%, transparent) 49%,
+      color-mix(in srgb, var(--ui-surface-raised) 65%, transparent) 50%,
+      transparent 52%
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(10 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-rose) 23%, transparent)
+        calc(11 * var(--layout-unit)),
+      transparent calc(12 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      transparent 0 calc(27 * var(--layout-unit)),
+      color-mix(in srgb, var(--scene-wood) 19%, transparent)
+        calc(27 * var(--layout-unit)) calc(28 * var(--layout-unit))
+    ),
+    linear-gradient(
+      174deg,
+      var(--ui-surface-raised),
+      var(--ui-accent-soft) 76%,
+      var(--ui-surface) 94%,
+      var(--stationery-edge) 99%,
+      var(--ui-surface-raised)
+    );
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    inset calc(-1 * var(--layout-unit)) calc(-2 * var(--layout-unit)) 0
+      var(--stationery-edge);
+  pointer-events: none;
+  clip-path: polygon(
+    0 calc(20 * var(--layout-unit)),
+    calc(20 * var(--layout-unit)) 0,
+    16% 1%,
+    29% 0,
+    34% 1%,
+    47% 0,
+    59% 1%,
+    68% 0,
+    79% 1%,
+    91% 0,
+    100% 1%,
+    99.5% 19%,
+    100% 36%,
+    99% 58%,
+    100% 76%,
+    99% 99%,
+    88% 100%,
+    76% 99%,
+    66% 100%,
+    52% 99%,
+    41% 100%,
+    31% 99%,
+    20% 100%,
+    9% 99%,
+    0 100%,
+    0.6% 79%,
+    0 66%,
+    0.7% 45%,
+    0 27%
+  );
+}
+.nook-letter-fold {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: calc(20 * var(--layout-unit));
+  height: calc(20 * var(--layout-unit));
+  background: linear-gradient(
+    135deg,
+    var(--stationery-edge) 46%,
+    var(--ui-surface-raised) 52%,
+    var(--ui-surface-soft) 83%,
+    var(--stationery-edge)
+  );
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  border-radius: 0 0 calc(3 * var(--layout-unit)) 0;
+  box-shadow: calc(2 * var(--layout-unit)) calc(2 * var(--layout-unit))
+    calc(2 * var(--layout-unit)) var(--stationery-shadow);
+  pointer-events: none;
+}
+.nook-pressed-flower {
+  position: absolute;
+  z-index: 1;
+  width: calc(42 * var(--layout-unit));
+  height: calc(89 * var(--layout-unit));
+  right: calc(8 * var(--layout-unit));
+  top: calc(-59 * var(--layout-unit));
+  transform: rotate(9deg);
+  filter: drop-shadow(
+    calc(1 * var(--layout-unit)) calc(2 * var(--layout-unit))
+      calc(0.7 * var(--layout-unit)) var(--stationery-shadow)
+  );
+  pointer-events: none;
+}
+.nook-letter::after {
+  content: "";
+  width: 84%;
+  height: calc(16 * var(--layout-unit));
+  position: absolute;
+  bottom: calc(1 * var(--layout-unit));
+  right: calc(8 * var(--layout-unit));
+  border-radius: 50%;
+  box-shadow: 0 calc(8 * var(--layout-unit)) calc(7 * var(--layout-unit))
+    var(--stationery-shadow);
+  transform: rotate(-3deg);
+  z-index: -2;
+  pointer-events: none;
+}
+.nook-letter:is(:hover, :focus-visible) {
+  transform: rotate(-0.5deg) translateY(calc(-2 * var(--layout-unit)));
+}
+.nook-paperclip {
+  position: absolute;
+  z-index: 2;
+  top: calc(-19 * var(--layout-unit));
+  right: calc(18 * var(--layout-unit));
+  height: calc(43 * var(--layout-unit));
+  width: calc(19 * var(--layout-unit));
+  overflow: visible;
+  transform: rotate(10deg);
+  pointer-events: none;
+}
+.nook-letter-title {
+  color: var(--ui-action);
+  font: 400
+    clamp(
+      calc(21 * var(--nook-type-unit)),
+      2.6cqw,
+      calc(30 * var(--nook-type-unit))
+    )/1.1
+    var(--font-script);
+}
+.nook-letter-copy {
+  margin-top: calc(11 * var(--layout-unit));
+  font: 400 calc(13 * var(--nook-type-unit))/1.65 var(--font-navigation);
+}
+.nook-letter-bottom {
+  color: var(--ui-action);
+  border-top: 1px solid var(--ui-rule);
+  padding-top: calc(10 * var(--layout-unit));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(4 * var(--layout-unit));
+  margin-top: calc(23 * var(--layout-unit));
+  font: 400 calc(10 * var(--nook-type-unit))/1.2 var(--font-navigation);
+}
+.nook-letter-bottom svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+}
+.nook-about {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(44 * var(--layout-unit));
+  max-width: 100%;
+  width: fit-content;
+  align-self: center;
+  padding: calc(9 * var(--layout-unit)) calc(14 * var(--layout-unit));
+  gap: calc(7 * var(--layout-unit));
+  color: var(--nook-text);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-leaf) 12%, transparent) 0
+        calc(0.7 * var(--layout-unit)),
+      transparent calc(0.7 * var(--layout-unit)) calc(2.5 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-surface-raised) 70%, transparent) 0
+        calc(0.8 * var(--layout-unit)),
+      transparent calc(0.8 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    var(--ui-secondary-soft);
+  border: calc(1 * var(--layout-unit)) solid
+    color-mix(in srgb, var(--scene-leaf) 30%, var(--ui-surface));
+  border-radius: calc(2 * var(--layout-unit));
+  box-shadow:
+    inset 0 calc(1 * var(--layout-unit)) 0 var(--ui-surface-raised),
+    calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+      calc(2 * var(--layout-unit)) var(--stationery-shadow);
+  transform: rotate(-3deg);
+  font: 400
+    clamp(
+      calc(18 * var(--layout-unit)),
+      2cqw,
+      calc(23 * var(--layout-unit))
+    )/1.2
+    var(--font-script);
+}
+.nook-about::before {
+  content: "";
+  position: absolute;
+  inset: calc(4 * var(--layout-unit));
+  border: calc(1 * var(--layout-unit)) dashed
+    color-mix(in srgb, var(--ui-secondary) 46%, transparent);
+  box-shadow: 0 calc(1 * var(--layout-unit)) 0
+    color-mix(in srgb, var(--ui-surface-raised) 65%, transparent);
+  pointer-events: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-photo::after,
+:root:is(.high-contrast, .dark.extra-dark) .nook-letter::before,
+:root:is(.high-contrast, .dark.extra-dark) .nook-keepsakes .nook-about {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-rule);
+  box-shadow: none;
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-photo-seam,
+:root:is(.high-contrast, .dark.extra-dark) .nook-letter-fold,
+:root:is(.high-contrast, .dark.extra-dark) .nook-keepsakes .nook-about::before {
+  display: none;
+}
+.nook-about svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+  flex-shrink: 0;
+}
+.nook-about svg:first-child {
+  color: var(--scene-rose);
+}
+.nook-about:hover span {
+  text-decoration: underline;
+  text-decoration-color: var(--scene-rose);
+  text-underline-offset: calc(5 * var(--layout-unit));
+}
+.home-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(10 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+  font: 400 calc(9 * var(--nook-type-unit))/1.4 var(--font-navigation);
+  color: var(--nook-muted);
+}
+.home-footer > a:last-child {
+  min-height: calc(44 * var(--layout-unit));
+  display: inline-flex;
+  align-items: center;
+  text-align: right;
+}
+.home-appearance {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+}
+.home-appearance svg {
+  width: calc(14 * var(--layout-unit));
+  height: calc(14 * var(--layout-unit));
+}
+.home-appearance i {
+  width: calc(7 * var(--layout-unit));
+  height: calc(7 * var(--layout-unit));
+  border-radius: 50%;
+  background: var(--scene-rose);
+  margin-left: calc(2 * var(--layout-unit));
+}
+.home-appearance i:nth-last-child(2) {
+  background: var(--scene-leaf);
+  margin-left: calc(-4 * var(--layout-unit));
+}
+.home-appearance i:last-child {
+  background: var(--scene-gold);
+  margin-left: calc(-4 * var(--layout-unit));
+}
+.home-screen a:focus-visible,
+.home-screen button:focus-visible {
+  outline: calc(2 * var(--layout-unit)) solid var(--ui-wall-focus);
+  outline-offset: calc(6 * var(--layout-unit));
+}
+.nook-candle-flame > .nook-candle-flame-frame {
+  visibility: hidden;
+  animation: lantern-flame-frame 1.92s step-end infinite;
+  animation-delay: calc(var(--flame-frame) * 240ms - 1.92s);
+}
+.nook-candle-flame > .nook-candle-flame-frame[data-frame="0"] {
+  /* Keep one complete stitched flame when motion is disabled. */
+  visibility: visible;
+}
+/* The interface responds smoothly. Sewn objects use deliberate rest poses,
+   anticipation and settling, with held exposures during each gesture. */
+@keyframes nook-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(12 * var(--layout-unit));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes photo-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(18 * var(--layout-unit));
+    rotate: 4deg;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+@keyframes note-arrive {
+  from {
+    opacity: 0;
+    translate: 0 calc(15 * var(--layout-unit));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes pom-sway {
+  0%,
+  25%,
+  55%,
+  100% {
+    transform: rotate(0deg);
+  }
+  26.25% {
+    transform: rotate(-0.8deg);
+  }
+  27.5% {
+    transform: rotate(-1.3deg);
+  }
+  28.75% {
+    transform: rotate(-0.4deg);
+  }
+  30% {
+    transform: rotate(1.6deg);
+  }
+  31.25% {
+    transform: rotate(3.9deg);
+  }
+  32.5% {
+    transform: rotate(5.6deg);
+  }
+  33.75%,
+  36.25% {
+    transform: rotate(6.2deg);
+  }
+  37.5% {
+    transform: rotate(5.2deg);
+  }
+  38.75% {
+    transform: rotate(3.2deg);
+  }
+  40% {
+    transform: rotate(0.8deg);
+  }
+  41.25% {
+    transform: rotate(-1.4deg);
+  }
+  42.5% {
+    transform: rotate(-2.9deg);
+  }
+  43.75%,
+  46.25% {
+    transform: rotate(-3.6deg);
+  }
+  47.5% {
+    transform: rotate(-2.6deg);
+  }
+  48.75% {
+    transform: rotate(-1.3deg);
+  }
+  50% {
+    transform: rotate(-0.3deg);
+  }
+  51.25% {
+    transform: rotate(0.7deg);
+  }
+  52.5% {
+    transform: rotate(0.9deg);
+  }
+  53.75% {
+    transform: rotate(0.4deg);
+  }
+}
+@keyframes pom-squash {
+  0%,
+  30%,
+  38.75%,
+  50%,
+  100% {
+    transform: scale(1);
+  }
+  31.25%,
+  33.75% {
+    transform: scale(0.975, 1.025);
+  }
+  35%,
+  36.25% {
+    transform: scale(1.02, 0.98);
+  }
+  43.75%,
+  46.25% {
+    transform: scale(0.985, 1.015);
+  }
+  47.5% {
+    transform: scale(1.01, 0.99);
+  }
+}
+@keyframes lantern-flame-frame {
+  0% {
+    visibility: visible;
+  }
+  12.5%,
+  100% {
+    visibility: hidden;
+  }
+}
+@keyframes moogle-breathe {
+  0%,
+  18%,
+  67%,
+  100% {
+    transform: scale(1);
+  }
+  36%,
+  43% {
+    transform: scale(1.018, 1.016);
+  }
+  43% {
+    animation-timing-function: steps(18, end);
+  }
+}
+@keyframes ivy-sway {
+  0%,
+  25%,
+  70%,
+  100% {
+    transform: rotate(-0.6deg);
+  }
+  35%,
+  40% {
+    transform: rotate(1.2deg);
+  }
+  40% {
+    animation-timing-function: steps(18, end);
+  }
+  55% {
+    transform: rotate(-0.4deg);
+    animation-timing-function: steps(6, end);
+  }
+  60% {
+    transform: rotate(-0.9deg);
+  }
+}
+@keyframes posy-sway {
+  0%,
+  30%,
+  75%,
+  100% {
+    transform: rotate(-0.6deg);
+  }
+  40%,
+  45% {
+    transform: rotate(0.8deg);
+  }
+  45% {
+    animation-timing-function: steps(18, end);
+  }
+  60% {
+    transform: rotate(-0.2deg);
+    animation-timing-function: steps(6, end);
+  }
+  65% {
+    transform: rotate(-0.8deg);
+  }
+}
+@keyframes lantern-warmth {
+  0%,
+  100% {
+    opacity: 0.86;
+  }
+  48% {
+    opacity: 1;
+  }
+}
+@keyframes star-glimmer {
+  0%,
+  100% {
+    opacity: 0.48;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+@container (max-width: 850px) {
+  .nook-layout {
+    padding-inline: calc(26 * var(--layout-unit));
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    column-gap: calc(20 * var(--layout-unit));
+    row-gap: calc(18 * var(--layout-unit));
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(30 * var(--nook-type-unit)),
+      4.5cqw,
+      calc(38 * var(--nook-type-unit))
+    );
+  }
+  .nook-eyebrow {
+    font-size: calc(9 * var(--nook-type-unit));
+    letter-spacing: 0.03em;
+  }
+  .nook-keepsakes {
+    gap: calc(18 * var(--layout-unit));
+    padding: calc(30 * var(--layout-unit)) calc(18 * var(--layout-unit))
+      calc(22 * var(--layout-unit));
+  }
+  .nook-letter {
+    padding: calc(22 * var(--layout-unit)) calc(12 * var(--layout-unit))
+      calc(14 * var(--layout-unit));
+  }
+  .nook-letter-title {
+    font-size: calc(23 * var(--nook-type-unit));
+  }
+  .nook-letter-copy {
+    font-size: calc(11 * var(--nook-type-unit));
+  }
+  .nook-letter-bottom {
+    margin-top: calc(17 * var(--layout-unit));
+    font-size: calc(9 * var(--nook-type-unit));
+  }
+  .nook-about {
+    font-size: calc(18 * var(--layout-unit));
+    gap: calc(5 * var(--layout-unit));
+  }
+  .nook-about > svg:first-child {
+    display: none;
+  }
+  .nook-photo-caption {
+    font-size: calc(19 * var(--nook-type-unit));
+  }
+  .nook-photo-caption svg {
+    width: calc(13 * var(--layout-unit));
+    height: calc(13 * var(--layout-unit));
+  }
+  .nook-notes {
+    gap: calc(18 * var(--layout-unit));
+  }
+}
+/* A tall display gets two generous wall areas instead of a small desktop row. */
+@media (min-width: 601px) and (max-aspect-ratio: 1/1) {
+  .nook-layout {
+    padding-top: clamp(
+      calc(100 * var(--layout-unit)),
+      8dvh,
+      calc(116 * var(--layout-unit))
+    );
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: space-between;
+    row-gap: calc(24 * var(--layout-unit));
+    padding-bottom: calc(70 * var(--layout-unit));
+  }
+  .nook-window-scene {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .nook-illustration-frame {
+    width: min(100%, 42cqw);
+  }
+  .nook-welcome {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(40 * var(--nook-type-unit)),
+      5.8cqw,
+      calc(64 * var(--nook-type-unit))
+    );
+  }
+  .nook-keepsakes {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 0;
+    --noticeboard-light-origin: 15% -20%;
+  }
+  .nook-photo {
+    width: min(100%, 26dvh);
+    justify-self: center;
+  }
+  .nook-wall-hanging {
+    display: none;
+  }
+}
+@container (max-width: 600px) {
+  .nook-holiday-keepsake {
+    width: calc(46 * var(--layout-unit));
+    height: calc(63 * var(--layout-unit));
+    top: calc(-12 * var(--layout-unit));
+    right: calc(-12 * var(--layout-unit));
+  }
+  .nook-layout {
+    padding-top: calc(96 * var(--layout-unit));
+    padding-inline: calc(20 * var(--layout-unit));
+    gap: calc(24 * var(--layout-unit));
+  }
+  .home-nook {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: calc(15 * var(--layout-unit));
+    row-gap: calc(32 * var(--layout-unit));
+    padding: 0 0 calc(56 * var(--layout-unit));
+  }
+  .nook-window-scene {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    justify-content: center;
+  }
+  .nook-illustration-frame {
+    width: min(100%, calc(230 * var(--layout-unit)));
+  }
+  .nook-moogle-note {
+    font-size: calc(18 * var(--layout-unit));
+    margin-top: 0;
+    width: calc(100% + calc(10 * var(--layout-unit)));
+  }
+  .nook-welcome {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
+    align-self: center;
+  }
+  .nook-eyebrow {
+    font-size: calc(8 * var(--layout-unit));
+    line-height: 1.7;
+    margin-bottom: calc(12 * var(--layout-unit));
+  }
+  .nook-eyebrow span {
+    padding-inline: calc(2 * var(--layout-unit));
+  }
+  .nook-welcome h1 {
+    font-size: clamp(
+      calc(28 * var(--nook-type-unit)),
+      8cqw,
+      calc(39 * var(--nook-type-unit))
+    );
+    line-height: 1.12;
+    max-width: calc(200 * var(--nook-type-unit));
+  }
+  .nook-welcome h1 > .nook-welcome-heart {
+    display: block;
+    margin-top: calc(15 * var(--layout-unit));
+    margin-left: 38%;
+    font-size: 0.8em;
+  }
+  .nook-welcome h1::after {
+    bottom: calc(28 * var(--layout-unit));
+    right: 5%;
+  }
+  .nook-keepsakes {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    --noticeboard-light-origin: 18% -30%;
+    gap: calc(18 * var(--layout-unit));
+    margin-top: 0;
+    padding: calc(30 * var(--layout-unit)) calc(20 * var(--layout-unit))
+      calc(22 * var(--layout-unit));
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+  .nook-photo {
+    padding: calc(7 * var(--layout-unit)) calc(7 * var(--layout-unit))
+      calc(9 * var(--layout-unit));
+  }
+  .nook-tape {
+    width: calc(70 * var(--layout-unit));
+    height: calc(21 * var(--layout-unit));
+    left: calc(50% - calc(35 * var(--layout-unit)));
+    top: calc(-11 * var(--layout-unit));
+  }
+  .nook-photo-caption {
+    font-size: calc(19 * var(--nook-type-unit));
+    padding-top: calc(6 * var(--nook-type-unit));
+  }
+  .nook-photo-caption svg {
+    display: none;
+  }
+  .nook-photo-label {
+    font-size: calc(8 * var(--layout-unit));
+    margin-top: calc(4 * var(--layout-unit));
+  }
+  .nook-letter {
+    padding: calc(22 * var(--layout-unit)) calc(12 * var(--layout-unit))
+      calc(13 * var(--layout-unit));
+  }
+  .nook-letter-title {
+    font-size: calc(25 * var(--nook-type-unit));
+  }
+  .nook-letter-copy {
+    font-size: calc(11 * var(--nook-type-unit));
+    line-height: 1.6;
+    margin-top: calc(8 * var(--layout-unit));
+  }
+  .nook-letter-bottom {
+    margin-top: calc(17 * var(--layout-unit));
+    font-size: calc(9 * var(--layout-unit));
+  }
+  .nook-notes {
+    gap: calc(12 * var(--layout-unit));
+  }
+  .nook-about {
+    font-size: calc(18 * var(--layout-unit));
+    padding-inline: calc(9 * var(--layout-unit));
+    gap: calc(4 * var(--layout-unit));
+  }
+  .nook-about svg {
+    width: calc(12 * var(--layout-unit));
+    height: calc(12 * var(--layout-unit));
+  }
+  .home-footer {
+    font-size: calc(10 * var(--nook-type-unit));
+    gap: calc(8 * var(--layout-unit));
+  }
+  .home-footer > a:last-child {
+    max-width: calc(115 * var(--layout-unit));
+  }
+  .home-appearance {
+    gap: calc(5 * var(--layout-unit));
+  }
+  .home-appearance i {
+    display: none;
+  }
+}
+@container (max-width: 360px) {
+  .nook-about {
+    font-size: calc(17 * var(--layout-unit));
+  }
+  .nook-about svg {
+    display: none;
+  }
+}
+.dyslexia-font .home-screen :is(h1, p, span, a) {
+  font-family: var(--font-body);
+}
+.dyslexia-font .nook-welcome h1 {
+  font-size: clamp(
+    calc(22 * var(--nook-type-unit)),
+    3.5cqw,
+    calc(38 * var(--nook-type-unit))
+  );
+}
+.dyslexia-font .nook-letter-title {
+  font-size: calc(16 * var(--nook-type-unit));
+}
+@container (max-width: 600px) {
+  .dyslexia-font .nook-illustration-frame {
+    width: min(100%, calc(230 * var(--layout-unit)));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-screen *,
+  .home-screen *::before,
+  .home-screen *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.reduce-motion .home-screen *,
+.reduce-motion .home-screen *::before,
+.reduce-motion .home-screen *::after {
+  animation: none !important;
+  transition: none !important;
+}

@@ -1,0 +1,93 @@
+.nook-hw-atmosphere {
+  --hw-snow-thread: #f2f3ed;
+  --hw-snow-shadow: #91a3b7;
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nook-window-exterior[data-mode="dark"] .nook-hw-atmosphere {
+  --hw-snow-thread: #d9e7ee;
+  --hw-snow-shadow: #576e8b;
+}
+
+/* Smaller knots drift behind the city; a few larger flakes pass near the glass. */
+.nook-hw-snow--far {
+  --snow-duration: 38s;
+  --snow-frames: 304;
+  --snow-sway: 4px;
+  --snow-gust-duration: 12s;
+  --snow-gust-frames: 48;
+  opacity: 0.5;
+}
+.nook-hw-snow--middle {
+  --snow-duration: 27s;
+  --snow-frames: 216;
+  --snow-sway: 9px;
+  --snow-gust-duration: 9s;
+  --snow-gust-frames: 36;
+  opacity: 0.78;
+}
+.nook-hw-snow--near {
+  --snow-duration: 18s;
+  --snow-frames: 144;
+  --snow-sway: 17px;
+  --snow-gust-duration: 7s;
+  --snow-gust-frames: 28;
+  opacity: 0.92;
+}
+
+/* One stitch held every eighth of a second. Duplicate tiles make the reset
+   identical to the last frame: the snowfall never fades away as a sheet. */
+.nook-hw-snowfall {
+  transform: translateY(-120px);
+  animation: nook-hw-snowfall var(--snow-duration)
+    steps(var(--snow-frames), end) infinite;
+}
+.nook-hw-snowfall--0 {
+  animation-delay: calc(var(--snow-duration) * -0.31);
+}
+.nook-hw-snowfall--1 {
+  transform: translateY(-320px);
+  animation-delay: calc(var(--snow-duration) * -0.81);
+}
+@keyframes nook-hw-snowfall {
+  from {
+    transform: translateY(-480px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Wind has its own clock, so it cannot jump when a vertical tile wraps. */
+.nook-hw-snow-gust {
+  animation: nook-hw-snow-gust var(--snow-gust-duration)
+    steps(var(--snow-gust-frames), end) infinite;
+}
+.nook-hw-snow-gust--1 {
+  animation-delay: calc(var(--snow-gust-duration) * -0.45);
+  animation-direction: reverse;
+}
+@keyframes nook-hw-snow-gust {
+  0%,
+  100% {
+    transform: translateX(calc(var(--snow-sway) * -1));
+  }
+  50% {
+    transform: translateX(var(--snow-sway));
+  }
+}
+
+/* The base transforms retain a complete scattering of snow when motion is off. */
+.reduce-motion .nook-hw-atmosphere * {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-hw-atmosphere * {
+    animation: none !important;
+  }
+}

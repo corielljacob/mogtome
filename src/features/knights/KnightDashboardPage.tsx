@@ -1,267 +1,395 @@
-import type { CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import {
-  FileText,
-  Link2,
-  Sparkles,
-  Lightbulb,
-  Loader2,
-  Inbox,
-} from "lucide-react";
-
-import { PageLayout, PageHeader, SectionLabel } from "@/shared/ui/PageShell";
-import { Tag } from "@/shared/ui/Tag";
-import { KawaiiStar, KawaiiSparkle } from "@/shared/ui/kawaiiMotifs";
-import { Sticker, BubbleSticker, TapeStrip, Dot } from "@/shared/ui/stickers";
-import { PendingSubmissions } from "@/features/knights/PendingSubmissions";
-import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
+import { useTheme } from "@/shared/contexts/ThemeContext";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { biographyApi } from "@/shared/api/biography";
+import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
+import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
+import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
+import { NookFairyLights } from "@/features/home/components/NookFairyLights";
+import { PendingSubmissions } from "./PendingSubmissions";
+import { DashboardIcon, type DashboardIconName } from "./DashboardIcons";
+import mailMoogle from "@/assets/moogles/moogle mail.webp";
+import "./dashboard-screen.css";
 
-function CountBadge({ n }: { n: number }) {
-  return <Tag color="var(--primary)">{n}</Tag>;
-}
+type Workspace = "biographies" | "links";
+type MappingTab = "suggested" | "manual";
 
-interface StatTileProps {
-  icon: React.ReactNode;
-  count: number;
-  label: string;
-  hint: string;
-  targetId: string;
-  isLoading: boolean;
-  delay: number;
-}
-
-function StatTile({
+function DeskSummary({
   icon,
-  count,
   label,
-  hint,
-  targetId,
-  isLoading,
-  delay,
-}: StatTileProps) {
-  const isClear = !isLoading && count === 0;
-
-  const handleClick = () => {
-    document
-      .getElementById(targetId)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
+  count,
+  detail,
+  loading,
+  error,
+  action,
+  onClick,
+}: {
+  icon: DashboardIconName;
+  label: string;
+  count: number;
+  detail: string;
+  loading: boolean;
+  error: boolean;
+  action: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
-      onClick={handleClick}
-      style={{ animationDelay: `${delay}s` }}
-      className="surface hover-lift p-4 sm:p-5 flex items-center gap-4 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 animate-[fadeSlideIn_0.4s_ease-out_both]"
-      aria-label={`${count} ${label} - ${hint}. Jump to section.`}
+      className="dashboard-summary"
+      onClick={onClick}
+      aria-label={`${label}: ${loading ? "loading" : error ? "unavailable" : count}. ${action}.`}
     >
-      <span className="icon-badge w-11 h-11 shrink-0 text-[var(--primary)]">
-        {icon}
+      <span className="dashboard-summary-icon">
+        <DashboardIcon name={icon} size={25} />
       </span>
-      <span className="min-w-0">
-        {isLoading ? (
-          <Loader2
-            className="w-6 h-6 text-[var(--text-subtle)] animate-spin"
-            aria-hidden="true"
-          />
-        ) : (
-          <span
-            className={`font-number text-3xl font-bold leading-none ${isClear ? "text-[var(--text-subtle)]" : "text-[var(--text)]"}`}
-          >
-            {count}
-          </span>
-        )}
-        <span className="block font-soft font-semibold text-sm text-[var(--text)] mt-1.5">
-          {label}
-        </span>
-        <span className="block text-xs text-[var(--text-muted)]">
-          {isClear ? "all clear, kupo!" : hint}
+      <span className="dashboard-summary-copy">
+        <span className="dashboard-summary-label">{label}</span>
+        <strong>
+          {loading ? (
+            <span className="dashboard-count-loading" aria-label="Loading" />
+          ) : error ? (
+            "—"
+          ) : (
+            count
+          )}
+        </strong>
+        <span className="dashboard-summary-detail">
+          {loading
+            ? "Checking the desk…"
+            : error
+              ? "Couldn’t load · open to retry"
+              : detail}
         </span>
       </span>
+      <DashboardIcon
+        name="arrow-right"
+        className="dashboard-summary-arrow"
+        size={19}
+      />
     </button>
   );
 }
 
 export function KnightDashboard() {
   const { user } = useAuth();
-  const firstName = user?.memberName?.split(" ")[0] ?? "Knight";
-
-  // shares the ['biography-submissions'] cache with <PendingSubmissions />, so
-  // no extra request.
+  const { isDarkMode, activeEvent, isEventThemeActive } = useTheme();
+  const reducedMotion = useReducedMotion();
+  const [workspace, setWorkspace] = useState<Workspace>("biographies");
+  const [mappingTab, setMappingTab] = useState<MappingTab>("suggested");
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const workspaceRef = useRef<HTMLElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const pendingTabScroll = useRef(false);
+  useStickyToolbar(workspaceRef, toolbarRef);
+  useLayoutEffect(() => {
+    if (!pendingTabScroll.current) return;
+    pendingTabScroll.current = false;
+    const panel = document.getElementById(`dashboard-panel-${workspace}`);
+    if (!panel) return;
+    const toolbar = toolbarRef.current;
+    const clearance =
+      toolbar?.dataset.stickyDisabled === "true"
+        ? 16
+        : (toolbar?.getBoundingClientRect().bottom ?? 0) + 16;
+    const top = panel.getBoundingClientRect().top;
+    if (top < clearance || top > window.innerHeight) {
+      panel.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [workspace]);
   const {
-    data: pendingBios,
-    isLoading: isLoadingBios,
-    isError: isErrorBios,
+    data: submissions,
+    isLoading: loadingBios,
+    isError: errorBios,
   } = useQuery({
     queryKey: ["biography-submissions"],
     queryFn: () => biographyApi.getPendingSubmissions(),
     staleTime: 1000 * 30,
   });
-  const pendingCount = pendingBios?.length ?? 0;
-
-  // shares cache with the <CharacterMapping /> tool
-  const {
-    allCharacters,
-    totalMatches,
-    isLoading: isLoadingMapping,
-    isError: isErrorMapping,
-  } = useCharacterMapping();
-  const unmappedCount = allCharacters.length;
-  const autoMatchCount = totalMatches;
-
-  const hasError = isErrorBios || isErrorMapping;
-  const isLoading = isLoadingBios || isLoadingMapping;
+  // One model keeps summary counts, skipped suggestions, and linked rows in sync.
+  const mapping = useCharacterMapping();
+  const pendingCount =
+    submissions?.filter((submission) => submission.status === "Pending")
+      .length ?? 0;
+  const characterCount = mapping.allCharacters.length;
+  const discordCount = mapping.allDiscordUsers.length;
   const allClear =
-    !isLoading &&
-    !hasError &&
+    !loadingBios &&
+    !errorBios &&
+    !mapping.isLoading &&
+    !mapping.isError &&
     pendingCount === 0 &&
-    unmappedCount === 0 &&
-    autoMatchCount === 0;
+    characterCount === 0 &&
+    discordCount === 0;
+  const firstName = user?.memberName?.split(" ")[0] || "friend";
+
+  const openWorkspace = (next: Workspace, nextMappingTab?: MappingTab) => {
+    pendingTabScroll.current = false;
+    setWorkspace(next);
+    if (nextMappingTab) setMappingTab(nextMappingTab);
+    requestAnimationFrame(() => {
+      const panel = document.getElementById(`dashboard-panel-${next}`);
+      panel?.focus({ preventScroll: true });
+      panel?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  };
+
+  const changeWorkspace = (next: Workspace) => {
+    if (next === workspace) return;
+    pendingTabScroll.current = true;
+    setWorkspace(next);
+  };
+
+  const onTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - index;
+    changeWorkspace(next === 0 ? "biographies" : "links");
+    tabs.current[next]?.focus({ preventScroll: true });
+  };
 
   return (
-    <PageLayout bleed>
-      <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-        <span
-          className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
-          aria-hidden="true"
+    <div className="dashboard-screen" data-mode={isDarkMode ? "dark" : "light"}>
+      <NookRoomDecor isDark={isDarkMode} />
+      <div className="dashboard-content">
+        <NookFairyLights
+          eventId={isEventThemeActive ? (activeEvent?.id ?? null) : null}
         />
-        <span
-          className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
-          style={{ "--pin": "var(--secondary)" } as CSSProperties}
-          aria-hidden="true"
-        />
-        <span
-          className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
-          style={{ "--pin": "var(--accent)" } as CSSProperties}
-          aria-hidden="true"
-        />
-        <span
-          className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
-          style={{ "--pin": "var(--secondary)" } as CSSProperties}
-          aria-hidden="true"
-        />
+        <header className="dashboard-masthead">
+          <div>
+            <p className="dashboard-eyebrow">
+              <DashboardIcon name="shield" size={15} /> Kupo Life · Member care
+            </p>
+            <h1>
+              Knight dashboard <DashboardIcon name="leaf" size={26} />
+            </h1>
+            <p>Welcome back, {firstName}. Here’s what needs a hand.</p>
+          </div>
+          <Link className="dashboard-home-link" to="/">
+            <DashboardIcon name="arrow-left" size={16} /> Back home
+          </Link>
+        </header>
 
-        <PageHeader
-          opener="~ Tend to the realm ~"
-          title="Knight Dashboard"
-          subtitle={`Welcome back, ${firstName}`}
-          stickers={
-            <>
-              <TapeStrip
-                className="top-4 right-[7%] rotate-[12deg]"
-                color="var(--primary)"
-              />
-              <Sticker
-                className="hidden sm:flex left-[5%] top-1/2 -translate-y-1/2 h-12 w-12 -rotate-[12deg]"
-                color="var(--primary)"
-              >
-                <KawaiiSparkle className="w-6 h-6 text-white" />
-              </Sticker>
-              <Sticker
-                className="hidden md:flex right-[5%] top-1/2 -translate-y-1/2 h-11 w-11 rotate-[12deg]"
-                color="var(--accent)"
-              >
-                <KawaiiStar className="w-6 h-6 text-white" />
-              </Sticker>
-              <BubbleSticker
-                className="hidden lg:block left-[14%] bottom-5 rotate-[4deg]"
-                color="var(--secondary)"
-              >
-                on duty!
-              </BubbleSticker>
-              <Dot
-                className="hidden md:block right-[17%] top-6 h-2.5 w-2.5"
-                color="var(--primary)"
-              />
-            </>
-          }
-        />
-
-        <section className="mb-12">
-          <SectionLabel
-            label="Needs Attention"
-            icon={<Inbox className="w-4 h-4" aria-hidden="true" />}
-          />
-
-          {allClear ? (
-            <div className="surface p-6 sm:p-8 text-center">
-              <p className="font-accent text-2xl sm:text-3xl text-[var(--primary)]">
-                All caught up, kupo! ✦
-              </p>
-              <p className="text-sm text-[var(--text-muted)] mt-1">
-                Nothing needs a knight&apos;s attention right now.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              <StatTile
-                icon={<FileText className="w-5 h-5" aria-hidden="true" />}
-                count={pendingCount}
-                label="Biographies"
-                hint="awaiting review"
-                targetId="submissions"
-                isLoading={isLoadingBios}
-                delay={0.05}
-              />
-              <StatTile
-                icon={<Link2 className="w-5 h-5" aria-hidden="true" />}
-                count={unmappedCount}
-                label="Characters"
-                hint="left to link"
-                targetId="mapping"
-                isLoading={isLoadingMapping}
-                delay={0.1}
-              />
-              <StatTile
-                icon={<Sparkles className="w-5 h-5" aria-hidden="true" />}
-                count={autoMatchCount}
-                label="Auto-matches"
-                hint="ready to confirm"
-                targetId="mapping"
-                isLoading={isLoadingMapping}
-                delay={0.15}
-              />
-            </div>
+        <section
+          className="dashboard-overview"
+          aria-labelledby="dashboard-overview-title"
+        >
+          <div className="dashboard-section-heading">
+            <h2 id="dashboard-overview-title">On the desk</h2>
+            <span>Choose a task to get started</span>
+          </div>
+          <div
+            className="dashboard-summary-grid"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <DeskSummary
+              icon="book"
+              label="Biographies"
+              count={pendingCount}
+              detail={
+                pendingCount === 1
+                  ? "biography awaiting review"
+                  : "biographies awaiting review"
+              }
+              loading={loadingBios}
+              error={errorBios}
+              action="Open biography reviews"
+              onClick={() => openWorkspace("biographies")}
+            />
+            <DeskSummary
+              icon="people"
+              label="Characters to link"
+              count={characterCount}
+              detail={`${discordCount} Discord ${discordCount === 1 ? "account" : "accounts"} also unlinked`}
+              loading={mapping.isLoading}
+              error={mapping.isError}
+              action="Choose a character and Discord account"
+              onClick={() => openWorkspace("links", "manual")}
+            />
+            <DeskSummary
+              icon="sparkles"
+              label="Suggested links"
+              count={mapping.totalMatches}
+              detail="Characters and Discord accounts with similar names"
+              loading={mapping.isLoading}
+              error={mapping.isError}
+              action="Review suggested links"
+              onClick={() => openWorkspace("links", "suggested")}
+            />
+          </div>
+          {allClear && (
+            <p className="dashboard-all-clear" role="status">
+              <DashboardIcon name="check" size={18} />
+              <span>
+                <strong>All caught up, kupo.</strong> No biographies or account
+                links need review.
+              </span>
+            </p>
           )}
         </section>
 
-        <section id="submissions" className="mb-12 scroll-mt-24">
-          <SectionLabel
-            label="Biography Submissions"
-            icon={<FileText className="w-4 h-4" aria-hidden="true" />}
-            badge={
-              pendingCount > 0 ? <CountBadge n={pendingCount} /> : undefined
-            }
-          />
-          <PendingSubmissions />
-        </section>
+        <div className="dashboard-desk-layout">
+          <section
+            ref={workspaceRef}
+            className="dashboard-workspace"
+            aria-label="Member care workspace"
+          >
+            <div
+              ref={toolbarRef}
+              className="dashboard-tabs"
+              role="tablist"
+              aria-label="Dashboard tools"
+            >
+              {(
+                [
+                  {
+                    id: "biographies",
+                    label: "Biography reviews",
+                    icon: "book",
+                  },
+                  { id: "links", label: "Character links", icon: "link" },
+                ] as const
+              ).map((tab, index) => (
+                <button
+                  key={tab.id}
+                  ref={(node) => {
+                    tabs.current[index] = node;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`dashboard-tab-${tab.id}`}
+                  aria-controls={`dashboard-panel-${tab.id}`}
+                  aria-selected={workspace === tab.id}
+                  tabIndex={workspace === tab.id ? 0 : -1}
+                  onClick={() => changeWorkspace(tab.id)}
+                  onKeyDown={(event) => onTabKeyDown(event, index)}
+                >
+                  <DashboardIcon name={tab.icon} size={19} />
+                  <span>{tab.label}</span>
+                  {tab.id === "biographies" &&
+                    !loadingBios &&
+                    !errorBios &&
+                    pendingCount > 0 && (
+                      <span className="dashboard-tab-count">
+                        {pendingCount}
+                      </span>
+                    )}
+                </button>
+              ))}
+            </div>
+            <div
+              id="dashboard-panel-biographies"
+              className="dashboard-panel"
+              role="tabpanel"
+              aria-labelledby="dashboard-tab-biographies"
+              hidden={workspace !== "biographies"}
+              tabIndex={0}
+            >
+              <header className="dashboard-panel-heading">
+                <p className="dashboard-paper-eyebrow">The review tray</p>
+                <h2>Biographies to review</h2>
+              </header>
+              <PendingSubmissions />
+            </div>
+            <div
+              id="dashboard-panel-links"
+              className="dashboard-panel"
+              role="tabpanel"
+              aria-labelledby="dashboard-tab-links"
+              hidden={workspace !== "links"}
+              tabIndex={0}
+            >
+              <header className="dashboard-panel-heading">
+                <p className="dashboard-paper-eyebrow">Put a name to a face</p>
+                <h2>Link member accounts.</h2>
+                <p>Match each member’s character to their Discord account.</p>
+              </header>
+              <CharacterMapping
+                embedded
+                mapping={mapping}
+                tab={mappingTab}
+                onTabChange={setMappingTab}
+              />
+            </div>
+          </section>
 
-        <section id="mapping" className="mb-12 scroll-mt-24">
-          <SectionLabel
-            label="Character Mapping"
-            icon={<Link2 className="w-4 h-4" aria-hidden="true" />}
-            badge={
-              unmappedCount > 0 ? <CountBadge n={unmappedCount} /> : undefined
-            }
-          />
-          <CharacterMapping />
-        </section>
-
-        <div className="text-center pb-2">
-          <p className="font-accent text-lg text-[var(--text-muted)] inline-flex items-center gap-2">
-            <Lightbulb
-              className="w-4 h-4 text-[var(--accent)]"
-              aria-hidden="true"
-            />
-            Have an idea for the dashboard? Ping{" "}
-            <span className="text-[var(--primary)] font-semibold">Plane</span>,
-            kupo~
-          </p>
+          <aside className="dashboard-aside" aria-label="Helpful notes">
+            <section className="dashboard-note">
+              <span className="dashboard-washi" aria-hidden="true" />
+              <DashboardIcon name="feather" size={27} />
+              <h2>
+                {workspace === "biographies"
+                  ? "Before you publish"
+                  : "Before you link"}
+              </h2>
+              {workspace === "biographies" ? (
+                <>
+                  <p>
+                    Keep each member’s own voice. Approving publishes their
+                    words as written.
+                  </p>
+                  <p>
+                    Not sure about a submission? Leave it in the tray and check
+                    in with the member.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    A similar name is a starting point. Make sure the character
+                    and Discord account belong to the same person.
+                  </p>
+                  <p>
+                    Skip a suggestion if you’re unsure, or choose the pair by
+                    hand.
+                  </p>
+                </>
+              )}
+              <span className="dashboard-note-signoff">
+                when in doubt, ask the member
+              </span>
+            </section>
+            <nav
+              className="dashboard-quick-links"
+              aria-label="Community shortcuts"
+            >
+              <Link to="/members">
+                <DashboardIcon name="people" size={20} />
+                <span>
+                  Members<small>Find a member</small>
+                </span>
+                <DashboardIcon name="arrow-right" size={16} />
+              </Link>
+              <Link to="/about">
+                <DashboardIcon name="leaf" size={20} />
+                <span>
+                  Meet the crew<small>Faces around the FC</small>
+                </span>
+                <DashboardIcon name="arrow-right" size={16} />
+              </Link>
+            </nav>
+            <figure className="dashboard-moogle-note">
+              <img src={mailMoogle} alt="" aria-hidden="true" />
+              <figcaption>Thanks for lending a hand.</figcaption>
+            </figure>
+          </aside>
         </div>
+        <footer className="dashboard-footer">
+          <DashboardIcon name="leaf" size={16} />
+          <span>Thanks for lending a hand, kupo.</span>
+        </footer>
       </div>
-    </PageLayout>
+    </div>
   );
 }

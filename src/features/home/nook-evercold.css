@@ -1,0 +1,23 @@
+/* A pressed violet petal and a little amber lantern warm the cool room. */
+.home-screen[data-scene="evercold"] .nook-evercold-charm {
+  position: absolute;
+  bottom: calc(100% - 18 * var(--layout-unit));
+  right: 1%;
+  width: min(29%, calc(69 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(7deg);
+  filter: drop-shadow(1px 3px 1.5px #354f5b2b);
+}
+
+.home-screen[data-scene="evercold"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    110deg,
+    #53747db3 0 calc(7 * var(--layout-unit)),
+    #e7e9e3cf calc(7 * var(--layout-unit)) calc(9 * var(--layout-unit)),
+    #99819ba8 calc(9 * var(--layout-unit)) calc(16 * var(--layout-unit)),
+    #c2a06aab calc(16 * var(--layout-unit)) calc(17 * var(--layout-unit))
+  );
+}

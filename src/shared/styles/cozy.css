@@ -1,0 +1,413 @@
+/* A quiet book masthead, with a ribbon keeping the current chapter. */
+:root {
+  --layout-unit: 1px;
+  --app-header-height: calc(
+    76 * var(--layout-unit) + env(safe-area-inset-top, 0px)
+  );
+  --font-navigation: "Lora", Georgia, serif;
+}
+@media (min-width: 1920px) and (min-height: 1080px) {
+  :root {
+    --layout-unit: clamp(1px, min(0.0520833333vw, 0.0925925926dvh), 2px);
+  }
+}
+.cozy-app-content {
+  display: flow-root;
+  min-height: 100lvh;
+  overflow-x: clip;
+}
+.cozy-topbar {
+  --nav-paper: var(--nook-wall, #eee1d2);
+  --nav-ink: var(--ui-wall-ink);
+  --nav-muted: var(--ui-wall-muted);
+  --nav-accent: var(--ui-wall-focus);
+  --nav-ribbon: var(--ui-secondary);
+  --nav-rule: color-mix(in srgb, var(--nav-ink) 24%, transparent);
+  position: relative;
+  z-index: 40;
+  min-height: var(--app-header-height);
+  padding: env(safe-area-inset-top, 0px)
+    max(calc(28 * var(--layout-unit)), env(safe-area-inset-right, 0px)) 0
+    max(calc(28 * var(--layout-unit)), env(safe-area-inset-left, 0px));
+  color: var(--nav-ink);
+  background: color-mix(in srgb, var(--nav-paper) 88%, transparent);
+  isolation: isolate;
+}
+.storybook-header {
+  position: relative;
+  width: 100%;
+  max-width: calc(1120 * var(--layout-unit));
+  min-width: 0;
+  min-height: calc(76 * var(--layout-unit));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: calc(24 * var(--layout-unit));
+}
+.storybook-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--nav-rule);
+  pointer-events: none;
+  z-index: -2;
+}
+.storybook-nav {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  align-self: stretch;
+  min-width: 0;
+  gap: 0 calc(8 * var(--layout-unit));
+  font: 400 calc(0.875rem + 14 * (var(--layout-unit) - 1px))/1.3
+    var(--font-navigation);
+}
+.storybook-nav a {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(5 * var(--layout-unit));
+  min-width: calc(44 * var(--layout-unit));
+  min-height: calc(76 * var(--layout-unit));
+  padding: calc(10 * var(--layout-unit)) calc(12 * var(--layout-unit));
+  color: var(--nav-muted);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  isolation: isolate;
+  transition: color 160ms ease;
+}
+/* One cut-tail ribbon hangs from the top edge of the current chapter. */
+.storybook-nav a::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(-6 * var(--layout-unit));
+  z-index: -1;
+  background:
+    linear-gradient(var(--nav-rule), var(--nav-rule)) left
+      calc(4 * var(--layout-unit)) top / 1px 100% no-repeat,
+    linear-gradient(var(--nav-rule), var(--nav-rule)) right
+      calc(4 * var(--layout-unit)) top / 1px 100% no-repeat,
+    var(--bg-noise),
+    var(--nav-ribbon);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    50% calc(100% - 7 * var(--layout-unit)),
+    0 100%
+  );
+  opacity: 0;
+  transform: scaleY(0.9);
+  transform-origin: top;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+  pointer-events: none;
+}
+.storybook-nav a:hover {
+  color: var(--nav-ink);
+}
+.storybook-nav a[aria-current] {
+  color: var(--ui-on-action);
+}
+.storybook-nav a:hover::before {
+  opacity: 0.35;
+  transform: scaleY(1);
+}
+.storybook-nav a[aria-current]::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+.nav-chapter {
+  color: var(--nav-muted);
+  font-size: 0.64em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+.storybook-nav a[aria-current] .nav-chapter {
+  color: inherit;
+}
+.topbar-controls,
+.nav-utilities {
+  display: flex;
+  align-items: center;
+}
+.topbar-controls {
+  justify-content: flex-end;
+  gap: calc(12 * var(--layout-unit));
+}
+.nav-utilities {
+  gap: 0;
+}
+.nav-icon-button {
+  display: grid;
+  place-items: center;
+  width: calc(44 * var(--layout-unit));
+  height: calc(44 * var(--layout-unit));
+  flex: none;
+  color: var(--nav-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    color 160ms,
+    background-color 160ms;
+}
+.nav-icon-button > svg {
+  width: calc(17 * var(--layout-unit));
+  height: calc(17 * var(--layout-unit));
+}
+.nav-icon-button > svg:not([data-ink-icon]) {
+  stroke-width: 1.35;
+}
+.nav-icon-button:hover,
+.nav-icon-button[aria-current] {
+  color: var(--nav-ink);
+  background: color-mix(in srgb, var(--nav-accent) 12%, transparent);
+}
+.cozy-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+  min-width: calc(44 * var(--layout-unit));
+  padding: calc(8 * var(--layout-unit)) calc(12 * var(--layout-unit));
+  color: var(--nav-ink);
+  border: 0;
+  border-left: 1px solid var(--nav-rule);
+  background: transparent;
+  font: 400 calc(0.75rem + 12 * (var(--layout-unit) - 1px))/1.2
+    var(--font-navigation);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 160ms;
+}
+.cozy-login > svg {
+  width: calc(16 * var(--layout-unit));
+  height: calc(16 * var(--layout-unit));
+  opacity: 0.75;
+}
+.cozy-login:hover {
+  color: var(--primary);
+}
+.cozy-login:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.account-menu {
+  position: relative;
+}
+.account-toggle {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--layout-unit));
+  min-width: calc(44 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+  color: var(--nav-ink);
+  border-radius: calc(6 * var(--layout-unit));
+  padding: calc(4 * var(--layout-unit));
+  font: 400 calc(0.8125rem + 13 * (var(--layout-unit) - 1px))/1.2
+    var(--font-navigation);
+  cursor: pointer;
+}
+.account-toggle img {
+  width: calc(28 * var(--layout-unit));
+  height: calc(28 * var(--layout-unit));
+  object-fit: cover;
+  border: 1px solid var(--nav-rule);
+  border-radius: 50%;
+}
+.account-toggle > span {
+  max-width: calc(90 * var(--layout-unit));
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.account-toggle > svg {
+  width: calc(13 * var(--layout-unit));
+  height: calc(13 * var(--layout-unit));
+}
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 12 * var(--layout-unit));
+  right: 0;
+  z-index: 50;
+  min-width: calc(210 * var(--layout-unit));
+  max-width: calc(100vw - 32px);
+  overflow-wrap: anywhere;
+  padding: calc(8 * var(--layout-unit));
+  border: 1px solid var(--nav-rule);
+  border-radius: calc(7 * var(--layout-unit));
+  background: var(--nav-paper);
+  box-shadow: 0 calc(12 * var(--layout-unit)) calc(40 * var(--layout-unit))
+    #21182726;
+  font: 400 calc(0.8125rem + 13 * (var(--layout-unit) - 1px))/1.4
+    var(--font-navigation);
+}
+.account-identity {
+  display: grid;
+  gap: calc(4 * var(--layout-unit));
+  padding: calc(10 * var(--layout-unit));
+  margin-bottom: calc(5 * var(--layout-unit));
+  border-bottom: 1px solid var(--nav-rule);
+}
+.account-identity strong {
+  color: var(--nav-ink);
+  font-weight: 500;
+}
+.account-identity span {
+  color: var(--nav-muted);
+  font-size: 0.85em;
+}
+.account-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: calc(9 * var(--layout-unit));
+  width: 100%;
+  min-height: calc(44 * var(--layout-unit));
+  padding: calc(9 * var(--layout-unit));
+  color: var(--nav-ink);
+  border-radius: calc(4 * var(--layout-unit));
+  cursor: pointer;
+  text-align: left;
+}
+.account-dropdown button:hover,
+.account-toggle:hover {
+  background: color-mix(in srgb, var(--nav-accent) 10%, transparent);
+}
+.account-dropdown button svg {
+  width: calc(17 * var(--layout-unit));
+  height: calc(17 * var(--layout-unit));
+  color: var(--nav-accent);
+}
+.cozy-app-content main:focus {
+  outline: none;
+}
+.cozy-app-content :is(a, button):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.cozy-topbar :is(a, button):focus-visible {
+  outline-color: var(--ui-wall-focus);
+}
+.dyslexia-font .cozy-topbar :is(a, button, span) {
+  font-family: "Comic Sans MS", var(--font-body);
+}
+.high-contrast .cozy-topbar {
+  --nav-paper: var(--bg);
+  --nav-ribbon: var(--ui-action);
+  --nav-rule: var(--text);
+  background: var(--bg);
+}
+.high-contrast .storybook-nav a[aria-current] > span:last-child {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 1060px) {
+  .storybook-header {
+    column-gap: 14px;
+  }
+  .topbar-controls {
+    gap: 4px;
+  }
+  .cozy-login span,
+  .account-toggle > span {
+    display: none;
+  }
+  .cozy-login {
+    padding-inline: 10px;
+  }
+}
+@media (max-width: 900px) {
+  :root {
+    --app-header-height: calc(108px + env(safe-area-inset-top, 0px));
+  }
+  .cozy-topbar {
+    padding: calc(8px + env(safe-area-inset-top, 0px))
+      max(20px, env(safe-area-inset-right, 0px)) 0
+      max(20px, env(safe-area-inset-left, 0px));
+  }
+  .storybook-header {
+    min-height: 100px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    gap: 0 8px;
+  }
+  .storybook-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: space-evenly;
+    gap: 0;
+    font-size: 0.8125rem;
+  }
+  .storybook-nav a {
+    min-height: 48px;
+    padding: 5px 10px;
+    gap: 4px;
+  }
+  .storybook-nav a::before {
+    bottom: -5px;
+  }
+  .topbar-controls {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 0;
+  }
+  .account-toggle {
+    justify-content: center;
+  }
+  .account-toggle > svg {
+    display: none;
+  }
+}
+@media (max-width: 400px) {
+  :root {
+    --app-header-height: calc(104px + env(safe-area-inset-top, 0px));
+  }
+  .cozy-topbar {
+    padding-inline: max(12px, env(safe-area-inset-left, 0px))
+      max(12px, env(safe-area-inset-right, 0px));
+  }
+  .storybook-header {
+    min-height: 96px;
+    column-gap: 4px;
+  }
+  .storybook-nav a {
+    padding-inline: 4px;
+  }
+  :root.large-text {
+    --app-header-height: calc(152px + env(safe-area-inset-top, 0px));
+  }
+  .large-text .storybook-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .large-text .storybook-nav:has(a:nth-child(5)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .large-text .storybook-header {
+    grid-template-rows: 48px auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cozy-topbar *,
+  .cozy-topbar *::before,
+  .cozy-topbar *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.reduce-motion .cozy-topbar *,
+.reduce-motion .cozy-topbar *::before,
+.reduce-motion .cozy-topbar *::after {
+  animation: none !important;
+  transition: none !important;
+}

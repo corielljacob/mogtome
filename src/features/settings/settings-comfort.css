@@ -1,0 +1,250 @@
+.settings-comfort-groups {
+  display: grid;
+  gap: 25px;
+}
+
+.settings-comfort-group {
+  min-width: 0;
+}
+
+.settings-comfort-group .settings-subheading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: var(--nook-ink);
+}
+
+.settings-comfort-group .settings-subheading svg {
+  color: var(--ui-secondary);
+}
+
+.settings-comfort-dark-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 0 12px;
+}
+
+.settings-comfort-dark-help svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.settings-comfort-color {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--nook-ink) 14%, transparent);
+}
+
+.settings-comfort-color > label {
+  color: var(--nook-ink);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.settings-comfort-select {
+  position: relative;
+  min-width: 0;
+}
+
+.settings-comfort-select select {
+  appearance: none;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 40px 10px 12px;
+  border: 1px solid var(--ui-rule);
+  border-radius: 7px;
+  background: var(--ui-surface-raised);
+  color: var(--nook-ink);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.settings-comfort-select select:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+
+.settings-comfort-select > svg {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--nook-ink);
+  pointer-events: none;
+}
+
+.settings-comfort-color .settings-help {
+  margin: 0;
+}
+
+.settings-account-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 14px 0;
+  color: var(--ui-muted);
+  font-size: 0.9375rem;
+}
+
+.settings-account-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 5px 0 20px;
+}
+
+.settings-account-portrait {
+  flex: 0 0 92px;
+  align-self: flex-start;
+  padding: 6px 6px 7px;
+  background: var(--ui-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--nook-ink) 13%, transparent);
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--nook-ink) 10%, transparent);
+  transform: rotate(-2deg);
+}
+
+.settings-account-portrait img,
+.settings-account-portrait-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center 25%;
+  background: var(--ui-secondary-soft);
+  color: var(--ui-secondary);
+}
+
+.settings-account-photo-caption {
+  display: block;
+  margin-top: 6px;
+  text-align: center;
+  color: var(--nook-ink);
+  font-family: var(--font-handwriting, cursive);
+  font-size: 0.75rem;
+}
+
+.settings-account-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-account-details h3,
+.settings-account-signed-out h3 {
+  margin: 0 0 6px;
+  color: var(--nook-ink);
+  font-size: 1.375rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.settings-account-connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  color: var(--ui-secondary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.settings-account-connection svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.settings-account-rank {
+  margin: 0;
+  color: var(--ui-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.settings-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding-top: 17px;
+  border-top: 1px solid color-mix(in srgb, var(--nook-ink) 14%, transparent);
+}
+
+.settings-account-actions .settings-button,
+.settings-account-login {
+  min-height: 44px;
+}
+
+.settings-account-actions .settings-account-logout {
+  background: transparent;
+  box-shadow: none;
+}
+
+.settings-account-signed-out {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px 13px;
+}
+
+.settings-account-discord-mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--ui-action-soft);
+  color: var(--ui-action);
+}
+
+.settings-account-discord-mark svg {
+  width: 27px;
+  height: 27px;
+}
+
+.settings-account-signed-out h3 {
+  font-size: 1.125rem;
+}
+
+.settings-account-login {
+  grid-column: 1 / -1;
+  justify-self: start;
+  background: var(--ui-action);
+  color: var(--ui-on-action);
+  border-color: var(--ui-action);
+}
+
+.settings-account-login:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ui-action) 88%, var(--ui-ink));
+}
+
+.settings-account-login svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 440px) {
+  .settings-account-identity {
+    gap: 13px;
+  }
+
+  .settings-account-portrait {
+    flex-basis: 76px;
+  }
+
+  .settings-account-details h3 {
+    font-size: 1.25rem;
+  }
+
+  .settings-account-actions .settings-button {
+    flex-grow: 1;
+    justify-content: center;
+  }
+}

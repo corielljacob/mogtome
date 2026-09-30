@@ -1,12 +1,13 @@
 /**
- * Maps Lucide-compatible icon names to Iconify icons (mostly the hand-sketched
- * `pepicons-pencil` pack, `game-icons` for RPG flair). The Vite alias
+ * Maps Lucide-compatible utility names to our shared ink drawings, retaining
+ * Iconify's hand-sketched and RPG illustrations for the remaining names. The Vite alias
  * `lucide-react` → this file means every `import { Heart } from 'lucide-react'`
- * transparently gets the sketchy icons.
+ * transparently uses the same icon language throughout the app.
  */
 
 import { Icon as IconifyIcon } from "@iconify/react";
 import type { ComponentProps, ReactElement, SVGAttributes } from "react";
+import { InkIcon, type InkIconName } from "./InkIcon";
 
 export interface IconProps extends SVGAttributes<SVGElement> {
   /** when absent the icon is aria-hidden */
@@ -21,7 +22,62 @@ export interface IconProps extends SVGAttributes<SVGElement> {
 
 export type LucideIcon = (props: IconProps) => ReactElement;
 
+const inkIcons: Partial<Record<string, InkIconName>> = {
+  Home: "home",
+  Settings: "settings",
+  Search: "search",
+  X: "close",
+  ChevronDown: "chevron-down",
+  ChevronUp: "chevron-up",
+  ChevronLeft: "chevron-left",
+  ChevronRight: "chevron-right",
+  ArrowRight: "arrow-right",
+  ArrowLeft: "arrow-left",
+  ArrowDown: "arrow-down",
+  ArrowUpDown: "sort",
+  ExternalLink: "external",
+  Check: "check",
+  Info: "info",
+  Filter: "sliders",
+  SlidersHorizontal: "sliders",
+  Monitor: "monitor",
+  Eye: "eye",
+  User: "user",
+  UserCircle: "user-circle",
+  Users: "people",
+  LogIn: "login",
+  LogOut: "logout",
+  BookOpen: "book",
+  Pencil: "edit",
+  Inbox: "inbox",
+  MessageCircle: "chat",
+  MessageSquare: "chat",
+  RefreshCw: "refresh",
+  RotateCcw: "reset",
+  AlertTriangle: "alert",
+  Link2: "link",
+  Wifi: "wifi",
+  Heart: "heart",
+  Stars: "sparkles",
+  Sparkles: "sparkles",
+  Crown: "crown",
+  Shield: "shield",
+  Gem: "crystal",
+  Compass: "compass",
+  Leaf: "leaf",
+  Flower: "flower",
+  Sun: "sun",
+  Moon: "moon",
+  Calendar: "calendar",
+  CalendarDays: "calendar",
+  Clock: "clock",
+  Contrast: "contrast",
+  Focus: "focus",
+  Palette: "palette",
+};
+
 function adapt(displayName: string, iconName: string): LucideIcon {
+  const inkName = inkIcons[displayName];
   const Wrapped = ({
     title,
     strokeWidth: _sw,
@@ -36,6 +92,28 @@ function adapt(displayName: string, iconName: string): LucideIcon {
     // dimension precedence: explicit size > w/h > CSS-only (via className)
     const w = size ?? width;
     const h = size ?? height;
+
+    if (inkName) {
+      const passthrough = rest as Omit<
+        ComponentProps<typeof InkIcon>,
+        "name" | "size" | "title"
+      >;
+
+      return (
+        <InkIcon
+          name={inkName}
+          title={title}
+          className={className}
+          style={style}
+          // Iconify defaults to 1em and infers an omitted dimension from the other.
+          width={w ?? h ?? "1em"}
+          height={h ?? w ?? "1em"}
+          aria-hidden={title ? undefined : true}
+          {...(title ? { "aria-label": title } : {})}
+          {...passthrough}
+        />
+      );
+    }
 
     // `rest` is SVG-typed but Iconify re-types a few shared props (`mode`,
     // `onLoad`, `rotate`) more narrowly, so cast to its own props type
@@ -62,7 +140,7 @@ function adapt(displayName: string, iconName: string): LucideIcon {
   return Wrapped;
 }
 
-// primary pack is pepicons-pencil; game-icons / pepicons-pop fill gaps
+// Preserve the original illustration fallbacks for names without a shared glyph.
 export const Home = adapt("Home", "pepicons-pencil:house");
 export const Settings = adapt("Settings", "pepicons-pencil:gear");
 export const Search = adapt("Search", "pepicons-pencil:loop");

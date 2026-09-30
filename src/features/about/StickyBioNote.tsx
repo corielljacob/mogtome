@@ -1,186 +1,182 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  type CSSProperties,
-} from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, ChevronDown } from "lucide-react";
 import { biographyApi } from "@/shared/api/biography";
+import { AboutIcon } from "./AboutIcons";
+import "./about-bio.css";
+
+const MAX_BIO_LENGTH = 500;
 
 export function StickyBioNote({
   bio,
-  rankHex,
   editable,
-  tilt,
+  memberName,
 }: {
   bio?: string;
   rankHex: string;
   editable: boolean;
   tilt: number;
+  memberName?: string;
 }) {
   const queryClient = useQueryClient();
+  const bioId = useId();
+  const editorId = useId();
+  const countId = useId();
+  const errorId = useId();
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const returnFocusRef = useRef(false);
   const [editing, setEditing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [draft, setDraft] = useState(bio ?? "");
+  const [savedBio, setSavedBio] = useState<{
+    source: string | undefined;
+    value: string;
+  } | null>(null);
+  // Keep a successful edit visible while the staff query refreshes. New server data wins.
+  const displayedBio =
+    savedBio && savedBio.source === bio ? savedBio.value : (bio ?? "");
+  const hasBio = displayedBio.trim().length > 0;
+  const canExpand =
+    displayedBio.length > 240 || displayedBio.split("\n").length > 5;
+  const isEditing = editing && editable;
+  const overLimit = draft.length > MAX_BIO_LENGTH;
 
-  // track whether the note overflows (and isn't scrolled to the end) so we can
-  // show a "scroll for more" hint on long bios.
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrollState, setScrollState] = useState({
-    canScroll: false,
-    atBottom: true,
-  });
-  const updateScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const canScroll = el.scrollHeight - el.clientHeight > 4;
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
-    setScrollState((prev) =>
-      prev.canScroll === canScroll && prev.atBottom === atBottom
-        ? prev
-        : { canScroll, atBottom },
-    );
-  }, []);
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    updateScroll();
-    const ro = new ResizeObserver(updateScroll);
-    ro.observe(el);
-    let cancelled = false;
-    void document.fonts?.ready?.then(() => {
-      if (!cancelled) updateScroll();
-    });
-    return () => {
-      cancelled = true;
-      ro.disconnect();
-    };
-  }, [updateScroll, bio, editing]);
+    if (isEditing) textareaRef.current?.focus();
+    else if (returnFocusRef.current) {
+      editButtonRef.current?.focus();
+      returnFocusRef.current = false;
+    }
+  }, [isEditing]);
 
   const mutation = useMutation({
-    mutationFn: (b: string) => biographyApi.setBiography(b),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    mutationFn: (value: string) => biographyApi.setBiography(value),
+    onSuccess: (_result, value) => {
+      setSavedBio({ source: bio, value });
+      void queryClient.invalidateQueries({ queryKey: ["staff"] });
+      setExpanded(false);
+      returnFocusRef.current = true;
       setEditing(false);
     },
   });
 
-  // A warm Post-it, tinted a touch toward the rank colour. Fixed colours (not
-  // theme tokens) so it reads as a physical sticky note in light + dark.
-  const stickyBg = `color-mix(in srgb, ${rankHex} 13%, #fbf2d3)`;
-  const stickyStyle: CSSProperties = {
-    background: stickyBg,
-    boxShadow:
-      "2px 5px 13px -3px rgba(0, 0, 0, 0.30), inset 0 -14px 18px -14px rgba(90, 70, 25, 0.18)",
-  };
-  // iOS Safari won't touch-scroll an overflow container nested inside a
-  // transform (the note's rotate), so opt this one back into momentum scrolling
-  // and keep the gesture contained to the note.
-  const scrollerStyle: CSSProperties = {
-    ...stickyStyle,
-    WebkitOverflowScrolling: "touch",
-    touchAction: "pan-y",
-    // only trap the scroll when the note actually has more to show; otherwise a
-    // wheel over a short note should fall through and scroll the page.
-    overscrollBehavior: scrollState.canScroll ? "contain" : "auto",
+  const beginEditing = () => {
+    setDraft(displayedBio);
+    mutation.reset();
+    setEditing(true);
   };
 
-  // Same overlap + tilt in both states so the note keeps its scrapbook spot,
-  // tucked over the polaroid's edge. Fixed size keeps every note consistent;
-  // a long bio scrolls inside it rather than stretching the card.
-  // phone sizes are trimmed so the polaroid + overlapping note (plus its tilt)
-  // fit a ~360px screen without clipping; full scrapbook sizes return at sm.
-  const shellCls =
-    "relative z-20 shrink-0 -ml-4 sm:-ml-6 mt-4 sm:mt-6 w-44 sm:w-64 lg:w-72";
-  const shellStyle: CSSProperties = { transform: `rotate(${tilt}deg)` };
-  const pin = (
-    <span
-      className="pushpin absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-      style={{ "--pin": rankHex } as CSSProperties}
-      aria-hidden="true"
-    />
-  );
-
-  if (editing) {
-    return (
-      <div className={shellCls} style={shellStyle}>
-        {pin}
-        <div className="rounded-[3px] p-3.5" style={stickyStyle}>
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            rows={6}
-            maxLength={500}
-            autoFocus
-            placeholder="Write your note, kupo~"
-            className="w-full resize-none border-none bg-transparent p-0 font-accent text-lg sm:text-xl leading-snug text-[#463c2e] placeholder:text-[#463c2e]/40 focus:outline-none"
-          />
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              onClick={() => mutation.mutate(draft.trim())}
-              disabled={mutation.isPending}
-              className="gel hover-bounce px-3 py-1 font-display text-xs font-bold text-white disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
-            >
-              {mutation.isPending ? "Saving…" : "Save"}
-            </button>
-            <button
-              onClick={() => setEditing(false)}
-              disabled={mutation.isPending}
-              className="px-1.5 py-1 font-display text-xs font-bold text-[#463c2e]/70 hover:text-[#463c2e] cursor-pointer touch-manipulation"
-            >
-              Cancel
-            </button>
-          </div>
-          {mutation.isError && (
-            <p className="mt-1 font-soft text-[11px] text-[#a23a2a]">
-              couldn't save, kupo
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const cancelEditing = () => {
+    setDraft(displayedBio);
+    mutation.reset();
+    returnFocusRef.current = true;
+    setEditing(false);
+  };
 
   return (
-    <div className={shellCls} style={shellStyle}>
-      {pin}
-      <div className="relative">
-        <div
-          ref={scrollRef}
-          onScroll={updateScroll}
-          className={`h-56 sm:h-64 lg:h-72 ${scrollState.canScroll ? "overflow-y-auto" : "overflow-hidden"} rounded-[3px] p-3.5 sm:p-4`}
-          style={scrollerStyle}
-        >
-          <p
-            className={`font-accent text-lg sm:text-xl leading-snug whitespace-pre-line ${bio ? "text-[#463c2e]" : "text-[#463c2e]/55"}`}
-          >
-            {bio || "no note pinned yet, kupo~"}
-          </p>
-        </div>
-        {scrollState.canScroll && !scrollState.atBottom && (
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 flex h-11 items-end justify-center rounded-b-[3px] pb-1.5"
-            style={{
-              background: `linear-gradient(to bottom, transparent, ${stickyBg} 78%)`,
-            }}
-            aria-hidden="true"
-          >
-            <ChevronDown className="w-4 h-4 text-[#463c2e]/55 motion-safe:animate-bounce" />
-          </div>
-        )}
-      </div>
-      {editable && (
-        <button
-          onClick={() => {
-            setDraft(bio ?? "");
-            setEditing(true);
+    <div className="about-bio-note">
+      {isEditing ? (
+        <form
+          className="about-bio-editor"
+          aria-label="Edit your bio"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!editable || mutation.isPending || overLimit) return;
+            mutation.mutate(draft.trim());
           }}
-          className="mt-2 ml-1 inline-flex items-center gap-1 text-xs font-display font-bold text-[var(--primary)] hover:underline cursor-pointer touch-manipulation"
         >
-          <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
-          {bio ? "edit my note" : "add my note"}
-        </button>
+          <label htmlFor={editorId}>Your bio</label>
+          <textarea
+            ref={textareaRef}
+            id={editorId}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            rows={6}
+            maxLength={MAX_BIO_LENGTH}
+            placeholder="What do you get up to in FFXIV?"
+            disabled={mutation.isPending}
+            aria-describedby={`${countId}${mutation.isError ? ` ${errorId}` : ""}`}
+            aria-invalid={overLimit || undefined}
+          />
+          <p className="about-bio-counter" id={countId}>
+            {draft.length} / {MAX_BIO_LENGTH} characters
+          </p>
+          <div className="about-bio-actions">
+            <button
+              type="submit"
+              className="about-bio-save"
+              disabled={mutation.isPending || overLimit}
+            >
+              <AboutIcon name="check" size={17} />
+              {mutation.isPending ? "Saving…" : "Save bio"}
+            </button>
+            <button
+              type="button"
+              onClick={cancelEditing}
+              disabled={mutation.isPending}
+            >
+              <AboutIcon name="close" size={16} /> Cancel
+            </button>
+          </div>
+          {mutation.isPending && (
+            <p className="about-bio-status" role="status">
+              Saving your bio…
+            </p>
+          )}
+          {mutation.isError && (
+            <p className="about-bio-error" id={errorId} role="alert">
+              Couldn't save your bio. Your changes are still here. Try again.
+            </p>
+          )}
+        </form>
+      ) : (
+        <>
+          <div
+            role="region"
+            aria-label={memberName ? `${memberName}'s bio` : "Member bio"}
+          >
+            <p
+              id={bioId}
+              className={`about-bio-text${!hasBio ? " about-bio-empty" : ""}${canExpand && !expanded ? " is-collapsed" : ""}`}
+            >
+              {hasBio
+                ? displayedBio
+                : editable
+                  ? "Add a few words about yourself."
+                  : "No bio yet."}
+            </p>
+            {canExpand && (
+              <button
+                type="button"
+                className="about-bio-expand"
+                aria-expanded={expanded}
+                aria-controls={bioId}
+                onClick={() => setExpanded((value) => !value)}
+              >
+                {expanded ? "Show less" : "Read full bio"}
+                <AboutIcon name="chevron-down" size={16} />
+              </button>
+            )}
+          </div>
+          {editable && (
+            <div className="about-bio-edit-row">
+              <button
+                ref={editButtonRef}
+                type="button"
+                className="about-bio-edit"
+                onClick={beginEditing}
+              >
+                <AboutIcon name="edit" size={16} />
+                {hasBio ? "Edit bio" : "Add bio"}
+              </button>
+              {mutation.isSuccess && (
+                <p className="about-bio-status" role="status">
+                  Bio saved.
+                </p>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

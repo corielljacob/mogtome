@@ -1,16 +1,24 @@
-import { type ReactNode } from "react";
-import { SearchInput } from "@/features/characterMapping/components/SearchInput";
-
-// Shared chrome for the two side-by-side picker columns (Characters / Discord):
-// icon + title + count pill, a search box, and a scroll area holding `children`
-// (the item list) or an empty message.
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import { SearchInput } from "./SearchInput";
 export function MappingColumn({
   icon,
   title,
   count,
+  totalCount,
+  platform,
+  inputRef,
   searchValue,
   onSearchChange,
   searchPlaceholder,
+  searchLabel,
+  rankingKey,
+  disabled,
   isEmpty,
   emptyMessage,
   children,
@@ -18,41 +26,86 @@ export function MappingColumn({
   icon: ReactNode;
   title: string;
   count: number;
+  totalCount: number;
+  platform: "ffxiv" | "discord";
+  inputRef?: RefObject<HTMLInputElement | null>;
   searchValue: string;
   onSearchChange: (value: string) => void;
   searchPlaceholder: string;
+  searchLabel?: string;
+  rankingKey?: string;
+  disabled?: boolean;
   isEmpty: boolean;
   emptyMessage: string;
   children: ReactNode;
 }) {
+  const titleId = useId();
+  const resultsId = useId();
+  const listId = useId();
+  const listRef = useRef<HTMLDivElement>(null);
+  const fallbackInput = useRef<HTMLInputElement>(null);
+  const input = inputRef ?? fallbackInput;
+
+  // A new query or opposite-side selection puts the best results at the top.
+  // Reset only this inventory so searching never moves the surrounding page.
+  useLayoutEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [searchValue, rankingKey]);
+
+  const clearSearch = () => {
+    onSearchChange("");
+    input.current?.focus();
+  };
   return (
-    <div className="flex flex-col min-h-0">
-      <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+    <section
+      className="dash-mapping-column"
+      aria-labelledby={titleId}
+      data-platform={platform}
+    >
+      <header>
         {icon}
-        <h3 className="font-display font-bold text-sm text-[var(--text)]">
-          {title}
-        </h3>
-        <span className="px-2 py-0.5 rounded-full text-xs font-soft font-bold bg-[color:color-mix(in_srgb,var(--primary)_12%,var(--card))] text-[var(--text-muted)]">
-          {count}
-        </span>
-      </div>
+        <h3 id={titleId}>{title}</h3>
+      </header>
+      <p
+        id={resultsId}
+        className="dash-mapping-column-count"
+        role="status"
+        aria-label={`${title} results`}
+        aria-atomic="true"
+      >
+        {searchValue.trim()
+          ? `${count} of ${totalCount} shown`
+          : `${totalCount} available`}
+      </p>
       <SearchInput
         value={searchValue}
         onChange={onSearchChange}
         placeholder={searchPlaceholder}
+        label={searchLabel}
+        disabled={disabled}
+        inputRef={input}
+        describedBy={resultsId}
+        controls={listId}
       />
-      {/* phone: cap each list so both columns (and their search boxes) stay
-          reachable without one pushing the other far down the sheet. desktop:
-          fill the column and scroll internally. */}
-      <div className="space-y-2 overflow-y-auto overscroll-contain max-h-[38vh] lg:max-h-none lg:flex-1 lg:min-h-0 pr-1">
+      <div id={listId} ref={listRef} className="dash-mapping-list">
         {isEmpty ? (
-          <p className="text-sm text-[var(--text-muted)] font-soft text-center py-6">
-            {emptyMessage}
-          </p>
+          <div className="dash-mapping-list-empty">
+            <p>{emptyMessage}</p>
+            {searchValue.trim() && totalCount > 0 && (
+              <button
+                type="button"
+                className="dash-mapping-text-button"
+                disabled={disabled}
+                onClick={clearSearch}
+              >
+                Clear search
+              </button>
+            )}
+          </div>
         ) : (
           children
         )}
       </div>
-    </div>
+    </section>
   );
 }

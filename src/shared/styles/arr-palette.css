@@ -1,0 +1,68 @@
+/* An Eorzean adventurer's room: ivory linen, aetheryte blue, weathered brass.
+   Explicit mode selectors also keep the window's two painted skies independent. */
+.nook-theme[data-scene="arr"][data-mode="light"] {
+  --scene-ink: #4b5559;
+  --scene-paper: #faf3df;
+  --scene-wood: #ac986f;
+  --scene-wood-light: #e3d6b4;
+  --scene-wood-dark: #77634a;
+  --scene-leaf: #648878;
+  --scene-leaf-light: #a0b99a;
+  --scene-rose: #6e9eaf;
+  --scene-gold: #b58d49;
+  --scene-brass: #7f653c;
+  --scene-shadow: #364e60;
+  --scene-pot: #9ab1b8;
+  --scene-book-rose: #426980;
+  --scene-book-blue: #427b90;
+  --scene-cushion: #6e92a4;
+  --scene-cushion-light: #afcbd3;
+  --scene-dried-flower: #c3a15e;
+  --scene-sky: #8bbdd4;
+  --scene-horizon: #f4dfb2;
+  --arr-crystal-light: #d6f5f5;
+  --arr-crystal: #68bbd0;
+  --arr-crystal-dark: #307796;
+  --nook-paper: #f5f0e5;
+  --nook-ink: #3f5969;
+  --nook-wall: #e4edf0;
+  --nook-wall-light: #f7f5e9;
+  --nook-wall-shade: #66859c;
+  --nook-wall-print: #718fa2;
+  --nook-wall-panel: #cbdade;
+  --nook-light-strength: 66%;
+  --nook-shade-strength: 12%;
+}
+.nook-theme[data-scene="arr"][data-mode="dark"] {
+  --scene-ink: #293f50;
+  --scene-paper: #e6dfc9;
+  --scene-wood: #7e775e;
+  --scene-wood-light: #b8ac88;
+  --scene-wood-dark: #4a5150;
+  --scene-leaf: #466b60;
+  --scene-leaf-light: #829b82;
+  --scene-rose: #87b1c0;
+  --scene-gold: #c5a260;
+  --scene-brass: #8f784e;
+  --scene-shadow: #071a28;
+  --scene-pot: #658b9b;
+  --scene-book-rose: #365c74;
+  --scene-book-blue: #3f7387;
+  --scene-cushion: #365b75;
+  --scene-cushion-light: #7395ab;
+  --scene-dried-flower: #c4aa73;
+  --scene-sky: #142c48;
+  --scene-horizon: #64869c;
+  --arr-crystal-light: #d5fcfa;
+  --arr-crystal: #77cfdf;
+  --arr-crystal-dark: #388ba9;
+  --nook-paper: #e5dfcf;
+  --nook-ink: #354f61;
+  --nook-wall: #142736;
+  --nook-wall-light: #416176;
+  --nook-wall-shade: #091925;
+  --nook-wall-print: #92b4be;
+  --nook-wall-panel: #122431;
+  --nook-light-strength: 36%;
+  --nook-shade-strength: 24%;
+}

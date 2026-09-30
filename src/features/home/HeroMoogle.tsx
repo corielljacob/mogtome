@@ -129,7 +129,7 @@ export function HeroMoogle() {
           >
             <img
               src={welcomingMoogle}
-              alt="A magical mogtome moogle"
+              alt="MogTome moogle"
               className="relative w-52 sm:w-64 md:w-80 lg:w-[22rem] xl:w-[26rem] drop-shadow-2xl cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95 active:-rotate-3"
               onClick={() =>
                 setQuoteIndex((prev) => (prev + 1) % kupoQuotes.length)

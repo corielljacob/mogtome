@@ -1,55 +1,104 @@
-import { type CSSProperties } from "react";
-import { User, LogOut } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { SettingsCard } from "@/features/settings/SettingsControls";
+import { DiscordIcon } from "@/shared/ui/DiscordIcon";
+import { SettingsCard } from "./SettingsControls";
+import { SettingsIcon } from "./SettingsIcons";
+import "./settings-comfort.css";
+
+function AccountPortrait({ src }: { src: string }) {
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  return (
+    <div className="settings-account-portrait" aria-hidden="true">
+      {src && failedSource !== src ? (
+        <img src={src} alt="" onError={() => setFailedSource(src)} />
+      ) : (
+        <span className="settings-account-portrait-fallback">
+          <SettingsIcon name="user" size={34} />
+        </span>
+      )}
+      <span className="settings-account-photo-caption">Kupo Life</span>
+    </div>
+  );
+}
 
 export function AccountSection() {
-  const { user, logout, isLoading, isAuthenticated } = useAuth();
+  const { user, login, logout, isLoading, isAuthenticated } = useAuth();
+  const signInButton = useRef<HTMLButtonElement>(null);
+  const pendingSignOut = useRef<HTMLButtonElement | null>(null);
+  const signedIn = Boolean(isAuthenticated && user);
+
+  useEffect(() => {
+    if (isLoading || signedIn || !pendingSignOut.current) return;
+    const trigger = pendingSignOut.current;
+    pendingSignOut.current = null;
+    if (
+      document.activeElement === trigger ||
+      (!trigger.isConnected && document.activeElement === document.body)
+    ) {
+      signInButton.current?.focus();
+    }
+  }, [isLoading, signedIn]);
 
   return (
     <SettingsCard
-      icon={User}
+      icon="user"
       title="Account"
-      accent="var(--primary)"
-      pinColor="var(--secondary)"
-      tilt={0.5}
+      description="Your account and membership."
     >
       {isLoading ? (
-        <p className="font-soft text-sm text-[var(--text-muted)]">Loading…</p>
-      ) : !isAuthenticated || !user ? (
-        <p className="font-soft text-sm text-[var(--text-muted)]">
-          Sign in with Discord using the button in the navigation bar, kupo~
+        <p className="settings-account-loading" role="status">
+          <SettingsIcon name="user" size={21} /> Checking your sign-in…
         </p>
+      ) : !isAuthenticated || !user ? (
+        <div className="settings-account-signed-out">
+          <div className="settings-account-discord-mark" aria-hidden="true">
+            <DiscordIcon />
+          </div>
+          <div>
+            <h3>You're signed out.</h3>
+            <p className="settings-description">
+              Sign in with Discord to open your profile and edit your bio.
+            </p>
+          </div>
+          <button
+            ref={signInButton}
+            className="settings-button settings-account-login"
+            type="button"
+            onClick={login}
+          >
+            <DiscordIcon /> Sign in with Discord
+          </button>
+        </div>
       ) : (
         <>
-          <div className="flex items-center gap-3.5 mb-4">
-            <div className="paper shrink-0 -rotate-3">
-              <div className="surface p-1.5">
-                <img
-                  src={user.memberPortraitUrl}
-                  alt=""
-                  className="w-14 h-14 rounded-lg object-cover"
-                />
-              </div>
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-display font-bold text-base text-[var(--text)] truncate">
-                {user.memberName}
+          <div className="settings-account-identity">
+            <AccountPortrait src={user.memberPortraitUrl} />
+            <div className="settings-account-details">
+              <p className="settings-account-connection">
+                <DiscordIcon /> Signed in with Discord
               </p>
-              <p className="font-soft text-sm text-[var(--text-muted)]">
-                {user.memberRank}
-              </p>
+              <h3>{user.memberName || "FC member"}</h3>
+              {user.memberRank && (
+                <p className="settings-account-rank">{user.memberRank}</p>
+              )}
             </div>
           </div>
-
-          <button
-            onClick={logout}
-            className="gel hover-bounce inline-flex items-center gap-2 px-4 py-2 font-display font-bold text-sm text-white cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-none touch-manipulation"
-            style={{ "--gel-color": "#e8607a" } as CSSProperties}
-          >
-            <LogOut className="w-4 h-4" aria-hidden="true" />
-            Sign Out
-          </button>
+          <div className="settings-account-actions">
+            <Link className="settings-button" to="/profile">
+              View my profile <SettingsIcon name="arrow-right" size={17} />
+            </Link>
+            <button
+              className="settings-button settings-account-logout"
+              type="button"
+              onClick={(event) => {
+                pendingSignOut.current = event.currentTarget;
+                logout();
+              }}
+            >
+              <SettingsIcon name="logout" size={17} /> Sign out
+            </button>
+          </div>
         </>
       )}
     </SettingsCard>

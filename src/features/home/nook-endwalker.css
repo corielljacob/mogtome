@@ -1,0 +1,23 @@
+/* A blue-white Elpis blossom is tied above the Chronicle with scholar's ribbon. */
+.home-screen[data-scene="endwalker"] .nook-endwalker-charm {
+  position: absolute;
+  bottom: calc(100% - 19 * var(--layout-unit));
+  right: 1%;
+  width: min(27%, calc(65 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(8deg);
+  filter: drop-shadow(1px 3px 1.5px #32485d2b);
+}
+
+.home-screen[data-scene="endwalker"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    105deg,
+    #526c83a8 0 calc(7 * var(--layout-unit)),
+    #e3d7b4c9 calc(7 * var(--layout-unit)) calc(9 * var(--layout-unit)),
+    #f1efe4cc calc(9 * var(--layout-unit)) calc(16 * var(--layout-unit)),
+    #b5a375b3 calc(16 * var(--layout-unit)) calc(17 * var(--layout-unit))
+  );
+}

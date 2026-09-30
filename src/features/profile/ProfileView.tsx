@@ -1,15 +1,13 @@
 import { Fragment } from "react";
-import type { CSSProperties } from "react";
 import { MembershipCard } from "@/shared/ui/MembershipCard";
-import { KawaiiHeart } from "@/shared/ui/kawaiiMotifs";
 import { ProfileHero } from "@/features/profile/ProfileHero";
 import { ProfileBio } from "@/features/profile/ProfileBio";
-import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 import type {
   ProfileData,
   ProfileViewer,
   BiographySubmission,
 } from "@/shared/types";
+import "./profile-screen.css";
 
 interface ProfileViewProps {
   profile: ProfileData;
@@ -51,53 +49,20 @@ export function ProfileView({
   ];
 
   return (
-    <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-      <span
-        className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
-        aria-hidden="true"
-      />
-      <span
-        className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
-        style={{ "--pin": "var(--secondary)" } as CSSProperties}
-        aria-hidden="true"
-      />
-      <span
-        className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
-        style={{ "--pin": "var(--accent)" } as CSSProperties}
-        aria-hidden="true"
-      />
-      <span
-        className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
-        style={{ "--pin": "var(--secondary)" } as CSSProperties}
-        aria-hidden="true"
-      />
-
-      <img
-        src={lilGuyMoogle}
-        alt=""
-        aria-hidden="true"
-        className="hidden lg:block absolute -top-7 -right-4 w-20 rotate-[10deg] animate-[float-gentle_4s_ease-in-out_infinite] pointer-events-none select-none z-20"
-      />
-
+    <div className="profile-screen">
       <ProfileHero profile={profile} />
 
       {/* on large screens the bio sits beside the membership card so the wide
           page is used; stacks back to one column below lg. */}
-      <div className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-7 sm:gap-9 items-start">
-        <div className="space-y-7 sm:space-y-9 min-w-0">
+      <div className="profile-layout">
+        <div className="profile-sections">
           {sections.map((s) => (
             <Fragment key={s.key}>{s.render()}</Fragment>
           ))}
         </div>
 
-        {/* brings its own chrome - pinned but not re-wrapped in a surface.
-            Sticky beside the bio on large screens. */}
-        <section className="paper relative lg:sticky lg:top-6">
-          <span
-            className="pushpin absolute -top-2 left-8 z-10"
-            style={{ "--pin": "var(--primary)" } as CSSProperties}
-            aria-hidden="true"
-          />
+        {/* The patch supplies its own fabric surface and stitched edge. */}
+        <section className="profile-membership" aria-label="Membership card">
           <MembershipCard
             name={profile.name}
             rank={profile.rank}
@@ -107,13 +72,6 @@ export function ProfileView({
           />
         </section>
       </div>
-
-      <p className="flex items-center justify-center gap-1.5 text-center font-soft text-xs text-[var(--text-subtle)] mt-9">
-        <KawaiiHeart className="w-3.5 h-3.5 text-[var(--primary)]" />
-        {viewer.isOwnProfile
-          ? "This is your corner of Kupo Life, kupo~"
-          : "A fellow member of Kupo Life, kupo~"}
-      </p>
     </div>
   );
 }

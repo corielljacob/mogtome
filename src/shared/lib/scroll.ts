@@ -1,6 +1,10 @@
 /** smooth scroll the document back to the top (Back-to-top button) */
 export function scrollAppToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const reduceMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    document.documentElement.classList.contains("reduce-motion");
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "instant" : "smooth" });
+  document.getElementById("main-content")?.focus({ preventScroll: true });
 }
 
 /** jump (no smooth) on route changes so each view starts at the top.

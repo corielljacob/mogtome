@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useEffectEvent,
   useId,
   useRef,
   useState,
@@ -67,6 +68,7 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const isMobile = useIsMobile();
+  const closeFromKeyboard = useEffectEvent(() => onClose());
 
   // swipe-to-dismiss for the mobile sheet (replaces Framer's drag). Driven only
   // from the grab handle so it never hijacks scrolling inside the body. Follows
@@ -111,14 +113,16 @@ export function Modal({
     const prevActive = document.activeElement as HTMLElement | null;
     dialogRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !e.defaultPrevented && !e.isComposing) {
+        closeFromKeyboard();
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      prevActive?.focus?.();
+      prevActive?.focus?.({ preventScroll: true });
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

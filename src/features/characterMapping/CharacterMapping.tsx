@@ -1,74 +1,62 @@
-import { useState, useCallback, useMemo, type ReactNode } from "react";
-import {
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-  Sparkles,
-  Wand2,
-  Link2,
-} from "lucide-react";
-import { Button } from "@/shared/ui/Button";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Modal } from "@/shared/ui/Modal";
-import { DiscordIcon } from "@/shared/ui/DiscordIcon";
-import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
-import { useSmartPicker } from "@/features/characterMapping/hooks/useSmartPicker";
-import { EmptyState } from "@/features/characterMapping/components/EmptyState";
-import { CharacterItem } from "@/features/characterMapping/components/CharacterItem";
-import { DiscordUserItem } from "@/features/characterMapping/components/DiscordUserItem";
-import { TriggerCard } from "@/features/characterMapping/components/TriggerCard";
-import { MappingColumn } from "@/features/characterMapping/components/MappingColumn";
-import { LinkBar } from "@/features/characterMapping/components/LinkBar";
-import { SuggestedPairs } from "@/features/characterMapping/components/SuggestedPairs";
-import FfxivIcon from "@/assets/icons/ffxiv.png";
-import happyMoogle from "@/assets/moogles/illustrated moogle.webp";
+import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
+import { DashboardIcon } from "@/features/knights/DashboardIcons";
+import {
+  useCharacterMapping,
+  type UseCharacterMappingResult,
+} from "./hooks/useCharacterMapping";
+import { useSmartPicker } from "./hooks/useSmartPicker";
+import { EmptyState } from "./components/EmptyState";
+import { CharacterItem } from "./components/CharacterItem";
+import { DiscordUserItem } from "./components/DiscordUserItem";
+import { TriggerCard } from "./components/TriggerCard";
+import { MappingColumn } from "./components/MappingColumn";
+import { LinkBar } from "./components/LinkBar";
+import { SuggestedPairs } from "./components/SuggestedPairs";
+import { MappingPlatformIcon } from "./components/MappingPlatformIcon";
+import type { MatchPair } from "./types";
+import "./character-mapping.css";
 
-type Tab = "suggested" | "manual";
+type MappingTab = "suggested" | "manual";
+interface CharacterMappingProps {
+  embedded?: boolean;
+  initialTab?: MappingTab;
+  mapping?: UseCharacterMappingResult;
+  tab?: MappingTab;
+  onTabChange?: (tab: MappingTab) => void;
+}
 
-// segmented tab pill
-function TabButton({
-  active,
-  onClick,
-  icon,
-  label,
-  count,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: ReactNode;
-  label: string;
-  count?: number;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-display font-bold cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] ${
-        active
-          ? "bg-[var(--primary)] text-white shadow-[0_2px_0_0_color-mix(in_srgb,var(--primary)_55%,#000)]"
-          : "text-[var(--text-muted)] hover:text-[var(--text)]"
-      }`}
-    >
-      {icon}
-      {label}
-      {count !== undefined && count > 0 && (
-        <span
-          className={`ml-0.5 rounded-full px-1.5 text-xs font-bold ${
-            active
-              ? "bg-white/25 text-white"
-              : "bg-[color:color-mix(in_srgb,var(--primary)_14%,var(--card))] text-[var(--text-muted)]"
-          }`}
-        >
-          {count}
-        </span>
-      )}
-    </button>
+export function CharacterMapping(props: CharacterMappingProps) {
+  return props.mapping ? (
+    <MappingWorkspace {...props} mapping={props.mapping} />
+  ) : (
+    <ConnectedMapping {...props} />
   );
 }
 
-export function CharacterMapping() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [tab, setTab] = useState<Tab>("suggested");
+function ConnectedMapping(props: CharacterMappingProps) {
+  const mapping = useCharacterMapping();
+  return <MappingWorkspace {...props} mapping={mapping} />;
+}
 
+function MappingWorkspace({
+  embedded = false,
+  initialTab = "suggested",
+  mapping,
+  tab: controlledTab,
+  onTabChange,
+}: CharacterMappingProps & { mapping: UseCharacterMappingResult }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [localTab, setLocalTab] = useState<MappingTab>(initialTab);
+  const [success, setSuccess] = useState("");
+  const reducedMotion = useReducedMotion();
+  const characterInput = useRef<HTMLInputElement>(null);
+  const discordInput = useRef<HTMLInputElement>(null);
+  const selectionRef = useRef<HTMLDivElement>(null);
+  const feedbackRef = useRef<HTMLParagraphElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  const tab = controlledTab ?? localTab;
   const {
     allCharacters,
     allDiscordUsers,
@@ -77,6 +65,7 @@ export function CharacterMapping() {
     totalMatches,
     isLoading,
     isError,
+    isFetching,
     confirmPair,
     dismissPair,
     confirmingPairKey,
@@ -84,16 +73,19 @@ export function CharacterMapping() {
     confirmAllExact,
     isConfirmingAll,
     isMapping,
+    mappingError,
     refresh,
     getRankedDiscordUsers,
     getRankedCharacters,
-  } = useCharacterMapping();
-
+  } = mapping;
+  const busy = isMapping || isConfirmingAll || confirmingPairKey !== null;
+  const handleClose = useCallback(() => {
+    if (!busy) setIsOpen(false);
+  }, [busy]);
   const suggestedPairs = useMemo(
     () => [...visibleExactMatches, ...visibleSuggestedMatches],
     [visibleExactMatches, visibleSuggestedMatches],
   );
-
   const {
     selectedCharacter,
     selectedDiscordUser,
@@ -106,6 +98,8 @@ export function CharacterMapping() {
     discordRows,
     selectCharacter,
     selectDiscordUser,
+    clearCharacter,
+    clearDiscordUser,
     reset: resetPicker,
   } = useSmartPicker({
     allCharacters,
@@ -114,31 +108,320 @@ export function CharacterMapping() {
     getRankedDiscordUsers,
     getRankedCharacters,
   });
-
+  const chooseTab = (next: MappingTab) => {
+    if (busy) return;
+    setLocalTab(next);
+    onTabChange?.(next);
+  };
   const handleRefresh = useCallback(() => {
+    if (busy || isFetching) return;
+    setSuccess("");
     resetPicker();
     refresh();
-  }, [resetPicker, refresh]);
-
-  const handleLink = useCallback(async () => {
-    if (!selectedCharacter || !selectedDiscordUser) return;
+  }, [busy, isFetching, resetPicker, refresh]);
+  const focusFeedback = (trigger: Element | null, failed = false) => {
+    requestAnimationFrame(() => {
+      if (
+        document.activeElement === trigger ||
+        (!trigger?.isConnected && document.activeElement === document.body)
+      ) {
+        (failed ? errorRef.current : feedbackRef.current)?.focus({
+          preventScroll: !failed,
+        });
+      }
+    });
+  };
+  const handleLink = async () => {
+    if (!selectedCharacter || !selectedDiscordUser || !canLink || busy) return;
+    setSuccess("");
+    const trigger = document.activeElement;
     try {
       await mapManually(
         selectedCharacter.characterId,
         selectedDiscordUser.discordId,
       );
+      setSuccess(
+        `Linked ${selectedCharacter.name} to ${selectedDiscordUser.serverNickName}.`,
+      );
       resetPicker();
+      focusFeedback(trigger);
     } catch {
-      // surfaced via the hook's mapping state
+      focusFeedback(trigger, true);
     }
-  }, [selectedCharacter, selectedDiscordUser, mapManually, resetPicker]);
-
-  const goManual = useCallback(() => setTab("manual"), []);
-
+  };
+  const handleConfirm = async (pair: MatchPair) => {
+    if (busy) return;
+    const trigger = document.activeElement;
+    setSuccess("");
+    try {
+      await confirmPair(pair);
+      setSuccess(
+        `Linked ${pair.character.name} to ${pair.discordUser.serverNickName}.`,
+      );
+      focusFeedback(trigger);
+    } catch {
+      focusFeedback(trigger, true);
+    }
+  };
+  const changeCharacter = () => {
+    clearCharacter();
+    setCharacterSearch("");
+    setSuccess("");
+    characterInput.current?.focus();
+  };
+  const changeDiscord = () => {
+    clearDiscordUser();
+    setDiscordSearch("");
+    setSuccess("");
+    discordInput.current?.focus();
+  };
   const hasAnyUnmapped = allCharacters.length > 0 || allDiscordUsers.length > 0;
-  const exactCount = visibleExactMatches.length;
-  const showTabs = !isLoading && !isError && hasAnyUnmapped;
-
+  const content = (
+    <section className="dash-mapping" aria-label="Character linking">
+      <div className="dash-mapping-toolbar">
+        <div
+          className="dash-mapping-segments"
+          role="group"
+          aria-label="Linking method"
+        >
+          <button
+            type="button"
+            aria-pressed={tab === "suggested"}
+            disabled={busy}
+            onClick={() => chooseTab("suggested")}
+          >
+            <DashboardIcon name="sparkles" size={17} /> Suggestions
+            {totalMatches > 0 && (
+              <span className="dash-mapping-count">{totalMatches}</span>
+            )}
+          </button>
+          <button
+            type="button"
+            aria-pressed={tab === "manual"}
+            disabled={busy}
+            onClick={() => chooseTab("manual")}
+          >
+            <DashboardIcon name="people" size={17} /> Choose by hand
+          </button>
+        </div>
+        <button
+          type="button"
+          className="dash-mapping-text-button"
+          onClick={handleRefresh}
+          disabled={isLoading || isFetching || busy}
+          aria-label="Refresh unlinked accounts"
+        >
+          <DashboardIcon name="refresh" size={17} />
+          {isFetching && !isLoading ? "Refreshing…" : "Refresh"}
+        </button>
+      </div>
+      <p className="dash-mapping-summary" role="status" aria-atomic="true">
+        {busy
+          ? "Linking accounts…"
+          : isLoading
+            ? "Loading unlinked accounts…"
+            : isError
+              ? "Account lists unavailable"
+              : `${allCharacters.length} ${allCharacters.length === 1 ? "character" : "characters"} and ${allDiscordUsers.length} Discord ${allDiscordUsers.length === 1 ? "account" : "accounts"} to link`}
+      </p>
+      <p
+        className="dash-mapping-success"
+        hidden={!success}
+        role="status"
+        aria-atomic="true"
+        ref={feedbackRef}
+        tabIndex={-1}
+      >
+        {success && (
+          <>
+            <DashboardIcon name="check" size={18} />
+            <span>{success}</span>
+          </>
+        )}
+      </p>
+      {mappingError && (
+        <div
+          className="dash-mapping-error"
+          role="alert"
+          ref={errorRef}
+          tabIndex={-1}
+        >
+          <DashboardIcon name="alert" size={20} />
+          <p>{mappingError.message || "Couldn't save the link. Try again."}</p>
+        </div>
+      )}
+      {isLoading ? (
+        <div className="dash-mapping-loading" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      ) : isError ? (
+        <EmptyState
+          icon={<DashboardIcon name="alert" size={27} />}
+          title="Couldn't load the accounts"
+          subtitle="Try loading the character and Discord lists again."
+          action={
+            <button
+              type="button"
+              className="dash-mapping-button"
+              onClick={handleRefresh}
+              disabled={isFetching}
+            >
+              {" "}
+              <DashboardIcon name="refresh" size={17} />
+              {isFetching ? "Trying again…" : "Try again"}
+            </button>
+          }
+        />
+      ) : !hasAnyUnmapped ? (
+        <EmptyState
+          icon={<DashboardIcon name="check" size={28} />}
+          title="All accounts linked"
+          subtitle="No characters or Discord accounts are waiting for a link."
+        />
+      ) : (
+        <>
+          <div hidden={tab !== "suggested"}>
+            <SuggestedPairs
+              pairs={suggestedPairs}
+              exactCount={visibleExactMatches.length}
+              confirmingPairKey={confirmingPairKey}
+              isConfirmingAll={isConfirmingAll}
+              disabled={busy}
+              onConfirm={(pair) => void handleConfirm(pair)}
+              onSkip={(pair) => {
+                setSuccess("");
+                dismissPair(pair);
+              }}
+              onConfirmAllExact={() => {
+                setSuccess("");
+                void confirmAllExact();
+              }}
+              onGoManual={() => chooseTab("manual")}
+            />
+          </div>
+          <div hidden={tab !== "manual"}>
+            <p className="dash-mapping-help">
+              Choose a character and their Discord account. Once you select one,
+              similar names move to the top of the other list.
+            </p>
+            <LinkBar
+              containerRef={selectionRef}
+              characterName={selectedCharacter?.name}
+              discordName={selectedDiscordUser?.serverNickName}
+              discordId={selectedDiscordUser?.discordId}
+              canLink={canLink}
+              isMapping={busy}
+              onClear={() => {
+                resetPicker();
+                setSuccess("");
+                characterInput.current?.focus();
+              }}
+              onChangeCharacter={changeCharacter}
+              onChangeDiscord={changeDiscord}
+              onLink={() => void handleLink()}
+            />
+            <div className="dash-mapping-columns">
+              <MappingColumn
+                icon={<MappingPlatformIcon platform="ffxiv" size={27} />}
+                title="FFXIV characters"
+                platform="ffxiv"
+                count={characterRows.length}
+                totalCount={allCharacters.length}
+                inputRef={characterInput}
+                searchValue={characterSearch}
+                onSearchChange={setCharacterSearch}
+                searchPlaceholder="Name or rank…"
+                searchLabel="Search characters"
+                rankingKey={selectedDiscordUser?.discordId}
+                disabled={busy}
+                isEmpty={characterRows.length === 0}
+                emptyMessage={
+                  characterSearch.trim()
+                    ? "No characters match this search."
+                    : "No unlinked characters."
+                }
+              >
+                {characterRows.map(({ character, matchInfo }) => (
+                  <CharacterItem
+                    key={character.characterId}
+                    character={character}
+                    isSelected={
+                      selectedCharacter?.characterId === character.characterId
+                    }
+                    matchInfo={matchInfo}
+                    onClick={() => {
+                      setSuccess("");
+                      selectCharacter(character);
+                    }}
+                    disabled={busy}
+                  />
+                ))}
+              </MappingColumn>
+              <MappingColumn
+                icon={<MappingPlatformIcon platform="discord" size={27} />}
+                title="Discord accounts"
+                platform="discord"
+                count={discordRows.length}
+                totalCount={allDiscordUsers.length}
+                inputRef={discordInput}
+                searchValue={discordSearch}
+                onSearchChange={setDiscordSearch}
+                searchPlaceholder="Name or Discord ID…"
+                searchLabel="Search Discord accounts"
+                rankingKey={selectedCharacter?.characterId}
+                disabled={busy}
+                isEmpty={discordRows.length === 0}
+                emptyMessage={
+                  discordSearch.trim()
+                    ? "No accounts match this search."
+                    : "No unlinked Discord accounts."
+                }
+              >
+                {discordRows.map(({ user, matchInfo }) => (
+                  <DiscordUserItem
+                    key={user.discordId}
+                    user={user}
+                    isSelected={
+                      selectedDiscordUser?.discordId === user.discordId
+                    }
+                    matchInfo={matchInfo}
+                    onClick={() => {
+                      setSuccess("");
+                      selectDiscordUser(user);
+                    }}
+                    disabled={busy}
+                  />
+                ))}
+              </MappingColumn>
+            </div>
+            {canLink && (
+              <div className="dash-mapping-review-return">
+                <p>Both accounts are selected.</p>
+                <button
+                  type="button"
+                  className="dash-mapping-button"
+                  disabled={busy}
+                  onClick={() => {
+                    selectionRef.current?.focus({ preventScroll: true });
+                    selectionRef.current?.scrollIntoView({
+                      block: "center",
+                      behavior: reducedMotion ? "auto" : "smooth",
+                    });
+                  }}
+                >
+                  <DashboardIcon name="check" size={18} />
+                  Review selected pair
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </section>
+  );
+  if (embedded) return content;
   return (
     <>
       <TriggerCard
@@ -149,184 +432,16 @@ export function CharacterMapping() {
         charactersCount={allCharacters.length}
         totalMatches={totalMatches}
       />
-
       <Modal
         open={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         size="xl"
         padded={false}
-        scroll={false}
-        icon={<Link2 className="w-5 h-5" aria-hidden="true" />}
-        title="Character Mapping"
-        eyebrow="~ pair up our moogles, kupo ~"
-        headerActions={
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading}
-            aria-label="Refresh unmapped lists"
-            className="shrink-0 grid place-items-center w-9 h-9 rounded-full border-2 border-white bg-[color:color-mix(in_srgb,var(--primary)_18%,var(--card))] text-[var(--primary)] shadow-[0_3px_8px_-3px_var(--shadow)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110 hover:rotate-[-12deg] active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--card)]"
-          >
-            <RefreshCw
-              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-            />
-          </button>
-        }
-        footer={
-          <LinkBar
-            show={
-              tab === "manual" &&
-              Boolean(selectedCharacter || selectedDiscordUser)
-            }
-            characterName={selectedCharacter?.name}
-            discordName={selectedDiscordUser?.serverNickName}
-            canLink={canLink}
-            isMapping={isMapping}
-            onClear={resetPicker}
-            onLink={handleLink}
-          />
-        }
+        icon={<DashboardIcon name="link" size={21} />}
+        title="Character linking"
+        eyebrow="Link characters to Discord accounts"
       >
-        <div className="flex flex-1 min-h-0 flex-col">
-          {showTabs && (
-            <div className="shrink-0 px-4 pt-3 pb-1">
-              <div className="mx-auto flex w-fit gap-1 rounded-full border-2 border-[color:color-mix(in_srgb,var(--primary)_14%,var(--border))] bg-[var(--card)] p-1 shadow-[0_2px_8px_-5px_var(--shadow)]">
-                <TabButton
-                  active={tab === "suggested"}
-                  onClick={() => setTab("suggested")}
-                  icon={<Sparkles className="w-4 h-4" aria-hidden="true" />}
-                  label="Suggested"
-                  count={suggestedPairs.length}
-                />
-                <TabButton
-                  active={tab === "manual"}
-                  onClick={() => setTab("manual")}
-                  icon={<Wand2 className="w-4 h-4" aria-hidden="true" />}
-                  label="By hand"
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-5 pt-2 pb-4">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center flex-1 py-16">
-                <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mb-3" />
-                <p className="text-sm text-[var(--text-muted)] font-soft">
-                  Loading unmapped accounts...
-                </p>
-              </div>
-            ) : isError ? (
-              <EmptyState
-                className="flex-1"
-                icon={<AlertCircle className="w-7 h-7 text-red-500" />}
-                title="Failed to load unmapped accounts"
-                subtitle="Something went wrong, kupo..."
-                action={
-                  <Button variant="primary" size="sm" onClick={handleRefresh}>
-                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                    Try Again
-                  </Button>
-                }
-              />
-            ) : !hasAnyUnmapped ? (
-              <div className="flex flex-1 flex-col items-center justify-center text-center py-10">
-                <img
-                  src={happyMoogle}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-24 sm:w-28 mb-3 object-contain animate-[float-gentle_4s_ease-in-out_infinite]"
-                />
-                <p className="font-display font-bold text-lg text-[var(--text)]">
-                  All accounts mapped!
-                </p>
-                <p className="font-soft text-sm text-[var(--text-muted)] mt-1">
-                  Every character is linked to a Discord account, kupo~
-                </p>
-              </div>
-            ) : tab === "suggested" ? (
-              <SuggestedPairs
-                pairs={suggestedPairs}
-                exactCount={exactCount}
-                confirmingPairKey={confirmingPairKey}
-                isConfirmingAll={isConfirmingAll}
-                onConfirm={confirmPair}
-                onSkip={dismissPair}
-                onConfirmAllExact={confirmAllExact}
-                onGoManual={goManual}
-              />
-            ) : (
-              <div className="flex-1 flex flex-col min-h-0">
-                <p className="text-sm font-soft text-[var(--text-muted)] mb-3 shrink-0">
-                  Pick a character, then its Discord account, kupo~
-                </p>
-
-                <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-y-auto lg:overflow-visible">
-                  <MappingColumn
-                    icon={<img src={FfxivIcon} alt="" className="w-5 h-5" />}
-                    title="Characters"
-                    count={characterRows.length}
-                    searchValue={characterSearch}
-                    onSearchChange={setCharacterSearch}
-                    searchPlaceholder="Search characters..."
-                    isEmpty={characterRows.length === 0}
-                    emptyMessage={
-                      characterSearch
-                        ? "No characters match, kupo~"
-                        : "Every character is linked, kupo!"
-                    }
-                  >
-                    {characterRows.map(({ character, matchInfo }) => (
-                      <CharacterItem
-                        key={character.characterId}
-                        character={character}
-                        isSelected={
-                          selectedCharacter?.characterId ===
-                          character.characterId
-                        }
-                        matchInfo={matchInfo}
-                        onClick={() => selectCharacter(character)}
-                        disabled={isMapping}
-                      />
-                    ))}
-                  </MappingColumn>
-
-                  <MappingColumn
-                    icon={
-                      <DiscordIcon
-                        className="h-4 text-[#5865F2]"
-                        aria-hidden="true"
-                      />
-                    }
-                    title="Discord Accounts"
-                    count={discordRows.length}
-                    searchValue={discordSearch}
-                    onSearchChange={setDiscordSearch}
-                    searchPlaceholder="Search Discord users..."
-                    isEmpty={discordRows.length === 0}
-                    emptyMessage={
-                      discordSearch
-                        ? "No accounts match, kupo~"
-                        : "Every account is linked, kupo!"
-                    }
-                  >
-                    {discordRows.map(({ user, matchInfo }) => (
-                      <DiscordUserItem
-                        key={user.discordId}
-                        user={user}
-                        isSelected={
-                          selectedDiscordUser?.discordId === user.discordId
-                        }
-                        matchInfo={matchInfo}
-                        onClick={() => selectDiscordUser(user)}
-                        disabled={isMapping}
-                      />
-                    ))}
-                  </MappingColumn>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <div className="nook-theme dash-mapping-modal">{content}</div>
       </Modal>
     </>
   );

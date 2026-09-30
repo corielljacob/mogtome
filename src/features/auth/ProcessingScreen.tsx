@@ -7,10 +7,10 @@ export function ProcessingScreen() {
         <Loader2 className="w-7 h-7 text-[var(--primary)]" />
       </div>
       <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
-        Logging you in, kupo~!
+        Signing in
       </h2>
       <p className="text-[var(--text-muted)] font-soft text-sm">
-        Completing Discord authentication...
+        Finishing Discord sign-in...
       </p>
     </div>
   );

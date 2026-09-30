@@ -100,20 +100,20 @@ export function MissingUserDataDialog() {
             id="missing-data-title"
             className="text-2xl sm:text-3xl font-display font-bold text-center text-amber-500 mb-4"
           >
-            Hold Up, Kupo!
+            Character not linked
           </h2>
 
           <div id="missing-data-desc" className="space-y-4 text-center">
             <p className="text-[var(--text)] leading-relaxed">
-              Your Discord has not yet been linked to your character.
+              Your Discord account hasn’t been linked to your character yet.
             </p>
             <p className="text-[var(--text-muted)] leading-relaxed">
-              Please try logging in again in a few hours. If you still see this
-              message, shoot a message to{" "}
+              Try signing in again in a few hours. If you still see this
+              message, contact{" "}
               <span className="font-semibold text-[var(--primary)]">
                 Plane Donut
               </span>{" "}
-              on Discord!
+              on Discord.
             </p>
           </div>
 
@@ -122,7 +122,7 @@ export function MissingUserDataDialog() {
               onClick={handleClose}
               className="px-8 bg-amber-500 hover:bg-amber-600 border-amber-600"
             >
-              Got it, kupo~
+              Got it
             </Button>
           </div>
         </div>

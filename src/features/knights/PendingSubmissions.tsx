@@ -1,324 +1,469 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  FileText,
-  Check,
-  X,
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-  Inbox,
-  Clock,
-  User,
-} from "lucide-react";
 import { biographyApi } from "@/shared/api/biography";
 import { membersApi } from "@/shared/api/members";
 import type { BiographySubmission, StaffMember } from "@/shared/types";
-import { ContentCard } from "@/shared/ui/ContentCard";
-import { Tag } from "@/shared/ui/Tag";
-import { Button, IconButton } from "@/shared/ui/Button";
+import { DashboardIcon } from "./DashboardIcons";
+import "./dashboard-submissions.css";
 
-interface SubmissionCardProps {
+type Decision = "approve" | "reject";
+
+interface ReviewRequest {
   submission: BiographySubmission;
-  submitter?: StaffMember;
-  onApprove: (submissionId: string) => void;
-  onReject: (submissionId: string) => void;
-  isApproving: boolean;
-  isRejecting: boolean;
+  decision: Decision;
+  author: string;
+  trigger: HTMLButtonElement;
+}
+
+interface ReviewFeedback {
+  kind: "success" | "error";
+  message: string;
+  submissionId: string;
+  trigger: HTMLButtonElement;
+}
+
+function submissionAuthor(
+  submission: BiographySubmission,
+  staff?: StaffMember,
+) {
+  return staff?.name || `Discord ID: ${submission.submittedByDiscordId}`;
 }
 
 function SubmissionCard({
   submission,
   submitter,
-  onApprove,
-  onReject,
-  isApproving,
-  isRejecting,
-}: SubmissionCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const submittedDate = new Date(submission.submittedAt);
-  const formattedDate = submittedDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  const formattedTime = submittedDate.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  const biographyPreview =
-    submission.biography.length > 100
-      ? `${submission.biography.slice(0, 100)}...`
-      : submission.biography;
+  onReview,
+  pendingReview,
+  errorId,
+}: {
+  submission: BiographySubmission;
+  submitter?: StaffMember;
+  onReview: (request: ReviewRequest) => void;
+  pendingReview?: ReviewRequest;
+  errorId?: string;
+}) {
+  const titleId = useId();
+  const author = submissionAuthor(submission, submitter);
+  const date = new Date(submission.submittedAt);
+  const validDate = Number.isFinite(date.getTime());
+  const isCurrentReview =
+    pendingReview?.submission.submissionId === submission.submissionId;
+  const initials = submitter?.name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => Array.from(part)[0])
+    .join("");
 
   return (
-    <div className="surface p-4 touch-manipulation animate-[fadeSlideIn_0.3s_ease-out]">
-      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-3">
-        <div className="flex items-center gap-3 sm:gap-2.5 min-w-0">
-          {submitter ? (
-            <img
-              src={submitter.avatarLink}
-              alt=""
-              className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl sm:rounded-lg bg-[var(--secondary)]/10 flex items-center justify-center flex-shrink-0">
-              <User
-                className="w-5 h-5 sm:w-4 sm:h-4 text-[var(--secondary)]"
-                aria-hidden="true"
-              />
-            </div>
-          )}
-          <div className="min-w-0">
-            <p className="font-soft font-semibold text-sm text-[var(--text)] truncate">
-              {submitter?.name ||
-                `Discord ID: ${submission.submittedByDiscordId}`}
-            </p>
-            <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-              {submitter && (
-                <>
-                  <span className="text-[var(--primary)]">
-                    {submitter.freeCompanyRank}
-                  </span>
-                  <span>•</span>
-                </>
-              )}
-              <Clock className="w-3 h-3" aria-hidden="true" />
-              <span>
-                {formattedDate} at {formattedTime}
-              </span>
-            </div>
-          </div>
+    <article
+      className="dash-bio-review"
+      aria-labelledby={titleId}
+      aria-describedby={errorId}
+      aria-busy={isCurrentReview}
+    >
+      <header className="dash-bio-review-header">
+        <span className="dash-bio-monogram" aria-hidden="true">
+          {initials || <DashboardIcon name="people" size={21} />}
+        </span>
+        <div className="dash-bio-author">
+          <h3 id={titleId}>{author}</h3>
+          {submitter && <p>{submitter.freeCompanyRank}</p>}
         </div>
-
-        <Tag
-          color={submission.status === "Pending" ? "var(--warning)" : undefined}
-          className="flex-shrink-0"
-        >
-          {submission.status}
-        </Tag>
-      </div>
-
-      <div className="mb-4">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none rounded-lg p-2 -m-2"
-        >
-          <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap">
-            {isExpanded ? submission.biography : biographyPreview}
-          </p>
-          {submission.biography.length > 100 && (
-            <span className="text-sm sm:text-xs text-[var(--primary)] mt-2 inline-block font-medium">
-              {isExpanded ? "Show less" : "Show more"}
-            </span>
+        <div className="dash-bio-date">
+          <span>Submitted</span>
+          {validDate ? (
+            <time dateTime={date.toISOString()} title={date.toLocaleString()}>
+              {date.toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+              <span>
+                {date.toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </span>
+            </time>
+          ) : (
+            <span>Date unavailable</span>
           )}
-        </button>
+        </div>
+      </header>
+
+      <div className="dash-bio-proposed">
+        <p className="dash-bio-label">
+          <DashboardIcon name="feather" size={16} aria-hidden="true" />
+          Submitted biography
+        </p>
+        <p className="dash-bio-prose">{submission.biography}</p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button
-          variant="success"
-          size="sm"
-          isLoading={isApproving}
-          disabled={isApproving || isRejecting}
-          onClick={() => onApprove(submission.submissionId)}
-          className="flex-1"
-        >
-          {!isApproving && <Check className="w-4 h-4" aria-hidden="true" />}
-          {isApproving ? "Approving..." : "Approve"}
-        </Button>
-        <Button
-          variant="danger"
-          size="sm"
-          isLoading={isRejecting}
-          disabled={isApproving || isRejecting}
-          onClick={() => onReject(submission.submissionId)}
-          className="flex-1"
-        >
-          {!isRejecting && <X className="w-4 h-4" aria-hidden="true" />}
-          {isRejecting ? "Rejecting..." : "Reject"}
-        </Button>
-      </div>
-    </div>
+      {submitter?.biography && (
+        <details className="dash-bio-current">
+          <summary>
+            <DashboardIcon name="book" size={16} aria-hidden="true" />
+            Compare with current biography
+            <DashboardIcon
+              name="chevron-down"
+              className="dash-bio-disclosure"
+              size={16}
+              aria-hidden="true"
+            />
+          </summary>
+          <p className="dash-bio-prose">{submitter.biography}</p>
+        </details>
+      )}
+
+      <footer className="dash-bio-review-footer">
+        <p>Approve to publish this biography.</p>
+        <div className="dash-bio-actions">
+          <button
+            className="dash-bio-button dash-bio-approve"
+            type="button"
+            disabled={!!pendingReview}
+            aria-label={`Approve biography for ${author}`}
+            onClick={(event) =>
+              onReview({
+                submission,
+                author,
+                decision: "approve",
+                trigger: event.currentTarget,
+              })
+            }
+          >
+            <DashboardIcon name="check" size={18} aria-hidden="true" />
+            {isCurrentReview && pendingReview.decision === "approve"
+              ? "Approving…"
+              : "Approve biography"}
+          </button>
+          <button
+            className="dash-bio-button dash-bio-reject"
+            type="button"
+            disabled={!!pendingReview}
+            aria-label={`Reject biography for ${author}`}
+            onClick={(event) =>
+              onReview({
+                submission,
+                author,
+                decision: "reject",
+                trigger: event.currentTarget,
+              })
+            }
+          >
+            <DashboardIcon name="close" size={18} aria-hidden="true" />
+            {isCurrentReview && pendingReview.decision === "reject"
+              ? "Rejecting…"
+              : "Reject biography"}
+          </button>
+        </div>
+      </footer>
+    </article>
   );
 }
 
 export function PendingSubmissions() {
   const queryClient = useQueryClient();
-  const [approvingId, setApprovingId] = useState<string | null>(null);
-  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const inputId = useId();
+  const sortId = useId();
+  const errorId = useId();
+  const resultsId = useId();
+  const searchRef = useRef<HTMLInputElement>(null);
+  const feedbackRef = useRef<HTMLParagraphElement>(null);
+  const reviewLock = useRef(false);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("oldest");
+  const [feedback, setFeedback] = useState<ReviewFeedback | null>(null);
 
   const {
-    data: submissions = [],
-    isLoading: isLoadingSubmissions,
+    data: submissions,
+    isLoading,
     isError,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: ["biography-submissions"],
     queryFn: () => biographyApi.getPendingSubmissions(),
-    staleTime: 1000 * 30, // 30s
+    staleTime: 1000 * 30,
   });
 
-  // staff lookup resolves submitter info by Discord ID
-  const { data: staffData } = useQuery({
+  const { data: staffData, isError: isStaffError } = useQuery({
     queryKey: ["staff"],
     queryFn: () => membersApi.getStaff(),
-    staleTime: 1000 * 60 * 5, // 5min
+    staleTime: 1000 * 60 * 5,
   });
 
   const staffByDiscordId = new Map(
     (staffData?.staff || [])
-      .filter((m) => m.discordId)
-      .map((m) => [m.discordId!, m]),
+      .filter((member) => member.discordId)
+      .map((member) => [member.discordId!, member]),
   );
+  const pendingSubmissions = (submissions || []).filter(
+    (submission) => submission.status === "Pending",
+  );
+  const query = search.trim().toLocaleLowerCase();
+  const visibleSubmissions = pendingSubmissions
+    .filter((submission) => {
+      const author = submissionAuthor(
+        submission,
+        staffByDiscordId.get(submission.submittedByDiscordId),
+      );
+      return `${author} ${submission.submittedByDiscordId} ${submission.biography}`
+        .toLocaleLowerCase()
+        .includes(query);
+    })
+    .sort((first, second) => {
+      const firstDate = Date.parse(first.submittedAt);
+      const secondDate = Date.parse(second.submittedAt);
+      if (!Number.isFinite(firstDate))
+        return Number.isFinite(secondDate) ? 1 : 0;
+      if (!Number.isFinite(secondDate)) return -1;
+      return sort === "oldest"
+        ? firstDate - secondDate
+        : secondDate - firstDate;
+    });
 
-  const pendingSubmissions = submissions.filter((s) => s.status === "Pending");
-
-  const isLoading = isLoadingSubmissions;
-
-  const approveMutation = useMutation({
-    mutationFn: (submissionId: string) =>
-      biographyApi.approveSubmission(submissionId),
-    onMutate: (submissionId) => {
-      setApprovingId(submissionId);
+  const reviewMutation = useMutation({
+    mutationFn: ({ submission, decision }: ReviewRequest) =>
+      decision === "approve"
+        ? biographyApi.approveSubmission(submission.submissionId)
+        : biographyApi.rejectSubmission(submission.submissionId),
+    onSuccess: async (_, request) => {
+      const { submission, decision, author, trigger } = request;
+      // Finish an older refresh before removing the successfully reviewed item.
+      await queryClient.cancelQueries({ queryKey: ["biography-submissions"] });
+      queryClient.setQueryData<BiographySubmission[]>(
+        ["biography-submissions"],
+        (current) =>
+          current?.filter(
+            (item) => item.submissionId !== submission.submissionId,
+          ),
+      );
+      setFeedback({
+        kind: "success",
+        message: `${author}'s biography ${decision === "approve" ? "approved" : "rejected"}.`,
+        submissionId: submission.submissionId,
+        trigger,
+      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["biography-submissions"] }),
+        queryClient.invalidateQueries({
+          queryKey: ["user-submission", submission.submittedByDiscordId],
+        }),
+        ...(decision === "approve"
+          ? [queryClient.invalidateQueries({ queryKey: ["staff"] })]
+          : []),
+      ]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
-      // approved bios surface in staff data too
-      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    onError: (_, { submission, decision, author, trigger }) => {
+      setFeedback({
+        kind: "error",
+        message: `Couldn't ${decision} ${author}'s biography. Try again.`,
+        submissionId: submission.submissionId,
+        trigger,
+      });
     },
     onSettled: () => {
-      setApprovingId(null);
+      reviewLock.current = false;
     },
   });
 
-  const rejectMutation = useMutation({
-    mutationFn: (submissionId: string) =>
-      biographyApi.rejectSubmission(submissionId),
-    onMutate: (submissionId) => {
-      setRejectingId(submissionId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["biography-submissions"] });
-    },
-    onSettled: () => {
-      setRejectingId(null);
-    },
-  });
+  useEffect(() => {
+    if (
+      feedback?.kind === "success" &&
+      (document.activeElement === feedback.trigger ||
+        document.activeElement === document.body)
+    ) {
+      feedbackRef.current?.focus({ preventScroll: true });
+    }
+  }, [feedback]);
 
-  const handleApprove = (submissionId: string) => {
-    approveMutation.mutate(submissionId);
+  const handleReview = (request: ReviewRequest) => {
+    if (reviewLock.current) return;
+    reviewLock.current = true;
+    setFeedback(null);
+    reviewMutation.mutate(request);
   };
-
-  const handleReject = (submissionId: string) => {
-    rejectMutation.mutate(submissionId);
+  const clearSearch = () => {
+    setSearch("");
+    searchRef.current?.focus();
   };
 
   return (
-    <ContentCard>
-      <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
-        <div className="flex items-start gap-2.5 sm:gap-3">
-          <span className="icon-badge w-10 h-10 shrink-0 text-[var(--primary)]">
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-          </span>
-          <div>
-            <h2 className="font-display font-bold text-base sm:text-lg text-[var(--text)]">
-              Pending Biography Submissions
-            </h2>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-              Review and approve member biographies
-            </p>
-          </div>
-        </div>
-
-        <IconButton
-          variant="ghost"
-          size="md"
-          icon={
-            <RefreshCw
-              className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
-            />
-          }
-          aria-label="Refresh submissions"
-          onClick={() => refetch()}
-          disabled={isLoading}
-        />
+    <div className="dash-bio-workspace">
+      <div className="dash-bio-intro">
+        <p>Read each biography before approving or rejecting it.</p>
+        <button
+          className="dash-bio-button dash-bio-refresh"
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching || reviewMutation.isPending}
+          aria-label="Refresh biography submissions"
+        >
+          <DashboardIcon name="refresh" size={17} aria-hidden="true" />
+          {isFetching && !isLoading ? "Refreshing…" : "Refresh"}
+        </button>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-          <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mb-3" />
-          <p className="text-sm text-[var(--text-muted)] font-soft">
-            Loading submissions...
-          </p>
-        </div>
-      ) : isError ? (
-        <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-          <AlertCircle className="w-10 h-10 text-red-500 mb-3" />
-          <p className="text-sm text-[var(--text)] font-soft font-semibold mb-1">
-            Failed to load submissions
-          </p>
-          <p className="text-xs text-[var(--text-muted)] mb-4">
-            Something went wrong, kupo...
-          </p>
-          <Button variant="primary" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="w-4 h-4" aria-hidden="true" />
-            Try Again
-          </Button>
-        </div>
-      ) : pendingSubmissions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-          <div className="icon-badge w-16 h-16 mb-4 text-[var(--secondary)]">
-            <Inbox className="w-8 h-8" />
-          </div>
-          <p className="text-sm text-[var(--text)] font-soft font-semibold mb-1">
-            All caught up!
-          </p>
-          <p className="text-xs text-[var(--text-muted)]">
-            No pending biography submissions to review, kupo~
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2 mb-4 flex-shrink-0">
-            <Tag color="var(--warning)">
-              {pendingSubmissions.length} pending
-            </Tag>
-          </div>
+      <p
+        className={`dash-bio-feedback${feedback ? ` dash-bio-feedback-${feedback.kind}` : ""}`}
+        ref={feedbackRef}
+        role={feedback?.kind === "error" ? "alert" : "status"}
+        id={errorId}
+        tabIndex={-1}
+      >
+        {feedback && (
+          <>
+            <DashboardIcon
+              name={feedback.kind === "error" ? "alert" : "check"}
+              size={18}
+              aria-hidden="true"
+            />
+            <span>{feedback.message}</span>
+          </>
+        )}
+      </p>
 
-          <div className="overflow-y-auto max-h-[400px] sm:max-h-[500px] pr-1 -mr-1 space-y-3 scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent">
-            {pendingSubmissions.map((submission) => (
-              <SubmissionCard
-                key={submission.submissionId}
-                submission={submission}
-                submitter={staffByDiscordId.get(
-                  submission.submittedByDiscordId,
-                )}
-                onApprove={handleApprove}
-                onReject={handleReject}
-                isApproving={approvingId === submission.submissionId}
-                isRejecting={rejectingId === submission.submissionId}
-              />
-            ))}
-          </div>
-
-          {/* kept outside the scroll area so it stays visible */}
-          {(approveMutation.isError || rejectMutation.isError) && (
-            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 mt-3 flex-shrink-0 animate-[fadeSlideIn_0.3s_ease-out]">
-              <AlertCircle
-                className="w-4 h-4 text-red-500 flex-shrink-0"
-                aria-hidden="true"
-              />
-              <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">
-                Failed to {approveMutation.isError ? "approve" : "reject"}{" "}
-                submission. Please try again.
-              </p>
-            </div>
-          )}
+      {isError && (
+        <div className="dash-bio-load-error" role="alert">
+          <DashboardIcon name="alert" size={20} aria-hidden="true" />
+          <p>
+            {submissions
+              ? "Couldn't refresh the reviews. You're still seeing the previous list."
+              : "Couldn't load biography submissions."}{" "}
+            Try refreshing.
+          </p>
         </div>
       )}
-    </ContentCard>
+
+      {isLoading ? (
+        <div className="dash-bio-empty" role="status">
+          <DashboardIcon name="book" size={32} aria-hidden="true" />
+          <p>Checking the review tray…</p>
+        </div>
+      ) : submissions ? (
+        <>
+          {pendingSubmissions.length > 0 && (
+            <div className="dash-bio-toolbar">
+              <div className="dash-bio-search-field">
+                <label htmlFor={inputId}>Find a biography</label>
+                <div className="dash-bio-search">
+                  <DashboardIcon name="search" size={18} aria-hidden="true" />
+                  <input
+                    ref={searchRef}
+                    id={inputId}
+                    type="search"
+                    value={search}
+                    aria-describedby={resultsId}
+                    onChange={(event) => setSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Escape" &&
+                        search &&
+                        !event.nativeEvent.isComposing
+                      ) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        clearSearch();
+                      }
+                    }}
+                    placeholder="Member name or biography…"
+                    autoComplete="off"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      aria-label="Clear biography search"
+                      onClick={clearSearch}
+                    >
+                      <DashboardIcon
+                        name="close"
+                        size={17}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="dash-bio-sort">
+                <label htmlFor={sortId}>Review order</label>
+                <select
+                  id={sortId}
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value)}
+                >
+                  <option value="oldest">Oldest first</option>
+                  <option value="newest">Newest first</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {isStaffError && !staffData && pendingSubmissions.length > 0 && (
+            <p className="dash-bio-staff-note">
+              Member names couldn't load. Submissions show Discord IDs instead.
+            </p>
+          )}
+
+          <p
+            className="dash-bio-count"
+            id={resultsId}
+            role="status"
+            aria-label="Biography results"
+            aria-atomic="true"
+          >
+            {query && pendingSubmissions.length > 0
+              ? `${visibleSubmissions.length} of ${pendingSubmissions.length} pending biographies`
+              : `${pendingSubmissions.length} ${pendingSubmissions.length === 1 ? "biography" : "biographies"} waiting for review`}
+          </p>
+
+          {pendingSubmissions.length === 0 ? (
+            <div className="dash-bio-empty">
+              <DashboardIcon name="inbox" size={34} aria-hidden="true" />
+              <h3>All caught up</h3>
+              <p>No biographies are waiting for review.</p>
+            </div>
+          ) : visibleSubmissions.length === 0 ? (
+            <div className="dash-bio-empty">
+              <DashboardIcon name="search" size={30} aria-hidden="true" />
+              <h3>No matching biographies</h3>
+              <p>Try another name or a few words from the biography.</p>
+              <button
+                className="dash-bio-button"
+                type="button"
+                onClick={clearSearch}
+              >
+                Clear search
+              </button>
+            </div>
+          ) : (
+            <div className="dash-bio-reviews">
+              {visibleSubmissions.map((submission) => (
+                <SubmissionCard
+                  key={submission.submissionId}
+                  submission={submission}
+                  submitter={staffByDiscordId.get(
+                    submission.submittedByDiscordId,
+                  )}
+                  onReview={handleReview}
+                  pendingReview={
+                    reviewMutation.isPending
+                      ? reviewMutation.variables
+                      : undefined
+                  }
+                  errorId={
+                    feedback?.kind === "error" &&
+                    feedback.submissionId === submission.submissionId
+                      ? errorId
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </>
+      ) : null}
+    </div>
   );
 }

@@ -1,0 +1,129 @@
+.nook-sb-atmosphere {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.nook-sb-flight {
+  /* Easing repeats per keyframe segment: ~43 holds per seven-second leg. */
+  animation: nook-sb-circle 36s steps(43, end) infinite;
+  transform-origin: 253px 126px;
+}
+.nook-sb-flight--two {
+  animation-delay: -9s;
+  animation-duration: 41s;
+}
+.nook-sb-flight--three {
+  animation-delay: -21s;
+  animation-duration: 38s;
+}
+.nook-sb-wing-pose {
+  opacity: 0;
+  animation: nook-sb-wing 1.8s step-end infinite;
+}
+.nook-sb-wing-pose--0 {
+  animation-delay: 0s;
+}
+.nook-sb-wing-pose--1 {
+  opacity: 1;
+  animation-name: nook-sb-wing-rest;
+}
+.nook-sb-wing-pose--2 {
+  animation-name: nook-sb-wing-low;
+}
+.nook-sb-flight--two .nook-sb-bird {
+  transform: rotate(-8deg);
+}
+.nook-sb-flight--three .nook-sb-bird {
+  transform: rotate(11deg);
+}
+
+@keyframes nook-sb-circle {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-4deg);
+  }
+  20% {
+    transform: translate(-30px, -8px) rotate(5deg);
+  }
+  42% {
+    transform: translate(-70px, 6px) rotate(12deg);
+  }
+  60% {
+    transform: translate(-48px, 15px) rotate(-7deg);
+  }
+  80% {
+    transform: translate(-12px, 8px) rotate(-12deg);
+  }
+}
+@keyframes nook-sb-wing {
+  0%,
+  16%,
+  100% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+}
+@keyframes nook-sb-wing-rest {
+  0%,
+  24%,
+  100% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0;
+  }
+}
+@keyframes nook-sb-wing-low {
+  0%,
+  24%,
+  100% {
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+  }
+}
+.nook-sb-mote {
+  opacity: 0.5;
+  animation: nook-sb-drift 16s steps(48, end) infinite;
+}
+.nook-sb-mote--1 {
+  animation-duration: 19s;
+}
+.nook-sb-mote--2 {
+  animation-duration: 22s;
+}
+@keyframes nook-sb-drift {
+  0% {
+    transform: translate(-18px, 12px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(5px, -7px);
+    opacity: 0.65;
+  }
+  88% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(26px, -24px);
+    opacity: 0;
+  }
+}
+.reduce-motion .nook-sb-atmosphere * {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nook-sb-atmosphere * {
+    animation: none !important;
+  }
+}

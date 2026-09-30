@@ -1,466 +1,532 @@
-import { type CSSProperties } from "react";
-import { Wifi, Loader2, Search, X } from "lucide-react";
-
-import {
-  PageLayout,
-  PageHeader,
-  PageFooter,
-  LoadingState,
-  ErrorState,
-  EmptyState,
-} from "@/shared/ui/PageShell";
-import { KawaiiStar, KawaiiBow } from "@/shared/ui/kawaiiMotifs";
-import {
-  Sticker,
-  MoogleSticker,
-  BubbleSticker,
-  TapeStrip,
-  Dot,
-} from "@/shared/ui/stickers";
-import { EVENT_TYPE_CONFIG } from "@/features/chronicle/eventTypes";
-import type { ChronicleEventFilter } from "@/shared/types";
-
-import { useChronicle } from "@/features/chronicle/useChronicle";
-import { LiveStatus } from "@/features/chronicle/LiveStatus";
-import { JournalEntry } from "@/features/chronicle/JournalEntry";
-import { WashiTape } from "@/features/chronicle/WashiTape";
-import { dayDecor, getEventKey } from "@/features/chronicle/chronicleHelpers";
-
-const EVENT_FILTERS: { value: ChronicleEventFilter; label: string }[] = (
-  Object.keys(EVENT_TYPE_CONFIG) as ChronicleEventFilter[]
-).map((key) => ({
-  value: key,
-  label: EVENT_TYPE_CONFIG[key].label,
-}));
-
-import flyingMoogles from "@/assets/moogles/moogles flying.webp";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { DiscordIcon } from "@/shared/ui/DiscordIcon";
+import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
+import { useChronicle } from "./useChronicle";
+import { ChronicleControls } from "./ChronicleControls";
+import { ChronicleIcon } from "./ChronicleIcons";
+import { JournalEntry } from "./JournalEntry";
+import { getEventKey } from "./chronicleHelpers";
+import { LiveStatus } from "./LiveStatus";
+import { ChronicleDayIndex } from "./ChronicleDayIndex";
+import { ChronicleDayHeading } from "./ChronicleDayHeading";
 import moogleMail from "@/assets/moogles/moogle mail.webp";
 
+interface PageFocusRequest {
+  button: HTMLButtonElement;
+  query: string;
+  previousKeys: Set<string>;
+  newKeys?: Set<string>;
+  hasNextPage?: boolean;
+}
+
+export function ChronicleAccessNotice() {
+  const { login } = useAuth();
+  return (
+    <section
+      className="chronicle-access chronicle-paper"
+      aria-labelledby="chronicle-access-title"
+    >
+      <span className="chronicle-washi" aria-hidden="true" />
+      <div className="chronicle-access-art" aria-hidden="true">
+        <img src={moogleMail} alt="" />
+      </div>
+      <div className="chronicle-access-copy">
+        <span className="chronicle-note-label">
+          <ChronicleIcon name="book" size={17} /> For our FC members
+        </span>
+        <h2 id="chronicle-access-title">What’s new in the FC?</h2>
+        <p>
+          Sign in with Discord to read FC announcements and see who’s joined or
+          moved up a rank.
+        </p>
+        <button
+          className="chronicle-paper-button chronicle-sign-in"
+          onClick={login}
+        >
+          <DiscordIcon /> Sign in with Discord{" "}
+          <ChronicleIcon name="arrow-right" size={18} />
+        </button>
+        <Link to="/members" className="chronicle-access-family">
+          Meet the members <ChronicleIcon name="arrow-right" size={16} />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export function Chronicle() {
+  const model = useChronicle();
+  return <ChronicleView model={model} />;
+}
+
+/** Presentation is separate so loading, recovery, and sample layouts can be tested. */
+export function ChronicleView({
+  model,
+}: {
+  model: ReturnType<typeof useChronicle>;
+}) {
   const {
-    searchInput,
-    setSearchInput,
-    activeFilter,
-    setActiveFilter,
-    deferredSearchQuery,
-    searchInputRef,
-    isSearching,
-    hasActiveFilter,
+    isLoading,
+    isError,
+    isFetching,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    hasNextPage,
+    refetch,
+    loadMore,
+    totalCount,
+    dayGroups,
+    isTransitioning,
     hasActiveQuery,
+    handleClearAll,
+    searchInput,
+    activeFilter,
     status,
     unseenCount,
     reconnect,
     markAllAsSeen,
-    isLoading,
-    isError,
-    isFetchingNextPage,
-    hasNextPage,
-    refetch,
+    deferredSearchQuery,
     apiEvents,
-    displayedEvents,
-    totalCount,
-    dayGroups,
-    isTransitioning,
-    sentinelRef,
-    handleClearSearch,
-    handleClearAll,
-    handleToggleFilter,
-  } = useChronicle();
+    canViewNameChanges,
+  } = model;
+  const initialLoading = isLoading && totalCount === 0;
+  const initialError = isError && !isFetchNextPageError && totalCount === 0;
+  const canReconnect = status === "disconnected" || status === "error";
+  const hasDayIndex = dayGroups.length > 1;
+  const workspaceRef = useRef<HTMLElement>(null);
+  const toolbarRef = useRef<HTMLElement>(null);
+  useStickyToolbar(workspaceRef, toolbarRef);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const emptyHeadingRef = useRef<HTMLHeadingElement>(null);
+  const entriesRef = useRef<HTMLDivElement>(null);
+  const endnoteRef = useRef<HTMLParagraphElement>(null);
+  const pageFocusRef = useRef<PageFocusRequest | null>(null);
+  const [completedPage, setCompletedPage] = useState<PageFocusRequest | null>(
+    null,
+  );
+  const query = JSON.stringify([
+    searchInput,
+    deferredSearchQuery,
+    activeFilter,
+    canViewNameChanges,
+  ]);
+  const resultQuery = JSON.stringify([deferredSearchQuery, activeFilter]);
+  const previousResultQuery = useRef(resultQuery);
+
+  useEffect(() => {
+    if (
+      isTransitioning ||
+      initialLoading ||
+      previousResultQuery.current === resultQuery
+    )
+      return;
+    previousResultQuery.current = resultQuery;
+    const heading = headingRef.current;
+    const toolbar = toolbarRef.current;
+    // Filtering from the sticky controls should reveal the new results without
+    // taking focus away from the field. Older-page loads keep their own place.
+    if (
+      heading &&
+      toolbar &&
+      heading.getBoundingClientRect().top <
+        Math.max(0, toolbar.getBoundingClientRect().bottom)
+    ) {
+      heading.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [resultQuery, isTransitioning, initialLoading]);
+
+  useEffect(() => {
+    // A disabled or removed button can drop focus onto body. Track intentional
+    // navigation separately so finishing a request never pulls the reader back.
+    const cancelForFocus = (event: FocusEvent | PointerEvent) => {
+      const request = pageFocusRef.current;
+      if (
+        request &&
+        event.type === "focusin" &&
+        event.target === document.body &&
+        (request.button.disabled || !request.button.isConnected)
+      )
+        return;
+      if (request && !request.button.contains(event.target as Node)) {
+        pageFocusRef.current = null;
+      }
+    };
+    const cancelForTab = (event: KeyboardEvent) => {
+      if (event.key === "Tab") pageFocusRef.current = null;
+    };
+    document.addEventListener("focusin", cancelForFocus);
+    document.addEventListener("pointerdown", cancelForFocus);
+    document.addEventListener("keydown", cancelForTab);
+    return () => {
+      pageFocusRef.current = null;
+      document.removeEventListener("focusin", cancelForFocus);
+      document.removeEventListener("pointerdown", cancelForFocus);
+      document.removeEventListener("keydown", cancelForTab);
+    };
+  }, []);
+
+  useEffect(() => {
+    const request = pageFocusRef.current;
+    if (!request) return;
+    if (request.query !== query) {
+      pageFocusRef.current = null;
+      return;
+    }
+    if (completedPage !== request || isFetching || !request.newKeys) return;
+    const newKeys = request.newKeys;
+
+    const firstNewItem = dayGroups
+      .flatMap((group) => group.items)
+      .find(
+        (item) => !item.isRealtime && newKeys.has(getEventKey(item.event, 0)),
+      );
+    const entry = firstNewItem
+      ? Array.from(
+          entriesRef.current?.querySelectorAll<HTMLElement>(
+            "[data-chronicle-entry-key]",
+          ) ?? [],
+        ).find(
+          (element) =>
+            element.dataset.chronicleEntryKey ===
+            getEventKey(firstNewItem.event, 0),
+        )
+      : undefined;
+    const endnote =
+      !hasNextPage && request.hasNextPage === false
+        ? (endnoteRef.current ?? emptyHeadingRef.current)
+        : null;
+
+    // The query result can settle before React commits its new rows.
+    if (
+      !entry &&
+      !endnote &&
+      newKeys.size > 0 &&
+      !apiEvents.some((event) => newKeys.has(getEventKey(event, 0)))
+    )
+      return;
+    if (!entry && !endnote && request.hasNextPage === false) return;
+
+    pageFocusRef.current = null;
+    if (
+      document.activeElement !== request.button &&
+      document.activeElement !== document.body
+    )
+      return;
+    const target = entry ?? endnote;
+    if (target) {
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ behavior: "instant", block: "nearest" });
+    } else if (request.button.isConnected) {
+      request.button.focus({ preventScroll: true });
+    }
+  }, [query, completedPage, isFetching, dayGroups, hasNextPage, apiEvents]);
+
+  const handleLoadOlder = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isFetching || isTransitioning || !hasNextPage) return;
+    const request: PageFocusRequest = {
+      button: event.currentTarget,
+      query,
+      previousKeys: new Set(
+        dayGroups.flatMap((group) =>
+          group.items.map((item) => getEventKey(item.event, 0)),
+        ),
+      ),
+    };
+    pageFocusRef.current = request;
+    const result = loadMore();
+    if (!result) {
+      pageFocusRef.current = null;
+      return;
+    }
+    void result
+      .then((page) => {
+        if (pageFocusRef.current !== request) return;
+        if (!page.isSuccess || !page.data) {
+          pageFocusRef.current = null;
+          return;
+        }
+        request.newKeys = new Set(
+          page.data.pages.flatMap((page) =>
+            page.events
+              .filter(
+                (entry) => canViewNameChanges || entry.type !== "NameChanged",
+              )
+              .map((entry) => getEventKey(entry, 0))
+              .filter((key) => !request.previousKeys.has(key)),
+          ),
+        );
+        request.hasNextPage = page.hasNextPage;
+        setCompletedPage(request);
+      })
+      .catch(() => {
+        if (pageFocusRef.current === request) pageFocusRef.current = null;
+      });
+  };
 
   return (
-    <PageLayout
-      bleed
-      moogles={{ primary: flyingMoogles, secondary: moogleMail }}
+    <section
+      ref={workspaceRef}
+      className="chronicle-workspace"
+      aria-label="Company activity"
     >
-      <div className="corkboard relative px-3.5 py-7 sm:px-6 sm:py-9 md:px-8 md:py-10">
-        <span
-          className="pushpin absolute top-3 left-3 sm:top-4 sm:left-4 z-20"
-          aria-hidden="true"
-        />
-        <span
-          className="pushpin absolute top-3 right-3 sm:top-4 sm:right-4 z-20"
-          style={{ "--pin": "var(--secondary)" } as CSSProperties}
-          aria-hidden="true"
-        />
-        <span
-          className="pushpin absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20"
-          style={{ "--pin": "var(--accent)" } as CSSProperties}
-          aria-hidden="true"
-        />
-        <span
-          className="pushpin absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20"
-          style={{ "--pin": "var(--secondary)" } as CSSProperties}
-          aria-hidden="true"
-        />
-
-        <PageHeader
-          opener="~ a little logbook of our days ~"
-          title="The Chronicle"
-          subtitle="what the FC has been up to lately"
-          stickers={
-            <>
-              <TapeStrip
-                className="top-4 left-[7%] -rotate-[12deg]"
-                color="var(--secondary)"
-              />
-              <MoogleSticker
-                src={moogleMail}
-                ring="var(--primary)"
-                className="hidden md:block left-[4%] top-1/2 -translate-y-1/2 h-16 w-16 -rotate-[6deg]"
-              />
-              <Sticker
-                className="hidden sm:flex right-[5%] top-1/2 -translate-y-1/2 h-12 w-12 rotate-[10deg]"
-                color="var(--accent)"
+      <span className="chronicle-washi" aria-hidden="true" />
+      <ChronicleControls model={model} toolbarRef={toolbarRef} />
+      <header className="chronicle-workspace-heading">
+        <div>
+          <h2 ref={headingRef} tabIndex={-1}>
+            {hasActiveQuery ? "Matching entries" : "Recent activity"}
+          </h2>
+          <p role="status" aria-atomic="true">
+            {initialLoading
+              ? hasActiveQuery
+                ? "Searching…"
+                : "Opening the Chronicle…"
+              : initialError
+                ? hasActiveQuery
+                  ? "Search unavailable"
+                  : "Entries unavailable"
+                : isTransitioning
+                  ? "Searching…"
+                  : `${totalCount} ${totalCount === 1 ? "entry" : "entries"} loaded`}
+          </p>
+        </div>
+        <div className="chronicle-workspace-actions">
+          <div
+            className="chronicle-connection"
+            role="group"
+            aria-label="Live connection"
+          >
+            <LiveStatus status={status} compact />
+            {canReconnect && (
+              <button
+                type="button"
+                className="chronicle-text-action"
+                onClick={reconnect}
               >
-                <KawaiiStar className="w-6 h-6 text-white" />
-              </Sticker>
-              <BubbleSticker className="hidden lg:block right-[14%] bottom-5 -rotate-[4deg]">
-                news!
-              </BubbleSticker>
-              <Dot
-                className="hidden md:block left-[17%] bottom-6 h-2.5 w-2.5"
-                color="var(--accent)"
-              />
-              <Dot
-                className="hidden lg:block right-[3%] top-7 h-2 w-2"
-                color="var(--secondary)"
-              />
-            </>
-          }
-        />
-
-        {/* on large screens: a sticky search/filter rail beside the feed, so the
-            wide page gets used and the journal column stays readable. */}
-        <div className="lg:grid lg:grid-cols-[19rem_1fr] lg:gap-6 xl:gap-8 lg:items-start">
-          <aside className="space-y-4 sm:space-y-5 mb-5 sm:mb-7 lg:mb-0 lg:sticky lg:top-4">
-            {/* search card - matches the Members search card */}
-            <section className="relative animate-[fadeSlideIn_0.3s_ease-out_0.1s_both]">
-              <span
-                className="pushpin absolute -top-2 left-8 z-10"
-                style={{ "--pin": "var(--secondary)" } as CSSProperties}
-                aria-hidden="true"
-              />
-              <span
-                className="pushpin absolute -top-2 right-8 z-10"
-                style={{ "--pin": "var(--primary)" } as CSSProperties}
-                aria-hidden="true"
-              />
-              <div className="surface paper p-3 sm:p-4">
-                <div className="relative group">
-                  <label htmlFor="chronicle-search" className="sr-only">
-                    Search chronicle events
-                  </label>
-                  <Search
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--primary)]/70 pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <input
-                    ref={searchInputRef}
-                    id="chronicle-search"
-                    type="search"
-                    inputMode="search"
-                    enterKeyHint="search"
-                    placeholder="Search, kupo~"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    className="
-              w-full pl-11 pr-11 py-3
-              bg-[var(--bg)] rounded-full
-              border-2 border-[color:color-mix(in_srgb,var(--primary)_16%,var(--card))]
-              focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20
-              font-soft text-base text-[var(--text)] placeholder:text-[var(--text-subtle)]
-              focus:outline-none transition-all touch-manipulation
-            "
-                    style={{ fontSize: "16px" }}
-                  />
-                  {searchInput && (
-                    <button
-                      onClick={handleClearSearch}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary)]/12 active:bg-[var(--primary)]/30 sm:hover:bg-[var(--primary)]/20 transition-colors cursor-pointer touch-manipulation"
-                      aria-label="Clear search"
-                    >
-                      <X className="w-4 h-4 text-[var(--primary)]" />
-                    </button>
-                  )}
+                <ChronicleIcon name="refresh" size={16} /> Reconnect
+              </button>
+            )}
+          </div>
+          {unseenCount > 0 && (
+            <div className="chronicle-unread-notice">
+              <strong>
+                {unseenCount} new {unseenCount === 1 ? "entry" : "entries"}
+              </strong>
+              <button
+                type="button"
+                className="chronicle-text-action"
+                onClick={
+                  hasActiveQuery
+                    ? handleClearAll
+                    : () => {
+                        markAllAsSeen();
+                        headingRef.current?.focus({ preventScroll: true });
+                      }
+                }
+              >
+                {hasActiveQuery ? "View new entries" : "Mark all read"}
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+      {deferredSearchQuery && (
+        <p className="chronicle-search-context">
+          Results for <strong>“{deferredSearchQuery}”</strong>
+        </p>
+      )}
+      <div
+        className={`chronicle-reading-layout${hasDayIndex ? " has-day-index" : ""}`}
+      >
+        {hasDayIndex && (
+          <ChronicleDayIndex
+            groups={dayGroups}
+            onBackToSearch={() => {
+              const input = model.searchInputRef.current;
+              input?.focus({ preventScroll: true });
+              input?.scrollIntoView({ behavior: "instant", block: "center" });
+            }}
+          />
+        )}
+        <section className="chronicle-timeline" aria-label="Chronicle timeline">
+          <div aria-busy={isTransitioning || initialLoading}>
+            {initialLoading ? (
+              <div className="chronicle-loading">
+                <p>
+                  <ChronicleIcon name="book" size={24} />{" "}
+                  {hasActiveQuery
+                    ? "Finding matching entries…"
+                    : "Catching up on the FC…"}
+                </p>
+                <div className="chronicle-loading-lines" aria-hidden="true">
+                  {[0, 1, 2].map((index) => (
+                    <div key={index}>
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  ))}
                 </div>
               </div>
-            </section>
-
-            {/* filter + status card - matches the Members rank-filter card */}
-            <section className="relative">
-              <span
-                className="pushpin absolute -top-2 left-8 z-10"
-                style={{ "--pin": "var(--accent)" } as CSSProperties}
-                aria-hidden="true"
-              />
-              <span
-                className="pushpin absolute -top-2 right-8 z-10"
-                style={{ "--pin": "var(--secondary)" } as CSSProperties}
-                aria-hidden="true"
-              />
-              <div className="surface paper p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2">
-                    <KawaiiBow className="w-5 h-5 text-[var(--primary)]" />
-                    <span className="font-display font-bold text-sm text-[var(--text)]">
-                      Pick a kind, kupo!
-                    </span>
-                  </div>
-                  {hasActiveFilter && (
-                    <button
-                      onClick={() => setActiveFilter(null)}
-                      className="flex items-center gap-1 text-sm font-display font-bold text-[var(--text-muted)] hover:text-[var(--primary)] active:text-[var(--primary)] transition-colors cursor-pointer touch-manipulation"
-                      aria-label="Clear filter"
-                    >
-                      <X className="w-4 h-4" />
-                      Clear
-                    </button>
-                  )}
-                </div>
-
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label="Filter by event type"
+            ) : initialError ? (
+              <div className="chronicle-message" role="alert">
+                <ChronicleIcon name="book" className="chronicle-message-icon" />
+                <h3>
+                  {hasActiveQuery
+                    ? "Couldn't load matching entries"
+                    : "Couldn't open the Chronicle"}
+                </h3>
+                <p>
+                  {hasActiveQuery
+                    ? "Try again, or clear your search and filters."
+                    : "Please try again in a moment."}
+                </p>
+                <button
+                  type="button"
+                  className="chronicle-paper-button"
+                  disabled={isFetching}
+                  onClick={() => void refetch()}
                 >
-                  {EVENT_FILTERS.map(({ value, label }) => {
-                    const config = EVENT_TYPE_CONFIG[value];
-                    const isActive = activeFilter === value;
-                    return (
-                      <button
-                        key={value}
-                        onClick={() => handleToggleFilter(value)}
-                        aria-pressed={isActive}
-                        className={`
-                  inline-flex items-center gap-1.5
-                  px-3.5 py-1.5 rounded-full text-sm font-display font-bold
-                  cursor-pointer transition-colors duration-200 touch-manipulation
-                  focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:outline-none
-                  ${isActive ? "gel text-white" : "bg-[var(--card)] border-2 text-[var(--text)]"}
-                `}
-                        style={
-                          isActive
-                            ? ({ "--gel-color": config.hex } as CSSProperties)
-                            : ({
-                                borderColor: `color-mix(in srgb, ${config.hex} 32%, var(--card))`,
-                              } as CSSProperties)
-                        }
-                      >
-                        <config.Icon
-                          className="w-3.5 h-3.5"
-                          style={{ color: isActive ? "#fff" : config.hex }}
-                          aria-hidden="true"
-                        />
-                        <span>{label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {hasActiveQuery && !isLoading && (
-                  <p
-                    className="mt-3 px-1 font-soft text-sm text-[var(--text-muted)]"
-                    aria-live="polite"
-                  >
-                    {isTransitioning ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <Loader2
-                          className="w-3.5 h-3.5 animate-spin"
-                          aria-hidden="true"
-                        />
-                        Looking...
-                      </span>
-                    ) : (
-                      <>
-                        Found{" "}
-                        <span className="font-bold text-[var(--primary)]">
-                          {displayedEvents.length}
-                        </span>{" "}
-                        entr{displayedEvents.length !== 1 ? "ies" : "y"}
-                      </>
-                    )}
-                  </p>
-                )}
-                <div className="mt-4 pt-3 border-t border-[var(--border)] flex items-center justify-between gap-3 min-h-6">
-                  <LiveStatus status={status} />
-                  <div className="flex items-center gap-4">
-                    {(status === "disconnected" || status === "error") && (
-                      <button
-                        onClick={reconnect}
-                        className="inline-flex items-center gap-1.5 text-xs font-soft font-medium text-[var(--primary)] hover:underline cursor-pointer touch-manipulation"
-                      >
-                        <Wifi className="w-3.5 h-3.5" aria-hidden="true" />
-                        reconnect
-                      </button>
-                    )}
-                    {!hasActiveQuery && unseenCount > 0 && (
-                      <button
-                        onClick={markAllAsSeen}
-                        className="text-xs font-soft font-medium text-[var(--text-muted)] hover:text-[var(--primary)] cursor-pointer touch-manipulation"
-                      >
-                        mark all read
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-          </aside>
-
-          <div className="min-w-0">
-            {isLoading && apiEvents.length === 0 ? (
-              <div>
-                <LoadingState
-                  message="Gathering the chronicles, kupo..."
-                  imageSrc={flyingMoogles}
-                />
-              </div>
-            ) : isError ? (
-              <div className="animate-[fadeIn_0.2s_ease-out]">
-                <ErrorState
-                  message="The chronicle tome got lost, kupo..."
-                  onRetry={() => refetch()}
-                />
+                  <ChronicleIcon name="refresh" size={18} />{" "}
+                  {isFetching ? "Trying again…" : "Try again"}
+                </button>
               </div>
             ) : totalCount === 0 ? (
-              <div className="animate-[fadeIn_0.2s_ease-out]">
-                {hasActiveQuery ? (
-                  <EmptyState
-                    title="Nothing here"
-                    message={
-                      isSearching
-                        ? "Kupo? Nothing matches that search..."
-                        : "No entries of that kind yet, kupo..."
-                    }
-                    imageSrc={moogleMail}
-                    onClear={handleClearAll}
-                    clearLabel={
-                      isSearching && hasActiveFilter
-                        ? "Clear search & filter"
-                        : isSearching
-                          ? "Clear search"
-                          : "Clear filter"
-                    }
-                  />
-                ) : (
-                  <EmptyState
-                    title="No entries yet"
-                    message="The chronicle awaits its first entry, kupo~"
-                    imageSrc={moogleMail}
-                  />
+              <div className="chronicle-message">
+                <ChronicleIcon
+                  name={hasActiveQuery ? "search" : "book"}
+                  className="chronicle-message-icon"
+                />
+                <h3 ref={emptyHeadingRef} tabIndex={-1}>
+                  {hasNextPage
+                    ? hasActiveQuery
+                      ? "No matching entries on this page"
+                      : "No entries on this page"
+                    : hasActiveQuery
+                      ? "No matching entries"
+                      : "The first page is waiting"}
+                </h3>
+                <p>
+                  {hasNextPage
+                    ? hasActiveQuery
+                      ? "Try loading older entries, or clear your search and filters."
+                      : "Try loading older entries."
+                    : hasActiveQuery
+                      ? "Try another member name or event type, or clear your filters."
+                      : "FC activity will appear here as it happens."}
+                </p>
+                {(hasActiveQuery || searchInput || activeFilter) && (
+                  <button
+                    type="button"
+                    className="chronicle-paper-button"
+                    onClick={handleClearAll}
+                  >
+                    <ChronicleIcon name="close" size={17} /> Clear search and
+                    filters
+                  </button>
                 )}
               </div>
             ) : (
-              <div
-                key={`content-${activeFilter ?? "all"}-${deferredSearchQuery.trim()}`}
-                className={`journal relative pl-10 sm:pl-12 pr-6 sm:pr-10 py-9 sm:py-12 transition-opacity duration-200 animate-[fadeIn_0.2s_ease-out] ${isTransitioning ? "opacity-50" : "opacity-100"}`}
-                role="feed"
-                aria-label="Chronicle timeline"
-              >
-                <WashiTape
-                  color="var(--accent)"
-                  className="absolute -top-3 left-10 w-20 h-7 -rotate-3 opacity-85 z-10"
-                />
-                <WashiTape
-                  color="var(--secondary)"
-                  className="absolute -top-3 right-12 w-16 h-7 rotate-2 opacity-85 z-10"
-                />
-
-                {dayGroups.map((group, gi) => {
-                  const { tilt, Sticker, tapeColor, stickerColor } = dayDecor(
-                    group.key,
-                    gi,
-                  );
-                  return (
+              <>
+                {isError && !isFetchNextPageError && (
+                  <div className="chronicle-update-error" role="alert">
+                    <p>
+                      We couldn't refresh the Chronicle. You can still read the
+                      entries below.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={isFetching}
+                      onClick={() => void refetch()}
+                    >
+                      {isFetching ? "Trying again…" : "Try again"}
+                    </button>
+                  </div>
+                )}
+                <div className="chronicle-day-pages" ref={entriesRef}>
+                  {dayGroups.map((group) => (
                     <section
+                      className="chronicle-day-page"
                       key={group.key}
-                      className={
-                        gi > 0
-                          ? "mt-11 pt-9 border-t-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_18%,transparent)]"
-                          : ""
-                      }
                       aria-label={`Entries from ${group.label}`}
                     >
-                      <header className="relative mb-5 sm:mb-6 flex items-center gap-2.5">
-                        <div
-                          className="relative inline-flex items-center gap-1.5"
-                          style={{ transform: `rotate(${tilt}deg)` }}
-                        >
-                          <WashiTape
-                            color={tapeColor}
-                            className="absolute -top-2.5 left-2 w-9 h-3.5 -rotate-6 opacity-85"
-                          />
-                          <KawaiiStar className="relative w-4 h-4 shrink-0 text-[var(--accent)]" />
-                          <h2 className="relative font-accent font-bold text-2xl sm:text-3xl text-[var(--primary)] leading-none">
-                            {group.label}
-                          </h2>
-                          <span className="relative font-accent text-lg text-[var(--text-subtle)] leading-none">
-                            · {group.items.length}
-                          </span>
-                        </div>
-                        <span
-                          className="shrink-0"
-                          style={{ transform: `rotate(${-tilt * 2.5}deg)` }}
-                          aria-hidden="true"
-                        >
-                          <Sticker className="w-5 h-5" color={stickerColor} />
-                        </span>
-                        <span
-                          className="flex-1 self-center border-b-2 border-dashed border-[color:color-mix(in_srgb,var(--primary)_20%,transparent)]"
-                          aria-hidden="true"
-                        />
-                      </header>
-
-                      <ol className="divide-y divide-[color:color-mix(in_srgb,var(--primary)_10%,transparent)]">
-                        {group.items.map((item, i) => (
+                      <ChronicleDayHeading group={group} />
+                      <ol className="chronicle-entries">
+                        {group.items.map((item, index) => (
                           <JournalEntry
-                            key={`${item.isRealtime ? "rt" : "h"}-${getEventKey(item.event, i)}`}
+                            key={getEventKey(item.event, index)}
                             item={item}
                           />
                         ))}
                       </ol>
                     </section>
-                  );
-                })}
-
-                {hasNextPage && (
-                  <div
-                    ref={sentinelRef}
-                    className="flex items-center justify-center py-8"
-                    aria-hidden={!isFetchingNextPage}
-                  >
-                    {isFetchingNextPage ? (
-                      <div
-                        className="flex items-center gap-2.5 text-[var(--text-muted)] animate-[fadeIn_0.2s_ease-out]"
-                        role="status"
-                      >
-                        <Loader2
-                          className="w-5 h-5 animate-spin text-[var(--primary)]"
-                          aria-hidden="true"
-                        />
-                        <span className="font-soft text-sm font-medium">
-                          Turning the page...
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-[var(--text-muted)]/50">
-                        &#8203;
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
+            {!initialLoading &&
+              !initialError &&
+              (totalCount > 0 || hasNextPage || isFetchNextPageError) && (
+                <div className="chronicle-load-older">
+                  {isFetchNextPageError && (
+                    <p className="chronicle-pagination-error" role="alert">
+                      Couldn't load older entries. You can try again.
+                    </p>
+                  )}
+                  {hasNextPage || isFetchNextPageError ? (
+                    <>
+                      <button
+                        type="button"
+                        className="chronicle-paper-button"
+                        onClick={handleLoadOlder}
+                        disabled={isFetching || isTransitioning || !hasNextPage}
+                      >
+                        <ChronicleIcon
+                          name={
+                            isFetchingNextPage || isFetchNextPageError
+                              ? "refresh"
+                              : "chevron-down"
+                          }
+                          size={18}
+                        />
+                        {isFetchingNextPage
+                          ? "Loading older entries…"
+                          : isFetchNextPageError
+                            ? "Try loading again"
+                            : "Load older entries"}
+                      </button>
+                      <p>
+                        Showing {totalCount} loaded{" "}
+                        {totalCount === 1 ? "entry" : "entries"} · Newest first
+                      </p>
+                    </>
+                  ) : isLoading ? (
+                    <p className="chronicle-endnote" role="status">
+                      <ChronicleIcon name="book" size={18} /> Loading earlier
+                      entries…
+                    </p>
+                  ) : !isError ? (
+                    <p
+                      className="chronicle-endnote"
+                      ref={endnoteRef}
+                      tabIndex={-1}
+                    >
+                      <ChronicleIcon name="check" size={18} />{" "}
+                      {hasActiveQuery
+                        ? "That's every matching entry."
+                        : "You've reached the beginning of the Chronicle."}
+                    </p>
+                  ) : null}
+                  <span className="sr-only" role="status">
+                    {isFetchingNextPage ? "Loading older entries" : ""}
+                  </span>
+                </div>
+              )}
           </div>
-        </div>
-
-        {!isLoading && !isError && totalCount > 0 && !hasNextPage && (
-          <PageFooter
-            message="Every moment tells a story, kupo!"
-            closing="~ to be continued ~"
-          />
-        )}
+        </section>
       </div>
-    </PageLayout>
+    </section>
   );
 }

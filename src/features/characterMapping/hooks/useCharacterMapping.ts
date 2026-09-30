@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { characterMappingApi } from "@/features/characterMapping/api";
 import {
@@ -29,9 +29,10 @@ export interface UseCharacterMappingResult {
   // Loading/error state
   isLoading: boolean;
   isError: boolean;
+  isFetching?: boolean;
 
   // Actions
-  confirmPair: (pair: MatchPair) => void;
+  confirmPair: (pair: MatchPair) => Promise<void>;
   dismissPair: (pair: MatchPair) => void;
   mapManually: (characterId: string, discordId: string) => Promise<void>;
   confirmAllExact: () => Promise<void>;
@@ -86,6 +87,8 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     new Set(),
   );
   const [isConfirmingAll, setIsConfirmingAll] = useState(false);
+  const [mappingError, setMappingError] = useState<Error | null>(null);
+  const operationInProgress = useRef(false);
 
   const markLinked = useCallback((characterId: string, discordId: string) => {
     setLinkedCharacterIds((prev) => new Set(prev).add(characterId));
@@ -98,6 +101,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     data: charactersData,
     isLoading: isLoadingCharacters,
     isError: isCharactersError,
+    isFetching: isFetchingCharacters,
     refetch: refetchCharacters,
   } = useQuery({
     queryKey: ["unmapped-characters"],
@@ -109,6 +113,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     data: discordUsersData,
     isLoading: isLoadingDiscordUsers,
     isError: isDiscordUsersError,
+    isFetching: isFetchingDiscordUsers,
     refetch: refetchDiscordUsers,
   } = useQuery({
     queryKey: ["unmapped-discord-users"],
@@ -207,42 +212,69 @@ export function useCharacterMapping(): UseCharacterMappingResult {
   // -- Actions ----------------------------------------------------------------
 
   const confirmPair = useCallback(
-    (pair: MatchPair) => {
+    async (pair: MatchPair) => {
+      if (operationInProgress.current)
+        throw new Error("A link is already being saved.");
+      operationInProgress.current = true;
+      setMappingError(null);
       const key = pairKey(pair);
       setConfirmingPairKey(key);
-      mapMutation.mutate(
-        {
+      try {
+        await mapMutation.mutateAsync({
           characterId: pair.character.characterId,
           discordId: pair.discordUser.discordId,
-        },
-        {
-          onSettled: () => setConfirmingPairKey(null),
-          onSuccess: () => {
-            // Remove the row immediately, before the refetch lands.
-            markLinked(pair.character.characterId, pair.discordUser.discordId);
-          },
-        },
-      );
+        });
+        markLinked(pair.character.characterId, pair.discordUser.discordId);
+      } catch (error) {
+        setMappingError(
+          new Error(
+            "Couldn't link these accounts. Check the names and try again.",
+          ),
+        );
+        throw error;
+      } finally {
+        operationInProgress.current = false;
+        setConfirmingPairKey(null);
+      }
     },
     [mapMutation, markLinked],
   );
 
   const dismissPair = useCallback((pair: MatchPair) => {
+    if (operationInProgress.current) return;
     setDismissedPairs((prev) => new Set(prev).add(pairKey(pair)));
   }, []);
 
   const mapManually = useCallback(
     async (characterId: string, discordId: string) => {
-      await mapMutation.mutateAsync({ characterId, discordId });
-      markLinked(characterId, discordId);
+      if (operationInProgress.current)
+        throw new Error("A link is already being saved.");
+      operationInProgress.current = true;
+      setMappingError(null);
+      try {
+        await mapMutation.mutateAsync({ characterId, discordId });
+        markLinked(characterId, discordId);
+      } catch (error) {
+        setMappingError(
+          new Error(
+            "Couldn't link these accounts. Your selection is still here. Try again.",
+          ),
+        );
+        throw error;
+      } finally {
+        operationInProgress.current = false;
+      }
     },
     [mapMutation, markLinked],
   );
 
   // Bulk-confirm every (visible, exact) match in one go.
   const confirmAllExact = useCallback(async () => {
-    if (isConfirmingAll) return;
+    if (operationInProgress.current) return;
+    operationInProgress.current = true;
+    setMappingError(null);
     setIsConfirmingAll(true);
+    let failed = 0;
     try {
       for (const pair of visibleExactMatches) {
         try {
@@ -252,20 +284,34 @@ export function useCharacterMapping(): UseCharacterMappingResult {
           });
           markLinked(pair.character.characterId, pair.discordUser.discordId);
         } catch {
-          // Skip a failed pair and keep going with the rest.
+          failed += 1;
         }
       }
     } finally {
+      if (failed > 0)
+        setMappingError(
+          new Error(
+            `${failed} ${failed === 1 ? "link couldn't" : "links couldn't"} be saved. Try the remaining pairs again.`,
+          ),
+        );
+      operationInProgress.current = false;
       setIsConfirmingAll(false);
     }
-  }, [isConfirmingAll, visibleExactMatches, mapMutation, markLinked]);
+  }, [visibleExactMatches, mapMutation, markLinked]);
 
   const refresh = useCallback(() => {
+    if (operationInProgress.current) return;
+    setMappingError(null);
     setDismissedPairs(new Set());
-    setLinkedCharacterIds(new Set());
-    setLinkedDiscordIds(new Set());
-    refetchCharacters();
-    refetchDiscordUsers();
+    // Keep successful links hidden while loading, then trust the fresh server lists.
+    void Promise.all([refetchCharacters(), refetchDiscordUsers()]).then(
+      (results) => {
+        if (results.every((result) => !result.isError)) {
+          setLinkedCharacterIds(new Set());
+          setLinkedDiscordIds(new Set());
+        }
+      },
+    );
   }, [refetchCharacters, refetchDiscordUsers]);
 
   // -- Return -----------------------------------------------------------------
@@ -279,6 +325,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     totalMatches,
     isLoading,
     isError,
+    isFetching: isFetchingCharacters || isFetchingDiscordUsers,
     confirmPair,
     dismissPair,
     mapManually,
@@ -287,7 +334,7 @@ export function useCharacterMapping(): UseCharacterMappingResult {
     refresh,
     confirmingPairKey,
     isMapping: mapMutation.isPending,
-    mappingError: mapMutation.error,
+    mappingError,
     getRankedDiscordUsers,
     getRankedCharacters,
   };

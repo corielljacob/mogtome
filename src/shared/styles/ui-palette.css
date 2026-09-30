@@ -1,0 +1,236 @@
+/* The same room, with distinct ink, paper, and interaction colors.
+   Keep illustration pigments in nook-palette.css; these roles are for the UI.
+   Even at night, the reading surfaces retain their warm stationery finish. */
+.nook-theme {
+  --ui-surface: color-mix(in srgb, var(--nook-paper) 78%, #fffdf7);
+  --ui-surface-raised: color-mix(in srgb, var(--nook-paper) 35%, #fffdf7);
+  --ui-surface-soft: color-mix(
+    in srgb,
+    var(--scene-wood-light) 18%,
+    var(--ui-surface)
+  );
+  --ui-ink: color-mix(in srgb, var(--nook-ink) 70%, #241e20);
+  --ui-muted: color-mix(in srgb, var(--nook-ink) 92%, #241e20);
+  --ui-heading: color-mix(in srgb, var(--nook-ink) 58%, #382839);
+  --ui-rule: color-mix(in srgb, var(--ui-ink) 28%, var(--ui-surface));
+  /* Deep rose, forest, and brass echo the existing ribbons, leaves, and lamps.
+     A dark anchor keeps pale theme/event colors readable on stationery. */
+  --ui-action: color-mix(in srgb, var(--primary) 20%, #592631);
+  --ui-on-action: #ffffff;
+  --ui-action-soft: color-mix(in srgb, var(--ui-action) 11%, var(--ui-surface));
+  --ui-secondary: color-mix(in srgb, var(--scene-leaf) 38%, #293f36);
+  --ui-secondary-soft: color-mix(
+    in srgb,
+    var(--scene-leaf-light) 23%,
+    var(--ui-surface)
+  );
+  --ui-accent: color-mix(in srgb, var(--accent) 15%, #493719);
+  --ui-accent-soft: color-mix(
+    in srgb,
+    var(--scene-gold) 19%,
+    var(--ui-surface)
+  );
+  --ui-focus: var(--ui-action);
+  --ui-wall-ink: color-mix(in srgb, var(--text) 75%, #352b2c);
+  --ui-wall-muted: color-mix(in srgb, var(--text-muted) 75%, #352b2c);
+  --ui-wall-heading: color-mix(
+    in srgb,
+    var(--ui-action) 65%,
+    var(--ui-wall-ink)
+  );
+  --ui-wall-focus: var(--ui-action);
+}
+.nook-theme[data-mode="dark"],
+:root.dark .nook-theme {
+  --ui-wall-ink: var(--text);
+  --ui-wall-muted: #d1c3d2;
+  --ui-wall-heading: #f0d5c9;
+  --ui-wall-focus: var(--primary);
+}
+
+/* ARR's blue ink and brass carry through the navigation and every reading surface.
+   Equal specificity to dark's defaults; accessible palettes below still win. */
+.nook-theme[data-scene="arr"][data-mode] {
+  --ui-ink: #293e4c;
+  --ui-muted: #4e626d;
+  --ui-heading: #254c64;
+  --ui-action: #285b78;
+  --ui-secondary: #2c5967;
+  --ui-accent: #775829;
+  --ui-wall-ink: #29495e;
+  --ui-wall-muted: #4d6677;
+  --ui-wall-heading: #285b78;
+}
+.nook-theme[data-scene="arr"][data-mode="dark"] {
+  --ui-wall-ink: #e2edf0;
+  --ui-wall-muted: #b8cdd6;
+  --ui-wall-heading: #bce4f0;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Blue-black ink and burgundy seals on Heavensward's pale stationery. */
+.nook-theme[data-scene="heavensward"][data-mode] {
+  --ui-ink: #303a50;
+  --ui-muted: #535e72;
+  --ui-heading: #35476a;
+  --ui-action: #354b72;
+  --ui-secondary: #455e70;
+  --ui-accent: #78465c;
+  --ui-accent-soft: color-mix(in srgb, #a7778d 16%, var(--ui-surface));
+  --ui-wall-ink: #344460;
+  --ui-wall-muted: #52617b;
+  --ui-wall-heading: #354b72;
+}
+.nook-theme[data-scene="heavensward"][data-mode="dark"] {
+  --ui-wall-ink: #e3e8f1;
+  --ui-wall-muted: #bec8dc;
+  --ui-wall-heading: #d0daf0;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Scarlet seals and indigo ink on warm Stormblood parchment. Keep the reading
+   surfaces light at night; the surrounding wall carries the plum and copper. */
+.nook-theme[data-scene="stormblood"][data-mode] {
+  --ui-ink: #4f3434;
+  --ui-muted: #73544c;
+  --ui-heading: #733c38;
+  --ui-action: #873d3f;
+  --ui-secondary: #365263;
+  --ui-secondary-soft: color-mix(in srgb, #8194a3 17%, var(--ui-surface));
+  --ui-accent: #77512e;
+  --ui-accent-soft: color-mix(in srgb, #b78749 18%, var(--ui-surface));
+  --ui-wall-ink: #573b37;
+  --ui-wall-muted: #775749;
+  --ui-wall-heading: #813e3f;
+}
+.nook-theme[data-scene="stormblood"][data-mode="dark"] {
+  --ui-wall-ink: #f1e0cc;
+  --ui-wall-muted: #cfb8a6;
+  --ui-wall-heading: #ebba9f;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Shadowbringers keeps violet ink and old copper legible on warm paper.
+   The restored night lives around the stationery, with pale glass-blue accents. */
+.nook-theme[data-scene="shadowbringers"][data-mode] {
+  --ui-ink: #3c3548;
+  --ui-muted: #645b70;
+  --ui-heading: #554068;
+  --ui-action: #594966;
+  --ui-secondary: #375d69;
+  --ui-secondary-soft: color-mix(in srgb, #8db1b8 17%, var(--ui-surface));
+  --ui-accent: #7a5534;
+  --ui-accent-soft: color-mix(in srgb, #b19066 18%, var(--ui-surface));
+  --ui-wall-ink: #494053;
+  --ui-wall-muted: #665a70;
+  --ui-wall-heading: #594966;
+}
+.nook-theme[data-scene="shadowbringers"][data-mode="dark"] {
+  --ui-wall-ink: #ece7ee;
+  --ui-wall-muted: #c9bfd5;
+  --ui-wall-heading: #d5c5df;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Celestial blue ink sits on warm paper in the lunar reading room.
+   Silver lights the navy wall, with small pale-gold accents in the stationery. */
+.nook-theme[data-scene="endwalker"][data-mode] {
+  --ui-ink: #343e55;
+  --ui-muted: #59647a;
+  --ui-heading: #3f5576;
+  --ui-action: #3f5679;
+  --ui-secondary: #465a73;
+  --ui-secondary-soft: color-mix(in srgb, #a4b2ca 17%, var(--ui-surface));
+  --ui-accent: #756342;
+  --ui-accent-soft: color-mix(in srgb, #b6a982 18%, var(--ui-surface));
+  --ui-wall-ink: #3e4d66;
+  --ui-wall-muted: #516079;
+  --ui-wall-heading: #405b7c;
+}
+.nook-theme[data-scene="endwalker"][data-mode="dark"] {
+  --ui-wall-ink: #e9ecf2;
+  --ui-wall-muted: #c6d0e3;
+  --ui-wall-heading: #d4dff1;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Jade ink and warm woven paper in the Turali reading room. */
+.nook-theme[data-scene="dawntrail"][data-mode] {
+  --ui-ink: #3d4337;
+  --ui-muted: #62684f;
+  --ui-heading: #305e54;
+  --ui-action: #305e54;
+  --ui-secondary: #9a5042;
+  --ui-secondary-soft: color-mix(in srgb, #c78a72 17%, var(--ui-surface));
+  --ui-accent: #795724;
+  --ui-accent-soft: color-mix(in srgb, #c9a262 18%, var(--ui-surface));
+  --ui-wall-ink: #3d4337;
+  --ui-wall-muted: #5b6149;
+  --ui-wall-heading: #305e54;
+}
+.nook-theme[data-scene="dawntrail"][data-mode="dark"] {
+  --ui-wall-ink: #f0e5cd;
+  --ui-wall-muted: #d1c3a5;
+  --ui-wall-heading: #e9d5b3;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Pearl paper and slate ink echo the glass-lit garden city in the reveal art. */
+.nook-theme[data-scene="evercold"][data-mode] {
+  --ui-ink: #354652;
+  --ui-muted: #596575;
+  --ui-heading: #3e6170;
+  --ui-action: #3e6170;
+  --ui-secondary: #685575;
+  --ui-secondary-soft: color-mix(in srgb, #a58cac 17%, var(--ui-surface));
+  --ui-accent: #745a37;
+  --ui-accent-soft: color-mix(in srgb, #c4a473 18%, var(--ui-surface));
+  --ui-wall-ink: #354652;
+  --ui-wall-muted: #526170;
+  --ui-wall-heading: #3e6170;
+}
+.nook-theme[data-scene="evercold"][data-mode="dark"] {
+  --ui-wall-ink: #e0e9eb;
+  --ui-wall-muted: #b5c8d2;
+  --ui-wall-heading: #d0dfea;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Accessible palettes own the controls as well as the decorative theme. */
+:root[class*="colorblind-"] .nook-theme {
+  --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);
+  --ui-secondary: color-mix(in srgb, var(--secondary) 20%, #303030);
+  --ui-accent: color-mix(in srgb, var(--accent) 20%, #303030);
+  --ui-secondary-soft: color-mix(
+    in srgb,
+    var(--secondary) 15%,
+    var(--ui-surface)
+  );
+  --ui-accent-soft: color-mix(in srgb, var(--accent) 15%, var(--ui-surface));
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme {
+  --ui-surface: var(--card);
+  --ui-surface-raised: var(--card);
+  --ui-surface-soft: var(--bg);
+  --ui-ink: var(--text);
+  --ui-muted: var(--text-muted);
+  --ui-heading: var(--text);
+  --ui-rule: var(--border);
+  --ui-action: var(--text);
+  --ui-on-action: var(--bg);
+  --ui-action-soft: var(--bg);
+  --ui-secondary: var(--text);
+  --ui-secondary-soft: var(--bg);
+  --ui-accent: var(--text);
+  --ui-accent-soft: var(--bg);
+  --ui-focus: var(--primary);
+  --ui-wall-ink: var(--text);
+  --ui-wall-muted: var(--text-muted);
+  --ui-wall-heading: var(--text);
+  --ui-wall-focus: var(--primary);
+  background: var(--bg);
+}
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme::before,
+:root:is(.high-contrast, .dark.extra-dark) .nook-theme > .nook-wallpaper {
+  display: none;
+}

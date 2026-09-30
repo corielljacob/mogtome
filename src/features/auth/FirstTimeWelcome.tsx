@@ -46,10 +46,10 @@ export function FirstTimeWelcome({
     <div className="text-center py-2 animate-[fadeIn_0.4s_ease-out]">
       <div className="mb-8 animate-[fadeIn_0.5s_ease-out]">
         <p className="text-[var(--text-muted)] font-soft text-sm mb-2 animate-[fadeSlideIn_0.6s_cubic-bezier(0.16,1,0.3,1)_0.1s_both]">
-          Welcome to the family, {firstName}
+          Welcome, {firstName}
         </p>
         <p className="font-accent text-2xl text-[var(--primary)] animate-[fadeSlideIn_0.7s_cubic-bezier(0.16,1,0.3,1)_0.2s_both]">
-          Your card is ready
+          Your member card is ready
         </p>
       </div>
 
@@ -132,7 +132,7 @@ export function FirstTimeWelcome({
             "
           >
             <span className="inline-flex items-center gap-2">
-              Let's go, kupo!
+              Continue
               <ArrowRight className="w-4 h-4" />
             </span>
           </button>

@@ -9,10 +9,10 @@ import lilGuyMoogle from "@/assets/moogles/lil guy moogle.webp";
 export const DEFAULT_KUPO_QUOTES = [
   "Welcome home, kupo!",
   "Good to see you, kupo~",
-  "Ready for adventure, kupo?",
+  "Any plans in Eorzea today?",
   "Stay cozy, kupo!",
-  "You look great today, kupo!",
-  "Let's have fun, kupo~",
+  "How did your roulettes go?",
+  "Just one more quest, kupo...",
   "Glad you're here, kupo!",
   "Have a cookie, kupo~",
 ];
@@ -209,7 +209,7 @@ export function getTimeGreeting(): string {
 }
 
 export function getTagline(): string {
-  return "A companion experience for Kupo Life!";
+  return "Catch up with Kupo Life!";
 }
 
 export function generateEventFairyLights(colors: string[]) {

@@ -1,0 +1,60 @@
+/* The community views share softly lit wallpaper and woven room texture. */
+.cozy-app-content:is(.is-home, .is-inner-page) {
+  background:
+    radial-gradient(
+      ellipse at 95% 84%,
+      color-mix(in srgb, var(--scene-gold) 8%, transparent),
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 19% 32%,
+      color-mix(
+        in srgb,
+        var(--nook-wall-light) var(--nook-light-strength),
+        transparent
+      ),
+      transparent 68%
+    ),
+    linear-gradient(
+      120deg,
+      transparent 45%,
+      color-mix(
+        in srgb,
+        var(--nook-wall-shade) var(--nook-shade-strength),
+        transparent
+      )
+    ),
+    var(--nook-wall);
+}
+.cozy-app-content:is(.is-home, .is-inner-page)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.66;
+  background-image:
+    var(--bg-noise),
+    repeating-linear-gradient(
+      0deg,
+      #8b70490a 0 calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(3 * var(--layout-unit))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #8b704906 0 calc(1 * var(--layout-unit)),
+      transparent calc(1 * var(--layout-unit)) calc(4 * var(--layout-unit))
+    );
+}
+.nook-wallpaper {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  color: var(--nook-wall-print);
+  opacity: 0.25;
+  mask-image: linear-gradient(90deg, #0009, #000 65%);
+}
+.nook-theme[data-mode="dark"] > .nook-wallpaper {
+  opacity: 0.12;
+}
