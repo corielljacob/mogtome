@@ -1,0 +1,23 @@
+/* A pale remembrance mask rests above the letter on folded indigo ribbon. */
+.home-screen[data-scene="shadowbringers"] .nook-shadowbringers-charm {
+  position: absolute;
+  bottom: calc(100% - 18 * var(--layout-unit));
+  right: 2%;
+  width: min(25%, calc(59 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(7deg);
+  filter: drop-shadow(1px 3px 1.5px #302c4330);
+}
+
+.home-screen[data-scene="shadowbringers"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    115deg,
+    #5d526fb3 0 calc(8 * var(--layout-unit)),
+    #d7bd94b8 calc(8 * var(--layout-unit)) calc(9.5 * var(--layout-unit)),
+    #699caa99 calc(9.5 * var(--layout-unit)) calc(16 * var(--layout-unit)),
+    #d7bd94b8 calc(16 * var(--layout-unit)) calc(17.5 * var(--layout-unit))
+  );
+}

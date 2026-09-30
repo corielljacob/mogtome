@@ -13,6 +13,19 @@ import { NookWindowSky } from "./NookWindowSky";
 import { createDayCycle, setDayCycleTarget } from "./nookDayCycle";
 import { NookSkyEmbroidery } from "./NookSkyEmbroidery";
 import { NookHeavenswardSkyEmbroidery } from "./NookHeavenswardSkyEmbroidery";
+import { NookStormbloodView } from "./NookStormbloodView";
+import { NookStormbloodSkyEmbroidery } from "./NookStormbloodSkyEmbroidery";
+import {
+  NookStormbloodSky,
+  NookStormbloodBreeze,
+} from "./NookStormbloodAtmosphere";
+import { NookShadowbringersView } from "./NookShadowbringersView";
+import { NookShadowbringersSkyEmbroidery } from "./NookShadowbringersSkyEmbroidery";
+import { NookShadowbringersLightParting } from "./NookShadowbringersLightParting";
+import {
+  NookShadowbringersSky,
+  NookShadowbringersLeaves,
+} from "./NookShadowbringersAtmosphere";
 import "./nook-window-cycle.css";
 
 interface NookWindowViewProps {
@@ -53,14 +66,21 @@ function NookDayCycleWindow({
   const reducedMotion = useReducedMotion();
   const isHalloween = eventId === "all-saints-wake";
   const scene = eventId ?? colorTheme;
+  const isShadowbringers = scene === "shadowbringers";
   const SkyEmbroidery =
-    scene === "heavensward" ? NookHeavenswardSkyEmbroidery : NookSkyEmbroidery;
+    scene === "heavensward"
+      ? NookHeavenswardSkyEmbroidery
+      : scene === "stormblood"
+        ? NookStormbloodSkyEmbroidery
+        : scene === "shadowbringers"
+          ? NookShadowbringersSkyEmbroidery
+          : NookSkyEmbroidery;
 
   useLayoutEffect(() => {
     if (!root.current) return;
     const cycle = createDayCycle(root.current, initialDark.current);
-    // The Halloween sky replaces its model groups. Rebind their tracks at the
-    // existing exposure, including a reversed or already settled transition.
+    // Holiday models and the parting Light have their own tracks. Rebind at
+    // the existing exposure, including a reversed or settled transition.
     const previous = playback.current;
     if (previous) {
       for (const animation of cycle) {
@@ -82,7 +102,7 @@ function NookDayCycleWindow({
       cycle.forEach((animation) => animation.cancel());
       animations.current = [];
     };
-  }, [isHalloween]);
+  }, [isHalloween, isShadowbringers]);
 
   useLayoutEffect(() => {
     setDayCycleTarget(animations.current, isDark, reducedMotion);
@@ -118,7 +138,10 @@ function NookDayCycleWindow({
       <NookWindowSky layer="sun" eventId={eventId} />
       <NookWindowSky layer="moon" eventId={eventId} />
       <NookWindowSky layer="stars" eventId={eventId} />
+      {isShadowbringers && <NookShadowbringersLightParting />}
       {scene === "heavensward" && <NookHeavenswardSky />}
+      {scene === "stormblood" && <NookStormbloodSky />}
+      {scene === "shadowbringers" && <NookShadowbringersSky />}
       {([false, true] as const).map((night) => (
         <div
           key={String(night)}
@@ -135,6 +158,10 @@ function NookDayCycleWindow({
           >
             {scene === "heavensward" ? (
               <NookHeavenswardView isDark={night} />
+            ) : scene === "stormblood" ? (
+              <NookStormbloodView isDark={night} />
+            ) : scene === "shadowbringers" ? (
+              <NookShadowbringersView isDark={night} />
             ) : (
               <NookShiroganeView isDark={night} />
             )}
@@ -146,6 +173,8 @@ function NookDayCycleWindow({
         data-cycle="golden-hour"
       />
       {scene === "heavensward" && <NookHeavenswardWeather />}
+      {scene === "stormblood" && <NookStormbloodBreeze />}
+      {scene === "shadowbringers" && <NookShadowbringersLeaves />}
     </div>
   );
 }

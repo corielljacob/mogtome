@@ -63,6 +63,51 @@ export function NookWallpaper({
               />
               <path d="M-10 15H10M0-18v-4m-2 2h4" strokeWidth=".7" />
             </>
+          ) : !eventId && colorTheme === "stormblood" ? (
+            <>
+              <path
+                d="M-3 1C-7-5-13-10-19-9Q-17-4-12-1L-17-3Q-14 3-8 4L-12 3Q-9 8-3 7L0 5M3 1C7-5 13-10 19-9Q17-4 12-1L17-3Q14 3 8 4L12 3Q9 8 3 7L0 5"
+                fill="currentColor"
+                fillOpacity=".1"
+                strokeWidth=".7"
+              />
+              <path
+                d="M-3 4Q-7 0-12-3M3 4Q7 0 12-3M0 6V12M-3 10 0 13 3 10"
+                strokeWidth=".55"
+              />
+              <circle
+                cy="-7"
+                r="4.3"
+                fill="var(--scene-gold)"
+                fillOpacity=".18"
+                stroke="var(--scene-gold)"
+                strokeWidth=".75"
+              />
+              <path
+                d="M0-14v-3M-6-12-8-14M6-12 8-14"
+                stroke="var(--scene-gold)"
+                strokeWidth=".7"
+              />
+            </>
+          ) : !eventId && colorTheme === "shadowbringers" ? (
+            <>
+              <path
+                d="M-12 11Q-12-1 0-1Q12-1 12 11M-13 11H13M-7 10Q-7 2 0-1Q7 2 7 10"
+                stroke="var(--scene-gold)"
+                strokeWidth=".65"
+              />
+              <path
+                d="M0-18 3-9 2 5 0 10-2 5-3-9Z"
+                fill="currentColor"
+                fillOpacity=".1"
+                strokeWidth=".65"
+              />
+              <path d="M0-18V10M-3-9 0-6 3-9" strokeWidth=".5" />
+              <path
+                d="M13-14l.8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8ZM-12-7v3m-1.5-1.5h3"
+                strokeWidth=".6"
+              />
+            </>
           ) : !eventId ||
             !["all-saints-wake", "starlight", "valentiones"].includes(
               eventId,

@@ -38,6 +38,57 @@ const moonArc: Keyframe[] = Array.from({ length: 17 }, (_, index) => {
   };
 });
 
+// Statically cut halves open around the horizon (transform-origin: 50% 55%).
+// Gold and violet share each physical pose. Only transforms move the cutouts,
+// avoiding animated clip-path paint differences when the clock reverses.
+const shadowbringersOpening = [
+  { offset: 0, shear: 0, shift: 0 },
+  { offset: 0.15, shear: 0.077, shift: 0 },
+  { offset: 0.45, shear: 0.447, shift: 0 },
+  { offset: 0.7, shear: 0.7, shift: 15 },
+  { offset: 1, shear: 0.82, shift: 110 },
+] as const;
+const shadowbringersFrames: Record<string, Keyframe[]> = {
+  "night-sky": [],
+  "shb-light-left": [],
+  "shb-light-right": [],
+  "shb-light-edge-left": [],
+  "shb-light-edge-right": [],
+};
+
+for (let exposure = 0; exposure <= DAY_CYCLE_FRAME_COUNT; exposure++) {
+  const offset = exposure / DAY_CYCLE_FRAME_COUNT;
+  const next = shadowbringersOpening.findIndex((stop) => stop.offset >= offset);
+  const end = shadowbringersOpening[next];
+  const start = shadowbringersOpening[Math.max(0, next - 1)];
+  const progress =
+    end.offset === start.offset
+      ? 0
+      : (offset - start.offset) / (end.offset - start.offset);
+  const shear = start.shear + (end.shear - start.shear) * progress;
+  const shift = start.shift + (end.shift - start.shift) * progress;
+  const angle = (Math.atan(shear) * 180) / Math.PI;
+  const opacity =
+    offset < 0.12 ? offset / 0.12 : offset <= 0.96 ? 1 : (1 - offset) / 0.04;
+
+  shadowbringersFrames["night-sky"].push({
+    offset,
+    opacity: Math.min(1, offset / 0.12),
+  });
+  for (const [side, direction] of [
+    ["left", -1],
+    ["right", 1],
+  ] as const) {
+    const frame = {
+      offset,
+      opacity,
+      transform: `translateX(${(direction * shift).toFixed(3)}%) skewX(${(-direction * angle).toFixed(4)}deg)`,
+    };
+    shadowbringersFrames[`shb-light-${side}`].push(frame);
+    shadowbringersFrames[`shb-light-edge-${side}`].push(frame);
+  }
+}
+
 // A shared clock makes a retoggle retrace the current light rather than restart.
 export const dayCycleFrames: Record<string, Keyframe[]> = {
   "night-sky": [
@@ -93,22 +144,25 @@ export function createDayCycle(
   root: HTMLElement,
   isDark: boolean,
 ): Animation[] {
+  const isShadowbringers = root.dataset.scene === "shadowbringers";
   return Array.from(
     root.querySelectorAll<HTMLElement>("[data-cycle], [data-cycle-model]"),
   ).flatMap((layer) => {
     const cycle = layer.dataset.cycle ?? "";
     const model = layer.dataset.cycleModel;
+    const opening = isShadowbringers ? shadowbringersFrames[cycle] : undefined;
     const frames =
       model === undefined
-        ? dayCycleFrames[cycle]
+        ? (opening ?? dayCycleFrames[cycle])
         : sewnModelFrames[Number(model)];
     if (!frames || typeof layer.animate !== "function") return [];
     const animation = layer.animate(frames, {
       duration: DAY_CYCLE_DURATION,
       fill: "both",
-      easing: physicalLayers.has(cycle)
-        ? `steps(${DAY_CYCLE_FRAME_COUNT}, end)`
-        : "linear",
+      easing:
+        opening || physicalLayers.has(cycle)
+          ? `steps(${DAY_CYCLE_FRAME_COUNT}, end)`
+          : "linear",
     });
     animation.pause();
     animation.currentTime = isDark ? DAY_CYCLE_DURATION : 0;

@@ -18,6 +18,14 @@ import {
   NookHeavenswardBanner,
   NookHeavenswardSeal,
 } from "./components/NookHeavenswardKeepsakes";
+import {
+  NookStormbloodBanner,
+  NookStormbloodCharm,
+} from "./components/NookStormbloodKeepsakes";
+import {
+  NookShadowbringersBanner,
+  NookShadowbringersCharm,
+} from "./components/NookShadowbringersKeepsakes";
 import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
 import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
 import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
@@ -33,6 +41,8 @@ import "./home-screen.css";
 import "./nook-halloween.css";
 import "./nook-arr.css";
 import "./nook-heavensward.css";
+import "./nook-stormblood.css";
+import "./nook-shadowbringers.css";
 
 export function Home() {
   const [boops, setBoops] = useState(0);
@@ -47,6 +57,8 @@ export function Home() {
   const isHalloween = event?.id === "all-saints-wake";
   const isArr = !event && settings.colorTheme === "arr";
   const isHeavensward = !event && settings.colorTheme === "heavensward";
+  const isStormblood = !event && settings.colorTheme === "stormblood";
+  const isShadowbringers = !event && settings.colorTheme === "shadowbringers";
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
@@ -68,6 +80,10 @@ export function Home() {
             <NookArrWayfinder />
           ) : isHeavensward ? (
             <NookHeavenswardBanner />
+          ) : isStormblood ? (
+            <NookStormbloodBanner />
+          ) : isShadowbringers ? (
+            <NookShadowbringersBanner />
           ) : (
             <NookWallHanging />
           )}
@@ -161,10 +177,18 @@ export function Home() {
                   <NookArrCrystalCharm />
                 ) : isHeavensward ? (
                   <NookHeavenswardSeal />
+                ) : isStormblood ? (
+                  <NookStormbloodCharm />
+                ) : isShadowbringers ? (
+                  <NookShadowbringersCharm />
                 ) : (
                   <NookPressedFlower />
                 )}
-                {!isHalloween && !isArr && !isHeavensward && <NookPaperclip />}
+                {!isHalloween &&
+                  !isArr &&
+                  !isHeavensward &&
+                  !isStormblood &&
+                  !isShadowbringers && <NookPaperclip />}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">

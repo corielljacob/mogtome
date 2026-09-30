@@ -55,6 +55,42 @@ artwork, and no image-generation model output is rendered in the Home scene.
   dragon with four wing drawings, informed by the broad wing membranes and horned
   profile in [Square Enix's Heavensward dragon artwork](https://lds-img.finalfantasyxiv.com/promo/h/R/JaN_fFXP8R_Qs28m59S8x4k9Ug.png).
   No raster pixels are embedded. The falling snow is also original SVG threadwork.
+- `src/features/home/components/NookStormbloodView.tsx` — an original embroidered
+  interpretation of Ala Mhigo and Loch Seld, with layered sandstone cloth,
+  terraced ramparts, a recessed palace gate, and sewn water. The composition is
+  informed by the [official Stormblood art gallery](https://na.finalfantasyxiv.com/stormblood/media/#artworks),
+  its [Ala Mhigo concept art](https://lds-img.finalfantasyxiv.com/promo/h/G/W9HmZIs9K5coBNE4O3tSYsE7OU.jpg),
+  Square Enix's [Loch Seld sunset screenshot](https://twitter.com/FF_XIV_EN/status/1654803220076851205),
+  and an [in-game view of the fortress](https://ffxiv.consolegameswiki.com/mediawiki/images/thumb/0/09/The_Lochs2.jpg/1067px-The_Lochs2.jpg).
+  `NookStormbloodSkyEmbroidery.tsx` and `NookStormbloodAtmosphere.tsx` add original
+  thread courses, small cloth birds, and drifting fiber knots. No reference
+  image pixels are embedded in the scene. References: **© SQUARE ENIX**.
+- `src/features/home/components/NookStormbloodKeepsakes.tsx` — an original scarlet
+  and gold embroidered banner and folded-fan charm. The griffin-and-sword motif
+  is inspired by the heraldry in Square Enix's [Ala Mhigo introduction](https://www.square-enix-games.com/news/final-fantasy-xiv-stormblood-ala-mhigo).
+  These are recomposed cloth ornaments, not reproductions of the official flag.
+- `src/features/home/components/NookShadowbringersView.tsx` — an original sewn
+  interpretation of the Crystarium, its Crystal Tower and glass domes, framed by
+  Lakeland's violet trees. References were visually inspected in Square Enix's
+  [official Shadowbringers environment exhibition](https://www.finalfantasyxiv.com/promotion/genso-zekkei/zekkei/06/),
+  especially the [Crystarium at night](https://www.finalfantasyxiv.com/promotion/genso-zekkei/static/6578d1b5832c0224a5f6124dd2b6cd8c/70b87/04_norvrandt_07.jpg)
+  and [Lakeland's lake and woodland](https://www.finalfantasyxiv.com/promotion/genso-zekkei/static/555852c2500c3b73c4e8f23a155e8b9d/1fc72/04_norvrandt_02_2.webp).
+  The pale Light and restored night draw on the expansion's
+  [official story introduction](https://na.finalfantasyxiv.com/shadowbringers/story/).
+  `NookShadowbringersSkyEmbroidery.tsx` and `NookShadowbringersAtmosphere.tsx`
+  provide original pearl thread courses, knotted stars, aether and drifting
+  cloth leaves. User-provided gameplay references guided the tower's scale above
+  the low glass-and-arcade city and the golden Light parting along violet edges
+  to reveal night. `NookShadowbringersLightParting.tsx` renders that transition as
+  original stitched silk with a reversible opening. Reference screenshots:
+  **© SQUARE ENIX**; no raster pixels are embedded in the window.
+- `src/features/home/components/NookShadowbringersKeepsakes.tsx` — an original
+  indigo banner with a crystal-and-arch motif and an Ancient-inspired mask charm.
+  The mask's broad brow, small eyes and dark hood were informed by the charm
+  shown on Square Enix's [official Amaurot laptop case](https://apac.store.square-enix.com/products/final-fantasy-xiv-laptop-case-amaurot)
+  ([product photograph](https://apac.store.square-enix.com/cdn/shop/files/MWFF140631-1_01.jpg?v=1776226625&width=600)).
+  The ornaments are recomposed as embroidered cloth, with original editable
+  paths rather than embedded photographs.
 - `src/features/home/components/NookNeighbourHouse.tsx` — the reference's pale
   stone house, gabled slate roof, chimneys, arched windows, balustrade, flowerbox,
   and trailing wisteria, drawn with the room's shared SVG materials.

@@ -1,0 +1,23 @@
+/* Folded silk and a gold-bound resistance banner share the room's scale. */
+.home-screen[data-scene="stormblood"] .nook-stormblood-charm {
+  position: absolute;
+  bottom: calc(100% - 17 * var(--layout-unit));
+  right: 1%;
+  width: min(29%, calc(72 * var(--layout-unit)));
+  height: auto;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(8deg);
+  filter: drop-shadow(1px 3px 1.5px #553d432b);
+}
+
+.home-screen[data-scene="stormblood"] .nook-tape {
+  --nook-washi: repeating-linear-gradient(
+    115deg,
+    #98484ab3 0 calc(7 * var(--layout-unit)),
+    #dfbf84cc calc(7 * var(--layout-unit)) calc(9 * var(--layout-unit)),
+    #3e526ba3 calc(9 * var(--layout-unit)) calc(16 * var(--layout-unit)),
+    #dfbf84cc calc(16 * var(--layout-unit)) calc(18 * var(--layout-unit))
+  );
+}

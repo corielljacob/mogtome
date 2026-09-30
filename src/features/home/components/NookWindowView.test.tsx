@@ -20,6 +20,40 @@ vi.mock("./NookHeavenswardWeather", () => ({
   NookHeavenswardWeather: () => <svg data-testid="ishgard-weather" />,
 }));
 
+vi.mock("./NookStormbloodSkyEmbroidery", () => ({
+  NookStormbloodSkyEmbroidery: () => null,
+}));
+vi.mock("./NookStormbloodView", () => ({
+  NookStormbloodView: ({ isDark }: { isDark: boolean }) => (
+    <g data-testid={isDark ? "ala-mhigo-night" : "ala-mhigo-day"} />
+  ),
+}));
+vi.mock("./NookStormbloodAtmosphere", () => ({
+  NookStormbloodSky: () => <svg data-testid="ala-mhigo-sky" />,
+  NookStormbloodBreeze: () => <svg data-testid="ala-mhigo-weather" />,
+}));
+vi.mock("./NookShadowbringersSkyEmbroidery", () => ({
+  NookShadowbringersSkyEmbroidery: () => null,
+}));
+vi.mock("./NookShadowbringersLightParting", () => ({
+  NookShadowbringersLightParting: () => (
+    <div data-testid="parting-light">
+      {["left", "right", "edge-left", "edge-right"].map((side) => (
+        <div key={side} data-cycle={`shb-light-${side}`} />
+      ))}
+    </div>
+  ),
+}));
+vi.mock("./NookShadowbringersView", () => ({
+  NookShadowbringersView: ({ isDark }: { isDark: boolean }) => (
+    <g data-testid={isDark ? "crystarium-night" : "crystarium-day"} />
+  ),
+}));
+vi.mock("./NookShadowbringersAtmosphere", () => ({
+  NookShadowbringersSky: () => <svg data-testid="crystarium-sky" />,
+  NookShadowbringersLeaves: () => <svg data-testid="crystarium-weather" />,
+}));
+
 class Playback {
   currentTime = 0;
   playbackRate = 1;
@@ -140,62 +174,134 @@ it("binds replacement holiday sky models without restarting a reversed or settle
   });
 });
 
-it("preserves the day cycle across Heavensward changes and gives holidays priority over its weather", () => {
-  const { container, getByTestId, queryByTestId, rerender } = render(
-    <NookWindowView isDark={false} eventId={null} colorTheme="heavensward" />,
-  );
-  const weather = getByTestId("ishgard-weather");
-  const sky = getByTestId("ishgard-sky");
-  const day = getByTestId("ishgard-day");
-  const night = getByTestId("ishgard-night");
-  expect(weather.closest(".nook-cycle-landscape")).toBeNull();
-  expect(sky.closest(".nook-cycle-landscape")).toBeNull();
-  expect(
-    sky.compareDocumentPosition(day) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).toBeTruthy();
-  expect(
-    night.compareDocumentPosition(weather) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).toBeTruthy();
-  const originalTracks = [...tracks];
+it.each([
+  ["heavensward", "ishgard"],
+  ["stormblood", "ala-mhigo"],
+] as const)(
+  "preserves the %s day cycle and gives holidays priority over its atmosphere",
+  (theme, scene) => {
+    const { container, getByTestId, queryByTestId, rerender } = render(
+      <NookWindowView isDark={false} eventId={null} colorTheme={theme} />,
+    );
+    const weather = getByTestId(`${scene}-weather`);
+    const sky = getByTestId(`${scene}-sky`);
+    const day = getByTestId(`${scene}-day`);
+    const night = getByTestId(`${scene}-night`);
+    expect(weather.closest(".nook-cycle-landscape")).toBeNull();
+    expect(sky.closest(".nook-cycle-landscape")).toBeNull();
+    expect(
+      sky.compareDocumentPosition(day) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      night.compareDocumentPosition(weather) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    const originalTracks = [...tracks];
 
-  rerender(<NookWindowView isDark eventId={null} colorTheme="heavensward" />);
-  expect(getByTestId("ishgard-weather")).toBe(weather);
-  expect(getByTestId("ishgard-sky")).toBe(sky);
-  expect(getByTestId("ishgard-day")).toBe(day);
-  expect(getByTestId("ishgard-night")).toBe(night);
+    rerender(<NookWindowView isDark eventId={null} colorTheme={theme} />);
+    expect(getByTestId(`${scene}-weather`)).toBe(weather);
+    expect(getByTestId(`${scene}-sky`)).toBe(sky);
+    expect(getByTestId(`${scene}-day`)).toBe(day);
+    expect(getByTestId(`${scene}-night`)).toBe(night);
+    tracks.forEach(({ playback }) => {
+      playback.currentTime = 1800;
+    });
+    rerender(
+      <NookWindowView isDark={false} eventId={null} colorTheme={theme} />,
+    );
+    rerender(
+      <NookWindowView isDark={false} eventId={null} colorTheme="pom-pom" />,
+    );
+    expect(queryByTestId(`${scene}-weather`)).toBeNull();
+    expect(queryByTestId(`${scene}-sky`)).toBeNull();
+    expect(queryByTestId(`${scene}-day`)).toBeNull();
+
+    rerender(
+      <NookWindowView isDark={false} eventId={null} colorTheme={theme} />,
+    );
+    expect(getByTestId(`${scene}-weather`)).toBeInTheDocument();
+    rerender(
+      <NookWindowView isDark={false} eventId="starlight" colorTheme={theme} />,
+    );
+    expect(queryByTestId(`${scene}-weather`)).toBeNull();
+    expect(queryByTestId(`${scene}-sky`)).toBeNull();
+    expect(queryByTestId(`${scene}-night`)).toBeNull();
+    expect(container.querySelector('[data-scene="starlight"]')).not.toBeNull();
+    expect(tracks).toHaveLength(originalTracks.length);
+    originalTracks.forEach(({ element, playback }) => {
+      expect(element.isConnected).toBe(true);
+      expect(playback.currentTime).toBe(1800);
+      expect(playback.playbackRate).toBe(-1);
+      expect(playback.cancel).not.toHaveBeenCalled();
+    });
+  },
+);
+
+it("preserves the parting Light phase when switching themes or yielding to a holiday", () => {
+  const { container, getByTestId, queryByTestId, rerender } = render(
+    <NookWindowView
+      isDark={false}
+      eventId={null}
+      colorTheme="shadowbringers"
+    />,
+  );
+  const curtain = getByTestId("parting-light");
+  const city = getByTestId("crystarium-day");
+  const nightCity = getByTestId("crystarium-night");
+  const weather = getByTestId("crystarium-weather");
+  expect(
+    curtain.compareDocumentPosition(city) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(
+    nightCity.compareDocumentPosition(weather) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(
+    tracks.filter(({ element }) =>
+      element.getAttribute("data-cycle")?.startsWith("shb-light-"),
+    ),
+  ).toHaveLength(4);
+
+  rerender(
+    <NookWindowView isDark eventId={null} colorTheme="shadowbringers" />,
+  );
+  expect(getByTestId("parting-light")).toBe(curtain);
+  expect(getByTestId("crystarium-day")).toBe(city);
   tracks.forEach(({ playback }) => {
     playback.currentTime = 1800;
   });
   rerender(
-    <NookWindowView isDark={false} eventId={null} colorTheme="heavensward" />,
-  );
-  rerender(
-    <NookWindowView isDark={false} eventId={null} colorTheme="pom-pom" />,
-  );
-  expect(queryByTestId("ishgard-weather")).toBeNull();
-  expect(queryByTestId("ishgard-sky")).toBeNull();
-  expect(queryByTestId("ishgard-day")).toBeNull();
-
-  rerender(
-    <NookWindowView isDark={false} eventId={null} colorTheme="heavensward" />,
-  );
-  expect(getByTestId("ishgard-weather")).toBeInTheDocument();
-  rerender(
     <NookWindowView
       isDark={false}
-      eventId="starlight"
-      colorTheme="heavensward"
+      eventId={null}
+      colorTheme="shadowbringers"
     />,
   );
-  expect(queryByTestId("ishgard-weather")).toBeNull();
-  expect(queryByTestId("ishgard-sky")).toBeNull();
-  expect(queryByTestId("ishgard-night")).toBeNull();
+
+  for (const next of ["pom-pom", "shadowbringers", "starlight"] as const) {
+    const oldTracks = tracks.splice(0);
+    rerender(
+      <NookWindowView
+        isDark={false}
+        eventId={next === "starlight" ? next : null}
+        colorTheme={next === "starlight" ? "shadowbringers" : next}
+      />,
+    );
+    oldTracks.forEach(({ playback }) =>
+      expect(playback.cancel).toHaveBeenCalledOnce(),
+    );
+    expect(tracks.length).toBeGreaterThan(0);
+    tracks.forEach(({ element, playback }) => {
+      expect(element.isConnected).toBe(true);
+      expect(playback.currentTime).toBe(1800);
+      expect(playback.playbackRate).toBe(-1);
+      expect(playback.playState).toBe("running");
+    });
+    expect(Boolean(queryByTestId("parting-light"))).toBe(
+      next === "shadowbringers",
+    );
+    expect(Boolean(queryByTestId("crystarium-weather"))).toBe(
+      next === "shadowbringers",
+    );
+  }
   expect(container.querySelector('[data-scene="starlight"]')).not.toBeNull();
-  expect(tracks).toHaveLength(originalTracks.length);
-  originalTracks.forEach(({ element, playback }) => {
-    expect(element.isConnected).toBe(true);
-    expect(playback.currentTime).toBe(1800);
-    expect(playback.playbackRate).toBe(-1);
-    expect(playback.cancel).not.toHaveBeenCalled();
-  });
 });

@@ -88,6 +88,50 @@
   --ui-wall-focus: var(--primary);
 }
 
+/* Scarlet seals and indigo ink on warm Stormblood parchment. Keep the reading
+   surfaces light at night; the surrounding wall carries the plum and copper. */
+.nook-theme[data-scene="stormblood"][data-mode] {
+  --ui-ink: #4f3434;
+  --ui-muted: #73544c;
+  --ui-heading: #733c38;
+  --ui-action: #873d3f;
+  --ui-secondary: #365263;
+  --ui-secondary-soft: color-mix(in srgb, #8194a3 17%, var(--ui-surface));
+  --ui-accent: #77512e;
+  --ui-accent-soft: color-mix(in srgb, #b78749 18%, var(--ui-surface));
+  --ui-wall-ink: #573b37;
+  --ui-wall-muted: #775749;
+  --ui-wall-heading: #813e3f;
+}
+.nook-theme[data-scene="stormblood"][data-mode="dark"] {
+  --ui-wall-ink: #f1e0cc;
+  --ui-wall-muted: #cfb8a6;
+  --ui-wall-heading: #ebba9f;
+  --ui-wall-focus: var(--primary);
+}
+
+/* Shadowbringers keeps violet ink and old copper legible on warm paper.
+   The restored night lives around the stationery, with pale glass-blue accents. */
+.nook-theme[data-scene="shadowbringers"][data-mode] {
+  --ui-ink: #3c3548;
+  --ui-muted: #645b70;
+  --ui-heading: #554068;
+  --ui-action: #594966;
+  --ui-secondary: #375d69;
+  --ui-secondary-soft: color-mix(in srgb, #8db1b8 17%, var(--ui-surface));
+  --ui-accent: #7a5534;
+  --ui-accent-soft: color-mix(in srgb, #b19066 18%, var(--ui-surface));
+  --ui-wall-ink: #494053;
+  --ui-wall-muted: #665a70;
+  --ui-wall-heading: #594966;
+}
+.nook-theme[data-scene="shadowbringers"][data-mode="dark"] {
+  --ui-wall-ink: #ece7ee;
+  --ui-wall-muted: #c9bfd5;
+  --ui-wall-heading: #d5c5df;
+  --ui-wall-focus: var(--primary);
+}
+
 /* Accessible palettes own the controls as well as the decorative theme. */
 :root[class*="colorblind-"] .nook-theme {
   --ui-action: color-mix(in srgb, var(--primary) 20%, #303030);
