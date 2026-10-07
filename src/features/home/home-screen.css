@@ -11,9 +11,6 @@
   min-width: 0;
   display: grid;
 }
-.is-home .storybook-header {
-  max-width: none;
-}
 .home-screen {
   --nook-ceiling-clearance: clamp(
     calc(112 * var(--layout-unit)),

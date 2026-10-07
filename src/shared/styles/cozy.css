@@ -36,7 +36,6 @@
 .storybook-header {
   position: relative;
   width: 100%;
-  max-width: calc(1120 * var(--layout-unit));
   min-width: 0;
   min-height: calc(76 * var(--layout-unit));
   margin-inline: auto;

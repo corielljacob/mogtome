@@ -4,6 +4,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Keep shared navigation aligned when a route needs a vertical scrollbar. */
+    scrollbar-gutter: stable;
     /* The viewport scrolls the document natively, like a normal site - this is
        what lets iOS Safari collapse its toolbar and fill the screen as you
        scroll. IMPORTANT: do NOT set overflow on html or body. Even
