@@ -1,5 +1,5 @@
 // The React logo components are the source of truth for every brand asset.
-// Run `npm run brand:generate` after editing either logo component.
+// Run `npm run brand:generate` after editing any logo artwork component.
 
 import { readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -146,7 +146,7 @@ const wordmark = rendered.find(
 ).svg;
 await writeFile(
   path.join(root, "public", "mogtome-logo.svg"),
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 200" role="img" aria-label="MogTome" fill="none">${placeSvg(mark, 16, 16, 146, 166.44)}${placeSvg(wordmark, 180, 46, 360, 90)}</svg>\n`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 200" role="img" aria-label="MogTome" fill="none">${placeSvg(mark, 12, 28, 132, 144)}${placeSvg(wordmark, 153, 29.94, 396, 97.5)}</svg>\n`,
 );
 console.log("wrote", "public/mogtome-logo.svg");
 

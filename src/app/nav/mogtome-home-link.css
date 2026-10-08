@@ -1,98 +1,33 @@
-/* A tiny cloth-bound keepsake: sage cover, linen bookplate, and brass charm. */
+/* Fuller handmade lettering balances the reader's embroidered detail. */
 .storybook-brand {
   --brand-unit: var(--layout-unit);
-  --brand-linen: #f7edd8;
-  --brand-seam: #b7a17c;
-  --brand-plum: #774d61;
-  --brand-sage: #50654e;
-  --brand-caption: #6b5948;
-  --brand-cover: #6d7e60;
-  --brand-cover-edge: #455b46;
-  --brand-leaf: #99a57c;
-  --brand-rose: #ba838a;
-  --brand-gold: #a47d42;
-  --brand-star: #dfbc78;
+  --brand-plum: #6f4654;
+  --brand-sage: #40563d;
+  --brand-bookmark: #b98593;
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: calc(276 * var(--brand-unit));
-  height: calc(76 * var(--brand-unit));
-  flex: none;
-  border-radius: calc(12 * var(--brand-unit));
+  gap: calc(3 * var(--brand-unit));
+  min-width: 0;
+  min-height: calc(48 * var(--brand-unit));
+  padding: calc(2 * var(--brand-unit)) calc(4 * var(--brand-unit))
+    calc(2 * var(--brand-unit)) 0;
+  border-radius: calc(8 * var(--brand-unit));
   color: var(--nav-ink);
   text-decoration: none;
-  isolation: isolate;
   -webkit-tap-highlight-color: transparent;
 }
-.storybook-brand-cover {
-  position: absolute;
-  z-index: -1;
-  inset: calc(10 * var(--brand-unit)) calc(12 * var(--brand-unit))
-    calc(5 * var(--brand-unit)) calc(34 * var(--brand-unit));
-  border: 1px solid var(--brand-cover-edge);
-  border-radius: calc(9 * var(--brand-unit)) calc(6 * var(--brand-unit))
-    calc(7 * var(--brand-unit)) calc(9 * var(--brand-unit));
-  background:
-    repeating-linear-gradient(0deg, #fff8df0e 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, #243c2912 0 1px, transparent 1px 3px),
-    var(--brand-cover);
-  box-shadow:
-    inset 0 0 0 2px #dce1b82b,
-    0 calc(3 * var(--brand-unit)) 0 var(--brand-cover-edge),
-    0 calc(5 * var(--brand-unit)) calc(7 * var(--brand-unit)) #211a2429;
-  transform: rotate(-2deg);
-  transition:
-    transform 280ms ease,
-    box-shadow 280ms ease;
-}
-.storybook-brand-cover::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border: 1px dashed #e2d9aa70;
-  border-radius: inherit;
-}
 .storybook-brand-reader {
-  position: relative;
-  z-index: 2;
   display: grid;
   place-items: center;
-  width: calc(86 * var(--brand-unit));
-  height: calc(76 * var(--brand-unit));
+  width: calc(44 * var(--brand-unit));
+  height: calc(48 * var(--brand-unit));
   flex: none;
-  transform: rotate(-8deg);
-  transform-origin: 50% 80%;
-  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.25, 1.2);
-}
-.storybook-brand-patch {
-  position: absolute;
-  inset: 17% 14% 7%;
-  border: 1px solid #baa882;
-  border-radius: 48% 48% 44% 44%;
-  background:
-    repeating-linear-gradient(45deg, #aa947c13 0 1px, transparent 1px 3px),
-    #e9ddc2;
-  box-shadow:
-    0 2px 2px #30251f35,
-    inset 0 0 0 3px #fff5dd;
-}
-.storybook-brand-patch::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border: 1px dashed #ad9870;
-  border-radius: inherit;
+  transform: rotate(-4deg);
+  transition: transform 220ms ease;
 }
 .storybook-brand-mark {
-  position: relative;
-  width: calc(73 * var(--brand-unit));
-  height: calc(76 * var(--brand-unit));
-  overflow: visible;
-  filter: drop-shadow(0 2px 1px #51382a33);
-}
-.storybook-brand-sprigs {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -100,229 +35,199 @@
 .storybook-brand-type {
   position: relative;
   display: grid;
-  align-items: center;
-  width: calc(192 * var(--brand-unit));
-  height: calc(57 * var(--brand-unit));
-  margin-left: calc(-12 * var(--brand-unit));
-  transform: rotate(-2deg);
-  transform-origin: 15% 70%;
-  transition: transform 280ms ease;
-}
-.storybook-brand-bookplate {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  align-content: center;
   gap: calc(1 * var(--brand-unit));
-  height: 100%;
-  padding: calc(3 * var(--brand-unit)) calc(13 * var(--brand-unit))
-    calc(6 * var(--brand-unit));
-  border: 1px solid var(--brand-seam);
-  border-radius: calc(7 * var(--brand-unit)) calc(10 * var(--brand-unit))
-    calc(10 * var(--brand-unit)) calc(6 * var(--brand-unit));
-  background:
-    repeating-linear-gradient(0deg, #907a5c0b 0 0.6px, transparent 0.6px 2px),
-    repeating-linear-gradient(90deg, #fffdf34d 0 0.6px, transparent 0.6px 2px),
-    linear-gradient(165deg, #fffdf480, transparent 55%, #a1845217),
-    var(--brand-linen);
-  box-shadow:
-    inset 0 0 0 2px #fff9e9b3,
-    0 calc(2 * var(--brand-unit)) 0 #d6c8a7,
-    0 calc(3 * var(--brand-unit)) 0 #9d8b66,
-    0 calc(4 * var(--brand-unit)) calc(3 * var(--brand-unit)) #30251f30;
 }
-.storybook-brand-bookplate::before {
-  content: "";
-  position: absolute;
-  inset: calc(4 * var(--brand-unit));
-  border: 1px dashed var(--brand-seam);
-  border-radius: calc(4 * var(--brand-unit)) calc(7 * var(--brand-unit))
-    calc(7 * var(--brand-unit)) calc(3 * var(--brand-unit));
-  pointer-events: none;
+.storybook-brand-name {
+  display: none;
+  align-items: baseline;
+  gap: 0.025em;
+  color: var(--brand-plum);
+  font-family: var(--font-navigation);
+  font-size: calc(1.75rem + 28 * (var(--brand-unit) - 1px));
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
 }
-.storybook-wordmark {
+.storybook-brand-name > span:last-child {
+  color: var(--brand-sage);
+}
+.storybook-handlettering {
   display: block;
-  width: calc(163 * var(--brand-unit));
-  height: auto;
+  width: calc(132 * var(--brand-unit));
+  height: calc(32.5 * var(--brand-unit));
   overflow: visible;
+}
+:is(.dyslexia-font, .large-text) .storybook-handlettering {
+  display: none;
+}
+:is(.dyslexia-font, .large-text) .storybook-brand-name {
+  display: flex;
 }
 .nav-world {
   display: flex;
   align-items: center;
-  gap: calc(6 * var(--brand-unit));
-  color: var(--brand-caption);
-  font: 500 max(0.4375rem, calc(8 * var(--brand-unit))) / 1.2
+  justify-content: center;
+  gap: calc(5 * var(--brand-unit));
+  color: var(--nav-muted);
+  font: 400 calc(0.6875rem + 11 * (var(--brand-unit) - 1px))/1.2
     var(--font-navigation);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  letter-spacing: 0.025em;
   white-space: nowrap;
 }
 .nav-world i {
-  color: var(--brand-plum);
-  font-size: 0.8em;
+  color: var(--brand-bookmark);
   font-style: normal;
 }
-.storybook-brand-bookmark {
-  position: absolute;
-  z-index: 0;
-  top: calc(7 * var(--brand-unit));
-  right: calc(-11 * var(--brand-unit));
-  display: grid;
-  place-items: center;
-  width: calc(21 * var(--brand-unit));
-  height: calc(36 * var(--brand-unit));
-  padding-left: calc(6 * var(--brand-unit));
-  color: #fff1da;
-  background:
-    linear-gradient(90deg, #72495144, transparent 65%),
-    repeating-linear-gradient(0deg, #fff8e521 0 1px, transparent 1px 3px),
-    var(--brand-rose);
-  clip-path: polygon(0 0, 100% 0, 83% 50%, 100% 100%, 0 100%);
-}
-.storybook-brand-bookmark svg {
-  width: calc(13 * var(--brand-unit));
-  height: calc(13 * var(--brand-unit));
-}
-.storybook-brand-charm {
-  position: absolute;
-  z-index: 3;
-  top: calc(21 * var(--brand-unit));
-  right: calc(-3 * var(--brand-unit));
-  width: calc(19 * var(--brand-unit));
-  height: calc(42 * var(--brand-unit));
-  overflow: visible;
-  transform: rotate(-9deg);
-  transform-origin: 46% 4%;
-  filter: drop-shadow(0 1px 1px #37271933);
-}
-.storybook-brand:is(:hover, :focus-visible) .storybook-brand-cover {
-  transform: translateY(calc(-1 * var(--brand-unit))) rotate(-1deg);
-  box-shadow:
-    inset 0 0 0 2px #dce1b82b,
-    0 calc(3 * var(--brand-unit)) 0 var(--brand-cover-edge),
-    0 calc(6 * var(--brand-unit)) calc(10 * var(--brand-unit)) #211a2433;
-}
 .storybook-brand:is(:hover, :focus-visible) .storybook-brand-reader {
-  transform: translateY(calc(-2 * var(--brand-unit))) rotate(-3deg);
-}
-.storybook-brand:is(:hover, :focus-visible) .storybook-brand-type {
   transform: translateY(calc(-1 * var(--brand-unit))) rotate(-1deg);
 }
-.storybook-brand:is(:hover, :focus-visible) .storybook-brand-charm {
-  animation: brand-charm-swing 900ms ease-in-out;
+.storybook-brand .brand-reader-pom,
+.storybook-brand .brand-reader-page {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
 }
-.storybook-brand:active .storybook-brand-type {
-  transform: translateY(calc(1 * var(--brand-unit))) rotate(-2deg);
+.storybook-brand:is(:hover, :focus-visible) .brand-reader-pom {
+  animation: brand-reader-nod 600ms ease-in-out;
 }
-@keyframes brand-charm-swing {
+.storybook-brand:is(:hover, :focus-visible) .brand-reader-page {
+  animation: brand-reader-page-turn 600ms ease-in-out;
+}
+@keyframes brand-reader-nod {
   0%,
   100% {
-    transform: rotate(-9deg);
+    transform: rotate(0);
   }
-  25% {
-    transform: rotate(17deg);
+  35% {
+    transform: rotate(12deg);
   }
-  55% {
-    transform: rotate(-17deg);
-  }
-  80% {
-    transform: rotate(-4deg);
+  70% {
+    transform: rotate(-6deg);
   }
 }
-/* Warm paper stays legible at night without becoming a bright white plaque. */
+@keyframes brand-reader-page-turn {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  45% {
+    transform: rotate(-12deg);
+  }
+}
+/* Soft inks follow the room's light without needing a pale label behind them. */
 .cozy-topbar[data-mode="dark"] .storybook-brand {
-  --brand-linen: #e8dcc2;
-  --brand-cover: #617458;
-  --brand-cover-edge: #3b4f3f;
-  --brand-leaf: #a3ac88;
-  --brand-gold: #b99a61;
+  --brand-plum: #ead1d9;
+  --brand-sage: #d8e2c7;
+  --brand-bookmark: #d5a9b2;
 }
 :root.high-contrast .cozy-topbar .storybook-brand {
-  --brand-linen: var(--bg);
-  --brand-seam: var(--text);
   --brand-plum: var(--text);
   --brand-sage: var(--text);
-  --brand-caption: var(--text);
+  --brand-bookmark: var(--text);
 }
-.high-contrast .storybook-brand-bookplate {
-  background: var(--bg);
-  box-shadow: none;
-  border: 2px solid var(--text);
-}
-.high-contrast .storybook-brand-cover,
-.high-contrast .storybook-brand-patch,
-.high-contrast .storybook-brand-sprigs,
-.high-contrast .storybook-brand-bookmark,
-.high-contrast .storybook-brand-charm,
-.high-contrast .brand-letter-shadow,
-.high-contrast .brand-letter-texture,
-.high-contrast .brand-letter-stitches {
+.high-contrast .brand-letter-texture {
   display: none;
+}
+@media (min-width: 901px) {
+  .large-text .storybook-brand-name {
+    font-size: calc(1.5rem + 28 * (var(--brand-unit) - 1px));
+  }
+  .large-text .nav-world {
+    font-size: calc(0.625rem + 11 * (var(--brand-unit) - 1px));
+  }
 }
 @media (max-width: 900px) {
   .storybook-brand {
-    --brand-unit: 0.78px;
-    height: 52px;
+    --brand-unit: 1px;
+    min-height: 44px;
+    gap: 2px;
   }
-}
-@media (max-width: 600px) {
-  .storybook-brand {
-    --brand-unit: 0.7px;
+  .storybook-brand-reader {
+    width: 38px;
+    height: 40px;
+  }
+  .storybook-brand-name {
+    font-size: 1.5rem;
+  }
+  .storybook-handlettering {
+    width: 112px;
+    height: 27.6px;
+  }
+  .storybook-brand-type {
+    gap: 1px;
+  }
+  .large-text .storybook-brand-name {
+    font-size: 1.25rem;
+  }
+  .large-text .nav-world {
+    font-size: 0.625rem;
   }
 }
 @media (max-width: 400px) {
   .storybook-brand {
-    --brand-unit: 0.63px;
-    height: 48px;
+    gap: 1px;
+    padding-right: 0;
+  }
+  .storybook-brand-name {
+    font-size: 1.5rem;
   }
   .nav-world {
-    gap: 3px;
-    letter-spacing: 0.06em;
-  }
-}
-@media (max-width: 360px) {
-  .storybook-brand {
-    --brand-unit: 0.56px;
+    font-size: 0.625rem;
+    gap: 4px;
   }
 }
 @media (max-width: 340px) {
-  .storybook-brand {
-    --brand-unit: 0.5px;
+  .storybook-brand-reader {
+    width: 36px;
   }
-  .nav-world {
-    gap: 2px;
-    letter-spacing: 0;
+  .storybook-brand-name {
+    font-size: 1.375rem;
+  }
+  .storybook-handlettering {
+    width: 100px;
+    height: 24.65px;
+  }
+  .large-text .storybook-brand-name {
+    font-size: 1.125rem;
+  }
+  .large-text .storybook-brand-reader {
+    width: 32px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .storybook-brand *,
-  .storybook-brand *::before,
-  .storybook-brand *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-  .storybook-brand:is(:hover, :focus-visible, :active) .storybook-brand-cover,
-  .storybook-brand:is(:hover, :focus-visible, :active) .storybook-brand-type {
-    transform: rotate(-2deg);
+  .storybook-brand-reader {
+    transition: none;
   }
   .storybook-brand:is(:hover, :focus-visible) .storybook-brand-reader {
-    transform: rotate(-8deg);
+    transform: rotate(-4deg);
   }
-}
-.reduce-motion
-  .storybook-brand:is(:hover, :focus-visible, :active)
-  .storybook-brand-cover,
-.reduce-motion
-  .storybook-brand:is(:hover, :focus-visible, :active)
-  .storybook-brand-type {
-  transform: rotate(-2deg) !important;
+  .storybook-brand .brand-reader-pom,
+  .storybook-brand .brand-reader-page {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 .reduce-motion
   .storybook-brand:is(:hover, :focus-visible)
   .storybook-brand-reader {
-  transform: rotate(-8deg) !important;
+  transform: rotate(-4deg);
 }
-.reduce-motion .storybook-brand-charm {
-  transform: rotate(-9deg) !important;
+.reduce-motion .storybook-brand .brand-reader-pom,
+.reduce-motion .storybook-brand .brand-reader-page {
+  animation: none !important;
+  transform: none !important;
+}
+@media (forced-colors: active) {
+  .storybook-brand {
+    --brand-plum: LinkText;
+    --brand-sage: LinkText;
+  }
+  .storybook-brand-name,
+  .storybook-brand-name > span:last-child,
+  .nav-world {
+    color: LinkText;
+  }
+  .brand-letter-texture {
+    display: none;
+  }
 }

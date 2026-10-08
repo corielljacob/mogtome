@@ -1,8 +1,8 @@
-/* A quiet book masthead, with a ribbon keeping the current chapter. */
+/* Small paper bookmarks bring a little personality to the book masthead. */
 :root {
   --layout-unit: 1px;
   --app-header-height: calc(
-    76 * var(--layout-unit) + env(safe-area-inset-top, 0px)
+    52 * var(--layout-unit) + env(safe-area-inset-top, 0px)
   );
   --font-navigation: "Lora", Georgia, serif;
 }
@@ -22,7 +22,7 @@
   --nav-muted: var(--ui-wall-muted);
   --nav-accent: var(--ui-wall-focus);
   --nav-ribbon: var(--ui-secondary);
-  --nav-rule: color-mix(in srgb, var(--nav-ink) 24%, transparent);
+  --nav-rule: color-mix(in srgb, var(--nav-ink) 16%, transparent);
   position: relative;
   z-index: 40;
   min-height: var(--app-header-height);
@@ -37,12 +37,12 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  min-height: calc(76 * var(--layout-unit));
+  min-height: calc(52 * var(--layout-unit));
   margin-inline: auto;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: calc(24 * var(--layout-unit));
+  gap: calc(20 * var(--layout-unit));
 }
 .storybook-header::after {
   content: "";
@@ -56,7 +56,7 @@
 .storybook-nav {
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
   flex-wrap: wrap;
   align-self: stretch;
   min-width: 0;
@@ -65,15 +65,17 @@
     var(--font-navigation);
 }
 .storybook-nav a {
+  --chapter-ink: var(--nav-accent);
+  --chapter-tilt: -0.8deg;
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: calc(5 * var(--layout-unit));
+  gap: calc(7 * var(--layout-unit));
   min-width: calc(44 * var(--layout-unit));
-  min-height: calc(76 * var(--layout-unit));
-  padding: calc(10 * var(--layout-unit)) calc(12 * var(--layout-unit));
+  min-height: calc(44 * var(--layout-unit));
+  padding: calc(8 * var(--layout-unit)) calc(12 * var(--layout-unit));
+  border-radius: calc(9 * var(--layout-unit));
   color: var(--nav-muted);
   text-decoration: none;
   text-align: center;
@@ -81,57 +83,115 @@
   isolation: isolate;
   transition: color 160ms ease;
 }
-/* One cut-tail ribbon hangs from the top edge of the current chapter. */
+.storybook-nav a[data-chapter="members"] {
+  --chapter-ink: color-mix(in srgb, var(--nav-ink) 65%, var(--ui-secondary));
+  --chapter-tilt: 0.7deg;
+}
+.storybook-nav a[data-chapter="chronicle"] {
+  --chapter-ink: color-mix(in srgb, var(--nav-ink) 65%, var(--ui-accent));
+  --chapter-tilt: -0.6deg;
+}
+.storybook-nav a[data-chapter="about"] {
+  --chapter-ink: color-mix(in srgb, var(--nav-ink) 70%, var(--primary));
+  --chapter-tilt: 0.8deg;
+}
+.storybook-nav a[data-chapter="dashboard"] {
+  --chapter-ink: color-mix(in srgb, var(--nav-ink) 60%, var(--ui-accent));
+}
+/* Only the paper moves; the labels stay steady and easy to read. */
 .storybook-nav a::before {
   content: "";
   position: absolute;
-  inset: 0 0 calc(-6 * var(--layout-unit));
+  inset: calc(5 * var(--layout-unit)) 0 calc(6 * var(--layout-unit));
   z-index: -1;
-  background:
-    linear-gradient(var(--nav-rule), var(--nav-rule)) left
-      calc(4 * var(--layout-unit)) top / 1px 100% no-repeat,
-    linear-gradient(var(--nav-rule), var(--nav-rule)) right
-      calc(4 * var(--layout-unit)) top / 1px 100% no-repeat,
-    var(--bg-noise),
-    var(--nav-ribbon);
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% 100%,
-    50% calc(100% - 7 * var(--layout-unit)),
-    0 100%
+  border: 1px solid color-mix(in srgb, var(--chapter-ink) 13%, transparent);
+  border-radius: calc(9 * var(--layout-unit)) calc(7 * var(--layout-unit))
+    calc(6 * var(--layout-unit)) calc(8 * var(--layout-unit));
+  background: color-mix(in srgb, var(--chapter-ink) 6%, var(--nav-paper));
+  box-shadow: 0 calc(1 * var(--layout-unit)) 0
+    color-mix(in srgb, var(--chapter-ink) 10%, transparent);
+  opacity: 0.65;
+  transform: rotate(var(--chapter-tilt));
+  transition:
+    opacity 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+  pointer-events: none;
+}
+.storybook-nav a::after {
+  content: "";
+  position: absolute;
+  inset: auto calc(13 * var(--layout-unit)) calc(8 * var(--layout-unit));
+  height: 1px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--chapter-ink) 0 calc(3 * var(--layout-unit)),
+    transparent calc(3 * var(--layout-unit)) calc(6 * var(--layout-unit))
   );
   opacity: 0;
-  transform: scaleY(0.9);
-  transform-origin: top;
+  transform: scaleX(0.6);
   transition:
     opacity 180ms ease,
     transform 180ms ease;
   pointer-events: none;
 }
-.storybook-nav a:hover {
+.storybook-nav a:is(:hover, :focus-visible) {
   color: var(--nav-ink);
 }
 .storybook-nav a[aria-current] {
-  color: var(--ui-on-action);
+  color: var(--nav-ink);
 }
-.storybook-nav a:hover::before {
-  opacity: 0.35;
-  transform: scaleY(1);
+.storybook-nav a:is(:hover, :focus-visible)::before {
+  opacity: 1;
+  background: color-mix(in srgb, var(--chapter-ink) 10%, var(--nav-paper));
+  transform: translateY(calc(-1 * var(--layout-unit))) rotate(0deg);
 }
 .storybook-nav a[aria-current]::before {
+  border-color: color-mix(in srgb, var(--chapter-ink) 28%, transparent);
+  background: color-mix(in srgb, var(--chapter-ink) 13%, var(--nav-paper));
   opacity: 1;
-  transform: scaleY(1);
 }
-.nav-chapter {
-  color: var(--nav-muted);
-  font-size: 0.64em;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.12em;
-  line-height: 1;
+.storybook-nav a[aria-current]::after {
+  opacity: 1;
+  transform: scaleX(1);
 }
-.storybook-nav a[aria-current] .nav-chapter {
-  color: inherit;
+.nav-chapter-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(22 * var(--layout-unit));
+  height: calc(25 * var(--layout-unit));
+  color: var(--chapter-ink);
+  isolation: isolate;
+}
+.nav-chapter-icon > svg {
+  width: calc(20 * var(--layout-unit));
+  height: calc(20 * var(--layout-unit));
+  transition: transform 180ms ease;
+}
+.nav-chapter-icon .nav-doodle-fill {
+  fill: color-mix(in srgb, var(--chapter-ink) 12%, var(--nav-paper));
+}
+/* A tiny notched ribbon is tucked behind the current chapter's drawing. */
+.nav-chapter-icon::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--layout-unit)) 0;
+  z-index: -1;
+  border-radius: calc(3 * var(--layout-unit)) calc(3 * var(--layout-unit)) 0 0;
+  background: color-mix(in srgb, var(--chapter-ink) 13%, var(--nav-paper));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.storybook-nav a[aria-current] .nav-chapter-icon::before {
+  opacity: 1;
+}
+.storybook-nav a:is(:hover, :focus-visible) .nav-chapter-icon > svg {
+  transform: rotate(-6deg) translateY(calc(-1 * var(--layout-unit)));
 }
 .topbar-controls,
 .nav-utilities {
@@ -140,7 +200,7 @@
 }
 .topbar-controls {
   justify-content: flex-end;
-  gap: calc(12 * var(--layout-unit));
+  gap: calc(8 * var(--layout-unit));
 }
 .nav-utilities {
   gap: 0;
@@ -163,6 +223,7 @@
 .nav-icon-button > svg {
   width: calc(17 * var(--layout-unit));
   height: calc(17 * var(--layout-unit));
+  transition: transform 180ms ease;
 }
 .nav-icon-button > svg:not([data-ink-icon]) {
   stroke-width: 1.35;
@@ -171,6 +232,9 @@
 .nav-icon-button[aria-current] {
   color: var(--nav-ink);
   background: color-mix(in srgb, var(--nav-accent) 12%, transparent);
+}
+.nav-icon-button:is(:hover, :focus-visible) > svg {
+  transform: rotate(12deg);
 }
 .cozy-login {
   display: flex;
@@ -181,22 +245,27 @@
   min-width: calc(44 * var(--layout-unit));
   padding: calc(8 * var(--layout-unit)) calc(12 * var(--layout-unit));
   color: var(--nav-ink);
-  border: 0;
-  border-left: 1px solid var(--nav-rule);
-  background: transparent;
+  border: 1px solid var(--nav-rule);
+  border-radius: calc(11 * var(--layout-unit)) calc(7 * var(--layout-unit));
+  background: color-mix(in srgb, var(--nav-paper) 80%, transparent);
   font: 400 calc(0.75rem + 12 * (var(--layout-unit) - 1px))/1.2
     var(--font-navigation);
   white-space: nowrap;
   cursor: pointer;
-  transition: color 160ms;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 .cozy-login > svg {
   width: calc(16 * var(--layout-unit));
   height: calc(16 * var(--layout-unit));
   opacity: 0.75;
 }
-.cozy-login:hover {
-  color: var(--primary);
+.cozy-login:is(:hover, :focus-visible):not(:disabled) {
+  color: var(--nav-accent);
+  background: color-mix(in srgb, var(--nav-accent) 8%, var(--nav-paper));
+  transform: translateY(calc(-1 * var(--layout-unit)));
 }
 .cozy-login:disabled {
   opacity: 0.6;
@@ -306,9 +375,15 @@
   --nav-rule: var(--text);
   background: var(--bg);
 }
-.high-contrast .storybook-nav a[aria-current] > span:last-child {
+.high-contrast .storybook-nav a[aria-current] .nav-chapter-label {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+.high-contrast .storybook-nav a[aria-current]::before {
+  border-color: var(--nav-ink);
+}
+.high-contrast .nav-chapter-icon {
+  color: var(--nav-ink);
 }
 @media (max-width: 1060px) {
   .storybook-header {
@@ -327,15 +402,15 @@
 }
 @media (max-width: 900px) {
   :root {
-    --app-header-height: calc(108px + env(safe-area-inset-top, 0px));
+    --app-header-height: calc(92px + env(safe-area-inset-top, 0px));
   }
   .cozy-topbar {
-    padding: calc(8px + env(safe-area-inset-top, 0px))
+    padding: calc(4px + env(safe-area-inset-top, 0px))
       max(20px, env(safe-area-inset-right, 0px)) 0
       max(20px, env(safe-area-inset-left, 0px));
   }
   .storybook-header {
-    min-height: 100px;
+    min-height: 88px;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto auto;
     gap: 0 8px;
@@ -348,12 +423,9 @@
     font-size: 0.8125rem;
   }
   .storybook-nav a {
-    min-height: 48px;
-    padding: 5px 10px;
+    min-height: 44px;
+    padding: 6px 10px;
     gap: 4px;
-  }
-  .storybook-nav a::before {
-    bottom: -5px;
   }
   .topbar-controls {
     grid-column: 2;
@@ -367,23 +439,40 @@
     display: none;
   }
 }
+@media (max-width: 600px) {
+  .nav-chapter-icon {
+    display: none;
+  }
+  .storybook-nav a {
+    padding-inline: 8px;
+  }
+  .large-text .storybook-nav a {
+    padding-inline: 4px;
+  }
+}
 @media (max-width: 400px) {
   :root {
-    --app-header-height: calc(104px + env(safe-area-inset-top, 0px));
+    --app-header-height: calc(92px + env(safe-area-inset-top, 0px));
   }
   .cozy-topbar {
     padding-inline: max(12px, env(safe-area-inset-left, 0px))
       max(12px, env(safe-area-inset-right, 0px));
   }
   .storybook-header {
-    min-height: 96px;
+    min-height: 88px;
     column-gap: 4px;
   }
   .storybook-nav a {
     padding-inline: 4px;
   }
+  :root:not(.large-text) .storybook-nav:has(a:nth-child(5)) {
+    font-size: 0.75rem;
+  }
+  .storybook-nav:has(a:nth-child(5)) a {
+    padding-inline: 2px;
+  }
   :root.large-text {
-    --app-header-height: calc(152px + env(safe-area-inset-top, 0px));
+    --app-header-height: calc(136px + env(safe-area-inset-top, 0px));
   }
   .large-text .storybook-nav {
     display: grid;
@@ -393,7 +482,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .large-text .storybook-header {
-    grid-template-rows: 48px auto;
+    grid-template-rows: 44px auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -403,10 +492,22 @@
     animation: none !important;
     transition: none !important;
   }
+  .storybook-nav a::before,
+  .storybook-nav a .nav-chapter-icon > svg,
+  .nav-icon-button > svg,
+  .cozy-login {
+    transform: none !important;
+  }
 }
 .reduce-motion .cozy-topbar *,
 .reduce-motion .cozy-topbar *::before,
 .reduce-motion .cozy-topbar *::after {
   animation: none !important;
   transition: none !important;
+}
+.reduce-motion .storybook-nav a::before,
+.reduce-motion .storybook-nav a .nav-chapter-icon > svg,
+.reduce-motion .nav-icon-button > svg,
+.reduce-motion .cozy-login {
+  transform: none !important;
 }

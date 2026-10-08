@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 
 interface MogTomeMarkProps {
   className?: string;
@@ -141,7 +141,8 @@ const pageLayers = [1.1, 2.35, 3.5]
       `M24 ${n(151 + offset)}C48 ${n(149 + offset)} 76 ${n(163 + offset)} 96 ${n(175 + offset)}M104 ${n(175 + offset)}C124 ${n(163 + offset)} 152 ${n(149 + offset)} 176 ${n(151 + offset)}`,
   )
   .join(" ");
-const pawThreads = cottonRows(43, 133, 35, 5, 100);
+const pawThreads =
+  cottonRows(43, 133, 35, 5, 100) + cottonRows(156, 108, 9, 5, 173);
 
 // Deliberately asymmetric ears, tufted cheeks, and an open book give the mark
 // its silhouette. All texture is SVG path geometry, including the satin fills.
@@ -163,10 +164,12 @@ const pages =
   "M28 140C55 140 79 150 100 166L96 175C76 163 48 149 24 151ZM172 140C145 140 121 150 100 166L104 175C124 163 152 149 176 151Z";
 const pageContact = `M24 155${leftJoint}M104 179${rightJoint}`;
 const paws =
-  "M49 134C40 132 37 139 40 146L44 153C47 159 52 159 53 155C55 161 59 161 62 157C67 157 68 149 64 143C60 136 56 133 49 134ZM147 137C157 132 164 138 162 147L159 156C157 162 152 163 149 159C145 165 139 164 138 159C133 158 134 148 138 144Q142 140 147 137Z";
+  "M49 134C40 132 37 139 40 146L44 153C47 159 52 159 53 155C55 161 59 161 62 157C67 157 68 149 64 143C60 136 56 133 49 134ZM149 145C156 137 158 131 161 123L166 112C168 107 174 108 174 113L172 121C178 111 183 112 183 118L179 126C186 120 191 124 187 130L179 141C173 150 169 154 163 156Z";
 const chest = "M74 137C63 149 62 166 74 181H128C140 165 137 150 122 137Z";
 
-export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
+export const MogTomeMark = memo(function MogTomeMark({
+  className = "",
+}: MogTomeMarkProps) {
   const id = useId();
   const paint = (name: string) => `url(#${id}-${name})`;
   return (
@@ -259,7 +262,7 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
         <Thread d={pawThreads} {...cotton} width={2} />
       </g>
       <g transform="translate(0 -20)">
-        <g transform="rotate(-6 100 142)">
+        <g transform="rotate(-9 100 142)">
           <path d={ears} fill={paint("fur")} />
           <g clipPath={paint("ears-shape")}>
             <Thread
@@ -295,12 +298,15 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
           </g>
           <ellipse cx="54" cy="151" rx="19" ry="12" fill={paint("blush")} />
           <ellipse cx="147" cy="151" rx="19" ry="12" fill={paint("blush")} />
+          {/* A bright eye and a wink stay expressive at navigation size. */}
+          <ellipse cx="66" cy="132" rx="6.5" ry="8.5" fill="#665044" />
+          <ellipse cx="64.5" cy="128.5" rx="2.1" ry="2.7" fill="#fffcef" />
           <Thread
-            d="M55 133Q65 142 77 135M124 135Q135 142 146 133"
-            color="#76604e"
+            d="M124 134Q136 120 148 133M147 132l5-3"
+            color="#665044"
             shade="#5a4537"
             light="#bdab8d"
-            width={2.6}
+            width={3.5}
           />
           <ellipse cx="100" cy="148" rx="12" ry="8.5" fill={paint("nose")} />
           <g clipPath={paint("nose-shape")}>
@@ -315,13 +321,11 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
             {...rose}
             width={0.85}
           />
-          <Thread
-            d="M91 160Q96 166 100 160Q104 166 110 159"
-            color="#806857"
-            shade="#665143"
-            light="#caba9f"
-            width={1.35}
+          <path
+            d="M89 158Q101 167 114 157Q111 175 101 175Q92 172 89 158Z"
+            fill="#775448"
           />
+          <path d="M96 171Q103 165 109 169Q103 175 96 171Z" fill="#d49a9e" />
           <Thread
             d="m48 150-1 3m6-2-1 3m95-3-1 3m6-4-1 3"
             {...rose}
@@ -331,30 +335,32 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
         </g>
       </g>
 
-      <g transform="translate(-5 -1)">
-        <Thread
-          d="M97 64C95 52 105 45 117 41Q127 37 127 29"
-          color="#8c7859"
-          shade="#655037"
-          light="#c2ad88"
-          width={2.4}
-        />
-        <circle cx="127" cy="27" r="21.5" fill={paint("pom")} />
-        <g transform="rotate(-25 127 27)">
-          <Thread d={pomThreads} {...gold} width={1.65} />
+      <g className="brand-reader-pom">
+        <g transform="translate(-5 -1)">
+          <Thread
+            d="M97 64C95 52 105 45 117 41Q127 37 127 29"
+            color="#8c7859"
+            shade="#655037"
+            light="#c2ad88"
+            width={2.4}
+          />
+          <circle cx="127" cy="27" r="21.5" fill={paint("pom")} />
+          <g transform="rotate(-25 127 27)">
+            <Thread d={pomThreads} {...gold} width={1.65} />
+          </g>
+          <Edge
+            d="M148.5 27A21.5 21.5 0 1 1 105.5 27A21.5 21.5 0 1 1 148.5 27Z"
+            {...gold}
+            width={2.25}
+          />
+          <Thread
+            d="M124 8C111 20 113 37 125 46"
+            {...gold}
+            color="#efd089"
+            width={0.9}
+            dash="2.2 2"
+          />
         </g>
-        <Edge
-          d="M148.5 27A21.5 21.5 0 1 1 105.5 27A21.5 21.5 0 1 1 148.5 27Z"
-          {...gold}
-          width={2.25}
-        />
-        <Thread
-          d="M124 8C111 20 113 37 125 46"
-          {...gold}
-          color="#efd089"
-          width={0.9}
-          dash="2.2 2"
-        />
       </g>
 
       {/* Paper sits behind the boards. Fine, unbound foreedges are distinct
@@ -417,6 +423,23 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
         fill="none"
       />
 
+      {/* A dog-eared page lifts from the book as our reader waves hello. */}
+      <g className="brand-reader-page">
+        <path
+          d="M139 146Q154 135 172 140Q169 146 175 152Q158 145 145 152Z"
+          fill="#fff3d6"
+          stroke="#bba57d"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M172 140Q160 140 163 147M147 145l8-2"
+          stroke="#d0bb94"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
+      </g>
+
       <path d={cover} fill={paint("cloth")} />
       <g clipPath={paint("cover-shape")}>
         <Thread d={coverThreads} {...sage} width={1.85} />
@@ -475,16 +498,19 @@ export function MogTomeMark({ className = "" }: MogTomeMarkProps) {
       <g clipPath={paint("paw-shape")}>
         <Thread d={pawThreads} {...cotton} width={2} />
       </g>
-      <Edge
-        d="M40 141C38 146 42 151 44 153C47 159 52 159 53 155C55 161 59 161 62 157C67 157 68 149 64 143M161 141C164 145 160 153 159 156C157 162 152 163 149 159C145 165 139 164 138 159C133 158 134 150 137 146"
-        width={1.85}
-      />
+      <Edge d={paws} width={1.85} />
       <Thread
-        d="M51 149Q51 154 53 155M60 151Q59 155 62 157M149 152Q148 156 149 159M141 153Q139 157 138 159"
+        d="M51 149Q51 154 53 155M60 151Q59 155 62 157M172 121l-3 7M179 126l-5 6M164 145q3-3 5-4"
         {...cotton}
         color="#beac8f"
         width={1}
       />
+      <path
+        d="M181 99l4-5M189 107l5-2"
+        stroke="#c9a45f"
+        strokeWidth="2.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
-}
+});
