@@ -432,3 +432,7 @@ docs
 *.sln
 *.sw?
 
+# Local design previews and validation scratch files
+/output/
+/tmp/
+
