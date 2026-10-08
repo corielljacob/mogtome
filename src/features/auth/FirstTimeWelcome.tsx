@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { User } from "@/shared/contexts/AuthContext";
 import { MembershipCard } from "@/shared/ui/MembershipCard";
 import { getTheme } from "@/shared/ui/membershipCardThemes";
@@ -102,20 +102,7 @@ export function FirstTimeWelcome({
         <AmbientGlow isActive={showCelebration} />
       </div>
 
-      <div className="min-h-[5.5rem] flex flex-col items-center justify-center gap-4">
-        {showCelebration && (
-          <p
-            key="celebration-text"
-            className="font-accent text-base text-[var(--secondary)] animate-[fadeSlideIn_0.5s_cubic-bezier(0.16,1,0.3,1)]"
-          >
-            <span className="inline-flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              <span>Welcome to MogTome, kupo!</span>
-              <Sparkles className="w-4 h-4" />
-            </span>
-          </p>
-        )}
-
+      <div className="min-h-[3rem] flex items-center justify-center">
         {showButton && (
           <button
             key="continue-button"

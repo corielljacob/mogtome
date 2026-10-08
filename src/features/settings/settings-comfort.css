@@ -122,15 +122,6 @@
   color: var(--ui-secondary);
 }
 
-.settings-account-photo-caption {
-  display: block;
-  margin-top: 6px;
-  text-align: center;
-  color: var(--nook-ink);
-  font-family: var(--font-handwriting, cursive);
-  font-size: 0.75rem;
-}
-
 .settings-account-details {
   min-width: 0;
   flex: 1;

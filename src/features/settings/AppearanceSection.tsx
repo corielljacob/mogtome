@@ -146,11 +146,7 @@ export function AppearanceSection() {
   };
 
   return (
-    <SettingsCard
-      icon="palette"
-      title="Appearance"
-      description="Choose your colors and seasonal decorations."
-    >
+    <SettingsCard icon="palette" title="Appearance">
       <div className="settings-appearance">
         <fieldset
           className="settings-fieldset"
@@ -183,8 +179,8 @@ export function AppearanceSection() {
             id={`${id}-mode-help`}
           >
             {settings.colorMode === "system"
-              ? `Following your device. ${isDarkMode ? "Dark" : "Light"} mode is active now.`
-              : `${settings.colorMode === "dark" ? "Dark" : "Light"} mode stays on until you change it. System follows your device.`}
+              ? `System: ${isDarkMode ? "dark" : "light"} mode.`
+              : "System follows your device setting."}
           </p>
         </fieldset>
 
@@ -194,7 +190,7 @@ export function AppearanceSection() {
         >
           <legend className="settings-subheading">Base theme</legend>
           <p className="settings-description" id={`${id}-theme-help`}>
-            Pick the colors you want between seasonal events.
+            Used when no seasonal theme is active.
           </p>
 
           {isEventThemeActive && activeEvent && (
@@ -205,20 +201,23 @@ export function AppearanceSection() {
             >
               <SettingsIcon name="calendar" size={23} aria-hidden="true" />
               <div>
-                <p className="settings-event-notice-title">
-                  On screen: {activeEvent.name}
+                <p
+                  className="settings-event-notice-title"
+                  id={`${id}-current-event`}
+                >
+                  Current theme: {activeEvent.name}
                 </p>
-                <p>
+                <p id={`${id}-seasonal-status`}>
                   {isDevelopmentPreview
-                    ? `${savedThemeName} is saved as your base theme. A development preview is overriding the calendar.`
-                    : `${savedThemeName} is saved and returns after ${eventEnd}. You can choose a different base theme below.`}
+                    ? `Preview overrides the calendar. Base theme: ${savedThemeName}.`
+                    : `${savedThemeName} returns after ${eventEnd}.`}
                 </p>
                 <button
                   type="button"
                   className="settings-button settings-event-action"
                   onClick={() => changeSeasonalTheme(true)}
                 >
-                  Use my base theme now
+                  Use base theme
                   <SettingsIcon
                     name="arrow-right"
                     size={16}
@@ -246,7 +245,7 @@ export function AppearanceSection() {
         <div className="settings-seasonal-group">
           <SettingRow
             label="Seasonal event themes"
-            description="Change colors for FFXIV seasonal events, then return to your base theme."
+            description="Use FFXIV event themes automatically."
           >
             <ToggleSwitch
               buttonRef={seasonalSwitchRef}
@@ -255,63 +254,69 @@ export function AppearanceSection() {
               onChange={() =>
                 setEventThemingDisabled(!settings.eventThemingDisabled)
               }
-              describedBy={`${id}-seasonal-status`}
+              describedBy={
+                isEventThemeActive && activeEvent
+                  ? `${id}-current-event ${id}-seasonal-status`
+                  : `${id}-seasonal-status`
+              }
             />
           </SettingRow>
 
-          <div
-            className="settings-seasonal-status"
-            id={`${id}-seasonal-status`}
-          >
-            <SettingsIcon name="calendar" size={19} aria-hidden="true" />
-            <div>
-              <p>
-                {isEventThemeActive && activeEvent
-                  ? `${activeEvent.name} is active${isDevelopmentPreview ? " as a development preview" : ` through ${eventEnd}`}.`
-                  : settings.eventThemingDisabled
-                    ? `Seasonal themes are off. ${savedThemeName} stays active.`
-                    : "Your base theme is active between seasonal events."}
-              </p>
-              {activeEvent && !isEventThemeActive && (
-                <>
-                  <p>You can use the {activeEvent.name} theme now.</p>
-                  <button
-                    type="button"
-                    className="settings-button settings-event-action"
-                    onClick={() => changeSeasonalTheme(false)}
-                  >
-                    Use {activeEvent.name} theme
-                    <SettingsIcon
-                      name="arrow-right"
-                      size={16}
-                      aria-hidden="true"
-                    />
-                  </button>
-                </>
-              )}
-              {!activeEvent && nextEvent && (
+          {!isEventThemeActive && (
+            <div
+              className="settings-seasonal-status"
+              id={`${id}-seasonal-status`}
+            >
+              <SettingsIcon name="calendar" size={19} aria-hidden="true" />
+              <div>
                 <p>
-                  Next on the theme calendar: <strong>{nextEvent.name}</strong>,{" "}
-                  {formatDateRange(
-                    nextEvent.dateRange.startMonth,
-                    nextEvent.dateRange.startDay,
-                    nextEvent.dateRange.endMonth,
-                    nextEvent.dateRange.endDay,
-                  )}
-                  .
+                  {settings.eventThemingDisabled
+                    ? `${savedThemeName} is active.`
+                    : "No seasonal event is active."}
                 </p>
-              )}
+                {activeEvent && !isEventThemeActive && (
+                  <>
+                    <p>
+                      {activeEvent.name}
+                      {isDevelopmentPreview
+                        ? " preview"
+                        : ` · through ${eventEnd}`}
+                    </p>
+                    <button
+                      type="button"
+                      className="settings-button settings-event-action"
+                      onClick={() => changeSeasonalTheme(false)}
+                    >
+                      Use {activeEvent.name} theme
+                      <SettingsIcon
+                        name="arrow-right"
+                        size={16}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </>
+                )}
+                {!activeEvent && nextEvent && (
+                  <p>
+                    Next event: <strong>{nextEvent.name}</strong>,{" "}
+                    {formatDateRange(
+                      nextEvent.dateRange.startMonth,
+                      nextEvent.dateRange.startDay,
+                      nextEvent.dateRange.endMonth,
+                      nextEvent.dateRange.endDay,
+                    )}
+                    .
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <Collapsible
             icon="calendar"
             label="Seasonal theme calendar"
             value={`${SEASONAL_EVENTS.length} events`}
           >
-            <p className="settings-help settings-calendar-help">
-              MogTome uses these dates for its seasonal themes each year.
-            </p>
             <ul className="settings-event-calendar">
               {SEASONAL_EVENTS.map((event) => {
                 const isCurrent = activeEvent?.id === event.id;
@@ -367,7 +372,7 @@ export function AppearanceSection() {
                 }
                 aria-describedby={`${id}-event-dev-help`}
               >
-                <option value="auto">Follow the real date</option>
+                <option value="auto">Follow calendar</option>
                 <option value="none">No active event</option>
                 {SEASONAL_EVENTS.map((event) => (
                   <option key={event.id} value={event.id}>
@@ -376,8 +381,7 @@ export function AppearanceSection() {
                 ))}
               </select>
               <p className="settings-help" id={`${id}-event-dev-help`}>
-                Overrides the calendar for development. Seasonal themes must be
-                on to display an event preview.
+                Requires seasonal event themes to be on.
               </p>
             </div>
           </details>

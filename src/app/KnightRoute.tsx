@@ -124,7 +124,6 @@ export function KnightRoute({ children }: KnightRouteProps) {
             />
             <img src={wizardMoogle} alt="A moogle wizard guarding the page" />
           </div>
-          <figcaption>On watch, kupo.</figcaption>
           <span className="knight-access-seal" aria-hidden="true">
             <InkIcon name="shield" size={25} />
           </span>

@@ -99,9 +99,7 @@ describe("Settings navigation", () => {
     expect(document.documentElement).toHaveClass("large-text");
     expect(screen.getByRole("switch", { name: "Extra dark" })).toBeEnabled();
     await user.click(screen.getByRole("tab", { name: /^Account/ }));
-    expect(
-      screen.getByRole("heading", { name: "You're signed out." }),
-    ).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Signed out" })).toBeVisible();
     await user.click(screen.getByRole("tab", { name: /^Appearance/ }));
     expect(screen.getByRole("radio", { name: "Dark" })).toBeChecked();
     expect(

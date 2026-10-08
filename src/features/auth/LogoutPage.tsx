@@ -5,24 +5,9 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 
 import wavingMoogle from "@/assets/moogles/4478593_moogle-moogle-ff-hd-png-download.webp";
 
-const FAREWELL_MESSAGES = [
-  "See you later!",
-  "See you in-game!",
-  "Until next time!",
-  "Catch you later!",
-  "See you around!",
-];
-
-function getRandomFarewell(): string {
-  return FAREWELL_MESSAGES[
-    Math.floor(Math.random() * FAREWELL_MESSAGES.length)
-  ];
-}
-
 export function Logout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [farewell] = useState(getRandomFarewell);
   const [phase, setPhase] = useState<"showing" | "fading">("showing");
 
   // Capture the user once on mount so the farewell keeps their name after
@@ -89,13 +74,10 @@ export function Logout() {
           </div>
 
           <div className="animate-[fadeSlideIn_0.4s_ease-out_0.2s_both]">
-            <h2 className="font-display text-xl font-bold text-[var(--text)] mb-2">
+            <h2 className="font-display text-xl font-bold text-[var(--text)] mb-4">
               Goodbye
               {displayUser ? `, ${displayUser.memberName.split(" ")[0]}` : ""}!
             </h2>
-            <p className="text-[var(--text-muted)] font-soft text-sm mb-4">
-              {farewell}
-            </p>
           </div>
 
           <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-subtle)] animate-[fadeIn_0.3s_ease-out_0.5s_both]">

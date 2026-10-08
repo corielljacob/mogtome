@@ -429,11 +429,6 @@
   text-decoration: underline;
   text-underline-offset: 0.3em;
 }
-.family-footer > p {
-  margin: 0;
-  color: var(--nook-muted);
-  font: 400 calc(23 * var(--family-type-unit))/1.4 var(--font-script);
-}
 .family-footer > .family-art-credit {
   flex-basis: 100%;
   justify-content: center;
@@ -534,12 +529,6 @@
   }
   .family-footer {
     gap: 0.25rem 1rem;
-  }
-  .family-footer > p {
-    flex-basis: 100%;
-    order: 3;
-    text-align: center;
-    font-size: 1.25rem;
   }
 }
 @media (min-width: 375px) and (max-width: 640px) {

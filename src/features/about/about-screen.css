@@ -147,18 +147,6 @@
 .about-welcome-note .about-button {
   margin-top: 10px;
 }
-.about-note-signature {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 7px;
-  margin-top: 17px;
-  color: inherit;
-  font: 400 1.25rem/1.3 var(--font-script);
-}
-.about-note-signature svg {
-  color: var(--scene-leaf);
-}
 .about-keepsake {
   position: relative;
   width: min(100%, 275px);
@@ -578,11 +566,6 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.about-footer > p {
-  margin: 0;
-  color: var(--nook-muted);
-  font: 400 1.375rem/1.4 var(--font-script);
-}
 .about-screen :is(a, button, input, select, textarea):focus-visible,
 #about-crew-title:focus-visible {
   outline: 2px solid var(--ui-focus);
@@ -595,9 +578,6 @@
   }
   .about-welcome-note {
     padding: 25px 25px 22px;
-  }
-  .about-note-signature {
-    font-size: 1.1rem;
   }
   .about-life-grid {
     gap: 18px;
@@ -660,9 +640,6 @@
   .about-location svg {
     width: 16px;
     height: 16px;
-  }
-  .about-note-signature {
-    font-size: 1.25rem;
   }
   .about-keepsake {
     width: 220px;
@@ -756,11 +733,6 @@
   }
   .about-next strong {
     font-size: 1.5rem;
-  }
-  .about-footer > p {
-    order: 3;
-    flex-basis: 100%;
-    text-align: center;
   }
 }
 .high-contrast .about-screen {

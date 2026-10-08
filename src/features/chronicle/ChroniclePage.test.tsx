@@ -424,7 +424,7 @@ describe("Chronicle page states", () => {
       screen.getByText("Catching up on the FC…").closest('[aria-busy="true"]'),
     ).not.toBeNull();
     expect(
-      screen.queryByRole("heading", { name: "The first page is waiting" }),
+      screen.queryByRole("heading", { name: "No activity yet" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -439,7 +439,7 @@ describe("Chronicle page states", () => {
     await user.click(within(error).getByRole("button", { name: "Try again" }));
     expect(model.refetch).toHaveBeenCalledOnce();
     expect(
-      screen.queryByRole("heading", { name: "The first page is waiting" }),
+      screen.queryByRole("heading", { name: "No activity yet" }),
     ).not.toBeInTheDocument();
   });
 
@@ -528,7 +528,7 @@ describe("Chronicle page states", () => {
     );
     expect(model.handleClearAll).toHaveBeenCalledOnce();
     expect(
-      screen.queryByRole("heading", { name: "The first page is waiting" }),
+      screen.queryByRole("heading", { name: "No activity yet" }),
     ).not.toBeInTheDocument();
   });
 
@@ -536,7 +536,7 @@ describe("Chronicle page states", () => {
     render(<ChronicleView model={createEmptyModel()} />);
 
     expect(
-      screen.getByRole("heading", { name: "The first page is waiting" }),
+      screen.getByRole("heading", { name: "No activity yet" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText("FC activity will appear here as it happens."),
@@ -640,7 +640,7 @@ describe("Chronicle page states", () => {
       expect(
         hasNextPage
           ? screen.getByRole("button", { name: "Load older entries" })
-          : screen.getByRole("heading", { name: "The first page is waiting" }),
+          : screen.getByRole("heading", { name: "No activity yet" }),
       ).toHaveFocus();
       expect(model.loadMore).toHaveBeenCalledOnce();
       expect(screen.queryByText(hiddenNameChange.text)).not.toBeInTheDocument();

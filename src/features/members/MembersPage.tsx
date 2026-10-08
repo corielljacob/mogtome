@@ -10,13 +10,11 @@ import { FamilyAlbumArt } from "./FamilyAlbumArt";
 import { scrollAppToTop } from "@/shared/lib/scroll";
 import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { useTheme } from "@/shared/contexts/ThemeContext";
-import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
-import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { NookPressedFlower } from "@/features/home/components/NookPressedFlower";
 import "./family-screen.css";
 
 export function Members() {
-  const { isDarkMode, activeEvent, isEventThemeActive } = useTheme();
+  const { isDarkMode } = useTheme();
   const {
     searchInputRef,
     searchQuery,
@@ -81,11 +79,7 @@ export function Members() {
 
   return (
     <div className="family-screen" data-mode={isDarkMode ? "dark" : "light"}>
-      <NookRoomDecor isDark={isDarkMode} />
       <div className="family-content">
-        <NookFairyLights
-          eventId={isEventThemeActive ? (activeEvent?.id ?? null) : null}
-        />
         <header className="family-cover">
           <div className="family-cover-copy">
             <p className="family-eyebrow">
@@ -339,7 +333,6 @@ export function Members() {
             <FamilyIcon name="arrow-left" size={18} />
             Back home
           </Link>
-          <p>See you in game, kupo.</p>
           <button onClick={scrollAppToTop}>
             Back to top
             <FamilyIcon name="up" size={18} />

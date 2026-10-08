@@ -135,6 +135,6 @@ describe("Accessibility settings", () => {
     ).toBe("deuteranopia");
     await user.selectOptions(select, "none");
     expect(document.documentElement).not.toHaveClass("colorblind-deuteranopia");
-    expect(select).toHaveAccessibleDescription("Default colors");
+    expect(select).not.toHaveAttribute("aria-describedby");
   });
 });

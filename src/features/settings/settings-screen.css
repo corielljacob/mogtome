@@ -29,15 +29,6 @@
   gap: 24px;
   margin: 0 5px 32px;
 }
-.settings-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 11px;
-  color: var(--nook-muted);
-  font-size: 0.6875rem;
-  line-height: 1.6;
-}
 .settings-masthead h1 {
   display: flex;
   align-items: center;
@@ -50,12 +41,6 @@
 .settings-masthead h1 svg {
   color: var(--scene-rose);
   transform: rotate(8deg);
-}
-.settings-masthead h1 + p {
-  margin: 11px 0 0;
-  color: var(--nook-muted);
-  font-size: 0.8125rem;
-  line-height: 1.7;
 }
 .settings-home-link {
   display: inline-flex;
@@ -77,9 +62,6 @@
 }
 .settings-sidebar {
   align-self: stretch;
-  min-width: 0;
-}
-.settings-sidebar-details {
   min-width: 0;
 }
 .settings-panels {
@@ -129,40 +111,12 @@
   font-weight: 600;
   line-height: 1.6;
 }
-.settings-nav small {
-  display: block;
-  margin-top: 2px;
-  font-size: 0.6875rem;
-  line-height: 1.5;
-}
 .settings-nav-arrow {
   margin-left: auto;
   opacity: 0;
 }
 .settings-nav [aria-selected="true"] .settings-nav-arrow {
   opacity: 1;
-}
-.settings-browser-note {
-  display: flex;
-  gap: 10px;
-  padding: 22px 13px;
-  margin-top: 12px;
-  color: var(--nook-muted);
-}
-.settings-browser-note > svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-.settings-browser-note strong {
-  color: var(--nook-text);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.settings-browser-note p {
-  margin: 6px 0 0;
-  color: inherit;
-  font-size: 0.6875rem;
-  line-height: 1.8;
 }
 .settings-room-preview {
   position: relative;
@@ -476,15 +430,6 @@
 .settings-disclosure-content[hidden] {
   display: none;
 }
-.settings-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin: 35px 0 6px;
-  color: var(--nook-muted);
-  font: 400 0.75rem/1.7 var(--font-navigation);
-}
 .settings-screen
   :is(button, a, input, select, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--ui-focus);
@@ -599,9 +544,6 @@
   .settings-sidebar {
     display: contents;
   }
-  .settings-sidebar-details {
-    order: 2;
-  }
   .settings-panels {
     order: 1;
     scroll-margin-top: calc(
@@ -626,32 +568,8 @@
   .settings-nav strong {
     font-size: 0.75rem;
   }
-  .settings-nav small,
   .settings-room-preview {
     display: none;
-  }
-  .settings-browser-note {
-    align-items: center;
-    margin: 13px 2px 0;
-    padding: 0;
-    gap: 8px;
-  }
-  .settings-browser-note > svg {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-  }
-  .settings-browser-note strong {
-    display: none;
-  }
-  .settings-browser-note p {
-    margin: 0;
-    font-size: 0.6875rem;
-    line-height: 1.65;
-  }
-  .settings-footer {
-    margin-top: 27px;
-    font-size: 0.6875rem;
   }
 }
 @media (max-width: 420px) {
@@ -668,9 +586,6 @@
   }
   .settings-masthead h1 {
     font-size: 2.4rem;
-  }
-  .settings-masthead h1 + p {
-    font-size: 0.75rem;
   }
   .settings-home-link {
     min-height: 36px;
@@ -697,13 +612,6 @@
   }
   .settings-toggle-state {
     display: none;
-  }
-  .settings-footer {
-    align-items: flex-start;
-    text-align: center;
-  }
-  .settings-footer svg {
-    flex-shrink: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
