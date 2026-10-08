@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { membersApi } from "@/shared/api/members";
+import { staffQuery } from "@/shared/api/memberQueries";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { FC_RANKS, type StaffMember } from "@/shared/types";
@@ -29,11 +29,8 @@ export function About() {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   useStickyToolbar(rosterRef, toolbarRef);
-  const { data, isLoading, isError, isFetching, refetch } = useQuery({
-    queryKey: ["staff"],
-    queryFn: () => membersApi.getStaff(),
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading, isError, isFetching, refetch } =
+    useQuery(staffQuery);
   const currentUserName = isAuthenticated ? user?.memberName : undefined;
   const canEditOwn = isAuthenticated && user?.hasKnighthood === true;
   const staff = useMemo(
