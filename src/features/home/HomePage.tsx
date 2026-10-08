@@ -1,50 +1,16 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Heart, Palette } from "lucide-react";
+import { ArrowRight, ExternalLink, Heart, Palette } from "lucide-react";
 import { useTheme, THEME_DEFINITIONS } from "@/shared/contexts/ThemeContext";
 import { NookIllustration } from "./components/NookIllustration";
+import { HomeEntrance } from "./components/HomeEntrance";
 import { NookAppliqueBacking } from "./components/NookAppliqueBacking";
-import { NookMoogle } from "./components/NookMoogle";
-import { NookPressedFlower } from "./components/NookPressedFlower";
+import { NookMoogleInteraction } from "./components/NookMoogleInteraction";
 import { NookHolidayKeepsake } from "./components/NookHolidayKeepsake";
 import { NookFairyLights } from "./components/NookFairyLights";
-import { NookRoomDecor } from "./components/NookRoomDecor";
-import { NookWallHanging } from "./components/NookWallHanging";
-import {
-  NookArrCrystalCharm,
-  NookArrWayfinder,
-} from "./components/NookArrKeepsakes";
-import {
-  NookHeavenswardBanner,
-  NookHeavenswardSeal,
-} from "./components/NookHeavenswardKeepsakes";
-import {
-  NookStormbloodBanner,
-  NookStormbloodCharm,
-} from "./components/NookStormbloodKeepsakes";
-import {
-  NookShadowbringersBanner,
-  NookShadowbringersCharm,
-} from "./components/NookShadowbringersKeepsakes";
-import {
-  NookEndwalkerBanner,
-  NookEndwalkerCharm,
-} from "./components/NookEndwalkerKeepsakes";
-import {
-  NookDawntrailNoticePin,
-  NookDawntrailCharm,
-} from "./components/NookDawntrailKeepsakes";
-import {
-  NookEvercoldBanner,
-  NookEvercoldCharm,
-} from "./components/NookEvercoldKeepsakes";
+import { NookFloorDecor, NookRoomDecor } from "./components/NookRoomDecor";
+import { NookThemeKeepsake } from "./components/NookThemeKeepsake";
 import { NookWelcomeHeading } from "./components/NookWelcomeHeading";
-import { NookHalloweenRoom } from "./components/NookHalloweenRoom";
-import { NookHalloweenHearth } from "./components/NookHalloweenHearth";
-import {
-  NookHalloweenBadge,
-  NookHalloweenNote,
-} from "./components/NookHalloweenKeepsakes";
 import {
   NookPaperclip,
   NookPhotoCorners,
@@ -59,98 +25,69 @@ import "./nook-endwalker.css";
 import "./nook-dawntrail.css";
 import "./nook-evercold.css";
 
+const NookHalloweenDetails = lazy(
+  () => import("./components/NookHalloweenDetails"),
+);
+
+function HalloweenBadgeFallback() {
+  return (
+    <p className="nook-halloween-badge">
+      <svg viewBox="-3 -2 37 34" aria-hidden="true" focusable="false" />
+      <span className="nook-halloween-badge-label">All Saints’ Wake</span>
+      <span className="nook-halloween-badge-star" aria-hidden="true">
+        ✦
+      </span>
+    </p>
+  );
+}
+
 export function Home() {
-  const [boops, setBoops] = useState(0);
-  const [isBooping, setIsBooping] = useState(false);
-  useEffect(() => {
-    if (boops === 0) return;
-    const settle = window.setTimeout(() => setIsBooping(false), 1800);
-    return () => window.clearTimeout(settle);
-  }, [boops]);
   const { activeEvent, isEventThemeActive, settings, isDarkMode } = useTheme();
   const event = isEventThemeActive ? activeEvent : null;
   const isHalloween = event?.id === "all-saints-wake";
-  const isArr = !event && settings.colorTheme === "arr";
-  const isHeavensward = !event && settings.colorTheme === "heavensward";
-  const isStormblood = !event && settings.colorTheme === "stormblood";
-  const isShadowbringers = !event && settings.colorTheme === "shadowbringers";
-  const isEndwalker = !event && settings.colorTheme === "endwalker";
-  const isDawntrail = !event && settings.colorTheme === "dawntrail";
-  const isEvercold = !event && settings.colorTheme === "evercold";
+  const keepsakeTheme = event ? null : settings.colorTheme;
   const themeName = THEME_DEFINITIONS.find(
     (theme) => theme.id === settings.colorTheme,
   )?.name;
 
   return (
-    <div
+    <HomeEntrance
       className="home-screen"
       data-mode={isDarkMode ? "dark" : "light"}
       data-scene={event?.id ?? settings.colorTheme}
       data-holiday={event ? "true" : undefined}
     >
-      <NookRoomDecor isDark={isDarkMode} />
-      {isHalloween && <NookHalloweenRoom />}
+      <NookRoomDecor isDark={isDarkMode} includeFloor={false} />
+      {isHalloween && (
+        <Suspense fallback={null}>
+          <NookHalloweenDetails placement="room" />
+        </Suspense>
+      )}
       <NookFairyLights eventId={event?.id ?? null} />
       <div className="nook-layout">
         <section className="home-nook" aria-label="Welcome to Kupo Life">
-          {isHalloween && <NookHalloweenHearth />}
-          {isArr ? (
-            <NookArrWayfinder />
-          ) : isHeavensward ? (
-            <NookHeavenswardBanner />
-          ) : isStormblood ? (
-            <NookStormbloodBanner />
-          ) : isShadowbringers ? (
-            <NookShadowbringersBanner />
-          ) : isEndwalker ? (
-            <NookEndwalkerBanner />
-          ) : isDawntrail ? (
-            <NookDawntrailNoticePin />
-          ) : isEvercold ? (
-            <NookEvercoldBanner />
-          ) : (
-            <NookWallHanging />
-          )}
+          <NookThemeKeepsake theme={keepsakeTheme} placement="wall" />
           <div className="nook-window-scene">
-            <div className="nook-illustration-frame">
+            <NookMoogleInteraction eventId={event?.id ?? null}>
               <NookAppliqueBacking />
               <NookIllustration
                 isDark={isDarkMode}
                 eventId={event?.id ?? null}
                 colorTheme={settings.colorTheme}
               />
-              <button
-                className="nook-moogle"
-                onClick={() => {
-                  setIsBooping(true);
-                  setBoops((count) => count + 1);
-                }}
-                aria-label="Boop the moogle"
-              >
-                <NookMoogle
-                  key={boops}
-                  className={isBooping ? "is-booped" : undefined}
-                  booped={isBooping}
-                  eventId={event?.id ?? null}
-                />
-              </button>
-            </div>
-            <p className="nook-moogle-note" role="status" aria-live="polite">
-              {isBooping ? (isHalloween ? "Boo, kupo!" : "kupo!") : ""}
-            </p>
+            </NookMoogleInteraction>
           </div>
 
           <header className="nook-welcome">
             <p className="nook-eyebrow">
               Kupo Life <span>·</span> Zalera <span>·</span> Crystal
             </p>
-            {isHalloween && <NookHalloweenBadge />}
-            <NookWelcomeHeading isHalloween={isHalloween} />
             {isHalloween && (
-              <p className="nook-halloween-welcome">
-                The ghosts are friendly, kupo.
-              </p>
+              <Suspense fallback={<HalloweenBadgeFallback />}>
+                <NookHalloweenDetails placement="badge" />
+              </Suspense>
             )}
+            <NookWelcomeHeading />
           </header>
 
           <div className="nook-keepsakes">
@@ -180,48 +117,19 @@ export function Home() {
               </span>
             </Link>
             <div className="nook-notes">
-              <p className="nook-wall-wish" aria-hidden="true">
-                <i className="nook-note-pin" />
-                <span>
-                  {isHalloween ? "Happy haunting!" : "See you in game."}
-                </span>
-                <svg viewBox="0 0 96 12" fill="none" focusable="false">
-                  <path
-                    d="M2 6q18-4 35 0m22 0q17-4 35 0M48 1l1.5 3.5L53 6l-3.5 1.5L48 11l-1.5-3.5L43 6l3.5-1.5Z"
-                    stroke="currentColor"
-                    strokeWidth=".8"
-                  />
-                </svg>
-              </p>
               <Link to="/chronicle" className="nook-letter">
                 <span className="nook-letter-fold" aria-hidden="true" />
                 {isHalloween ? (
-                  <NookHalloweenNote />
-                ) : isArr ? (
-                  <NookArrCrystalCharm />
-                ) : isHeavensward ? (
-                  <NookHeavenswardSeal />
-                ) : isStormblood ? (
-                  <NookStormbloodCharm />
-                ) : isShadowbringers ? (
-                  <NookShadowbringersCharm />
-                ) : isEndwalker ? (
-                  <NookEndwalkerCharm />
-                ) : isDawntrail ? (
-                  <NookDawntrailCharm />
-                ) : isEvercold ? (
-                  <NookEvercoldCharm />
+                  <Suspense fallback={null}>
+                    <NookHalloweenDetails placement="letter" />
+                  </Suspense>
                 ) : (
-                  <NookPressedFlower />
+                  <NookThemeKeepsake theme={keepsakeTheme} placement="letter" />
                 )}
                 {!isHalloween &&
-                  !isArr &&
-                  !isHeavensward &&
-                  !isStormblood &&
-                  !isShadowbringers &&
-                  !isEndwalker &&
-                  !isDawntrail &&
-                  !isEvercold && <NookPaperclip />}
+                  (!keepsakeTheme || keepsakeTheme === "pom-pom") && (
+                    <NookPaperclip />
+                  )}
                 <span className="nook-letter-title">The Chronicle</span>
                 <span className="nook-letter-copy">What’s new in the FC.</span>
                 <span className="nook-letter-bottom">
@@ -237,22 +145,41 @@ export function Home() {
           </div>
         </section>
         <footer className="home-footer">
+          <div className="home-floor-decor" aria-hidden="true">
+            <NookFloorDecor
+              isDark={isDarkMode}
+              includeReadingCorner={!isHalloween}
+            />
+            {isHalloween && (
+              <Suspense fallback={null}>
+                <NookHalloweenDetails placement="hearth" />
+              </Suspense>
+            )}
+          </div>
           <Link
             to="/settings"
             className="home-appearance"
             aria-label={`Change appearance. Current ${event ? "holiday" : "theme"}: ${event?.name ?? themeName}`}
           >
             <Palette aria-hidden="true" />
-            <span>{event?.name ?? "Appearance"}</span>
-            <i />
-            <i />
-            <i />
+            <span>Appearance</span>
+            <span className="home-palette-preview" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="home-appearance-theme">
+              {event?.name ?? themeName}
+            </span>
           </Link>
-          <a href="/images/nook/SOURCES.md" target="_blank" rel="noreferrer">
-            Moogle art © SQUARE ENIX · credits
-          </a>
+          <div className="home-footer-credits">
+            <span>Moogle art © SQUARE ENIX</span>
+            <a href="/images/nook/SOURCES.md" target="_blank" rel="noreferrer">
+              Art credits <ExternalLink aria-hidden="true" />
+            </a>
+          </div>
         </footer>
       </div>
-    </div>
+    </HomeEntrance>
   );
 }

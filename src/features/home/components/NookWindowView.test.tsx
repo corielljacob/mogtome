@@ -1,19 +1,61 @@
-import { render } from "@testing-library/react";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { act, render } from "@testing-library/react";
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { NookWindowView } from "./NookWindowView";
+import { warmWindowThemes } from "./windowTestUtils";
+import { observeHomeAnimationVisibility } from "./homeAnimationVisibility";
 
-vi.mock("./NookShiroganeView", () => ({ NookShiroganeView: () => null }));
+beforeAll(
+  () =>
+    warmWindowThemes([
+      "arr",
+      "heavensward",
+      "stormblood",
+      "shadowbringers",
+      "endwalker",
+      "dawntrail",
+      "evercold",
+    ]),
+  20000,
+);
+
+vi.mock("./NookLandscape", () => ({
+  NookLandscape: ({
+    scene,
+    night,
+    className,
+  }: {
+    scene: string;
+    night?: boolean;
+    className?: string;
+  }) => {
+    const labels: Record<string, string> = {
+      heavensward: "ishgard",
+      stormblood: "ala-mhigo",
+      shadowbringers: "crystarium",
+      dawntrail: "tuliyollal",
+      evercold: "evercold",
+    };
+    return (
+      <img
+        className={className}
+        alt=""
+        data-testid={
+          scene === "endwalker"
+            ? "lunar-surface"
+            : labels[scene]
+              ? `${labels[scene]}-${night ? "night" : "day"}`
+              : undefined
+        }
+      />
+    );
+  },
+}));
 vi.mock("./NookSkyEmbroidery", () => ({ NookSkyEmbroidery: () => null }));
 vi.mock("./NookHeavenswardSkyEmbroidery", () => ({
   NookHeavenswardSkyEmbroidery: () => null,
 }));
 vi.mock("./NookArrView", () => ({
   NookArrView: () => <svg data-testid="mothercrystal" />,
-}));
-vi.mock("./NookHeavenswardView", () => ({
-  NookHeavenswardView: ({ isDark }: { isDark: boolean }) => (
-    <g data-testid={isDark ? "ishgard-night" : "ishgard-day"} />
-  ),
 }));
 vi.mock("./NookHeavenswardWeather", () => ({
   NookHeavenswardSky: () => <svg data-testid="ishgard-sky" />,
@@ -22,11 +64,6 @@ vi.mock("./NookHeavenswardWeather", () => ({
 
 vi.mock("./NookStormbloodSkyEmbroidery", () => ({
   NookStormbloodSkyEmbroidery: () => null,
-}));
-vi.mock("./NookStormbloodView", () => ({
-  NookStormbloodView: ({ isDark }: { isDark: boolean }) => (
-    <g data-testid={isDark ? "ala-mhigo-night" : "ala-mhigo-day"} />
-  ),
 }));
 vi.mock("./NookStormbloodAtmosphere", () => ({
   NookStormbloodSky: () => <svg data-testid="ala-mhigo-sky" />,
@@ -44,11 +81,6 @@ vi.mock("./NookShadowbringersLightParting", () => ({
     </div>
   ),
 }));
-vi.mock("./NookShadowbringersView", () => ({
-  NookShadowbringersView: ({ isDark }: { isDark: boolean }) => (
-    <g data-testid={isDark ? "crystarium-night" : "crystarium-day"} />
-  ),
-}));
 vi.mock("./NookShadowbringersAtmosphere", () => ({
   NookShadowbringersSky: () => <svg data-testid="crystarium-sky" />,
   NookShadowbringersLeaves: () => <svg data-testid="crystarium-weather" />,
@@ -56,11 +88,12 @@ vi.mock("./NookShadowbringersAtmosphere", () => ({
 vi.mock("./NookEndwalkerSkyEmbroidery", () => ({
   NookEndwalkerSkyEmbroidery: () => null,
 }));
-vi.mock("./NookEndwalkerView", () => ({
-  NookEndwalkerView: () => <g data-testid="lunar-surface" />,
-}));
 
 class Playback {
+  constructor(target: Element) {
+    this.effect = { target, getComputedTiming: () => ({ endTime: 4800 }) };
+  }
+  effect: { target: Element; getComputedTiming: () => { endTime: number } };
   currentTime = 0;
   playbackRate = 1;
   playState: AnimationPlayState = "running";
@@ -90,7 +123,7 @@ beforeEach(() => {
   Object.defineProperty(Element.prototype, "animate", {
     configurable: true,
     value: function (this: Element) {
-      const playback = new Playback();
+      const playback = new Playback(this);
       tracks.push({ element: this, playback });
       return playback as unknown as Animation;
     },
@@ -138,10 +171,59 @@ it.each(["starlight", "all-saints-wake"] as const)(
 );
 
 afterEach(() => {
+  vi.restoreAllMocks();
   if (originalAnimate) {
     Object.defineProperty(Element.prototype, "animate", originalAnimate);
   } else {
     Reflect.deleteProperty(Element.prototype, "animate");
+  }
+});
+
+it("preserves a hidden transition's playback intent when a new scene rebinds its tracks", async () => {
+  const view = (holiday = false, dark = false) => (
+    <div className="nook-window-scene">
+      <NookWindowView
+        isDark={dark}
+        eventId={holiday ? "all-saints-wake" : null}
+      />
+    </div>
+  );
+  const { container, rerender } = render(view());
+  Object.defineProperty(container, "getAnimations", {
+    value: () => tracks.map(({ playback }) => playback),
+  });
+  const visibility = vi.spyOn(document, "visibilityState", "get");
+  const stop = observeHomeAnimationVisibility(container);
+  try {
+    rerender(view(false, true));
+    tracks.forEach(({ playback }) => {
+      playback.currentTime = 1200;
+    });
+    visibility.mockReturnValue("hidden");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(
+      tracks.every(({ playback }) => playback.playState === "paused"),
+    ).toBe(true);
+    const oldTracks = tracks.splice(0);
+
+    await act(async () => rerender(view(true, true)));
+
+    expect(tracks.length).toBeGreaterThan(0);
+    oldTracks.forEach(({ playback }) =>
+      expect(playback.cancel).toHaveBeenCalledOnce(),
+    );
+    tracks.forEach(({ playback }) => {
+      expect(playback.currentTime).toBe(1200);
+      expect(playback.playState).toBe("paused");
+    });
+    visibility.mockReturnValue("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    tracks.forEach(({ playback }) => {
+      expect(playback.currentTime).toBe(1200);
+      expect(playback.playState).toBe("running");
+    });
+  } finally {
+    stop();
   }
 });
 
@@ -225,12 +307,13 @@ it.each([
   ["stormblood", "ala-mhigo"],
 ] as const)(
   "preserves the %s day cycle and gives holidays priority over its atmosphere",
-  (theme, scene) => {
-    const { container, getByTestId, queryByTestId, rerender } = render(
-      <NookWindowView isDark={false} eventId={null} colorTheme={theme} />,
-    );
-    const weather = getByTestId(`${scene}-weather`);
-    const sky = getByTestId(`${scene}-sky`);
+  async (theme, scene) => {
+    const { container, getByTestId, findByTestId, queryByTestId, rerender } =
+      render(
+        <NookWindowView isDark={false} eventId={null} colorTheme={theme} />,
+      );
+    const weather = await findByTestId(`${scene}-weather`);
+    const sky = await findByTestId(`${scene}-sky`);
     const day = getByTestId(`${scene}-day`);
     const night = getByTestId(`${scene}-night`);
     expect(weather.closest(".nook-cycle-landscape")).toBeNull();
@@ -282,18 +365,19 @@ it.each([
   },
 );
 
-it("preserves the parting Light phase when switching themes or yielding to a holiday", () => {
-  const { container, getByTestId, queryByTestId, rerender } = render(
-    <NookWindowView
-      isDark={false}
-      eventId={null}
-      colorTheme="shadowbringers"
-    />,
-  );
+it("preserves the parting Light phase when switching themes or yielding to a holiday", async () => {
+  const { container, getByTestId, findByTestId, queryByTestId, rerender } =
+    render(
+      <NookWindowView
+        isDark={false}
+        eventId={null}
+        colorTheme="shadowbringers"
+      />,
+    );
   const curtain = getByTestId("parting-light");
   const city = getByTestId("crystarium-day");
   const nightCity = getByTestId("crystarium-night");
-  const weather = getByTestId("crystarium-weather");
+  const weather = await findByTestId("crystarium-weather");
   expect(
     curtain.compareDocumentPosition(city) & Node.DOCUMENT_POSITION_FOLLOWING,
   ).toBeTruthy();

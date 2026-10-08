@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 interface NookThreadProps {
   d: string;
   color: string;
@@ -22,6 +24,23 @@ export function NookThread({
   dasharray,
   relief = 1,
 }: NookThreadProps) {
+  // Long embroidered surfaces can contain thousands of stitches. Referencing
+  // one path keeps the three paint layers from parsing the same geometry again.
+  // Short seams stay inline, where references would cost more than the path.
+  if (d.length > 256) {
+    return (
+      <SharedThread
+        d={d}
+        color={color}
+        width={width}
+        shadow={shadow}
+        highlight={highlight}
+        opacity={opacity}
+        dasharray={dasharray}
+        relief={relief}
+      />
+    );
+  }
   return (
     <g
       fill="none"
@@ -45,6 +64,47 @@ export function NookThread({
         opacity=".4"
         // A little twist interrupts the sheen. Dashed seams keep their own
         // rhythm so the highlight never bridges a gap between stitches.
+        strokeDasharray={dasharray ?? "4.1 .8 2.3 1.1 6.2 .7"}
+        transform={`translate(${-0.16 * relief} ${-0.2 * relief})`}
+      />
+    </g>
+  );
+}
+
+function SharedThread({
+  d,
+  color,
+  width,
+  shadow,
+  highlight,
+  opacity,
+  dasharray,
+  relief,
+}: Required<Omit<NookThreadProps, "dasharray">> & { dasharray?: string }) {
+  const id = `${useId().replace(/:/g, "")}-thread`;
+  return (
+    <g
+      fill="none"
+      stroke={color}
+      strokeWidth={width}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeDasharray={dasharray}
+      opacity={opacity}
+    >
+      <use
+        href={`#${id}`}
+        stroke={shadow}
+        strokeWidth={width + 0.5 * relief}
+        opacity={0.29 * Math.min(relief, 1.4)}
+        transform={`translate(${0.25 * relief} ${0.45 * relief})`}
+      />
+      <path id={id} d={d} />
+      <use
+        href={`#${id}`}
+        stroke={highlight}
+        strokeWidth={width * 0.28}
+        opacity=".4"
         strokeDasharray={dasharray ?? "4.1 .8 2.3 1.1 6.2 .7"}
         transform={`translate(${-0.16 * relief} ${-0.2 * relief})`}
       />

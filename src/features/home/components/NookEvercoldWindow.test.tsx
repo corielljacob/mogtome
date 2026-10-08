@@ -1,18 +1,58 @@
 import { render } from "@testing-library/react";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { NookWindowView } from "./NookWindowView";
+import { warmWindowThemes } from "./windowTestUtils";
+
+beforeAll(
+  () =>
+    warmWindowThemes([
+      "arr",
+      "heavensward",
+      "stormblood",
+      "shadowbringers",
+      "endwalker",
+      "dawntrail",
+      "evercold",
+    ]),
+  20000,
+);
 
 const motion = vi.hoisted(() => ({ reduced: false }));
 vi.mock("@/shared/hooks/useReducedMotion", () => ({
   useReducedMotion: () => motion.reduced,
 }));
-vi.mock("./NookEvercoldView", () => ({
-  NookEvercoldView: ({ isDark }: { isDark: boolean }) => (
-    <g data-testid={isDark ? "evercold-night" : "evercold-day"} />
-  ),
+vi.mock("./NookLandscape", () => ({
+  NookLandscape: ({
+    scene,
+    night,
+    className,
+  }: {
+    scene: string;
+    night?: boolean;
+    className?: string;
+  }) => {
+    const labels: Record<string, string> = {
+      heavensward: "ishgard",
+      stormblood: "ala-mhigo",
+      shadowbringers: "crystarium",
+      dawntrail: "tuliyollal",
+      evercold: "evercold",
+    };
+    return (
+      <img
+        className={className}
+        alt=""
+        data-testid={
+          scene === "endwalker"
+            ? "lunar-surface"
+            : labels[scene]
+              ? `${labels[scene]}-${night ? "night" : "day"}`
+              : undefined
+        }
+      />
+    );
+  },
 }));
-vi.mock("./NookDawntrailView", () => ({ NookDawntrailView: () => null }));
-vi.mock("./NookShiroganeView", () => ({ NookShiroganeView: () => null }));
 
 class Playback {
   currentTime = 0;

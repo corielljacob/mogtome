@@ -1,5 +1,5 @@
 /* PERFORMANCE: Font import removed from CSS - loaded via <link> in HTML for better control */
-@import "tailwindcss";
+@import "tailwindcss" source("../../");
 
 /* Style layers, split out of what used to be one ~2000-line index.css.
  *

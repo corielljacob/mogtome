@@ -142,11 +142,6 @@
   color: #e8b877;
   font-size: 1.2em;
 }
-.nook-halloween-welcome {
-  margin: calc(18 * var(--layout-unit)) 0 0;
-  color: var(--nook-muted);
-  font: 400 calc(13 * var(--nook-type-unit))/1.6 var(--font-body);
-}
 .home-screen[data-scene="all-saints-wake"] .nook-welcome-heart {
   display: none;
 }
@@ -282,10 +277,6 @@
   }
   .home-screen[data-scene="all-saints-wake"] .nook-welcome h1::after {
     bottom: calc(-10 * var(--layout-unit));
-  }
-  .nook-halloween-welcome {
-    font-size: calc(11 * var(--nook-type-unit));
-    line-height: 1.5;
   }
   .nook-halloween-hearth {
     width: calc(130 * var(--layout-unit));

@@ -1,18 +1,27 @@
 # Home scene artwork sources
 
-The current Home combines custom SVG illustrations and CSS with one credited
+The current Home combines custom SVG illustrations, exported WebP artwork, and CSS with one credited
 Square Enix moogle illustration on the Members link. The SVG was authored with **AI coding assistance**.
 No image-generation tools were used to create this SVG
 artwork, and no image-generation model output is rendered in the Home scene.
 
 ## Active Home artwork
 
+### Pre-rendered artwork
+
+- `src/features/home/art/generated/` contains transparent WebP exports of the
+  authored static window landscapes and sky embroidery at 2x and 4x.
+  `npm run nook:generate` renders these from the editable React SVG originals
+  and shared room palettes. Weather, celestial layers, the lighting timeline, and the
+  original moogle SVG animations remain live. No image-generation tools or
+  external image pixels are used for these exports.
+
 ### Navigation identity
 
 - `src/shared/ui/MogTomeMark.tsx` and `public/mogtome-mark.svg` — a code-authored
   moogle reading a small open book, used in the masthead and browser favicon.
 - `src/shared/ui/MogTomeWordmark.tsx` and `public/mogtome-wordmark.svg` — original
-  serif lettering drawn as SVG paths, independent of any installed or web font.
+  hand lettering drawn as SVG paths, independent of any installed or web font.
 - `src/shared/ui/NavBotanical.tsx` — original SVG sprigs with sage leaves and
   rose buds, autumn leaves for All Saints' Wake, and evergreen for Starlight.
 - Navigation uses self-hosted Lora under the SIL Open Font License;

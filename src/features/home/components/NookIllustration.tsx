@@ -1,12 +1,15 @@
-import { useId } from "react";
+import { lazy, Suspense, useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import type { ColorTheme } from "@/shared/contexts/ThemeContext";
-import { NookSeasonalDecor } from "./NookSeasonalDecor";
 import { NookProps } from "./NookProps";
 import { NookThread } from "./NookThread";
 import { NookVines } from "./NookVines";
 import { NookWindowView } from "./NookWindowView";
 import { threadVariation } from "./nookNeedlework";
+
+const NookSeasonalDecor = lazy(() =>
+  import("./NookSeasonalDecor").then((m) => ({ default: m.NookSeasonalDecor })),
+);
 
 interface NookIllustrationProps {
   isDark: boolean;
@@ -274,7 +277,11 @@ export function NookIllustration({
           <NookVines layer="front" hasGarland={hasGarland} />
 
           <NookProps isDark={isDark} />
-          <NookSeasonalDecor eventId={eventId} />
+          {eventId && (
+            <Suspense fallback={null}>
+              <NookSeasonalDecor eventId={eventId} />
+            </Suspense>
+          )}
         </g>
       </svg>
     </>
