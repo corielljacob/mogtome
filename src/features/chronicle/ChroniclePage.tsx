@@ -406,7 +406,7 @@ export function ChronicleView({
                       : "No entries on this page"
                     : hasActiveQuery
                       ? "No matching entries"
-                      : "The first page is waiting"}
+                      : "No activity yet"}
                 </h3>
                 <p>
                   {hasNextPage

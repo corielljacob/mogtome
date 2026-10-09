@@ -17,7 +17,6 @@ function AccountPortrait({ src }: { src: string }) {
           <SettingsIcon name="user" size={34} />
         </span>
       )}
-      <span className="settings-account-photo-caption">Kupo Life</span>
     </div>
   );
 }
@@ -41,11 +40,7 @@ export function AccountSection() {
   }, [isLoading, signedIn]);
 
   return (
-    <SettingsCard
-      icon="user"
-      title="Account"
-      description="Your account and membership."
-    >
+    <SettingsCard icon="user" title="Account">
       {isLoading ? (
         <p className="settings-account-loading" role="status">
           <SettingsIcon name="user" size={21} /> Checking your sign-in…
@@ -55,12 +50,7 @@ export function AccountSection() {
           <div className="settings-account-discord-mark" aria-hidden="true">
             <DiscordIcon />
           </div>
-          <div>
-            <h3>You're signed out.</h3>
-            <p className="settings-description">
-              Sign in with Discord to open your profile and edit your bio.
-            </p>
-          </div>
+          <h3>Signed out</h3>
           <button
             ref={signInButton}
             className="settings-button settings-account-login"

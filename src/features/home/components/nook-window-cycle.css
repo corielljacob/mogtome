@@ -29,7 +29,7 @@
 .nook-cycle-clouds {
   will-change: transform, opacity;
 }
-.nook-cycle-landscape > svg {
+.nook-cycle-landscape > img {
   display: block;
   width: 100%;
   height: 100%;

@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { membersApi } from "@/shared/api/members";
+import { staffQuery } from "@/shared/api/memberQueries";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import { FC_RANKS, type StaffMember } from "@/shared/types";
 import { scrollAppToTop } from "@/shared/lib/scroll";
 import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
-import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
-import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { NookPressedFlower } from "@/features/home/components/NookPressedFlower";
 import { StaffCard } from "./StaffCard";
 import { AboutIcon } from "./AboutIcons";
@@ -21,7 +19,7 @@ const RANK_ORDER = new Map<string, number>(
 
 export function About() {
   const { user, isAuthenticated } = useAuth();
-  const { isDarkMode, activeEvent, isEventThemeActive } = useTheme();
+  const { isDarkMode } = useTheme();
   const [search, setSearch] = useState("");
   const [rank, setRank] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -29,11 +27,8 @@ export function About() {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   useStickyToolbar(rosterRef, toolbarRef);
-  const { data, isLoading, isError, isFetching, refetch } = useQuery({
-    queryKey: ["staff"],
-    queryFn: () => membersApi.getStaff(),
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading, isError, isFetching, refetch } =
+    useQuery(staffQuery);
   const currentUserName = isAuthenticated ? user?.memberName : undefined;
   const canEditOwn = isAuthenticated && user?.hasKnighthood === true;
   const staff = useMemo(
@@ -100,11 +95,7 @@ export function About() {
 
   return (
     <div className="about-screen" data-mode={isDarkMode ? "dark" : "light"}>
-      <NookRoomDecor isDark={isDarkMode} />
       <div className="about-content">
-        <NookFairyLights
-          eventId={isEventThemeActive ? (activeEvent?.id ?? null) : null}
-        />
         <header className="about-masthead">
           <h1>
             About Kupo Life <AboutIcon name="heart" />
@@ -128,16 +119,12 @@ export function About() {
               or just hang out in chat.
             </p>
             <p className="about-story">
-              There’s no activity quota or pressure to raid. Make yourself at
-              home, kupo.
+              There’s no activity quota or pressure to raid.
             </p>
             <a className="about-button" href="#about-crew-title">
               <AboutIcon name="people" size={18} /> Meet the crew{" "}
               <AboutIcon name="arrow-right" size={18} />
             </a>
-            <span className="about-note-signature" aria-hidden="true">
-              a little room for everyone <AboutIcon name="heart" size={15} />
-            </span>
           </div>
           <figure className="about-keepsake">
             <span className="about-washi" aria-hidden="true" />
@@ -415,7 +402,6 @@ export function About() {
           <Link to="/">
             <AboutIcon name="arrow-left" size={17} /> Back home
           </Link>
-          <p>See you in game, kupo.</p>
           <button type="button" onClick={scrollAppToTop}>
             Back to top <AboutIcon name="up" size={17} />
           </button>

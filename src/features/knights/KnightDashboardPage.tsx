@@ -8,8 +8,6 @@ import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
 import { biographyApi } from "@/shared/api/biography";
 import { useCharacterMapping } from "@/features/characterMapping/hooks/useCharacterMapping";
 import { CharacterMapping } from "@/features/characterMapping/CharacterMapping";
-import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
-import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { PendingSubmissions } from "./PendingSubmissions";
 import { DashboardIcon, type DashboardIconName } from "./DashboardIcons";
 import mailMoogle from "@/assets/moogles/moogle mail.webp";
@@ -77,7 +75,7 @@ function DeskSummary({
 
 export function KnightDashboard() {
   const { user } = useAuth();
-  const { isDarkMode, activeEvent, isEventThemeActive } = useTheme();
+  const { isDarkMode } = useTheme();
   const reducedMotion = useReducedMotion();
   const [workspace, setWorkspace] = useState<Workspace>("biographies");
   const [mappingTab, setMappingTab] = useState<MappingTab>("suggested");
@@ -160,11 +158,7 @@ export function KnightDashboard() {
 
   return (
     <div className="dashboard-screen" data-mode={isDarkMode ? "dark" : "light"}>
-      <NookRoomDecor isDark={isDarkMode} />
       <div className="dashboard-content">
-        <NookFairyLights
-          eventId={isEventThemeActive ? (activeEvent?.id ?? null) : null}
-        />
         <header className="dashboard-masthead">
           <div>
             <p className="dashboard-eyebrow">
@@ -232,8 +226,8 @@ export function KnightDashboard() {
             <p className="dashboard-all-clear" role="status">
               <DashboardIcon name="check" size={18} />
               <span>
-                <strong>All caught up, kupo.</strong> No biographies or account
-                links need review.
+                <strong>All caught up.</strong> No biographies or account links
+                need review.
               </span>
             </p>
           )}
@@ -381,14 +375,9 @@ export function KnightDashboard() {
             </nav>
             <figure className="dashboard-moogle-note">
               <img src={mailMoogle} alt="" aria-hidden="true" />
-              <figcaption>Thanks for lending a hand.</figcaption>
             </figure>
           </aside>
         </div>
-        <footer className="dashboard-footer">
-          <DashboardIcon name="leaf" size={16} />
-          <span>Thanks for lending a hand, kupo.</span>
-        </footer>
       </div>
     </div>
   );

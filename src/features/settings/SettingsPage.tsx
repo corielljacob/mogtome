@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { useTheme, THEME_DEFINITIONS } from "@/shared/contexts/ThemeContext";
 import { useIsMobile } from "@/shared/hooks/useMobile";
 import { useStickyToolbar } from "@/shared/hooks/useStickyToolbar";
-import { NookRoomDecor } from "@/features/home/components/NookRoomDecor";
-import { NookFairyLights } from "@/features/home/components/NookFairyLights";
 import { AppearanceSection } from "./AppearanceSection";
 import { AccessibilitySection } from "./AccessibilitySection";
 import { AccountSection } from "./AccountSection";
@@ -15,25 +13,21 @@ import "./settings-screen.css";
 const SECTIONS: {
   id: string;
   label: string;
-  detail: string;
   icon: SettingsIconName;
 }[] = [
   {
     id: "appearance",
     label: "Appearance",
-    detail: "Colors & seasonal touches",
     icon: "palette",
   },
   {
     id: "accessibility",
     label: "Accessibility",
-    detail: "Reading & comfort",
     icon: "eye",
   },
   {
     id: "account",
     label: "Account",
-    detail: "Your Discord connection",
     icon: "user",
   },
 ];
@@ -85,21 +79,12 @@ export function Settings() {
   };
   return (
     <div className="settings-screen" data-mode={isDarkMode ? "dark" : "light"}>
-      <NookRoomDecor isDark={isDarkMode} />
       <div className="settings-content">
-        <NookFairyLights
-          eventId={isEventThemeActive ? (activeEvent?.id ?? null) : null}
-        />
         <header className="settings-masthead">
           <div>
-            <p className="settings-eyebrow">
-              <SettingsIcon name="sliders" size={16} /> Kupo Life · Your
-              preferences
-            </p>
             <h1>
               Settings <SettingsIcon name="sparkles" size={28} />
             </h1>
-            <p>Pick a theme and get comfortable.</p>
           </div>
           <Link to="/" className="settings-home-link">
             Back to home <SettingsIcon name="arrow-right" size={17} />
@@ -132,7 +117,6 @@ export function Settings() {
                   <SettingsIcon name={item.icon} size={22} />
                   <span>
                     <strong>{item.label}</strong>
-                    <small>{item.detail}</small>
                   </span>
                   <SettingsIcon
                     name="arrow-right"
@@ -142,38 +126,26 @@ export function Settings() {
                 </button>
               ))}
             </div>
-            <div className="settings-sidebar-details">
-              <div className="settings-browser-note">
-                <SettingsIcon name="monitor" size={19} />
-                <div>
-                  <strong>Just for this browser</strong>
-                  <p>
-                    Appearance and accessibility preferences stay in this
-                    browser and apply right away.
-                  </p>
-                </div>
-              </div>
-              <div
-                className="settings-room-preview"
-                aria-label="Current appearance"
-              >
-                <span className="settings-preview-tape" aria-hidden="true" />
-                <div className="settings-preview-window" aria-hidden="true">
-                  <span className="settings-preview-swatch" />
-                  <img src={gamingMoogle} alt="" />
-                  <span className="settings-preview-lines">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                </div>
-                <p>{themeName}</p>
-                <span>
-                  {settings.colorMode === "system"
-                    ? `Following your device · ${isDarkMode ? "dark" : "light"}`
-                    : `${isDarkMode ? "Dark" : "Light"} appearance`}
+            <div
+              className="settings-room-preview"
+              aria-label="Current appearance"
+            >
+              <span className="settings-preview-tape" aria-hidden="true" />
+              <div className="settings-preview-window" aria-hidden="true">
+                <span className="settings-preview-swatch" />
+                <img src={gamingMoogle} alt="" />
+                <span className="settings-preview-lines">
+                  <i />
+                  <i />
+                  <i />
                 </span>
               </div>
+              <p>{themeName}</p>
+              <span>
+                {settings.colorMode === "system"
+                  ? `Following your device · ${isDarkMode ? "dark" : "light"}`
+                  : `${isDarkMode ? "Dark" : "Light"} appearance`}
+              </span>
             </div>
           </aside>
           <div className="settings-panels" ref={panelRef}>
@@ -206,12 +178,6 @@ export function Settings() {
             </div>
           </div>
         </div>
-        <footer className="settings-footer">
-          <SettingsIcon name="book" size={18} />
-          <span>
-            Appearance and accessibility changes save right away, kupo.
-          </span>
-        </footer>
       </div>
     </div>
   );

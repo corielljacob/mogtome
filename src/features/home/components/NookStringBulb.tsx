@@ -1,5 +1,7 @@
+import { Fragment } from "react";
+
 interface NookStringBulbProps {
-  /** Unique per bulb; used by its local glass, metal, and light gradients. */
+  /** ID of the shared paint definitions for this light strand. */
   id: string;
   variant?: number;
 }
@@ -13,53 +15,67 @@ const glassTones = [
 const glassOutline =
   "M-2.7 4.3V6.2C-2.7 8.1-6.8 9.2-6.8 14.1C-6.8 18.8-3.8 22 0 22C3.8 22 6.8 18.8 6.8 14.1C6.8 9.2 2.7 8.1 2.7 6.2V4.3Z";
 
+/** Define each glass tone once, even when bulbs occupy separate SVG viewports. */
+export function NookStringBulbDefs({ id }: { id: string }) {
+  return (
+    <defs>
+      <linearGradient id={`${id}-socket`} x1="0" x2="1" y1="0" y2=".15">
+        <stop stopColor="#59442e" />
+        <stop offset=".23" stopColor="#ac8b52" />
+        <stop offset=".43" stopColor="#d2b77e" />
+        <stop offset=".68" stopColor="#92733f" />
+        <stop offset="1" stopColor="#51422f" />
+      </linearGradient>
+      {glassTones.map((tone, variant) => (
+        <Fragment key={variant}>
+          <linearGradient
+            id={`${id}-${variant}-glass`}
+            x1="-6.8"
+            y1="11"
+            x2="6.8"
+            y2="16"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor={tone.edge} stopOpacity=".76" />
+            <stop offset=".17" stopColor={tone.body} stopOpacity=".84" />
+            <stop offset=".38" stopColor={tone.heart} stopOpacity=".72" />
+            <stop offset=".67" stopColor={tone.body} stopOpacity=".85" />
+            <stop offset="1" stopColor={tone.edge} stopOpacity=".86" />
+          </linearGradient>
+          <radialGradient
+            id={`${id}-${variant}-glass-heart`}
+            cx=".47"
+            cy=".6"
+            r=".6"
+          >
+            <stop stopColor="#fff9df" stopOpacity=".9" />
+            <stop offset=".43" stopColor={tone.heart} stopOpacity=".38" />
+            <stop offset="1" stopColor={tone.body} stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={`${id}-${variant}-halo`}>
+            <stop stopColor={tone.glow} stopOpacity=".5" />
+            <stop offset=".22" stopColor={tone.glow} stopOpacity=".25" />
+            <stop offset=".58" stopColor="#ecae58" stopOpacity=".075" />
+            <stop offset="1" stopColor="#e9a153" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={`${id}-${variant}-inner-halo`}>
+            <stop stopColor="#fff6cc" stopOpacity=".8" />
+            <stop offset=".32" stopColor={tone.glow} stopOpacity=".33" />
+            <stop offset="1" stopColor={tone.glow} stopOpacity="0" />
+          </radialGradient>
+        </Fragment>
+      ))}
+    </defs>
+  );
+}
+
 /** A small real glass bulb, anchored at its socket. CSS controls the halo strength. */
 export function NookStringBulb({ id, variant = 0 }: NookStringBulbProps) {
-  const tone = glassTones[Math.abs(Math.trunc(variant)) % glassTones.length];
-  const paint = (name: string) => `url(#${id}-${name})`;
+  const tone = Math.abs(Math.trunc(variant)) % glassTones.length;
+  const paint = (name: string) => `url(#${id}-${tone}-${name})`;
 
   return (
     <g className="nook-bulb" strokeLinecap="round" strokeLinejoin="round">
-      <defs>
-        <linearGradient
-          id={`${id}-glass`}
-          x1="-6.8"
-          y1="11"
-          x2="6.8"
-          y2="16"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor={tone.edge} stopOpacity=".76" />
-          <stop offset=".17" stopColor={tone.body} stopOpacity=".84" />
-          <stop offset=".38" stopColor={tone.heart} stopOpacity=".72" />
-          <stop offset=".67" stopColor={tone.body} stopOpacity=".85" />
-          <stop offset="1" stopColor={tone.edge} stopOpacity=".86" />
-        </linearGradient>
-        <radialGradient id={`${id}-glass-heart`} cx=".47" cy=".6" r=".6">
-          <stop stopColor="#fff9df" stopOpacity=".9" />
-          <stop offset=".43" stopColor={tone.heart} stopOpacity=".38" />
-          <stop offset="1" stopColor={tone.body} stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id={`${id}-socket`} x1="0" x2="1" y1="0" y2=".15">
-          <stop stopColor="#59442e" />
-          <stop offset=".23" stopColor="#ac8b52" />
-          <stop offset=".43" stopColor="#d2b77e" />
-          <stop offset=".68" stopColor="#92733f" />
-          <stop offset="1" stopColor="#51422f" />
-        </linearGradient>
-        <radialGradient id={`${id}-halo`}>
-          <stop stopColor={tone.glow} stopOpacity=".5" />
-          <stop offset=".22" stopColor={tone.glow} stopOpacity=".25" />
-          <stop offset=".58" stopColor="#ecae58" stopOpacity=".075" />
-          <stop offset="1" stopColor="#e9a153" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id={`${id}-inner-halo`}>
-          <stop stopColor="#fff6cc" stopOpacity=".8" />
-          <stop offset=".32" stopColor={tone.glow} stopOpacity=".33" />
-          <stop offset="1" stopColor={tone.glow} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
       <ellipse
         className="nook-bulb-halo"
         cy="13"
@@ -141,7 +157,7 @@ export function NookStringBulb({ id, variant = 0 }: NookStringBulbProps) {
       <path d="M-1.75 0h3.5v1.7h-3.5Z" fill="#554a39" stroke="none" />
       <path
         d="M-3 1Q0 .2 3 1L3.2 4.6Q0 5.6-3.2 4.6Z"
-        fill={paint("socket")}
+        fill={`url(#${id}-socket)`}
         stroke="#58432e"
         strokeWidth=".6"
       />

@@ -530,11 +530,6 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.chronicle-footer > p {
-  margin: 0;
-  color: var(--nook-muted);
-  font: 400 1.375rem/1.4 var(--font-script);
-}
 .chronicle-screen :is(a, button, input, select):focus-visible {
   outline: 2px solid var(--ui-focus);
   outline-offset: 3px;
@@ -673,12 +668,6 @@
   }
   .chronicle-message {
     padding: 28px 4px 40px;
-  }
-  .chronicle-footer > p {
-    order: 3;
-    flex-basis: 100%;
-    text-align: center;
-    font-size: 1.25rem;
   }
 }
 @media (max-width: 360px) {

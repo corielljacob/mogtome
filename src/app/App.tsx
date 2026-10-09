@@ -1,5 +1,12 @@
-import { lazy, Suspense, Component, useEffect } from "react";
-import type { ReactNode, ErrorInfo } from "react";
+import {
+  lazy,
+  memo,
+  Suspense,
+  Component,
+  useEffect,
+  useLayoutEffect,
+} from "react";
+import type { ReactNode, ErrorInfo, SyntheticEvent } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Navbar } from "@/app/Navbar";
@@ -11,6 +18,7 @@ import { ThemeProvider, useTheme } from "@/shared/contexts/ThemeContext";
 import { NookWallpaper } from "@/features/home/components/NookWallpaper";
 import { NavExpandedProvider } from "@/shared/contexts/NavExpandedContext";
 import { jumpAppToTop } from "@/shared/lib/scroll";
+import { preloadRoute, routeLoaders } from "./routePreload";
 import "@/shared/styles/inner-page.css";
 
 // catches stale-chunk failures after a deploy and reloads to fetch fresh assets
@@ -36,48 +44,17 @@ class ChunkErrorBoundary extends Component<{ children: ReactNode }> {
   }
 }
 
-const Home = lazy(() =>
-  import("@/features/home/HomePage").then((m) => ({ default: m.Home })),
-);
-const Members = lazy(() =>
-  import("@/features/members/MembersPage").then((m) => ({
-    default: m.Members,
-  })),
-);
-const Chronicle = lazy(() =>
-  import("@/app/ChronicleRoute").then((m) => ({
-    default: m.ChronicleRoute,
-  })),
-);
-const About = lazy(() =>
-  import("@/features/about/AboutPage").then((m) => ({ default: m.About })),
-);
-const AuthCallback = lazy(() =>
-  import("@/features/auth/AuthCallbackPage").then((m) => ({
-    default: m.AuthCallback,
-  })),
-);
-const Logout = lazy(() =>
-  import("@/features/auth/LogoutPage").then((m) => ({ default: m.Logout })),
-);
-const Settings = lazy(() =>
-  import("@/features/settings/SettingsPage").then((m) => ({
-    default: m.Settings,
-  })),
-);
-const Profile = lazy(() =>
-  import("@/features/profile/ProfilePage").then((m) => ({
-    default: m.Profile,
-  })),
-);
-const KnightDashboard = lazy(() =>
-  import("@/features/knights/KnightDashboardPage").then((m) => ({
-    default: m.KnightDashboard,
-  })),
-);
-const Debug = lazy(() =>
-  import("@/features/debug/DebugPage").then((m) => ({ default: m.Debug })),
-);
+const Home = lazy(routeLoaders["/"]);
+const Members = lazy(routeLoaders["/members"]);
+const Chronicle = lazy(routeLoaders["/chronicle"]);
+const About = lazy(routeLoaders["/about"]);
+const AuthCallback = lazy(routeLoaders["/auth/callback"]);
+const Logout = lazy(routeLoaders["/auth/logout"]);
+const Settings = lazy(routeLoaders["/settings"]);
+const Profile = lazy(routeLoaders["/profile"]);
+const KnightDashboard = lazy(routeLoaders["/dashboard"]);
+const Debug = lazy(routeLoaders["/debug"]);
+const Wallpaper = memo(NookWallpaper);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,7 +87,7 @@ function AppContent() {
 
   // Start each view at the top on navigation - the document (window) is the
   // scroller, and its scroll position carries across client-side route changes.
-  useEffect(() => {
+  useLayoutEffect(() => {
     jumpAppToTop();
   }, [location.pathname]);
 
@@ -139,26 +116,19 @@ function AppContent() {
     };
   }, []);
 
-  // Warm the lazy route chunks during idle so tapping a nav tab never has to fetch
-  // a chunk and suspend. With the destination already in cache, navigation renders
-  // immediately instead of render-blocking on the load - the nav stays snappy. The
-  // bundler dedupes these with the lazy() imports, so it just primes the cache.
-  useEffect(() => {
-    const warm = () => {
-      void import("@/features/members/MembersPage");
-      void import("@/app/ChronicleRoute");
-      void import("@/features/about/AboutPage");
-      void import("@/features/profile/ProfilePage");
-      void import("@/features/settings/SettingsPage");
-      void import("@/features/knights/KnightDashboardPage");
-    };
-    if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(warm, { timeout: 3000 });
-      return () => window.cancelIdleCallback?.(id);
+  function warmDestination(event: SyntheticEvent) {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>("a[href]");
+    if (!link || link.target === "_blank" || link.hasAttribute("download"))
+      return;
+    const url = new URL(link.href, window.location.href);
+    if (
+      url.origin === window.location.origin &&
+      url.pathname !== location.pathname
+    ) {
+      void preloadRoute(url.pathname, queryClient);
     }
-    const t = window.setTimeout(warm, 1200);
-    return () => window.clearTimeout(t);
-  }, []);
+  }
 
   return (
     <div>
@@ -172,11 +142,14 @@ function AppContent() {
       {/* The document remains the native scroller, including on iOS. */}
       <div
         className={contentClass}
+        onPointerOverCapture={warmDestination}
+        onPointerDownCapture={warmDestination}
+        onFocusCapture={warmDestination}
         data-mode={isDarkMode ? "dark" : "light"}
         data-scene={event?.id ?? settings.colorTheme}
         data-holiday={event ? "true" : undefined}
       >
-        <NookWallpaper
+        <Wallpaper
           eventId={event?.id ?? null}
           colorTheme={settings.colorTheme}
         />

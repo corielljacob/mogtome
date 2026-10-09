@@ -1,14 +1,14 @@
 /* One small gesture: rest, lift, hold, settle, rest. Replacements follow the
    character's pose instead of cycling the fabric over an unmoving face. */
 .nook-moogle__model {
-  opacity: 0;
+  visibility: hidden;
   animation-duration: 9.6s, 1800ms;
   animation-timing-function: step-end;
   animation-iteration-count: infinite, 1;
   animation-fill-mode: none;
 }
 .nook-moogle__model--0 {
-  opacity: 1;
+  visibility: visible;
   animation-name: moogle-model-0, none;
 }
 .nook-moogle__model--1 {
@@ -38,21 +38,21 @@
 }
 @keyframes moogle-model-0 {
   26.25% {
-    opacity: 0;
+    visibility: hidden;
   }
   0%,
   53.75%,
   100% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @keyframes moogle-model-boop-0 {
   0% {
-    opacity: 0;
+    visibility: hidden;
   }
   83.333333%,
   100% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @keyframes moogle-model-1 {
@@ -60,42 +60,42 @@
   31.25%,
   53.75%,
   100% {
-    opacity: 0;
+    visibility: hidden;
   }
   26.25%,
   43.75% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @keyframes moogle-model-boop-1 {
   22.222222%,
   83.333333%,
   100% {
-    opacity: 0;
+    visibility: hidden;
   }
   0%,
   66.666667% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @keyframes moogle-model-2 {
   0%,
   43.75%,
   100% {
-    opacity: 0;
+    visibility: hidden;
   }
   31.25% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @keyframes moogle-model-boop-2 {
   0%,
   66.666667%,
   100% {
-    opacity: 0;
+    visibility: hidden;
   }
   22.222222% {
-    opacity: 1;
+    visibility: visible;
   }
 }
 @media (prefers-reduced-motion: reduce) {

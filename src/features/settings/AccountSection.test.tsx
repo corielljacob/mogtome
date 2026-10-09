@@ -46,7 +46,7 @@ describe("Account settings", () => {
     const user = userEvent.setup();
     render(<AccountSection />);
     expect(
-      screen.getByRole("heading", { name: "You're signed out." }),
+      screen.getByRole("heading", { name: "Signed out" }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: "View my profile" }),

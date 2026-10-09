@@ -1,6 +1,6 @@
 import { useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
-import { NookStringBulb } from "./NookStringBulb";
+import { NookStringBulb, NookStringBulbDefs } from "./NookStringBulb";
 import { NookThread } from "./NookThread";
 import "../nook-lights.css";
 
@@ -583,6 +583,7 @@ export function NookFairyLights({
         preserveAspectRatio="none"
         focusable="false"
       >
+        <NookStringBulbDefs id={`${id}-bulb`} />
         <path
           className="nook-light-cord nook-light-cord--shadow"
           d={cord}
@@ -658,10 +659,7 @@ export function NookFairyLights({
                 d={`M0 0C1 ${drop * 0.25} -1 ${drop * 0.65} 0 ${drop + 1}`}
               />
               <g transform={`translate(0 ${drop})`}>
-                <NookStringBulb
-                  id={`${id}-bulb-${index}`}
-                  variant={index % 3}
-                />
+                <NookStringBulb id={`${id}-bulb`} variant={index % 3} />
               </g>
             </g>
           </svg>

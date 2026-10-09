@@ -255,7 +255,7 @@ describe("Knight dashboard workspace", () => {
     renderDashboard();
 
     expect(await screen.findByRole("status")).toHaveTextContent(
-      "All caught up, kupo.",
+      "All caught up.",
     );
     expect(
       screen.getByRole("button", { name: /^Biographies: 0\./ }),

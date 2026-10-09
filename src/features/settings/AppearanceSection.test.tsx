@@ -97,9 +97,7 @@ describe("Appearance settings", () => {
     const modes = screen.getByRole("group", { name: "Color mode" });
     const system = within(modes).getByRole("radio", { name: "System" });
     expect(system).toBeChecked();
-    expect(
-      screen.getByText("Following your device. Dark mode is active now."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("System: dark mode.")).toBeInTheDocument();
 
     await user.click(within(modes).getByRole("radio", { name: "Light" }));
     expect(calls.setColorMode).toHaveBeenLastCalledWith("light");
@@ -152,20 +150,20 @@ describe("Appearance settings", () => {
     for (const radio of within(themes).getAllByRole("radio"))
       expect(radio).toBeEnabled();
     expect(screen.getByRole("status")).toHaveTextContent(
-      "On screen: All Saints' Wake",
+      "Current theme: All Saints' Wake",
     );
     expect(screen.getByRole("status")).toHaveTextContent(
-      "MogTome (Default) is saved and returns after",
+      "MogTome (Default) returns after",
     );
 
     await user.click(within(themes).getByRole("radio", { name: "Endwalker" }));
 
     expect(calls.setColorTheme).toHaveBeenCalledExactlyOnceWith("endwalker");
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Endwalker is saved and returns after",
+      "Endwalker returns after",
     );
     expect(screen.getByRole("status")).toHaveTextContent(
-      "On screen: All Saints' Wake",
+      "Current theme: All Saints' Wake",
     );
     expect(within(themes).getByText("Saved base theme")).toBeInTheDocument();
     expect(calls.setEventThemingDisabled).not.toHaveBeenCalled();
@@ -173,14 +171,12 @@ describe("Appearance settings", () => {
       within(themes).getByRole("radio", { name: "Endwalker" }),
     ).toHaveFocus();
 
-    screen.getByRole("button", { name: "Use my base theme now" }).focus();
+    screen.getByRole("button", { name: "Use base theme" }).focus();
     await user.keyboard("{Enter}");
 
     expect(calls.setEventThemingDisabled).toHaveBeenCalledExactlyOnceWith(true);
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    expect(
-      screen.getByText("Seasonal themes are off. Endwalker stays active."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Endwalker is active.")).toBeInTheDocument();
     expect(
       screen.getByRole("switch", { name: "Seasonal event themes" }),
     ).not.toBeChecked();
@@ -199,16 +195,12 @@ describe("Appearance settings", () => {
       name: "Seasonal event themes",
     });
     expect(toggle).toBeChecked();
-    expect(toggle).toHaveAccessibleDescription(
-      "Your base theme is active between seasonal events.",
-    );
+    expect(toggle).toHaveAccessibleDescription("No seasonal event is active.");
 
     await user.click(toggle);
 
     expect(toggle).not.toBeChecked();
-    expect(toggle).toHaveAccessibleDescription(
-      "Seasonal themes are off. Dawntrail stays active.",
-    );
+    expect(toggle).toHaveAccessibleDescription("Dawntrail is active.");
     expect(calls.setEventThemingDisabled).toHaveBeenCalledExactlyOnceWith(true);
     expect(calls.setColorTheme).not.toHaveBeenCalled();
   });
@@ -220,9 +212,7 @@ describe("Appearance settings", () => {
       activeEvent: starlight,
       seasonalDisabled: true,
     });
-    expect(
-      screen.getByText("Seasonal themes are off. A Realm Reborn stays active."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("A Realm Reborn is active.")).toBeInTheDocument();
 
     screen
       .getByRole("button", { name: "Use Starlight Celebration theme" })
@@ -233,10 +223,10 @@ describe("Appearance settings", () => {
       false,
     );
     expect(screen.getByRole("status")).toHaveTextContent(
-      "On screen: Starlight Celebration",
+      "Current theme: Starlight Celebration",
     );
     expect(screen.getByRole("status")).toHaveTextContent(
-      "A Realm Reborn is saved",
+      "A Realm Reborn returns after",
     );
     expect(screen.getByRole("radio", { name: "A Realm Reborn" })).toBeChecked();
     expect(
@@ -264,11 +254,7 @@ describe("Appearance settings", () => {
     expect(
       within(list).getByText("All Saints' Wake").closest("li"),
     ).toHaveTextContent("Active theme");
-    expect(
-      screen.getByText(
-        "MogTome uses these dates for its seasonal themes each year.",
-      ),
-    ).toBeVisible();
+    expect(list).toBeVisible();
     await user.click(button);
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
@@ -276,12 +262,12 @@ describe("Appearance settings", () => {
   it("shows the next theme event without implying that it is currently active", () => {
     renderAppearance({ nextEvent: allSaints });
 
-    expect(screen.getByText(/Next on the theme calendar:/)).toHaveTextContent(
+    expect(screen.getByText(/Next event:/)).toHaveTextContent(
       "All Saints' Wake",
     );
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(
-      screen.getByText("Your base theme is active between seasonal events."),
+      screen.getByText("No seasonal event is active."),
     ).toBeInTheDocument();
   });
 
@@ -301,7 +287,7 @@ describe("Appearance settings", () => {
 
     expect(calls.setEventOverride).toHaveBeenLastCalledWith("starlight");
     expect(screen.getByRole("status")).toHaveTextContent(
-      "A development preview is overriding the calendar.",
+      "Preview overrides the calendar.",
     );
     await user.selectOptions(select, "none");
     expect(calls.setEventOverride).toHaveBeenLastCalledWith("none");

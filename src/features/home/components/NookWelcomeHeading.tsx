@@ -5,16 +5,10 @@ const heart =
   "M12 21C9 17 2 13 2 7C2 1 9 0 12 6C15 0 22 1 22 7C22 13 15 17 12 21Z";
 
 /** Real text keeps the stitched greeting selectable and responsive. */
-export function NookWelcomeHeading({
-  isHalloween = false,
-}: {
-  isHalloween?: boolean;
-}) {
+export function NookWelcomeHeading() {
   return (
     <h1 className="nook-embroidered-heading">
-      <span className="nook-welcome-text">
-        {isHalloween ? "Come in for a spell." : "Welcome home, kupo."}
-      </span>
+      <span className="nook-welcome-text">Welcome home, kupo.</span>
       <svg
         className="nook-welcome-heart"
         viewBox="-1 -2 26 27"

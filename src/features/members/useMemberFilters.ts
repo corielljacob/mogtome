@@ -12,7 +12,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { membersApi } from "@/shared/api/members";
+import { memberDirectoryQuery } from "@/shared/api/memberQueries";
 import { FC_RANKS } from "@/shared/types";
 
 // for validating rank names that arrive via the URL
@@ -212,11 +212,7 @@ export function useMemberFilters() {
     normalizeSearch(searchQuery) !== normalizeSearch(deferredSearchQuery) ||
     selectedRanks !== deferredSelectedRanks;
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["members-all"],
-    queryFn: () => membersApi.getMembers({ pageSize: 1000 }),
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading, isError, refetch } = useQuery(memberDirectoryQuery);
 
   const allMembers = useMemo(() => data?.items ?? [], [data]);
 

@@ -83,27 +83,6 @@
   pointer-events: none;
   user-select: none;
 }
-.nook-wall-wish {
-  margin: 0;
-  color: var(--scene-rose);
-  font: 400 calc(23 * var(--layout-unit))/1.2 var(--font-script);
-  text-align: center;
-  transform: rotate(-4deg);
-  opacity: 0.85;
-}
-.nook-wall-wish span {
-  display: block;
-}
-.nook-wall-wish span:last-child {
-  font-size: 0.92em;
-}
-.nook-wall-wish svg {
-  display: block;
-  width: calc(96 * var(--layout-unit));
-  height: calc(12 * var(--layout-unit));
-  margin: calc(6 * var(--layout-unit)) auto 0;
-  color: var(--scene-gold);
-}
 @container (max-width: 1000px) {
   .nook-wall-hanging {
     left: 35%;
@@ -114,9 +93,6 @@
   }
   .nook-reading-corner {
     width: calc(90 * var(--layout-unit));
-  }
-  .nook-wall-wish {
-    font-size: calc(20 * var(--layout-unit));
   }
 }
 @container (max-width: 850px) {
@@ -137,13 +113,10 @@
   .nook-reading-corner {
     display: none;
   }
-  .nook-wall-wish {
-    display: none;
-  }
 }
 .high-contrast .nook-room-decor {
   opacity: 0.3;
 }
-.high-contrast :is(.nook-wall-hanging, .nook-wall-wish) {
+.high-contrast .nook-wall-hanging {
   display: none;
 }

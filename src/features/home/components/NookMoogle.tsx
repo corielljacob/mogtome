@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import { NookMoogleHeadwear } from "./NookMoogleHeadwear";
 import { NookMoogleBodywear } from "./NookMoogleBodywear";
@@ -11,6 +11,13 @@ import {
 import { NookMooglePawPads } from "./NookMooglePawPads";
 import { NookThread } from "./NookThread";
 import "./nook-moogle-models.css";
+
+const MemoNookMoogleHeadwear = memo(NookMoogleHeadwear);
+const MemoNookMoogleBodywear = memo(NookMoogleBodywear);
+const MemoNookMoogleStitches = memo(NookMoogleStitches);
+const MemoNookMooglePawPads = memo(NookMooglePawPads);
+const MemoNookMoogleMouthStitches = memo(NookMoogleMouthStitches);
+const MemoNookMoogleNoseStitches = memo(NookMoogleNoseStitches);
 
 interface NookMoogleProps {
   className?: string;
@@ -216,7 +223,7 @@ function NookMoogleModel({
           <path d="M64 169C47 168 32 161 24 150C21 161 20 177 23 188C31 181 37 182 43 189C49 182 57 185 65 190Z" />
           <path d="M139 171C157 169 170 161 179 153C183 164 185 178 181 190C173 181 165 183 160 190C154 183 145 186 137 190Z" />
           <g clipPath={paint("wing-shape")}>
-            <NookMoogleStitches
+            <MemoNookMoogleStitches
               model={model}
               part="wings"
               color={materials.wingLight}
@@ -263,7 +270,7 @@ function NookMoogleModel({
             opacity=".5"
           />
           <g clipPath={paint("belly-shape")}>
-            <NookMoogleStitches
+            <MemoNookMoogleStitches
               model={model}
               part="belly"
               color={materials.fur}
@@ -292,7 +299,7 @@ function NookMoogleModel({
         </g>
 
         {!scarfInFront && (
-          <NookMoogleBodywear eventId={eventId} paint={paint} />
+          <MemoNookMoogleBodywear eventId={eventId} paint={paint} />
         )}
 
         <g
@@ -377,7 +384,7 @@ function NookMoogleModel({
             opacity=".8"
           />
           <g clipPath={paint("head-shape")}>
-            <NookMoogleStitches
+            <MemoNookMoogleStitches
               model={model}
               part="face"
               color={materials.fur}
@@ -435,7 +442,7 @@ function NookMoogleModel({
               strokeWidth=".7"
             />
             <g clipPath={paint("nose-shape")}>
-              <NookMoogleNoseStitches
+              <MemoNookMoogleNoseStitches
                 model={model}
                 color={materials.rose}
                 shade={materials.roseShade}
@@ -443,7 +450,7 @@ function NookMoogleModel({
                 padding={paint("nose")}
               />
             </g>
-            <NookMoogleMouthStitches
+            <MemoNookMoogleMouthStitches
               model={model}
               pleased={pleased}
               color={materials.ink}
@@ -454,10 +461,12 @@ function NookMoogleModel({
               <path d="m48 150-1 3m6-2-1 3m95-3-1 3m6-4-1 3" />
             </g>
           </g>
-          <NookMoogleHeadwear eventId={eventId} paint={paint} />
+          <MemoNookMoogleHeadwear eventId={eventId} paint={paint} />
         </g>
 
-        {scarfInFront && <NookMoogleBodywear eventId={eventId} paint={paint} />}
+        {scarfInFront && (
+          <MemoNookMoogleBodywear eventId={eventId} paint={paint} />
+        )}
 
         <g className="nook-moogle__paws" fill={paint("fur")}>
           <path d={leftPaw} />
@@ -469,7 +478,7 @@ function NookMoogleModel({
           />
           <path d={feet} />
           <g clipPath={paint("paws-shape")}>
-            <NookMoogleStitches
+            <MemoNookMoogleStitches
               model={model}
               part="paws"
               color={materials.fur}
@@ -484,7 +493,7 @@ function NookMoogleModel({
             d="M70 216C58 212 47 220 47 232C46 240 58 244 72 244C86 244 94 239 90 230C87 223 80 218 70 216ZM130 216C141 211 152 220 153 231C155 240 142 244 128 244C114 244 108 239 111 231C114 223 121 219 130 216Z"
             width={2}
           />
-          <NookMooglePawPads
+          <MemoNookMooglePawPads
             model={model}
             color={materials.roseLight}
             shade={materials.roseShade}
@@ -543,7 +552,7 @@ function NookMoogleModel({
               />
               <g clipPath={paint("pom-shape")}>
                 <g transform={`rotate(${[-30, -33, -27][model]} 131 29)`}>
-                  <NookMoogleStitches
+                  <MemoNookMoogleStitches
                     model={model}
                     part="pom"
                     color={materials.pom}

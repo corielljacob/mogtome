@@ -45,7 +45,7 @@ export function SettingRow({
   disabled = false,
 }: {
   label: string;
-  description: string;
+  description?: string;
   children: ReactNode;
   disabled?: boolean;
 }) {
@@ -53,7 +53,7 @@ export function SettingRow({
     <div className="setting-row" data-disabled={disabled || undefined}>
       <div className="setting-row-copy">
         <p>{label}</p>
-        <p>{description}</p>
+        {description && <p>{description}</p>}
       </div>
       <div className="setting-row-control">{children}</div>
     </div>

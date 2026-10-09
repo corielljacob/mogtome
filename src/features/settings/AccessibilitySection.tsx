@@ -17,22 +17,17 @@ export function AccessibilitySection() {
   const selectedMode = COLORBLIND_MODES.find(
     (mode) => mode.value === settings.colorblindMode,
   );
+  const colorHelp =
+    settings.colorblindMode === "none" ? undefined : selectedMode?.description;
 
   return (
-    <SettingsCard
-      icon="eye"
-      title="Accessibility"
-      description="Adjust the text, colors, and motion to suit you."
-    >
+    <SettingsCard icon="eye" title="Accessibility">
       <div className="settings-comfort-groups">
         <fieldset className="settings-fieldset settings-comfort-group">
           <legend className="settings-subheading">
             <SettingsIcon name="book" size={18} /> Reading
           </legend>
-          <SettingRow
-            label="Larger text"
-            description="Increase text size across the site."
-          >
+          <SettingRow label="Larger text">
             <ToggleSwitch
               label="Larger text"
               enabled={settings.largeText}
@@ -41,7 +36,7 @@ export function AccessibilitySection() {
           </SettingRow>
           <SettingRow
             label="Dyslexia-friendly font"
-            description="Use a reading font with wider spacing."
+            description="Wider letter and word spacing."
           >
             <ToggleSwitch
               label="Dyslexia-friendly font"
@@ -55,10 +50,7 @@ export function AccessibilitySection() {
           <legend className="settings-subheading">
             <SettingsIcon name="contrast" size={18} /> Display
           </legend>
-          <SettingRow
-            label="High contrast"
-            description="Make text and controls stand out more clearly."
-          >
+          <SettingRow label="High contrast">
             <ToggleSwitch
               label="High contrast"
               enabled={settings.highContrast}
@@ -67,7 +59,7 @@ export function AccessibilitySection() {
           </SettingRow>
           <SettingRow
             label="Extra dark"
-            description="Use deeper blacks in dark mode."
+            description="Darker backgrounds in Dark mode."
             disabled={!isDarkMode}
           >
             <ToggleSwitch
@@ -99,7 +91,7 @@ export function AccessibilitySection() {
                     event.target.value as ColorblindMode,
                   )
                 }
-                aria-describedby={`${colorId}-help`}
+                aria-describedby={colorHelp ? `${colorId}-help` : undefined}
               >
                 {COLORBLIND_MODES.map(({ value, label }) => (
                   <option key={value} value={value}>
@@ -109,9 +101,11 @@ export function AccessibilitySection() {
               </select>
               <SettingsIcon name="chevron" size={17} />
             </div>
-            <p className="settings-help" id={`${colorId}-help`}>
-              {selectedMode?.description ?? "Default colors"}
-            </p>
+            {colorHelp && (
+              <p className="settings-help" id={`${colorId}-help`}>
+                {colorHelp}
+              </p>
+            )}
           </div>
         </fieldset>
 
@@ -121,7 +115,7 @@ export function AccessibilitySection() {
           </legend>
           <SettingRow
             label="Reduce motion"
-            description="Reduce animations and turn off smooth scrolling."
+            description="Turn off animations and smooth scrolling."
           >
             <ToggleSwitch
               label="Reduce motion"
@@ -131,7 +125,7 @@ export function AccessibilitySection() {
           </SettingRow>
           <SettingRow
             label="Stronger focus outlines"
-            description="Make it easier to see where you are when using the keyboard."
+            description="Highlight the focused control when using the keyboard."
           >
             <ToggleSwitch
               label="Stronger focus outlines"

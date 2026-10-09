@@ -19,7 +19,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "icons": "node scripts/generate-pwa-icons.js",
-    "brand:generate": "node scripts/generate-brand-assets.js"
+    "brand:generate": "node scripts/generate-brand-assets.js",
+    "nook:generate": "node scripts/generate-nook-assets.js"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

@@ -23,6 +23,10 @@ to understand. Keep the cozy scrapbook and moogle personality; soften excess.
 ## What to cut
 
 - Repeated sentimental slogans, stacked cute phrases, and constant catchphrases.
+- Decorative captions and sign-offs that add no information. Remove the line
+  instead of replacing it with another slogan.
+- Settings introductions and subtitles that repeat a heading or control label.
+  Use help text for behavior that needs explanation.
 - Hype when the sentence just means “view,” “read,” or “join.”
 - Stock transitions, artificial groups of three, and unnecessary “not just X,
   but Y” framing.
@@ -37,7 +41,8 @@ work. Read aloud: would someone in the FC actually say this?
 | ---------------------------------------------- | ------------------------------------------------------------- |
 | Rounding everyone up, kupo...                  | Keep: explicitly liked by the user.                           |
 | Welcome home, kupo                             | A fitting warm welcome.                                       |
-| Same friends. New stories. Always home, kupo ♡ | Trim: “See you in game, kupo.”                                |
+| Same friends. New stories. Always home, kupo ♡ | Remove: decorative footer slogan.                             |
+| The ghosts are friendly, kupo.                 | Remove: decorative seasonal filler.                           |
 | Couldn’t save your bio. Try again.             | Keep errors clear and actionable.                             |
 | A companion experience for Kupo Life!          | Say what it does: “Catch up with Kupo Life!”                  |
 | Sizzling summer fun, kupo~!                    | Give the moogle a voice: “Too hot for this much fluff, kupo.” |

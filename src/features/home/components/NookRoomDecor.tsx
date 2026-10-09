@@ -19,7 +19,13 @@ const moonFloss = Array.from(
 ).join(" ");
 
 /** Sewn room accents use the same floss and padded outlines as the window. */
-export function NookRoomDecor({ isDark }: { isDark: boolean }) {
+export function NookRoomDecor({
+  isDark,
+  includeFloor = true,
+}: {
+  isDark: boolean;
+  includeFloor?: boolean;
+}) {
   const id = useId().replace(/:/g, "");
 
   return (
@@ -166,6 +172,23 @@ export function NookRoomDecor({ isDark }: { isDark: boolean }) {
         </g>
       </svg>
 
+      {includeFloor && <NookFloorDecor isDark={isDark} />}
+    </div>
+  );
+}
+
+/** Floor accents can share the footer's edge instead of a fixed screen offset. */
+export function NookFloorDecor({
+  isDark,
+  includeReadingCorner = true,
+}: {
+  isDark: boolean;
+  includeReadingCorner?: boolean;
+}) {
+  const id = useId().replace(/:/g, "");
+
+  return (
+    <>
       <svg
         className="nook-room-botanical"
         viewBox="0 0 230 320"
@@ -325,7 +348,7 @@ export function NookRoomDecor({ isDark }: { isDark: boolean }) {
         />
       </svg>
 
-      <NookReadingCorner isDark={isDark} />
-    </div>
+      {includeReadingCorner && <NookReadingCorner isDark={isDark} />}
+    </>
   );
 }

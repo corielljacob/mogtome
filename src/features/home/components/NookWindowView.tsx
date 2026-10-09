@@ -1,47 +1,80 @@
-import { useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useLayoutEffect, useRef } from "react";
+import type { ComponentType } from "react";
 import type { SeasonalEventId } from "@/shared/constants/seasonalEvents";
 import type { ColorTheme } from "@/shared/contexts/ThemeContext";
 import { useReducedMotion } from "@/shared/hooks/useReducedMotion";
-import { NookShiroganeView } from "./NookShiroganeView";
-import { NookArrView } from "./NookArrView";
-import { NookHeavenswardView } from "./NookHeavenswardView";
-import {
-  NookHeavenswardSky,
-  NookHeavenswardWeather,
-} from "./NookHeavenswardWeather";
+import { NookLandscape } from "./NookLandscape";
+
+type AtmosphereLayers = {
+  sky: ComponentType;
+  foreground: ComponentType;
+};
+
+// The far and near placements share one import, while keeping their own
+// boundaries so the fixed sky and city can paint before the weather arrives.
+function lazyAtmosphere(load: () => Promise<AtmosphereLayers>) {
+  let pending: Promise<AtmosphereLayers> | undefined;
+  const layer = (placement: keyof AtmosphereLayers) =>
+    lazy(() => {
+      pending ??= load();
+      return pending.then((layers) => ({ default: layers[placement] }));
+    });
+  return { sky: layer("sky"), foreground: layer("foreground") };
+}
+
+const { sky: NookHeavenswardSky, foreground: NookHeavenswardWeather } =
+  lazyAtmosphere(() =>
+    import("./NookHeavenswardWeather").then((m) => ({
+      sky: m.NookHeavenswardSky,
+      foreground: m.NookHeavenswardWeather,
+    })),
+  );
+const { sky: NookStormbloodSky, foreground: NookStormbloodBreeze } =
+  lazyAtmosphere(() =>
+    import("./NookStormbloodAtmosphere").then((m) => ({
+      sky: m.NookStormbloodSky,
+      foreground: m.NookStormbloodBreeze,
+    })),
+  );
+const { sky: NookShadowbringersSky, foreground: NookShadowbringersLeaves } =
+  lazyAtmosphere(() =>
+    import("./NookShadowbringersAtmosphere").then((m) => ({
+      sky: m.NookShadowbringersSky,
+      foreground: m.NookShadowbringersLeaves,
+    })),
+  );
+const NookArrView = lazy(() =>
+  import("./NookArrView").then((m) => ({ default: m.NookArrView })),
+);
 import { NookWindowSky } from "./NookWindowSky";
 import { createDayCycle, setDayCycleTarget } from "./nookDayCycle";
-import { NookSkyEmbroidery } from "./NookSkyEmbroidery";
-import { NookHeavenswardSkyEmbroidery } from "./NookHeavenswardSkyEmbroidery";
-import { NookStormbloodView } from "./NookStormbloodView";
-import { NookStormbloodSkyEmbroidery } from "./NookStormbloodSkyEmbroidery";
-import {
-  NookStormbloodSky,
-  NookStormbloodBreeze,
-} from "./NookStormbloodAtmosphere";
-import { NookShadowbringersView } from "./NookShadowbringersView";
-import { NookShadowbringersSkyEmbroidery } from "./NookShadowbringersSkyEmbroidery";
-import { NookShadowbringersLightParting } from "./NookShadowbringersLightParting";
-import {
-  NookShadowbringersSky,
-  NookShadowbringersLeaves,
-} from "./NookShadowbringersAtmosphere";
-import { NookEndwalkerView } from "./NookEndwalkerView";
-import { NookEndwalkerSkyEmbroidery } from "./NookEndwalkerSkyEmbroidery";
-import { NookEndwalkerSky } from "./NookEndwalkerSky";
-import { NookDawntrailView } from "./NookDawntrailView";
-import { NookDawntrailSkyEmbroidery } from "./NookDawntrailSkyEmbroidery";
-import {
-  NookDawntrailSky,
-  NookDawntrailBirds,
-  NookDawntrailTide,
-} from "./NookDawntrailSky";
-import { NookEvercoldView } from "./NookEvercoldView";
-import { NookEvercoldSky } from "./NookEvercoldSky";
-import {
-  NookEvercoldSkyEmbroidery,
-  NookEvercoldAtmosphere,
-} from "./NookEvercoldSkyEmbroidery";
+import { isAnimationPausedForVisibility } from "./homeAnimationVisibility";
+import { NookSkySurface } from "./NookSkySurface";
+const NookShadowbringersLightParting = lazy(() =>
+  import("./NookShadowbringersLightParting").then((m) => ({
+    default: m.NookShadowbringersLightParting,
+  })),
+);
+const NookEndwalkerSky = lazy(() =>
+  import("./NookEndwalkerSky").then((m) => ({ default: m.NookEndwalkerSky })),
+);
+const NookDawntrailSky = lazy(() =>
+  import("./NookDawntrailSky").then((m) => ({ default: m.NookDawntrailSky })),
+);
+const NookDawntrailBirds = lazy(() =>
+  import("./NookDawntrailSky").then((m) => ({ default: m.NookDawntrailBirds })),
+);
+const NookDawntrailTide = lazy(() =>
+  import("./NookDawntrailSky").then((m) => ({ default: m.NookDawntrailTide })),
+);
+const NookEvercoldSky = lazy(() =>
+  import("./NookEvercoldSky").then((m) => ({ default: m.NookEvercoldSky })),
+);
+const NookEvercoldAtmosphere = lazy(() =>
+  import("./NookEvercoldSkyEmbroidery").then((m) => ({
+    default: m.NookEvercoldAtmosphere,
+  })),
+);
 import "./nook-window-cycle.css";
 import "./nook-ambient-models.css";
 
@@ -53,6 +86,21 @@ interface NookWindowViewProps {
 
 /** Aether and lunar space keep their fixed light when the room changes mode. */
 export function NookWindowView(props: NookWindowViewProps) {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="nook-window-exterior nook-cycle-sky nook-window-placeholder"
+          aria-hidden="true"
+        />
+      }
+    >
+      <NookWindowScene {...props} />
+    </Suspense>
+  );
+}
+
+function NookWindowScene(props: NookWindowViewProps) {
   if (!props.eventId && props.colorTheme === "arr") {
     return (
       <div
@@ -70,16 +118,9 @@ export function NookWindowView(props: NookWindowViewProps) {
         data-scene="endwalker"
         aria-hidden="true"
       >
-        <NookEndwalkerSkyEmbroidery />
+        <NookSkySurface scene="endwalker" />
         <NookEndwalkerSky />
-        <svg
-          className="nook-cycle-surface"
-          viewBox="70 58 262 373"
-          fill="none"
-          focusable="false"
-        >
-          <NookEndwalkerView />
-        </svg>
+        <NookLandscape scene="endwalker" className="nook-cycle-surface" />
       </div>
     );
   }
@@ -106,19 +147,6 @@ function NookDayCycleWindow({
   const isShadowbringers = scene === "shadowbringers";
   const isDawntrail = scene === "dawntrail";
   const isEvercold = scene === "evercold";
-  const SkyEmbroidery =
-    scene === "heavensward"
-      ? NookHeavenswardSkyEmbroidery
-      : scene === "stormblood"
-        ? NookStormbloodSkyEmbroidery
-        : scene === "shadowbringers"
-          ? NookShadowbringersSkyEmbroidery
-          : isDawntrail
-            ? NookDawntrailSkyEmbroidery
-            : isEvercold
-              ? NookEvercoldSkyEmbroidery
-              : NookSkyEmbroidery;
-
   useLayoutEffect(() => {
     if (!root.current) return;
     const cycle = createDayCycle(root.current, initialDark.current);
@@ -139,7 +167,9 @@ function NookDayCycleWindow({
         playback.current = {
           time: clock.currentTime,
           rate: clock.playbackRate,
-          running: clock.playState === "running",
+          running:
+            clock.playState === "running" ||
+            isAnimationPausedForVisibility(clock),
         };
       }
       cycle.forEach((animation) => animation.cancel());
@@ -165,9 +195,9 @@ function NookDayCycleWindow({
         data-mode="light"
         data-scene={scene}
       >
-        <SkyEmbroidery>
-          {isEvercold && <NookEvercoldSky layer="clouds" embedded />}
-        </SkyEmbroidery>
+        <NookSkySurface scene={scene} active={!isDark}>
+          {isEvercold && <NookEvercoldSky layer="clouds" />}
+        </NookSkySurface>
       </div>
       <div
         className="nook-cycle-surface nook-cycle-sky nook-cycle-sky--night nook-theme"
@@ -175,14 +205,19 @@ function NookDayCycleWindow({
         data-mode="dark"
         data-scene={scene}
       >
-        <SkyEmbroidery>
-          {isEvercold && <NookEvercoldSky layer="clouds" embedded />}
-        </SkyEmbroidery>
+        <NookSkySurface scene={scene} exposure="night" active={isDark}>
+          {isEvercold && <NookEvercoldSky layer="clouds" />}
+        </NookSkySurface>
       </div>
       <div className="nook-cycle-surface nook-cycle-dusk" data-cycle="dusk">
-        <SkyEmbroidery dusk>
-          {isEvercold && <NookEvercoldSky layer="clouds" embedded />}
-        </SkyEmbroidery>
+        <NookSkySurface
+          scene={scene}
+          exposure="dusk"
+          isDark={isDark}
+          active={false}
+        >
+          {isEvercold && <NookEvercoldSky layer="clouds" />}
+        </NookSkySurface>
       </div>
       {!isEvercold &&
         (["clouds", "sun", "moon", "stars"] as const).map((layer) =>
@@ -193,9 +228,12 @@ function NookDayCycleWindow({
           ),
         )}
       {isShadowbringers && <NookShadowbringersLightParting />}
-      {scene === "heavensward" && <NookHeavenswardSky />}
-      {scene === "stormblood" && <NookStormbloodSky />}
-      {scene === "shadowbringers" && <NookShadowbringersSky />}
+      {/* Weather has independent clocks; its chunk never delays the glass. */}
+      <Suspense fallback={null}>
+        {scene === "heavensward" && <NookHeavenswardSky />}
+        {scene === "stormblood" && <NookStormbloodSky />}
+        {scene === "shadowbringers" && <NookShadowbringersSky />}
+      </Suspense>
       {isDawntrail && <NookDawntrailBirds />}
       {([false, true] as const).map((night) => (
         <div
@@ -203,37 +241,22 @@ function NookDayCycleWindow({
           className={`nook-cycle-surface nook-cycle-landscape nook-cycle-landscape--${night ? "night" : "day"}`}
           data-cycle={night ? "night-landscape" : undefined}
         >
-          <svg
-            className="nook-theme"
-            data-mode={night ? "dark" : "light"}
-            data-scene={scene}
-            viewBox="70 58 262 373"
-            fill="none"
-            focusable="false"
-          >
-            {scene === "heavensward" ? (
-              <NookHeavenswardView isDark={night} />
-            ) : scene === "stormblood" ? (
-              <NookStormbloodView isDark={night} />
-            ) : scene === "shadowbringers" ? (
-              <NookShadowbringersView isDark={night} />
-            ) : isDawntrail ? (
-              <NookDawntrailView isDark={night} />
-            ) : isEvercold ? (
-              <NookEvercoldView isDark={night} />
-            ) : (
-              <NookShiroganeView isDark={night} />
-            )}
-          </svg>
+          <NookLandscape
+            scene={scene}
+            night={night}
+            active={night === isDark}
+          />
         </div>
       ))}
       <div
         className="nook-cycle-surface nook-cycle-golden-hour"
         data-cycle="golden-hour"
       />
-      {scene === "heavensward" && <NookHeavenswardWeather />}
-      {scene === "stormblood" && <NookStormbloodBreeze />}
-      {scene === "shadowbringers" && <NookShadowbringersLeaves />}
+      <Suspense fallback={null}>
+        {scene === "heavensward" && <NookHeavenswardWeather />}
+        {scene === "stormblood" && <NookStormbloodBreeze />}
+        {scene === "shadowbringers" && <NookShadowbringersLeaves />}
+      </Suspense>
       {isDawntrail && <NookDawntrailTide />}
       {isEvercold && <NookEvercoldAtmosphere />}
     </div>
